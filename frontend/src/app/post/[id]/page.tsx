@@ -323,7 +323,10 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                 <div className="flex items-center gap-1 mb-2">
                   {post.is_user_content && post.author_username ? (
                     <span className="flex items-center gap-1 text-zinc-500 text-xs">
-                      Submitted by @{post.author_username}
+                      Submitted by{" "}
+                      <Link href={`/profile/${post.author_username}`} className="hover:text-zinc-300 transition-colors">
+                        @{post.author_username}
+                      </Link>
                       {post.author_is_verified && (
                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Verified" className="flex-shrink-0">
                           <circle cx="8" cy="8" r="8" fill="#60a5fa"/>

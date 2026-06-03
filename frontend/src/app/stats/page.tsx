@@ -12,6 +12,7 @@ import {
   Treemap,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend,
 } from "recharts"
+import Link from "next/link"
 import { useAuth } from "../lib/auth"
 import { apiFetch } from "../lib/api"
 import { getSavedPostIds } from "../lib/savedPosts"
@@ -483,7 +484,7 @@ function GlobalTab({ data }: { data: GlobalStats }) {
             <tr key={r.username} className="border-b border-zinc-900">
               <td className="py-2 pr-3 text-zinc-500">{i + 1}</td>
               <td className="py-2 pr-3 text-white">
-                {r.username}
+                <Link href={`/profile/${r.username}`} className="hover:text-zinc-300 transition-colors">{r.username}</Link>
                 {r.is_verified && <span className="ml-1 text-blue-400 text-[10px]">✓</span>}
               </td>
               <td className="py-2 text-right text-zinc-300">{r.post_count}</td>
@@ -550,7 +551,7 @@ function GlobalTab({ data }: { data: GlobalStats }) {
             <tr key={r.username} className="border-b border-zinc-900">
               <td className="py-2 pr-3 text-zinc-500">{i + 1}</td>
               <td className="py-2 pr-3 text-white">
-                {r.username}
+                <Link href={`/profile/${r.username}`} className="hover:text-zinc-300 transition-colors">{r.username}</Link>
                 {r.is_verified && <span className="ml-1 text-blue-400 text-[10px]">✓</span>}
               </td>
               <td className="py-2 text-right text-zinc-300">{r.like_count}</td>
@@ -613,7 +614,7 @@ function GlobalTab({ data }: { data: GlobalStats }) {
           {topByComments.map((r, i) => (
             <tr key={r.username} className="border-b border-zinc-900">
               <td className="py-2 pr-3 text-zinc-500">{i + 1}</td>
-              <td className="py-2 pr-3 text-white">{r.username}</td>
+              <td className="py-2 pr-3 text-white"><Link href={`/profile/${r.username}`} className="hover:text-zinc-300 transition-colors">{r.username}</Link></td>
               <td className="py-2 text-right text-zinc-300">{r.comment_count}</td>
             </tr>
           ))}
@@ -666,7 +667,7 @@ function GlobalTab({ data }: { data: GlobalStats }) {
           {topByReadTime.map((r, i) => (
             <tr key={r.username} className="border-b border-zinc-900">
               <td className="py-2 pr-3 text-zinc-500">{i + 1}</td>
-              <td className="py-2 pr-3 text-white">{r.username}</td>
+              <td className="py-2 pr-3 text-white"><Link href={`/profile/${r.username}`} className="hover:text-zinc-300 transition-colors">{r.username}</Link></td>
               <td className="py-2 text-right text-zinc-300">{r.avg_sec}s</td>
             </tr>
           ))}

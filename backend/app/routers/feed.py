@@ -1,10 +1,11 @@
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session, selectinload
 
+from ..auth import get_current_user, get_optional_user
 from ..database import get_db
-from ..models import Interest, Post
+from ..models import Follow, Interest, Post, User
 from ..schemas import PostOut
 from ..scoring import score_posts
 
@@ -70,3 +71,45 @@ def get_feed(
         tier_map.update({p.id: 3 for p in tier3})
 
     return score_posts(tier1 + tier2 + tier3, slugs, db, tier_map)
+
+
+@router.get("/feed/following", response_model=List[PostOut])
+def get_following_feed(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    following_ids = [
+        row.following_id
+        for row in db.query(Follow).filter(
+            Follow.follower_id == current_user.id,
+            Follow.status == "accepted",
+        ).all()
+    ]
+    if not following_ids:
+        return []
+    posts = (
+        db.query(Post)
+        .options(selectinload(Post.interests), selectinload(Post.author))
+        .filter(Post.author_id.in_(following_ids), Post.status == "published")
+        .order_by(Post.created_at.desc())
+        .limit(50)
+        .all()
+    )
+    return [PostOut.model_validate(p) for p in posts]
+
+
+@router.get("/feed/user/{username}", response_model=List[PostOut])
+def get_user_feed(
+    username: str,
+    _current_user: Optional[User] = Depends(get_optional_user),
+    db: Session = Depends(get_db),
+):
+    target = db.query(User).filter(User.username == username, User.is_active == True).first()
+    if not target:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found.")
+    posts = (
+        db.query(Post)
+        .options(selectinload(Post.interests), selectinload(Post.author))
+        .filter(Post.author_id == target.id, Post.status == "published")
+        .order_by(Post.created_at.desc())
+        .limit(50)
+        .all()
+    )
+    return [PostOut.model_validate(p) for p in posts]

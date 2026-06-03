@@ -29,10 +29,37 @@ export default function ProfilePage() {
   const [deleteError, setDeleteError] = useState("")
   const [deleteLoading, setDeleteLoading] = useState(false)
 
+  // Bio
+  const [bio, setBio] = useState("")
+  const [bioLoading, setBioLoading] = useState(false)
+  const [bioError, setBioError] = useState("")
+
+  // Privacy toggle
+  const [privacyLoading, setPrivacyLoading] = useState(false)
+
+  // Follow requests
+  const [pendingRequests, setPendingRequests] = useState<{ username: string; is_verified: boolean; created_at: string }[]>([])
+  const [showRequests, setShowRequests] = useState(false)
+  const [requestActionLoading, setRequestActionLoading] = useState<string | null>(null)
+
   // Redirect unauthenticated visitors to login.
   useEffect(() => {
     if (!loading && !user) router.replace("/login")
   }, [user, loading, router])
+
+  // Sync bio state when user loads
+  useEffect(() => {
+    if (user) setBio(user.bio ?? "")
+  }, [user])
+
+  // Fetch pending follow requests for private accounts
+  useEffect(() => {
+    if (!user?.is_private) return
+    apiFetch(`/api/users/${user.username}/follow-requests`)
+      .then((r) => r.json())
+      .then(setPendingRequests)
+      .catch(() => {})
+  }, [user])
 
   if (loading || !user) return null
 
@@ -108,6 +135,60 @@ export default function ProfilePage() {
     }
   }
 
+  async function handleSaveBio() {
+    setBioError("")
+    setBioLoading(true)
+    try {
+      const r = await apiFetch("/api/auth/me", {
+        method: "PATCH",
+        body: JSON.stringify({ bio }),
+      })
+      const data = await r.json()
+      if (!r.ok) throw new Error(data.detail ?? "Failed to save bio.")
+      updateUser(data)
+    } catch (err) {
+      setBioError(err instanceof Error ? err.message : "Failed to save bio.")
+    } finally {
+      setBioLoading(false)
+    }
+  }
+
+  async function handleTogglePrivacy() {
+    if (!user) return
+    setPrivacyLoading(true)
+    try {
+      const r = await apiFetch("/api/auth/me", {
+        method: "PATCH",
+        body: JSON.stringify({ is_private: !user.is_private }),
+      })
+      const data = await r.json()
+      if (!r.ok) throw new Error(data.detail ?? "Failed to update privacy.")
+      updateUser(data)
+    } finally {
+      setPrivacyLoading(false)
+    }
+  }
+
+  async function handleAcceptRequest(requesterUsername: string) {
+    setRequestActionLoading(requesterUsername)
+    try {
+      await apiFetch(`/api/users/${requesterUsername}/follow/accept`, { method: "POST" })
+      setPendingRequests((prev) => prev.filter((r) => r.username !== requesterUsername))
+    } finally {
+      setRequestActionLoading(null)
+    }
+  }
+
+  async function handleDeclineRequest(requesterUsername: string) {
+    setRequestActionLoading(requesterUsername)
+    try {
+      await apiFetch(`/api/users/${requesterUsername}/follow/reject`, { method: "DELETE" })
+      setPendingRequests((prev) => prev.filter((r) => r.username !== requesterUsername))
+    } finally {
+      setRequestActionLoading(null)
+    }
+  }
+
   // Derive initials from username for the avatar.
   const initial = user.username.charAt(0).toUpperCase()
 
@@ -155,8 +236,114 @@ export default function ProfilePage() {
           </button>
         </div>
 
+        {/* Bio */}
+        <div className="mx-6 mb-4">
+          <label className="block text-zinc-400 text-xs mb-1.5">Bio</label>
+          <textarea
+            value={bio}
+            onChange={(e) => setBio(e.target.value)}
+            maxLength={160}
+            rows={3}
+            placeholder="Tell people about yourself..."
+            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 px-4 py-3 text-sm focus:outline-none focus:border-zinc-500 transition-colors resize-none"
+          />
+          <div className="flex items-center justify-between mt-1">
+            <span className="text-zinc-600 text-xs">{bio.length}/160</span>
+            <button
+              onClick={handleSaveBio}
+              disabled={bioLoading}
+              className="text-xs text-zinc-400 disabled:opacity-50"
+            >
+              {bioLoading ? "Saving..." : "Save bio"}
+            </button>
+          </div>
+          {bioError && <p className="text-red-400 text-xs mt-1">{bioError}</p>}
+        </div>
+
+        {/* Follow Requests (private accounts only) */}
+        {user.is_private && (
+          <div className="mx-6 mb-4 bg-zinc-900/50 rounded-2xl overflow-hidden">
+            <button
+              onClick={() => setShowRequests((v) => !v)}
+              className="w-full px-5 py-4 flex items-center justify-between text-left"
+            >
+              <span className="text-white text-sm flex items-center gap-2">
+                Follow Requests
+                {pendingRequests.length > 0 && (
+                  <span className="bg-sky-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    {pendingRequests.length}
+                  </span>
+                )}
+              </span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"
+                className={`w-4 h-4 text-zinc-500 transition-transform ${showRequests ? "rotate-90" : ""}`}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+              </svg>
+            </button>
+            {showRequests && (
+              <div className="px-5 pb-5 flex flex-col gap-3">
+                {pendingRequests.length === 0 ? (
+                  <p className="text-zinc-500 text-sm">No pending requests.</p>
+                ) : (
+                  pendingRequests.map((req) => (
+                    <div key={req.username} className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-white text-sm font-medium">@{req.username}</span>
+                        {req.is_verified && (
+                          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-label="Verified">
+                            <circle cx="8" cy="8" r="8" fill="#60a5fa"/>
+                            <path d="M4.5 8l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        )}
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleAcceptRequest(req.username)}
+                          disabled={requestActionLoading === req.username}
+                          className="bg-white text-zinc-950 rounded-lg px-3 py-1 text-xs font-semibold disabled:opacity-50"
+                        >
+                          Accept
+                        </button>
+                        <button
+                          onClick={() => handleDeclineRequest(req.username)}
+                          disabled={requestActionLoading === req.username}
+                          className="border border-zinc-600 text-zinc-400 rounded-lg px-3 py-1 text-xs disabled:opacity-50"
+                        >
+                          Decline
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Settings card */}
         <div className="mx-6 mb-8 bg-zinc-900/50 rounded-2xl overflow-hidden">
+
+          {/* Private Account toggle */}
+          <div className="border-b border-zinc-800/60">
+            <div className="px-5 py-4 flex items-center justify-between">
+              <div>
+                <p className="text-white text-sm">Private account</p>
+                <p className="text-zinc-500 text-xs mt-0.5">New followers must be approved</p>
+              </div>
+              <button
+                onClick={handleTogglePrivacy}
+                disabled={privacyLoading}
+                className={`relative w-11 h-6 rounded-full transition-colors duration-200 disabled:opacity-50 ${
+                  user.is_private ? "bg-sky-500" : "bg-zinc-700"
+                }`}
+                aria-label="Toggle private account"
+              >
+                <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200 ${
+                  user.is_private ? "translate-x-5" : "translate-x-0"
+                }`} />
+              </button>
+            </div>
+          </div>
 
           {/* Change username */}
           <div className="border-b border-zinc-800/60">

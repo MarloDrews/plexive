@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, JSON, String, Table, Text
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, JSON, String, Table, Text, UniqueConstraint
 from sqlalchemy.orm import relationship
 
 from .database import Base
@@ -88,8 +88,25 @@ class User(Base):
     created_at    = Column(DateTime, default=datetime.utcnow)
     is_active     = Column(Boolean, default=True, nullable=False)
     is_verified   = Column(Boolean, default=False, nullable=False)
+    is_private    = Column(Boolean, default=False, nullable=False)
+    bio           = Column(String, nullable=True)
 
     posts = relationship("Post", back_populates="author", foreign_keys="Post.author_id")
+
+
+class Follow(Base):
+    __tablename__ = "follows"
+    __table_args__ = (UniqueConstraint("follower_id", "following_id", name="uq_follow"),)
+
+    id           = Column(Integer, primary_key=True, index=True)
+    follower_id  = Column(Integer, ForeignKey("users.id"), nullable=False)
+    following_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    # "pending" = request sent but not yet accepted; "accepted" = following is active
+    status       = Column(String, default="accepted", nullable=False)
+    created_at   = Column(DateTime, default=datetime.utcnow)
+
+    follower  = relationship("User", foreign_keys=[follower_id])
+    following = relationship("User", foreign_keys=[following_id])
 
 
 class Comment(Base):

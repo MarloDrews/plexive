@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { type Post, FORMAT_STYLES } from "@/app/components/PostCard"
 import { apiFetch } from "@/app/lib/api"
 import BottomNav from "@/app/components/BottomNav"
@@ -165,7 +166,11 @@ export default function SearchPage() {
                   <FormatBadge format={post.format} />
                   <p className="text-white font-semibold text-sm mt-0.5 line-clamp-2">{post.title}</p>
                   <p className="flex items-center gap-1 text-zinc-600 text-xs mt-0.5">
-                    {post.is_user_content && post.author_username ? `@${post.author_username}` : "Deepscroll"}
+                    {post.is_user_content && post.author_username ? (
+                      <Link href={`/profile/${post.author_username}`} className="hover:text-zinc-400 transition-colors" onClick={(e) => e.stopPropagation()}>
+                        @{post.author_username}
+                      </Link>
+                    ) : "Deepscroll"}
                     {post.is_user_content && post.author_is_verified && (
                       <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Verified" className="flex-shrink-0">
                         <circle cx="8" cy="8" r="8" fill="#60a5fa"/>

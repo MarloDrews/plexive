@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from pydantic import BaseModel, EmailStr, field_validator
 from sqlalchemy.orm import Session
@@ -82,6 +84,8 @@ class PatchMeRequest(BaseModel):
     username: str | None = None
     new_password: str | None = None
     current_password: str | None = None
+    is_private: Optional[bool] = None
+    bio: Optional[str] = None
 
     @field_validator("new_password")
     @classmethod
@@ -94,6 +98,13 @@ class PatchMeRequest(BaseModel):
             raise ValueError("Password must be 72 bytes or fewer (bcrypt limit).")
         return v
 
+    @field_validator("bio")
+    @classmethod
+    def validate_bio(cls, v: str | None) -> str | None:
+        if v is not None and len(v) > 160:
+            raise ValueError("bio must be 160 characters or fewer.")
+        return v
+
 
 @router.patch("/me", response_model=UserOut)
 def patch_me(
@@ -101,7 +112,7 @@ def patch_me(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    if body.username is None and body.new_password is None:
+    if all(v is None for v in [body.username, body.new_password, body.is_private, body.bio]):
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Provide at least one field to update.",
@@ -132,6 +143,12 @@ def patch_me(
                 detail="Username already taken.",
             )
         current_user.username = body.username
+
+    if body.is_private is not None:
+        current_user.is_private = body.is_private
+
+    if body.bio is not None:
+        current_user.bio = body.bio
 
     db.commit()
     db.refresh(current_user)

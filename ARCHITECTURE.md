@@ -11,19 +11,20 @@ backend/
   app/
     database.py                 engine, SessionLocal, Base, get_db dependency
     main.py                     FastAPI app, CORS for localhost:3000, router registration, create_all on startup
-    models.py                   ORM models: Interest, Post (author_id FK→users nullable, status string default "published", image_path; author_username and author_is_verified properties), Event (user_id nullable FK), User (posts relationship, is_verified boolean default false), Comment, post_interests join table
+    models.py                   ORM models: Interest, Post (author_id FK→users nullable, status string default "published", image_path; author_username and author_is_verified properties), Event (user_id nullable FK), User (posts relationship, is_verified boolean default false, is_private boolean default false, bio string nullable), Follow (follower_id FK→users, following_id FK→users, status "pending"|"accepted", created_at; UniqueConstraint uq_follow), Comment, post_interests join table
     auth.py                     hash_password, verify_password, create_access_token, decode_access_token, get_current_user, get_optional_user (returns User|None, used for optional auth)
-    schemas.py                  Pydantic models: UserOut (id, email, username, created_at, is_verified), InterestOut, PostOut (author_username, author_is_verified, status, is_user_content), PostCreate, EventIn, UploadResponse, SvgUploadResponse
+    schemas.py                  Pydantic models: UserOut (id, email, username, created_at, is_verified, is_private, bio), InterestOut, PostOut (author_username, author_is_verified, status, is_user_content), PostCreate, EventIn, UploadResponse, SvgUploadResponse
     sanitize.py                 validate_image() — chunked read, magic-byte check, animated-GIF reject, Pillow re-encode; sanitize_svg() / sanitize_svg_text() — defusedxml XXE check, lxml element+attribute whitelist, dangerous-pattern rejection
     upload_config.py            UPLOAD_DIR (absolute path at repo root/user_uploads/), size limits (5 MB images, 512 KB SVGs)
     rate_limit.py               in-memory per-user rate limiter (dict of timestamps); check_rate_limit(user_id, key, max, window_secs)
     scoring.py                    score_posts() — interest match (tier-scaled), format engagement, repeat penalty
     routers/
       interests.py              GET /api/interests
-      feed.py                   GET /api/feed — three-tier: direct matches → related co-tags → all remaining
+      feed.py                   GET /api/feed — three-tier: direct matches → related co-tags → all remaining; GET /api/feed/following (auth, posts from followed users, limit 50); GET /api/feed/user/{username} (no auth, published posts by user, limit 50)
 
       events.py                 POST /api/events (captures user_id when auth token present; deduplicates "like" events per user+post for auth users); GET /api/posts/{id}/likes → {count, liked}
-      auth.py                   POST /api/auth/register, POST /api/auth/login, GET /api/auth/me, PATCH /api/auth/me (update username/password), DELETE /api/auth/me (delete account)
+      auth.py                   POST /api/auth/register, POST /api/auth/login, GET /api/auth/me, PATCH /api/auth/me (update username/password/is_private/bio), DELETE /api/auth/me (delete account)
+      follows.py                POST /api/users/{username}/follow; DELETE /api/users/{username}/follow; POST /api/users/{username}/follow/accept; DELETE /api/users/{username}/follow/reject; GET /api/users/{username}/followers; GET /api/users/{username}/following; GET /api/users/{username}/follow-requests (auth, own only); GET /api/users/{username}/profile (no auth, returns counts + follow_status)
       search.py                 GET /api/search — case-insensitive substring search across title, hook, body, author, known_for, the_question; ranked by title-match then recency; limit 50
       comments.py               GET /api/posts/{id}/comments?count=true → {count} or full list; POST /api/posts/{id}/comments (auth); DELETE /api/comments/{id} (auth, own comment only)
       uploads.py                POST /api/upload/image (10/hr, validate_image, UUID filename); POST /api/upload/svg (10/hr, sanitize_svg, returns svg_content string not URL)
@@ -43,7 +44,7 @@ frontend/
   src/app/
     layout.tsx                  root layout, Geist font, title "Deepscroll"
     globals.css                 Tailwind import, Geist font wiring, heart-pop keyframe
-    page.tsx                    home feed: 7-tab bar, horizontal snap between tabs, vertical snap within each, real-time indicator; BottomNav (feed active)
+    page.tsx                    home feed: 8-tab bar (Following first, then For You + 6 formats), horizontal snap between tabs, vertical snap within each, real-time indicator; FollowingTabPage fetches /api/feed/following with auth; BottomNav (feed active)
     onboarding/
       page.tsx                  server component — renders InterestPicker (no props)
       InterestPicker.tsx        client — fetches /api/interests, groups 145 pills into 10 categories, sticky header/footer, saves slugs to localStorage
@@ -52,7 +53,9 @@ frontend/
     register/
       page.tsx                  register form: email + username + password, inline error messages, redirects to / on success or if already logged in
     profile/
-      page.tsx                  account page: avatar (initials), @username, email, "My posts →" link, inline forms for change username / change password / sign out / delete account; BottomNav (profile active)
+      page.tsx                  account page: avatar (initials), @username, email, "My posts →" link, bio textarea (160 chars, save button), private account toggle (PATCH /api/auth/me), follow requests panel (private accounts only, accept/decline each), inline forms for change username / change password / sign out / delete account; BottomNav (profile active)
+      [username]/
+        page.tsx                public profile: header with back + settings/more-options, 72px avatar, verified badge, bio, stats row (posts/followers/following), follow/unfollow button, Posts|Saved|Liked tabs; fetches /api/users/{username}/profile and /api/feed/user/{username}; BottomNav (profile active)
     search/
       page.tsx                  search input + format chips + compact result cards; debounced 300ms; navigates to post detail; BottomNav (search active); attribution (@user or Deepscroll) below title in result cards
     create/
@@ -137,6 +140,18 @@ Join table linking posts ↔ interests (many-to-many).
 | created_at    | DateTime | default now                               |
 | is_active     | Boolean  | default true; false = soft-deleted        |
 | is_verified   | Boolean  | default false; true = bypasses review queue (posts go to "published"), can verify other users via admin endpoint |
+| is_private    | Boolean  | default false; true = follow requests require approval |
+| bio           | String?  | up to 160 chars; shown on public profile  |
+
+### follows
+| column       | type              | description                                         |
+|--------------|-------------------|-----------------------------------------------------|
+| id           | Integer           | primary key                                         |
+| follower_id  | FK→users          | the user who is following                           |
+| following_id | FK→users          | the user being followed                             |
+| status       | String            | "pending" (awaiting approval) or "accepted" (active)|
+| created_at   | DateTime          | default now                                         |
+Unique constraint: (follower_id, following_id)
 
 ## API ENDPOINTS
 
@@ -164,6 +179,16 @@ GET  /api/posts/mine    Authorization: Bearer <token>                           
 PATCH /api/admin/users/{user_id}/verify  Authorization: Bearer <token>                 → UserOut  sets is_verified=True  403 if caller is not verified  404 if user not found
 GET  /api/stats/global                                                                  → GlobalStats JSON (no auth)
 GET  /api/stats/me      Authorization: Bearer <token>                                   → MyStats JSON  401 if unauthenticated
+POST /api/users/{username}/follow   Authorization: Bearer <token>                       → {status: "accepted"|"pending"}  400 if already following or self-follow
+DELETE /api/users/{username}/follow  Authorization: Bearer <token>                      → 204  404 if not following
+POST /api/users/{username}/follow/accept  Authorization: Bearer <token>                 → {status: "accepted"}  current_user must be the target  404 if no pending request
+DELETE /api/users/{username}/follow/reject  Authorization: Bearer <token>               → 204  current_user must be the target  404 if no pending request
+GET  /api/users/{username}/followers                                                    → [{username, is_verified, is_private}]  empty if private+not-following
+GET  /api/users/{username}/following                                                    → [{username, is_verified, is_private}]  same privacy rule
+GET  /api/users/{username}/follow-requests  Authorization: Bearer <token>               → [{username, is_verified, created_at}]  403 if not own account
+GET  /api/users/{username}/profile                                                      → {username, is_verified, is_private, bio, follower_count, following_count, post_count, follow_status}
+GET  /api/feed/following  Authorization: Bearer <token>                                 → [PostOut]  limit 50  empty if following nobody
+GET  /api/feed/user/{username}                                                          → [PostOut]  published posts by user  limit 50  404 if user not found
 ```
 
 ## SECURITY
@@ -200,7 +225,7 @@ attributes. Never use `dangerouslySetInnerHTML` to render comment text.
 | InterestPicker.tsx     | onboarding pill grid; 10 category sections + Other; fetches own data; gates entry to feed via localStorage |
 | eventQueue.ts          | batches view/like events and POSTs them in groups rather than one-by-one    |
 | useWikipediaImage.ts   | fetches Wikipedia portrait for people posts lacking image_url; thumbnail or original size |
-| auth.tsx               | AuthContext/Provider: JWT in localStorage, session restore via /me, login/register/logout/loading |
+| auth.tsx               | AuthContext/Provider: JWT in localStorage, session restore via /me, login/register/logout/loading; AuthUser includes is_private and bio |
 | api.ts                 | apiFetch: adds Authorization header when token present                      |
 | Providers.tsx          | client boundary so layout.tsx (Server Component) can mount AuthProvider     |
 | profile/page.tsx       | account settings: avatar, identity display (inline verified badge if is_verified), change username/password, sign out, delete account; BottomNav (profile active) |

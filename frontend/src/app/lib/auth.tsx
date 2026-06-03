@@ -10,6 +10,8 @@ export interface AuthUser {
   username: string
   created_at: string
   is_verified: boolean
+  is_private: boolean
+  bio: string | null
 }
 
 interface AuthContextType {

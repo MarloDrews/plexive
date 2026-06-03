@@ -12,6 +12,8 @@ class UserOut(BaseModel):
     username: str
     created_at: datetime
     is_verified: bool
+    is_private: bool
+    bio: str | None
 
 
 class EventIn(BaseModel):
