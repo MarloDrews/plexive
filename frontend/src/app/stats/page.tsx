@@ -54,8 +54,9 @@ const FORMAT_COLORS: Record<string, string> = {
   concepts: "#a78bfa",
   questions: "#34d399",
   stories: "#fb923c",
+  academy: "#818cf8",
 }
-const FORMATS = ["books", "facts", "people", "concepts", "questions", "stories"]
+const FORMATS = ["books", "facts", "people", "concepts", "questions", "stories", "academy"]
 const DEFAULT_COLOR = "#a1a1aa"
 const RANK_COLORS = ["#a78bfa", "#7c3aed", "#4c1d95", "#2e1065", "#1e1b4b"]
 

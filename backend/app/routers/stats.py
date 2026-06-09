@@ -11,7 +11,7 @@ from ..models import Comment, Event, Post, User
 
 router = APIRouter(tags=["stats"])
 
-FORMATS = ["books", "facts", "people", "concepts", "questions", "stories"]
+FORMATS = ["books", "facts", "people", "concepts", "questions", "stories", "academy"]
 
 # SQLite strftime %w: 0=Sun, 1=Mon, ..., 6=Sat
 # Remap to Mon=0, Tue=1, ..., Sun=6
