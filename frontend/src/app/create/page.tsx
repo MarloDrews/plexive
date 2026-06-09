@@ -36,7 +36,7 @@ const FORMATS = FORMAT_IDS.map((id) => ({
 interface Interest { id: number; name: string; slug: string }
 
 const inputCls =
-  "w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder-zinc-500 text-sm focus:outline-none focus:ring-1 focus:ring-zinc-600"
+  "w-full bg-surface-2 border border-edge-strong rounded-field px-4 py-3 text-white placeholder-zinc-500 text-sm focus:outline-none focus:ring-1 focus:ring-zinc-600"
 const labelCls = "text-zinc-400 text-xs uppercase tracking-wider mb-2 mt-4 block"
 
 function FieldError({ msg }: { msg: string | undefined }) {
@@ -496,7 +496,7 @@ export default function CreatePage() {
                   const selected = selectedFormat === fmt.id
                   if (!fmt.enabled) {
                     return (
-                      <div key={fmt.id} className="rounded-2xl p-5 border border-zinc-800 bg-zinc-900/30 opacity-50 relative">
+                      <div key={fmt.id} className="rounded-card p-5 border border-zinc-800 bg-zinc-900/30 opacity-50 relative">
                         <div className="font-semibold text-zinc-400 text-sm">{fmt.name}</div>
                         <div className="text-zinc-600 text-xs mt-0.5">{fmt.description}</div>
                         <span className="absolute top-2 right-2 text-[10px] text-zinc-500 border border-zinc-700 rounded px-1.5 py-0.5">Coming soon</span>
@@ -507,7 +507,7 @@ export default function CreatePage() {
                     <button
                       key={fmt.id}
                       onClick={() => setSelectedFormat(fmt.id)}
-                      className={`rounded-2xl p-5 text-left transition-colors ${selected ? `border-2 ${fmt.accent} bg-zinc-900` : "border border-zinc-800 bg-zinc-900/50"}`}
+                      className={`rounded-card p-5 text-left transition-colors ${selected ? `border-2 ${fmt.accent} bg-zinc-900` : "border border-zinc-800 bg-zinc-900/50"}`}
                     >
                       <div className="font-semibold text-white text-sm">{fmt.name}</div>
                       <div className="text-zinc-400 text-xs mt-0.5">{fmt.description}</div>
@@ -537,7 +537,7 @@ export default function CreatePage() {
                 <input
                   type="search" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search existing posts..."
-                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl pl-9 pr-4 py-3 text-white placeholder-zinc-500 text-sm focus:outline-none focus:ring-1 focus:ring-zinc-600"
+                  className="w-full bg-surface-2 border border-edge-strong rounded-field pl-9 pr-4 py-3 text-white placeholder-zinc-500 text-sm focus:outline-none focus:ring-1 focus:ring-zinc-600"
                 />
               </div>
               {searchLoading && <div className="flex justify-center py-4"><Spinner size="sm" /></div>}
@@ -546,7 +546,7 @@ export default function CreatePage() {
                   {searchResults.map((post) => {
                     const style = FORMAT_STYLES[post.format as FormatId]
                     return (
-                      <button key={post.id} onClick={() => window.open(`/post/${post.id}`, "_blank")} className="w-full text-left bg-zinc-900/60 rounded-2xl px-4 py-3">
+                      <button key={post.id} onClick={() => window.open(`/post/${post.id}`, "_blank")} className="w-full text-left bg-surface-1 rounded-card px-4 py-3">
                         {style && <span className={`text-xs font-medium ${style.text}`}>{style.badge}</span>}
                         <p className="text-white font-semibold text-sm mt-0.5 line-clamp-2">{post.title}</p>
                         {fcStr(post.feed_card, "essence") && <p className="text-zinc-400 text-xs mt-1 line-clamp-2">{fcStr(post.feed_card, "essence")}</p>}

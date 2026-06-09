@@ -22,6 +22,7 @@
   --color-surface-0: #09090b;              /* page base (zinc-950) */
   --color-surface-1: rgb(24 24 27 / 0.6);  /* cards (zinc-900/60) */
   --color-surface-2: #27272a;              /* inputs, inner blocks (zinc-800) */
+  --color-surface-overlay: rgb(9 9 11 / 0.95);  /* bars, sheets (zinc-950/95) */
 
   /* Borders */
   --color-edge: rgb(39 39 42 / 0.6);       /* hairline dividers (zinc-800/60) */

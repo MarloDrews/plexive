@@ -27,7 +27,7 @@ export default function StorySection({ content, isUserContent }: Props) {
       {content.key_figures && content.key_figures.length > 0 && (
         <div className="flex flex-col gap-3 mt-1">
           {content.key_figures.map((fig, i) => (
-            <div key={i} className="bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-4 flex gap-3 items-start">
+            <div key={i} className="bg-surface-2 border border-edge-strong rounded-field px-4 py-4 flex gap-3 items-start">
               {fig.image_url && (
                 <img
                   src={fig.image_url}

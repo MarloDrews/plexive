@@ -348,7 +348,7 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
           </div>
 
           {/* Sticky comment bar */}
-          <div className="flex-none border-t border-zinc-800/50 bg-zinc-950/95 backdrop-blur-md">
+          <div className="flex-none border-t border-edge bg-surface-overlay backdrop-blur-md">
             <div className="flex items-center gap-2 px-3 py-2">
               <div className="flex-1 min-w-0">
                 {user ? (

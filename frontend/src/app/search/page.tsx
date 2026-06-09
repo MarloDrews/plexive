@@ -160,7 +160,7 @@ export default function SearchPage() {
                 <button
                   key={post.id}
                   onClick={() => router.push(`/post/${post.id}`)}
-                  className="w-full text-left bg-zinc-900/60 rounded-2xl px-4 py-3"
+                  className="w-full text-left bg-surface-1 rounded-card px-4 py-3"
                 >
                   <FormatBadge format={post.format} />
                   <p className="text-white font-semibold text-sm mt-0.5 line-clamp-2">{post.title}</p>

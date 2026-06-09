@@ -194,7 +194,7 @@ export default function ProfilePage() {
   const initial = user.username.charAt(0).toUpperCase()
 
   const inputClass =
-    "w-full bg-zinc-800 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 px-4 py-3 text-sm focus:outline-none focus:border-zinc-500 transition-colors"
+    "w-full bg-surface-2 border border-edge-strong rounded-field text-white placeholder-zinc-500 px-4 py-3 text-sm focus:outline-none focus:border-zinc-500 transition-colors"
   const submitClass =
     "w-full bg-white text-zinc-950 font-semibold py-3 rounded-xl text-sm disabled:opacity-50 transition-opacity"
 
@@ -241,7 +241,7 @@ export default function ProfilePage() {
             maxLength={160}
             rows={3}
             placeholder="Tell people about yourself..."
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 px-4 py-3 text-sm focus:outline-none focus:border-zinc-500 transition-colors resize-none"
+            className="w-full bg-surface-2 border border-edge-strong rounded-field text-white placeholder-zinc-500 px-4 py-3 text-sm focus:outline-none focus:border-zinc-500 transition-colors resize-none"
           />
           <div className="flex items-center justify-between mt-1">
             <span className="text-zinc-600 text-xs">{bio.length}/160</span>
@@ -258,7 +258,7 @@ export default function ProfilePage() {
 
         {/* Follow Requests (private accounts only) */}
         {user.is_private && (
-          <div className="mx-6 mb-4 bg-zinc-900/50 rounded-2xl overflow-hidden">
+          <div className="mx-6 mb-4 bg-surface-1 rounded-card overflow-hidden">
             <button
               onClick={() => setShowRequests((v) => !v)}
               className="w-full px-5 py-4 flex items-center justify-between text-left"
@@ -312,10 +312,10 @@ export default function ProfilePage() {
         )}
 
         {/* Settings card */}
-        <div className="mx-6 mb-8 bg-zinc-900/50 rounded-2xl overflow-hidden">
+        <div className="mx-6 mb-8 bg-surface-1 rounded-card overflow-hidden">
 
           {/* Private Account toggle */}
-          <div className="border-b border-zinc-800/60">
+          <div className="border-b border-edge">
             <div className="px-5 py-4 flex items-center justify-between">
               <div>
                 <p className="text-white text-sm">Private account</p>
@@ -337,7 +337,7 @@ export default function ProfilePage() {
           </div>
 
           {/* Change username */}
-          <div className="border-b border-zinc-800/60">
+          <div className="border-b border-edge">
             <button
               onClick={() => togglePanel("username")}
               className="w-full px-5 py-4 flex items-center justify-between text-left"
@@ -368,7 +368,7 @@ export default function ProfilePage() {
           </div>
 
           {/* Change password */}
-          <div className="border-b border-zinc-800/60">
+          <div className="border-b border-edge">
             <button
               onClick={() => togglePanel("password")}
               className="w-full px-5 py-4 flex items-center justify-between text-left"
@@ -408,7 +408,7 @@ export default function ProfilePage() {
           </div>
 
           {/* Sign out */}
-          <div className="border-b border-zinc-800/60">
+          <div className="border-b border-edge">
             <button
               onClick={() => { logout(); router.replace("/") }}
               className="w-full px-5 py-4 text-left text-red-400 text-sm"

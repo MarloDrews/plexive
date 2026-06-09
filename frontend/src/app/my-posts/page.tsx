@@ -82,7 +82,7 @@ export default function MyPostsPage() {
                   <button
                     key={post.id}
                     onClick={() => router.push(`/post/${post.id}`)}
-                    className="w-full text-left bg-zinc-900/60 rounded-2xl px-4 py-3 flex items-start gap-3"
+                    className="w-full text-left bg-surface-1 rounded-card px-4 py-3 flex items-start gap-3"
                   >
                     {/* Cover thumbnail */}
                     <div className="shrink-0 w-10 h-14 rounded-lg overflow-hidden bg-zinc-800">

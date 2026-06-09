@@ -249,7 +249,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
           }`}
         >
           {post.format === "books" && fc ? (
-            <div className="bg-zinc-900/50 rounded-2xl px-5 py-5 flex flex-col gap-3">
+            <div className="bg-surface-1 rounded-card px-5 py-5 flex flex-col gap-3">
               {/* Title row + cover */}
               <div className="flex gap-3 items-start">
                 <div className="flex-1 min-w-0">
@@ -295,7 +295,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
               </div>
             </div>
           ) : post.format === "people" && fc ? (
-            <div className="bg-zinc-900/50 rounded-2xl px-5 py-5 flex flex-col gap-3">
+            <div className="bg-surface-1 rounded-card px-5 py-5 flex flex-col gap-3">
               <div className="flex gap-4 items-start">
                 {(fc.portrait as { image_url?: string } | undefined)?.image_url && (
                   <div className="shrink-0 w-20 h-20 rounded-full overflow-hidden bg-zinc-800 border-2 border-rose-400/40">
@@ -344,7 +344,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
               </div>
             </div>
           ) : post.format === "facts" && fc ? (
-            <div className="bg-zinc-900/50 rounded-2xl px-5 py-5 flex flex-col gap-3">
+            <div className="bg-surface-1 rounded-card px-5 py-5 flex flex-col gap-3">
               {fcStr(fc, "field") && (
                 <p className="text-xs font-semibold tracking-widest text-cyan-600 uppercase">{fcStr(fc, "field")}</p>
               )}
@@ -372,7 +372,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
             </div>
           ) : (
             /* Fallback for other formats */
-            <div className="bg-zinc-900/50 rounded-2xl px-5 py-6 flex flex-col gap-3">
+            <div className="bg-surface-1 rounded-card px-5 py-6 flex flex-col gap-3">
               <h2 className="text-3xl font-bold tracking-tight text-white leading-snug">
                 {post.title}
               </h2>

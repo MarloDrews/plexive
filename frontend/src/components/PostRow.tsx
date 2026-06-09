@@ -16,7 +16,7 @@ export default function PostRow({ post }: Props) {
   return (
     <button
       onClick={() => router.push(`/post/${post.id}`)}
-      className="w-full text-left bg-zinc-900/60 rounded-2xl px-4 py-3 flex items-start gap-3"
+      className="w-full text-left bg-surface-1 rounded-card px-4 py-3 flex items-start gap-3"
     >
       <span className={`w-2 h-2 rounded-full mt-2 shrink-0 ${style?.dot ?? "bg-zinc-500"}`} />
       <div className="flex-1 min-w-0">

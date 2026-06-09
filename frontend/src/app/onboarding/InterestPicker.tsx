@@ -246,7 +246,7 @@ export default function InterestPicker() {
       </div>
 
       {/* Bottom bar — fixed height, does not scroll */}
-      <div className="shrink-0 px-6 pt-4 pb-8 bg-zinc-950/95 backdrop-blur">
+      <div className="shrink-0 px-6 pt-4 pb-8 bg-surface-overlay backdrop-blur">
         <p className="text-zinc-500 text-sm mb-3">
           {selected.size} of {interests.length} selected
         </p>
