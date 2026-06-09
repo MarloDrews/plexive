@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/app/lib/auth"
 import { apiFetch } from "@/app/lib/api"
-import { FORMAT_STYLES } from "@/app/components/PostCard"
+import { FORMAT_STYLES, type FormatId } from "@/lib/formats"
 import BottomNav from "@/app/components/BottomNav"
 import { fcStr, type Post } from "@/types/post"
 
@@ -86,7 +86,7 @@ export default function MyPostsPage() {
           {posts !== null && posts.length > 0 && (
             <div className="flex flex-col gap-2 px-4 pt-2">
               {posts.map((post) => {
-                const style = FORMAT_STYLES[post.format as keyof typeof FORMAT_STYLES]
+                const style = FORMAT_STYLES[post.format as FormatId]
                 return (
                   <button
                     key={post.id}
@@ -110,7 +110,7 @@ export default function MyPostsPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         {style && (
-                          <span className={`text-xs font-medium ${style.text}`}>{style.label}</span>
+                          <span className={`text-xs font-medium ${style.text}`}>{style.badge}</span>
                         )}
                         {post.status === "pending" && (
                           <span className="bg-amber-500/20 text-amber-300 rounded-full px-2 py-0.5 text-xs">

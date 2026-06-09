@@ -9,69 +9,9 @@ import { apiFetch } from "@/app/lib/api"
 import { savePost, unsavePost, isPostSaved } from "@/app/lib/savedPosts"
 import { likePost, unlikePost, isPostLiked, getCachedLikeCount, setCachedLikeCount, isLikeSent, markLikeSent, unmarkLikeSent } from "@/app/lib/likedPosts"
 import { fcNum, fcStr, type Post } from "@/types/post"
+import { formatStyle } from "@/lib/formats"
 
 export type { Post }
-
-export const FORMAT_STYLES = {
-  books: {
-    label: "BOOKS",
-    dot: "bg-amber-400",
-    text: "text-amber-400",
-    glow: "from-amber-600/40",
-    radial: "rgba(251,191,36,0.09)",
-    accent: "#fbbf24",
-  },
-  facts: {
-    label: "FACTS",
-    dot: "bg-cyan-400",
-    text: "text-cyan-400",
-    glow: "from-cyan-500/40",
-    radial: "rgba(34,211,238,0.09)",
-    accent: "#22d3ee",
-  },
-  people: {
-    label: "PEOPLE",
-    dot: "bg-rose-400",
-    text: "text-rose-400",
-    glow: "from-rose-500/40",
-    radial: "rgba(251,113,133,0.09)",
-    accent: "#fb7185",
-  },
-  concepts: {
-    label: "CONCEPTS",
-    dot: "bg-violet-400",
-    text: "text-violet-400",
-    glow: "from-violet-500/40",
-    radial: "rgba(167,139,250,0.09)",
-    accent: "#a78bfa",
-  },
-  questions: {
-    label: "QUESTIONS",
-    dot: "bg-emerald-400",
-    text: "text-emerald-400",
-    glow: "from-emerald-500/40",
-    radial: "rgba(52,211,153,0.09)",
-    accent: "#34d399",
-  },
-  stories: {
-    label: "STORIES",
-    dot: "bg-orange-400",
-    text: "text-orange-400",
-    glow: "from-orange-500/40",
-    radial: "rgba(251,146,60,0.09)",
-    accent: "#fb923c",
-  },
-  academy: {
-    label: "ACADEMY",
-    dot: "bg-indigo-400",
-    text: "text-indigo-400",
-    glow: "from-indigo-500/40",
-    radial: "rgba(129,140,248,0.09)",
-    accent: "#818cf8",
-  },
-} as const
-
-type Format = keyof typeof FORMAT_STYLES
 
 const MIN_DWELL_MS = 500
 
@@ -112,7 +52,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
   const [showHeartAnim, setShowHeartAnim] = useState(false)
   const [toastVisible, setToastVisible] = useState(false)
 
-  const style = FORMAT_STYLES[post.format as Format] ?? FORMAT_STYLES.facts
+  const style = formatStyle(post.format)
   const fc = post.feed_card
 
   useEffect(() => {
@@ -276,13 +216,11 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
       {/* Double-tap heart overlay */}
       {showHeartAnim && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
-          <style>{`@keyframes heartBoom{0%{transform:scale(0);opacity:1}50%{transform:scale(1.3);opacity:1}100%{transform:scale(1);opacity:0}}`}</style>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             fill="currentColor"
-            className="w-24 h-24 text-rose-400"
-            style={{ animation: "heartBoom 600ms ease-out forwards" }}
+            className="w-24 h-24 text-rose-400 heart-boom"
             onAnimationEnd={() => setShowHeartAnim(false)}
           >
             <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.218l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
@@ -295,7 +233,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
         <div className="flex items-center gap-2">
           <span className={`w-2 h-2 rounded-full shrink-0 ${style.dot}`} />
           <span className={`text-xs font-semibold tracking-widest ${style.text}`}>
-            {style.label}
+            {style.badge}
           </span>
         </div>
         {post.format === "books" && fcNum(fc, "post_reading_time_min") ? (

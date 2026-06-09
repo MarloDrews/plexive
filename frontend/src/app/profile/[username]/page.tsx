@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import { useAuth } from "@/app/lib/auth"
 import { apiFetch } from "@/app/lib/api"
-import { FORMAT_STYLES } from "@/app/components/PostCard"
+import { FORMAT_STYLES, type FormatId } from "@/lib/formats"
 import { getSavedPostIds } from "@/app/lib/savedPosts"
 import { getLikedPostIds } from "@/app/lib/likedPosts"
 import BottomNav from "@/app/components/BottomNav"
@@ -286,7 +286,7 @@ function PostsTab({ posts }: { posts: Post[] | null }) {
   return (
     <div className="flex flex-col gap-2">
       {posts.map((post) => {
-        const style = FORMAT_STYLES[post.format as keyof typeof FORMAT_STYLES]
+        const style = FORMAT_STYLES[post.format as FormatId]
         return (
           <button
             key={post.id}
@@ -295,7 +295,7 @@ function PostsTab({ posts }: { posts: Post[] | null }) {
           >
             <span className={`w-2 h-2 rounded-full mt-2 shrink-0 ${style?.dot ?? "bg-zinc-500"}`} />
             <div className="flex-1 min-w-0">
-              {style && <span className={`text-xs font-medium ${style.text}`}>{style.label}</span>}
+              {style && <span className={`text-xs font-medium ${style.text}`}>{style.badge}</span>}
               <p className="text-white font-semibold text-sm mt-0.5 line-clamp-2">{post.title}</p>
             </div>
           </button>
@@ -339,7 +339,7 @@ function PrivateTabContent({
   return (
     <div className="flex flex-col gap-2">
       {posts.map((post) => {
-        const style = FORMAT_STYLES[post.format as keyof typeof FORMAT_STYLES]
+        const style = FORMAT_STYLES[post.format as FormatId]
         return (
           <button
             key={post.id}
@@ -348,7 +348,7 @@ function PrivateTabContent({
           >
             <span className={`w-2 h-2 rounded-full mt-2 shrink-0 ${style?.dot ?? "bg-zinc-500"}`} />
             <div className="flex-1 min-w-0">
-              {style && <span className={`text-xs font-medium ${style.text}`}>{style.label}</span>}
+              {style && <span className={`text-xs font-medium ${style.text}`}>{style.badge}</span>}
               <p className="text-white font-semibold text-sm mt-0.5 line-clamp-2">{post.title}</p>
             </div>
           </button>

@@ -1,3 +1,5 @@
+import { FORMAT_STYLES, type FormatId } from "@/lib/formats"
+
 interface Props {
   format: string
   accentColor: string
@@ -66,16 +68,6 @@ function MortarboardIcon({ color }: { color: string }) {
   )
 }
 
-const FORMAT_LABELS: Record<string, string> = {
-  books: "Books",
-  facts: "Facts",
-  people: "People",
-  concepts: "Ideas",
-  questions: "Q&A",
-  stories: "Stories",
-  academy: "Academy",
-}
-
 function FormatIcon({ format, color }: { format: string; color: string }) {
   switch (format) {
     case "books":     return <BookIcon color={color} />
@@ -90,7 +82,7 @@ function FormatIcon({ format, color }: { format: string; color: string }) {
 }
 
 export default function EmptyState({ format, accentColor }: Props) {
-  const label = FORMAT_LABELS[format] ?? format
+  const label = FORMAT_STYLES[format as FormatId]?.label ?? format
 
   return (
     <div className="flex flex-col items-center gap-4 px-8 text-center">

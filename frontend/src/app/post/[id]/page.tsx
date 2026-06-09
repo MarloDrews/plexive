@@ -3,7 +3,7 @@
 import { use, useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { FORMAT_STYLES } from "@/app/components/PostCard"
+import { formatStyle } from "@/lib/formats"
 import { fcStr, type Post } from "@/types/post"
 import SectionRenderer from "@/components/SectionRenderer"
 import CommentsSection, { type Comment } from "@/app/components/CommentsSection"
@@ -13,8 +13,6 @@ import { apiFetch } from "@/app/lib/api"
 import { queueEvent, hasPendingLike, cancelPendingLike } from "@/app/lib/eventQueue"
 import { savePost, unsavePost, isPostSaved } from "@/app/lib/savedPosts"
 import { likePost, unlikePost, isPostLiked, getCachedLikeCount, setCachedLikeCount, isLikeSent, markLikeSent, unmarkLikeSent } from "@/app/lib/likedPosts"
-
-type Format = keyof typeof FORMAT_STYLES
 
 export default function PostDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
@@ -194,16 +192,7 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
     }
   }
 
-  const style = post
-    ? FORMAT_STYLES[post.format as Format] ?? {
-        label: post.format.toUpperCase(),
-        dot: "bg-zinc-400",
-        text: "text-zinc-400",
-        glow: "from-zinc-400/40",
-        radial: "rgba(161,161,170,0.09)",
-        accent: "#a1a1aa",
-      }
-    : null
+  const style = post ? formatStyle(post.format) : null
 
   return (
     <div className="h-[100dvh] bg-zinc-950 flex justify-center">
@@ -265,7 +254,7 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                   <div className="flex items-center gap-2 mb-5">
                     <span className={`w-2 h-2 rounded-full shrink-0 ${style.dot}`} />
                     <span className={`text-xs font-semibold tracking-widest ${style.text}`}>
-                      {style.label}
+                      {style.badge}
                     </span>
                   </div>
 

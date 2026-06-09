@@ -3,22 +3,18 @@
 import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { type Post, FORMAT_STYLES } from "@/app/components/PostCard"
+import { type Post } from "@/app/components/PostCard"
 import { fcStr } from "@/types/post"
+import { FORMAT_IDS, FORMAT_STYLES, type FormatId } from "@/lib/formats"
 import { apiFetch } from "@/app/lib/api"
 import BottomNav from "@/app/components/BottomNav"
 
-const FORMAT_CHIPS = [
-  { label: "All",      value: ""          },
-  { label: "Books",    value: "books"     },
-  { label: "Facts",    value: "facts"     },
-  { label: "People",   value: "people"    },
-  { label: "Concepts", value: "concepts"  },
-  { label: "Q&A",      value: "questions" },
-  { label: "Stories",  value: "stories"   },
-] as const
+const FORMAT_CHIPS: { label: string; value: FormatId | "" }[] = [
+  { label: "All", value: "" },
+  ...FORMAT_IDS.map((id) => ({ label: FORMAT_STYLES[id].label, value: id })),
+]
 
-type FormatValue = (typeof FORMAT_CHIPS)[number]["value"]
+type FormatValue = FormatId | ""
 
 function Snippet({ post }: { post: Post }) {
   const text = fcStr(post.feed_card, "essence") || fcStr(post.feed_card, "headline")
@@ -27,11 +23,11 @@ function Snippet({ post }: { post: Post }) {
 }
 
 function FormatBadge({ format }: { format: string }) {
-  const style = FORMAT_STYLES[format as keyof typeof FORMAT_STYLES]
+  const style = FORMAT_STYLES[format as FormatId]
   if (!style) return null
   return (
     <span className={`text-xs font-medium ${style.text}`}>
-      {style.label}
+      {style.badge}
     </span>
   )
 }
@@ -121,7 +117,7 @@ export default function SearchPage() {
           <div className="flex gap-2 mt-2 overflow-x-auto [&::-webkit-scrollbar]:hidden [scrollbar-width:none] pb-1">
             {FORMAT_CHIPS.map((chip) => {
               const isActive = formatFilter === chip.value
-              const style = chip.value ? FORMAT_STYLES[chip.value as keyof typeof FORMAT_STYLES] : null
+              const style = chip.value ? FORMAT_STYLES[chip.value] : null
               return (
                 <button
                   key={chip.value}

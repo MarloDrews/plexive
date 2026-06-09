@@ -4,24 +4,33 @@ import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/app/lib/auth"
 import { apiFetch } from "@/app/lib/api"
-import { FORMAT_STYLES } from "@/app/components/PostCard"
+import { FORMAT_IDS, FORMAT_STYLES, type FormatId } from "@/lib/formats"
 import { fcStr, type Post } from "@/types/post"
 import { CATEGORIES } from "@/app/onboarding/InterestPicker"
 import BottomNav from "@/app/components/BottomNav"
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
-const FORMATS = [
-  { id: "books",     name: "Books",     accent: "border-amber-400",   description: "Summarize a book's key ideas",   enabled: true  },
-  { id: "facts",     name: "Facts",     accent: "border-cyan-400",    description: "Share a mind-blowing fact",       enabled: false },
-  { id: "people",    name: "People",    accent: "border-rose-400",    description: "Profile an inspiring person",     enabled: false },
-  { id: "concepts",  name: "Concepts",  accent: "border-violet-400",  description: "Explain a mental model",          enabled: false },
-  { id: "questions", name: "Questions", accent: "border-emerald-400", description: "Pose a thought experiment",       enabled: false },
-  { id: "stories",   name: "Stories",   accent: "border-orange-400",  description: "Tell a gripping true story",      enabled: false },
-  { id: "academy",   name: "Academy",   accent: "border-indigo-400",  description: "Teach something valuable",        enabled: false },
-] as const
+const FORMAT_DESCRIPTIONS: Record<FormatId, string> = {
+  books: "Summarize a book's key ideas",
+  facts: "Share a mind-blowing fact",
+  people: "Profile an inspiring person",
+  concepts: "Explain a mental model",
+  questions: "Pose a thought experiment",
+  stories: "Tell a gripping true story",
+  academy: "Teach something valuable",
+}
 
-type FormatId = (typeof FORMATS)[number]["id"]
+// Only the Books wizard exists so far.
+const ENABLED_FORMATS = new Set<FormatId>(["books"])
+
+const FORMATS = FORMAT_IDS.map((id) => ({
+  id,
+  name: FORMAT_STYLES[id].label,
+  accent: FORMAT_STYLES[id].border,
+  description: FORMAT_DESCRIPTIONS[id],
+  enabled: ENABLED_FORMATS.has(id),
+}))
 
 interface Interest { id: number; name: string; slug: string }
 
@@ -534,10 +543,10 @@ export default function CreatePage() {
               {!searchLoading && searchResults.length > 0 && (
                 <div className="flex flex-col gap-2 mb-4">
                   {searchResults.map((post) => {
-                    const style = FORMAT_STYLES[post.format as keyof typeof FORMAT_STYLES]
+                    const style = FORMAT_STYLES[post.format as FormatId]
                     return (
                       <button key={post.id} onClick={() => window.open(`/post/${post.id}`, "_blank")} className="w-full text-left bg-zinc-900/60 rounded-2xl px-4 py-3">
-                        {style && <span className={`text-xs font-medium ${style.text}`}>{style.label}</span>}
+                        {style && <span className={`text-xs font-medium ${style.text}`}>{style.badge}</span>}
                         <p className="text-white font-semibold text-sm mt-0.5 line-clamp-2">{post.title}</p>
                         {fcStr(post.feed_card, "essence") && <p className="text-zinc-400 text-xs mt-1 line-clamp-2">{fcStr(post.feed_card, "essence")}</p>}
                       </button>
