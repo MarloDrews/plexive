@@ -103,7 +103,9 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
   )
   const [commentsCount, setCommentsCount] = useState(post.comment_count)
   const [saved, setSaved] = useState(() => isPostSaved(post.id))
-  const [saveCount, setSaveCount] = useState(0)
+  // Saves are local-only (no backend endpoint yet), so the count can only
+  // reflect this user's own save state.
+  const [saveCount, setSaveCount] = useState(() => (isPostSaved(post.id) ? 1 : 0))
   const [animatingSave, setAnimatingSave] = useState(false)
   const [animatingLike, setAnimatingLike] = useState(false)
   const [showComments, setShowComments] = useState(false)
@@ -131,10 +133,10 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
   }, [post.id])
 
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setVisible(true)
-      return
-    }
+    // Reduced motion only disables the entrance animation — view tracking
+    // and like-state refresh must still run for those users.
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    if (reduceMotion) setVisible(true)
 
     const el = cardRef.current
     if (!el) return
@@ -143,7 +145,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
       ([entry]) => {
         if (entry.isIntersecting) {
           viewStartRef.current = Date.now()
-          setVisible(true)
+          if (!reduceMotion) setVisible(true)
           setLiked(isPostLiked(post.id))
           const cached = getCachedLikeCount(post.id)
           if (cached !== null) setLikesCount(cached)
@@ -155,7 +157,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
             }
             viewStartRef.current = null
           }
-          setVisible(false)
+          if (!reduceMotion) setVisible(false)
         }
       },
       { threshold: 0.6 }
@@ -205,7 +207,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
       setSaveCount((prev) => prev + 1)
     } else {
       unsavePost(post.id)
-      setSaveCount((prev) => prev - 1)
+      setSaveCount((prev) => Math.max(0, prev - 1))
     }
   }
 
@@ -545,7 +547,11 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
       </div>
 
       {showComments && (
-        <CommentsBottomSheet postId={post.id} onClose={() => setShowComments(false)} />
+        <CommentsBottomSheet
+          postId={post.id}
+          onClose={() => setShowComments(false)}
+          onCountChange={setCommentsCount}
+        />
       )}
 
       <Toast message="Link copied!" visible={toastVisible} />
