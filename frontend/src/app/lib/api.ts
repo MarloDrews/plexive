@@ -6,8 +6,12 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL
 export async function apiFetch(path: string, options: RequestInit = {}): Promise<Response> {
   const token = localStorage.getItem("deepscroll_token")
   const headers: Record<string, string> = {
-    "Content-Type": "application/json",
     ...(options.headers as Record<string, string> ?? {}),
+  }
+  // FormData bodies must NOT get an explicit Content-Type — the browser sets
+  // multipart/form-data with the correct boundary itself.
+  if (!(options.body instanceof FormData) && !headers["Content-Type"]) {
+    headers["Content-Type"] = "application/json"
   }
   if (token) headers["Authorization"] = `Bearer ${token}`
   return fetch(`${API_URL}${path}`, { ...options, headers })
