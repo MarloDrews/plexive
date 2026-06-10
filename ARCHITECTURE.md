@@ -6,7 +6,7 @@
 backend/
   requirements.txt              fastapi, uvicorn, sqlalchemy, passlib[bcrypt], python-jose[cryptography], python-dotenv, email-validator
   .env.example                  JWT_SECRET template (copy to .env, never commit .env)
-  seed.py                       idempotent: get-or-create 145 interests from taxonomy; reads SEED_ADMIN_PASSWORD from backend/.env; get-or-create @Marlo (marlo07drews@gmail.com, is_verified=True); auto-discovers all *_example.json files in docs/content-structure/examples/ — upserts one post per file (format derived from filename, title from feed_card.title|the_question|headline|name); upsert key is (author_id, format) so title changes do not create duplicates; FORMAT_INTEREST_SLUGS dict maps format → interest slugs (books/facts/questions/stories defined); legacy DB preserved as deepscroll.db.legacy_*
+  seed.py                       idempotent: get-or-create 145 interests from taxonomy; reads SEED_ADMIN_PASSWORD from backend/.env; get-or-create @Marlo (marlo07drews@gmail.com, is_verified=True); auto-discovers all *_example.json files in docs/content-structure/examples/ — upserts one post per file (format derived from filename, title from feed_card.title|concept_name|the_question|headline|name); upsert key is (author_id, format) so title changes do not create duplicates; FORMAT_INTEREST_SLUGS dict maps format → interest slugs (books/facts/concepts/questions/stories defined); legacy DB preserved as deepscroll.db.legacy_*
   deepscroll.db                 SQLite database (gitignored)
   app/
     database.py                 engine, SessionLocal, Base, get_db dependency
@@ -87,6 +87,17 @@ frontend/
     SectionRenderer.tsx         maps section.type → component; handles all sections for books/facts/people/concepts/questions/stories formats
     sections/
       (books/facts/people/concepts sections — existing)
+      OneLinerSection.tsx       concepts: prominent one-sentence summary
+      IntuitionSection.tsx      concepts: plain-language intuition paragraph
+      VisualExplanationSection.tsx concepts: SVG + caption
+      HowItWorksSection.tsx     concepts: numbered steps with title+body
+      FormalDefinitionSection.tsx concepts: body + monospace formula + notation legend
+      RealWorldExamplesSection.tsx concepts: list of domain-labelled examples
+      HowToApplySection.tsx     concepts: body + checkbox list + optional SVG
+      WhereItBreaksSection.tsx  concepts: where the concept fails
+      MentalTakeawaySection.tsx concepts: closing insight + optional SVG
+      OriginSection.tsx         concepts: history body + key thinkers cards
+      NearbyConceptsSection.tsx concepts: list of related concepts with distinctions
       TheQuestionSection.tsx    questions: large heading with the question text
       SetupSection.tsx          questions: intro paragraph
       WhyItsHardSection.tsx     questions: why the question is difficult

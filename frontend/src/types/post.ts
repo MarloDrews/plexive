@@ -247,6 +247,17 @@ export type SectionType =
   | "unanswered"
   | "cast"
   | "historical_context"
+  | "one_liner"
+  | "intuition"
+  | "visual_explanation"
+  | "how_it_works"
+  | "formal_definition"
+  | "real_world_examples"
+  | "how_to_apply"
+  | "where_it_breaks"
+  | "mental_takeaway"
+  | "origin"
+  | "nearby_concepts"
 
 export interface Section {
   type: SectionType | string

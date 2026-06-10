@@ -56,6 +56,7 @@ SEED_USERNAME = "Marlo"
 FORMAT_INTEREST_SLUGS = {
     "books": ["psychology", "behavioral-economics", "decision-making", "neuroscience"],
     "facts": ["biology", "animals", "everyday-science"],
+    "concepts": ["mental-models", "critical-thinking", "epistemology"],
     "questions": ["philosophy", "ethics", "critical-thinking", "epistemology"],
     "stories": ["history", "crime", "forgotten-history"],
 }
@@ -65,6 +66,7 @@ def _post_title(feed_card: dict) -> str:
     """Extract the display title from a feed_card regardless of format."""
     return (
         feed_card.get("title")
+        or feed_card.get("concept_name")
         or feed_card.get("the_question")
         or feed_card.get("headline")
         or feed_card.get("name")

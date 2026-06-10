@@ -53,6 +53,17 @@ import WhatWeLearnSection from "./sections/WhatWeLearnSection"
 import UnansweredSection from "./sections/UnansweredSection"
 import CastSection from "./sections/CastSection"
 import HistoricalContextSection from "./sections/HistoricalContextSection"
+import OneLinerSection from "./sections/OneLinerSection"
+import IntuitionSection from "./sections/IntuitionSection"
+import VisualExplanationSection from "./sections/VisualExplanationSection"
+import HowItWorksSection from "./sections/HowItWorksSection"
+import FormalDefinitionSection from "./sections/FormalDefinitionSection"
+import RealWorldExamplesSection from "./sections/RealWorldExamplesSection"
+import HowToApplySection from "./sections/HowToApplySection"
+import WhereItBreaksSection from "./sections/WhereItBreaksSection"
+import MentalTakeawaySection from "./sections/MentalTakeawaySection"
+import OriginSection from "./sections/OriginSection"
+import NearbyConceptsSection from "./sections/NearbyConceptsSection"
 
 interface Props {
   sections: Section[]
@@ -175,6 +186,28 @@ export default function SectionRenderer({ sections, isUserContent }: Props) {
             return <CastSection key={i} content={c as any} />
           case "historical_context":
             return <HistoricalContextSection key={i} content={c as string} />
+          case "one_liner":
+            return <OneLinerSection key={i} content={c as string} />
+          case "intuition":
+            return <IntuitionSection key={i} content={c as string} />
+          case "visual_explanation":
+            return <VisualExplanationSection key={i} content={c as any} isUserContent={isUserContent} />
+          case "how_it_works":
+            return <HowItWorksSection key={i} content={c as any} />
+          case "formal_definition":
+            return <FormalDefinitionSection key={i} content={c as any} />
+          case "real_world_examples":
+            return <RealWorldExamplesSection key={i} content={c as any} />
+          case "how_to_apply":
+            return <HowToApplySection key={i} content={c as any} isUserContent={isUserContent} />
+          case "where_it_breaks":
+            return <WhereItBreaksSection key={i} content={c as string} />
+          case "mental_takeaway":
+            return <MentalTakeawaySection key={i} content={c as any} isUserContent={isUserContent} />
+          case "origin":
+            return <OriginSection key={i} content={c as any} />
+          case "nearby_concepts":
+            return <NearbyConceptsSection key={i} content={c as any} />
           default:
             console.warn(`SectionRenderer: unknown section type "${section.type}"`)
             return null
