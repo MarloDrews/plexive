@@ -2,12 +2,15 @@
 
 import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import PostCard from "@/app/components/PostCard"
 import BottomNav from "@/app/components/BottomNav"
 import EmptyState from "@/components/EmptyState"
 import Spinner from "@/components/Spinner"
 import type { Post } from "@/types/post"
 import { FORMAT_IDS, FORMAT_STYLES, type FormatId } from "@/lib/formats"
+import { useAuth } from "@/app/lib/auth"
+import { apiFetch } from "@/app/lib/api"
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
@@ -21,6 +24,7 @@ interface FeedTab {
 
 const TABS: FeedTab[] = [
   { id: "for-you", label: "For You", format: null, accent: "#ffffff", rgb: [255, 255, 255] },
+  { id: "following", label: "Following", format: null, accent: "#ffffff", rgb: [255, 255, 255] },
   ...FORMAT_IDS.map((id) => ({
     id,
     label: FORMAT_STYLES[id].label,
@@ -51,6 +55,8 @@ function TabPage({
 }) {
   const [posts, setPosts] = useState<Post[] | null>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
+  const { user, loading: authLoading } = useAuth()
+  const isFollowingTab = tab.id === "following"
 
   useEffect(() => {
     if (posts === null || !scrollRef.current) return
@@ -63,18 +69,42 @@ function TabPage({
   }, [posts, tab.id])
 
   useEffect(() => {
-    if (!isActivated || posts !== null || slugs.length === 0) return
+    if (!isActivated || posts !== null) return
+    if (isFollowingTab) {
+      if (authLoading || !user) return
+      apiFetch("/api/feed/following")
+        .then((r) => (r.ok ? r.json() : []))
+        .then((data: Post[]) => setPosts(data))
+        .catch(() => setPosts([]))
+      return
+    }
+    if (slugs.length === 0) return
     const params = new URLSearchParams({ interests: slugs.join(",") })
     if (tab.format) params.set("format", tab.format)
     fetch(`${API_URL}/api/feed?${params}`)
       .then((r) => r.json())
       .then((data: Post[]) => setPosts(data))
-  }, [isActivated, posts, slugs, tab.format]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [isActivated, posts, slugs, tab.format, isFollowingTab, user, authLoading]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div ref={scrollRef} className="w-full shrink-0 snap-start h-[100dvh] overflow-y-scroll snap-y snap-mandatory overscroll-y-contain [&::-webkit-scrollbar]:hidden [scrollbar-width:none] pb-14">
       {!isActivated ? (
         <div className="h-full bg-zinc-950" />
+      ) : isFollowingTab && !authLoading && !user ? (
+        <div className="h-full flex flex-col items-center justify-center gap-3 bg-zinc-950 px-8 text-center">
+          <p className="text-white font-semibold">See posts from people you follow</p>
+          <Link href="/login" className="bg-white text-zinc-950 rounded-xl px-5 py-2 text-sm font-semibold">
+            Log in
+          </Link>
+        </div>
+      ) : isFollowingTab && posts !== null && posts.length === 0 ? (
+        <div className="h-full flex flex-col items-center justify-center gap-3 bg-zinc-950 px-8 text-center">
+          <p className="text-white font-semibold">Nothing here yet</p>
+          <p className="text-zinc-500 text-sm">Posts from people you follow will show up here.</p>
+          <Link href="/search" className="bg-white text-zinc-950 rounded-xl px-5 py-2 text-sm font-semibold">
+            Find people
+          </Link>
+        </div>
       ) : posts === null ? (
         <div className="h-full flex items-center justify-center bg-zinc-950">
           <Spinner />
