@@ -8,7 +8,15 @@ import { apiFetch } from "@/app/lib/api"
 import BottomNav from "@/app/components/BottomNav"
 import VerifiedBadge from "@/components/VerifiedBadge"
 import Avatar from "@/components/Avatar"
+import Spinner from "@/components/Spinner"
 import { formatStyle } from "@/lib/formats"
+
+interface ListUser {
+  username: string
+  is_verified: boolean
+  is_private: boolean
+  avatar_url: string | null
+}
 
 interface EloData {
   global_rating: number | null
@@ -59,6 +67,13 @@ export default function ProfilePage() {
   // Knowledge score
   const [elo, setElo] = useState<EloData | null>(null)
 
+  // Followers / following counts and bottom-sheet
+  const [followerCount, setFollowerCount] = useState<number | null>(null)
+  const [followingCount, setFollowingCount] = useState<number | null>(null)
+  const [postCount, setPostCount] = useState<number | null>(null)
+  const [listOpen, setListOpen] = useState<"followers" | "following" | null>(null)
+  const [listUsers, setListUsers] = useState<ListUser[] | null>(null)
+
   // Redirect unauthenticated visitors to login.
   useEffect(() => {
     if (!loading && !user) router.replace("/login")
@@ -86,6 +101,30 @@ export default function ProfilePage() {
       .then(setElo)
       .catch(() => {})
   }, [user])
+
+  // Fetch follower / following / post counts
+  useEffect(() => {
+    if (!user) return
+    apiFetch(`/api/users/${user.username}/profile`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (!data) return
+        setFollowerCount(data.follower_count)
+        setFollowingCount(data.following_count)
+        setPostCount(data.post_count)
+      })
+      .catch(() => {})
+  }, [user])
+
+  function openList(kind: "followers" | "following") {
+    if (!user) return
+    setListOpen(kind)
+    setListUsers(null)
+    apiFetch(`/api/users/${user.username}/${kind}`)
+      .then((r) => (r.ok ? r.json() : []))
+      .then(setListUsers)
+      .catch(() => setListUsers([]))
+  }
 
   if (loading || !user) return null
 
@@ -284,6 +323,23 @@ export default function ProfilePage() {
             @{user.username}
             {user.is_verified && <VerifiedBadge size={20} />}
           </p>
+
+          {/* Followers / Following / Posts row */}
+          <div className="flex gap-6 mt-3 mb-1">
+            <div className="text-center">
+              <p className="text-ink font-bold text-base font-mono">{postCount ?? "—"}</p>
+              <p className="text-ink-muted text-xs">Posts</p>
+            </div>
+            <button className="text-center cursor-pointer" onClick={() => openList("followers")}>
+              <p className="text-ink font-bold text-base font-mono">{followerCount ?? "—"}</p>
+              <p className="text-ink-muted text-xs">Followers</p>
+            </button>
+            <button className="text-center cursor-pointer" onClick={() => openList("following")}>
+              <p className="text-ink font-bold text-base font-mono">{followingCount ?? "—"}</p>
+              <p className="text-ink-muted text-xs">Following</p>
+            </button>
+          </div>
+
           <p className="text-ink-muted text-sm mt-1">{user.email}</p>
           <Link href={`/profile/${user.username}`} className="btn btn-ghost text-sm mt-2 px-3 py-1.5">
             View public profile
@@ -571,6 +627,49 @@ export default function ProfilePage() {
 
         </div>
         </div>
+
+        {/* Followers / Following bottom sheet */}
+        {listOpen && (
+          <div className="fixed inset-0 z-40 flex justify-center" onClick={() => setListOpen(null)}>
+            <div className="absolute inset-0 bg-surface-0/70" />
+            <div
+              className="absolute bottom-0 w-full max-w-[430px] max-h-[70dvh] bg-surface-1 border-t border-edge rounded-t-sheet flex flex-col"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b border-edge">
+                <p className="text-ink text-sm font-semibold capitalize">{listOpen}</p>
+                <button onClick={() => setListOpen(null)} className="text-ink-dim hover:text-ink transition-colors cursor-pointer" aria-label="Close">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                    <path d="M18 6L6 18M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <div className="overflow-y-auto px-3 py-3 flex flex-col gap-1 pb-[max(env(safe-area-inset-bottom),12px)]">
+                {listUsers === null ? (
+                  <div className="flex justify-center py-8"><Spinner /></div>
+                ) : listUsers.length === 0 ? (
+                  <p className="text-ink-muted text-sm text-center py-8">Nothing here yet.</p>
+                ) : (
+                  listUsers.map((u) => (
+                    <a
+                      key={u.username}
+                      href={`/profile/${u.username}`}
+                      onClick={() => setListOpen(null)}
+                      className="flex items-center gap-3 px-2 py-2 rounded-field hover:bg-surface-2 transition-colors duration-150"
+                    >
+                      <Avatar username={u.username} avatarUrl={u.avatar_url} size={40} />
+                      <span className="flex items-center gap-1.5 text-ink text-sm font-medium">
+                        @{u.username}
+                        {u.is_verified && <VerifiedBadge size={14} />}
+                      </span>
+                    </a>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         <BottomNav activeTab="profile" />
       </div>
     </div>

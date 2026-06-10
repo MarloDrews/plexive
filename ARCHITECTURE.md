@@ -4,8 +4,8 @@
 
 ```
 backend/
-  requirements.txt              fastapi, uvicorn, sqlalchemy, passlib[bcrypt], python-jose[cryptography], python-dotenv, email-validator
-  .env.example                  JWT_SECRET template (copy to .env, never commit .env)
+  requirements.txt              fastapi, uvicorn, sqlalchemy, psycopg2-binary, passlib[bcrypt], python-jose[cryptography], python-dotenv, email-validator
+  .env.example                  JWT_SECRET and DATABASE_URL templates (copy to .env, never commit .env)
   seed.py                       idempotent: get-or-create 145 interests from taxonomy; reads SEED_ADMIN_PASSWORD from backend/.env; get-or-create @Marlo (marlo07drews@gmail.com, is_verified=True); auto-discovers all *_example.json files in docs/content-structure/examples/ — upserts one post per file (format derived from filename, title from feed_card.title|concept_name|the_question|headline|name); upsert key is (author_id, format) so title changes do not create duplicates; FORMAT_INTEREST_SLUGS dict maps format → interest slugs (books/facts/people/concepts/questions/stories defined); legacy DB preserved as deepscroll.db.legacy_*
   tests/smoke_test.py           end-to-end API smoke test (quiz/Elo, avatar, user search) against a throwaway DB in a temp dir; run with .venv\Scripts\python.exe tests\smoke_test.py (needs httpx)
   tests/chat_test.py            end-to-end chat test (conversation rules, history authz, websocket auth/send/broadcast/rejection) against a throwaway DB; run with .venv\Scripts\python.exe tests\chat_test.py
@@ -13,7 +13,7 @@ backend/
   tests/_db_inspect.py          idempotent helper: adds users.avatar_url to an existing deepscroll.db (create_all never adds columns); alternative to a full reset
   deepscroll.db                 SQLite database (gitignored)
   app/
-    database.py                 engine, SessionLocal, Base, get_db dependency
+    database.py                 engine (PostgreSQL via DATABASE_URL env var), SessionLocal, Base, get_db dependency
     main.py                     FastAPI app, CORS origins from FRONTEND_ORIGIN env (default localhost:3000, "*" stripped), 10 MB request body cap middleware, router registration, create_all on startup
     models.py                   ORM models: Interest, Post (feed_card JSON not null, sections JSON not null, is_user_content Boolean not null default False, author_id FK→users nullable; indexes on format/status/created_at; author_username and author_is_verified as properties), Event (user_id nullable FK), User (posts relationship, is_verified boolean default false, is_private boolean default false, bio string nullable, avatar_url string nullable), Follow (follower_id FK→users, following_id FK→users, status "pending"|"accepted", created_at; UniqueConstraint uq_follow), UserElo (user_id+format unique, rating float, answered_count), QuizAnswer (user_id+post_id+question_index unique, chosen_index, is_correct, rating_delta), Comment, post_interests join table
     elo.py                      Elo knowledge score: start 1000, floor 100, K=32 first 30 answers per format then 16, question rating 800/1000/1200 from post_difficulty, global = average of per-format ratings (None until first answer)
@@ -400,7 +400,7 @@ attributes. Never use `dangerouslySetInnerHTML` to render comment text.
 | auth.tsx               | AuthContext/Provider: JWT in localStorage, session restore via /me, login/register/logout/loading; AuthUser includes is_private and bio |
 | api.ts                 | apiFetch: adds Authorization header when token present                      |
 | Providers.tsx          | client boundary so layout.tsx (Server Component) can mount AuthProvider     |
-| profile/page.tsx       | account settings: avatar, identity display (inline verified badge if is_verified), change username/password, sign out, delete account; BottomNav (profile active) |
+| profile/page.tsx       | account settings: avatar, identity display (inline verified badge if is_verified), Posts/Followers/Following stats row (counts from /api/users/{me}/profile; tapping Followers or Following opens bottom-sheet user list), change username/password, sign out, delete account; BottomNav (profile active) |
 | CommentsSection.tsx    | read-only display component; receives comments/currentUsername/onDelete/deletingId as props; relative timestamps (UTC-aware); plain-text only (no dangerouslySetInnerHTML); exports Comment interface |
 | CommentsBottomSheet.tsx | bottom sheet modal for feed card comments; self-contained state (fetch/post/delete); drag-to-close on handle bar; sticky input; fixed overlay with max-w-[430px] sheet |
 | Toast.tsx              | fixed bottom-center pill notification; visible prop controls opacity via CSS transition; pointer-events-none |
@@ -412,7 +412,7 @@ attributes. Never use `dangerouslySetInnerHTML` to render comment text.
 ## CURRENT STATUS
 
 **Built**
-- FastAPI backend with SQLite, CORS, full API
+- FastAPI backend with PostgreSQL (Supabase), CORS, full API
 - Section-based post schema: feed_card JSON + sections JSON array; old per-format fields removed
 - 15 section types for Books format (validated via Pydantic v2 discriminated union)
 - Seed script: 145 interests + auto-discovers all *_example.json files (currently Books + Facts + People); FORMAT_INTEREST_SLUGS maps format → interests; _post_title falls back to feed_card.name for People
@@ -436,4 +436,3 @@ attributes. Never use `dangerouslySetInnerHTML` to render comment text.
 - Content for academy format
 - Recommendation algorithm improvements
 - Pagination / infinite scroll
-- PostgreSQL migration

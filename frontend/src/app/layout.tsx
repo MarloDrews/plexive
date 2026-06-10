@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Newsreader, Source_Sans_3, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import "katex/dist/katex.min.css";
 import Providers from "./components/Providers";
 
 // "Lamplight" type system (docs/DESIGN.md): Newsreader is the serif voice of
