@@ -118,6 +118,80 @@ export interface MisconceptionItem {
   reality: string
 }
 
+export interface AtAGlanceQuestionsContent {
+  field: string
+  type: string
+  first_posed_by: string
+  year: string | number
+  still_debated: boolean
+  post_reading_time_min: number
+  post_difficulty: 1 | 2 | 3
+}
+
+export interface AtAGlanceStoriesContent {
+  era: string
+  location: string
+  category: string
+  sources_reliability: 1 | 2 | 3
+  post_reading_time_min: number
+  post_difficulty: 1 | 2 | 3
+}
+
+export interface PerspectiveItem {
+  position_name: string
+  school_or_thinker: string
+  body: string
+  strongest_argument: string
+  concrete_example: string
+}
+
+export interface WhatScienceSaysContent {
+  body: string
+  key_findings: string[]
+  visual_svg?: string
+}
+
+export interface YourTurnContent {
+  intro: string
+  prompts: string[]
+  closing_thought: string
+}
+
+export interface StoryChapter {
+  title: string
+  body: string
+  image_url?: string
+  image_caption?: string
+  image_attribution?: string
+}
+
+export interface SettingContent {
+  body: string
+  image_url?: string
+  image_caption?: string
+  image_attribution?: string
+}
+
+export interface TheTurnContent {
+  body: string
+  image_url?: string
+  image_caption?: string
+  image_attribution?: string
+}
+
+export interface TheAftermathContent {
+  body: string
+  visual_svg?: string
+  image_caption?: string
+}
+
+export interface CastMember {
+  name: string
+  role: string
+  one_line: string
+  lifespan: string
+}
+
 export type SectionType =
   | "essence"
   | "quiz_badge"
@@ -153,6 +227,26 @@ export type SectionType =
   | "what_drove_them"
   | "legacy"
   | "their_world"
+  | "the_question"
+  | "setup"
+  | "why_its_hard"
+  | "what_hangs_on_it"
+  | "perspectives"
+  | "where_they_clash"
+  | "what_science_says"
+  | "your_turn"
+  | "history_of_the_question"
+  | "where_the_debate_stands"
+  | "cold_open"
+  | "setting"
+  | "chapters"
+  | "the_turn"
+  | "the_aftermath"
+  | "what_it_means"
+  | "what_we_learn"
+  | "unanswered"
+  | "cast"
+  | "historical_context"
 
 export interface Section {
   type: SectionType | string

@@ -1,8 +1,19 @@
 import type { ReactNode } from "react"
-import type { AtAGlanceBooksContent, AtAGlancePeopleContent } from "../../types/post"
+import type {
+  AtAGlanceBooksContent,
+  AtAGlancePeopleContent,
+  AtAGlanceQuestionsContent,
+  AtAGlanceStoriesContent,
+} from "../../types/post"
+
+type AnyAtAGlance =
+  | AtAGlanceBooksContent
+  | AtAGlancePeopleContent
+  | AtAGlanceQuestionsContent
+  | AtAGlanceStoriesContent
 
 interface Props {
-  content: AtAGlanceBooksContent | AtAGlancePeopleContent
+  content: AnyAtAGlance
 }
 
 function DotScale({ value, max = 3 }: { value: number; max?: number }) {
@@ -18,11 +29,68 @@ function DotScale({ value, max = 3 }: { value: number; max?: number }) {
   )
 }
 
-function isPeople(c: AtAGlanceBooksContent | AtAGlancePeopleContent): c is AtAGlancePeopleContent {
+function isPeople(c: AnyAtAGlance): c is AtAGlancePeopleContent {
   return "born" in c
 }
 
+function isQuestions(c: AnyAtAGlance): c is AtAGlanceQuestionsContent {
+  return "still_debated" in c
+}
+
+function isStories(c: AnyAtAGlance): c is AtAGlanceStoriesContent {
+  return "sources_reliability" in c
+}
+
 export default function AtAGlanceSection({ content }: Props) {
+  if (isQuestions(content)) {
+    const rows: { label: string; value: ReactNode }[] = [
+      { label: "Field", value: content.field },
+      { label: "Type", value: content.type },
+      { label: "First posed by", value: content.first_posed_by },
+      { label: "Key year", value: String(content.year) },
+      { label: "Still debated", value: content.still_debated ? "Yes" : "No" },
+      { label: "Read time", value: `${content.post_reading_time_min} min` },
+      { label: "Difficulty", value: <DotScale value={content.post_difficulty} /> },
+    ]
+
+    return (
+      <div className="px-5 py-6">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-3">
+          {rows.map(({ label, value }) => (
+            <div key={label} className="flex flex-col gap-0.5">
+              <span className="text-xs text-zinc-500 uppercase tracking-wide">{label}</span>
+              <span className="text-sm text-zinc-200">{value}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  if (isStories(content)) {
+    const rows: { label: string; value: ReactNode }[] = [
+      { label: "Era", value: content.era },
+      { label: "Location", value: content.location },
+      { label: "Category", value: content.category },
+      { label: "Source reliability", value: <DotScale value={content.sources_reliability} /> },
+      { label: "Read time", value: `${content.post_reading_time_min} min` },
+      { label: "Difficulty", value: <DotScale value={content.post_difficulty} /> },
+    ]
+
+    return (
+      <div className="px-5 py-6">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-3">
+          {rows.map(({ label, value }) => (
+            <div key={label} className="flex flex-col gap-0.5">
+              <span className="text-xs text-zinc-500 uppercase tracking-wide">{label}</span>
+              <span className="text-sm text-zinc-200">{value}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
   if (isPeople(content)) {
     const rows: { label: string; value: ReactNode }[] = [
       { label: "Born", value: content.born },

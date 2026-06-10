@@ -33,6 +33,26 @@ import GreatestWorkSection from "./sections/GreatestWorkSection"
 import WhatDroveThemSection from "./sections/WhatDroveThemSection"
 import LegacySection from "./sections/LegacySection"
 import TheirWorldSection from "./sections/TheirWorldSection"
+import TheQuestionSection from "./sections/TheQuestionSection"
+import SetupSection from "./sections/SetupSection"
+import WhyItsHardSection from "./sections/WhyItsHardSection"
+import WhatHangsOnItSection from "./sections/WhatHangsOnItSection"
+import PerspectivesSection from "./sections/PerspectivesSection"
+import WhereTheyClashSection from "./sections/WhereTheyClashSection"
+import WhatScienceSaysSection from "./sections/WhatScienceSaysSection"
+import YourTurnSection from "./sections/YourTurnSection"
+import HistoryOfTheQuestionSection from "./sections/HistoryOfTheQuestionSection"
+import WhereTheDebateStandsSection from "./sections/WhereTheDebateStandsSection"
+import ColdOpenSection from "./sections/ColdOpenSection"
+import SettingSection from "./sections/SettingSection"
+import ChaptersSection from "./sections/ChaptersSection"
+import TheTurnSection from "./sections/TheTurnSection"
+import TheAftermathSection from "./sections/TheAftermathSection"
+import WhatItMeansSection from "./sections/WhatItMeansSection"
+import WhatWeLearnSection from "./sections/WhatWeLearnSection"
+import UnansweredSection from "./sections/UnansweredSection"
+import CastSection from "./sections/CastSection"
+import HistoricalContextSection from "./sections/HistoricalContextSection"
 
 interface Props {
   sections: Section[]
@@ -115,6 +135,46 @@ export default function SectionRenderer({ sections, isUserContent }: Props) {
             return <LegacySection key={i} content={c as any} />
           case "their_world":
             return <TheirWorldSection key={i} content={c as string} />
+          case "the_question":
+            return <TheQuestionSection key={i} content={c as string} />
+          case "setup":
+            return <SetupSection key={i} content={c as string} />
+          case "why_its_hard":
+            return <WhyItsHardSection key={i} content={c as string} />
+          case "what_hangs_on_it":
+            return <WhatHangsOnItSection key={i} content={c as string} />
+          case "perspectives":
+            return <PerspectivesSection key={i} content={c as any} />
+          case "where_they_clash":
+            return <WhereTheyClashSection key={i} content={c as string} />
+          case "what_science_says":
+            return <WhatScienceSaysSection key={i} content={c as any} isUserContent={isUserContent} />
+          case "your_turn":
+            return <YourTurnSection key={i} content={c as any} />
+          case "history_of_the_question":
+            return <HistoryOfTheQuestionSection key={i} content={c as string} />
+          case "where_the_debate_stands":
+            return <WhereTheDebateStandsSection key={i} content={c as string} />
+          case "cold_open":
+            return <ColdOpenSection key={i} content={c as string} />
+          case "setting":
+            return <SettingSection key={i} content={c as any} />
+          case "chapters":
+            return <ChaptersSection key={i} content={c as any} />
+          case "the_turn":
+            return <TheTurnSection key={i} content={c as any} />
+          case "the_aftermath":
+            return <TheAftermathSection key={i} content={c as any} isUserContent={isUserContent} />
+          case "what_it_means":
+            return <WhatItMeansSection key={i} content={c as string} />
+          case "what_we_learn":
+            return <WhatWeLearnSection key={i} content={c as string} />
+          case "unanswered":
+            return <UnansweredSection key={i} content={c as string} />
+          case "cast":
+            return <CastSection key={i} content={c as any} />
+          case "historical_context":
+            return <HistoricalContextSection key={i} content={c as string} />
           default:
             console.warn(`SectionRenderer: unknown section type "${section.type}"`)
             return null

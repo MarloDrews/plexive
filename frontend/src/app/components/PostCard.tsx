@@ -370,6 +370,73 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
                 )}
               </div>
             </div>
+          ) : post.format === "questions" && fc ? (
+            <div className="bg-surface-1 rounded-card px-5 py-5 flex flex-col gap-3">
+              {fcStr(fc, "field") && (
+                <p className="text-xs font-semibold tracking-widest text-emerald-600 uppercase">{fcStr(fc, "field")}</p>
+              )}
+              <h2 className="text-2xl font-bold tracking-tight text-white leading-snug">
+                {fcStr(fc, "the_question")}
+              </h2>
+              {fcStr(fc, "framing_line") && (
+                <p className="text-sm text-zinc-400 leading-relaxed">{fcStr(fc, "framing_line")}</p>
+              )}
+
+              {Array.isArray(fc.teasers) && (fc.teasers as string[]).length > 0 && (
+                <div className="mt-1 space-y-1">
+                  {(fc.teasers as string[]).map((teaser, i) => (
+                    <div key={i} className="flex items-start gap-2">
+                      <span className="text-emerald-400 text-sm mt-0.5 shrink-0">→</span>
+                      <span className="text-sm text-zinc-300/70 leading-snug">{teaser}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex items-center gap-3 pt-1 border-t border-zinc-800">
+                <DotScale value={fc.post_difficulty as 1 | 2 | 3} />
+                {fcNum(fc, "post_reading_time_min") > 0 && (
+                  <span className="text-zinc-500 text-xs">{fcNum(fc, "post_reading_time_min")} min read</span>
+                )}
+              </div>
+            </div>
+          ) : post.format === "stories" && fc ? (
+            <div className="bg-surface-1 rounded-card px-5 py-5 flex flex-col gap-3">
+              <div className="flex items-center gap-2 flex-wrap">
+                {fcStr(fc, "era_label") && (
+                  <span className="text-xs font-semibold tracking-widest text-orange-400 uppercase">
+                    {fcStr(fc, "era_label")}
+                  </span>
+                )}
+                {fcStr(fc, "category") && (
+                  <span className="text-xs text-zinc-600 uppercase tracking-wide">{fcStr(fc, "category")}</span>
+                )}
+              </div>
+              <h2 className="text-xl font-bold tracking-tight text-white leading-snug">
+                {fcStr(fc, "headline")}
+              </h2>
+
+              {Array.isArray(fc.teasers) && (fc.teasers as string[]).length > 0 && (
+                <div className="mt-1 space-y-1">
+                  {(fc.teasers as string[]).map((teaser, i) => (
+                    <div key={i} className="flex items-start gap-2">
+                      <span className="text-orange-400 text-sm mt-0.5 shrink-0">→</span>
+                      <span className="text-sm text-zinc-300/70 leading-snug">{teaser}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex items-center gap-3 pt-1 border-t border-zinc-800">
+                <DotScale value={fc.post_difficulty as 1 | 2 | 3} />
+                {fcNum(fc, "post_reading_time_min") > 0 && (
+                  <span className="text-zinc-500 text-xs">{fcNum(fc, "post_reading_time_min")} min read</span>
+                )}
+                {fcStr(fc, "era") && (
+                  <span className="text-zinc-600 text-xs">{fcStr(fc, "era")}</span>
+                )}
+              </div>
+            </div>
           ) : (
             /* Fallback for other formats */
             <div className="bg-surface-1 rounded-card px-5 py-6 flex flex-col gap-3">
