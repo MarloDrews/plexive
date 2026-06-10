@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:upload.wikimedia.org)",
+      "PowerShell(Get-ChildItem c:\\\\Users\\\\marlo\\\\GitHub\\\\deepscroll\\\\frontend\\\\public\\\\seed-images\\\\ | Select-Object Name, @{N='KB';E={[math]::Round\\($_.Length/1KB\\)}})",
+      "Skill(code-review)",
+      "Skill(code-review:*)"
+    ]
+  }
+}

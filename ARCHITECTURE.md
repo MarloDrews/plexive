@@ -6,7 +6,7 @@
 backend/
   requirements.txt              fastapi, uvicorn, sqlalchemy, passlib[bcrypt], python-jose[cryptography], python-dotenv, email-validator
   .env.example                  JWT_SECRET template (copy to .env, never commit .env)
-  seed.py                       idempotent: get-or-create 145 interests from taxonomy; reads SEED_ADMIN_PASSWORD from backend/.env; get-or-create @Marlo (marlo07drews@gmail.com, is_verified=True); auto-discovers all *_example.json files in docs/content-structure/examples/ — upserts one post per file (format derived from filename, title from feed_card.title or feed_card.headline or feed_card.name); FORMAT_INTEREST_SLUGS dict maps format → interest slugs; legacy DB preserved as deepscroll.db.legacy_*
+  seed.py                       idempotent: get-or-create 145 interests from taxonomy; reads SEED_ADMIN_PASSWORD from backend/.env; get-or-create @Marlo (marlo07drews@gmail.com, is_verified=True); auto-discovers all *_example.json files in docs/content-structure/examples/ — upserts one post per file (format derived from filename, title from feed_card.title or feed_card.headline or feed_card.name); upsert key is (author_id, format) so title changes do not create duplicates; FORMAT_INTEREST_SLUGS dict maps format → interest slugs; legacy DB preserved as deepscroll.db.legacy_*
   deepscroll.db                 SQLite database (gitignored)
   app/
     database.py                 engine, SessionLocal, Base, get_db dependency

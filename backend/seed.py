@@ -142,9 +142,10 @@ for filename in sorted(os.listdir(examples_dir)):
     sections = example["sections"]
     title = _post_title(feed_card)
 
-    existing = db.query(Post).filter_by(format=post_format, title=title).first()
+    existing = db.query(Post).filter_by(author_id=marlo.id, format=post_format).first()
 
     if existing:
+        existing.title = title
         existing.feed_card = feed_card
         existing.sections = sections
         existing.status = "published"
