@@ -2,6 +2,11 @@
 // Every place that needs a format color/label (feed tabs, PostCard, search
 // chips, create wizard, empty states) must read from here so the accent
 // system stays consistent.
+//
+// "Lamplight" palette (docs/DESIGN.md): muted book-spine inks at matched
+// lightness. The hexes are mirrored as --color-fmt-* tokens in globals.css;
+// the Tailwind classes below reference those tokens. Inside post rendering
+// the active ink is exposed as the CSS variable --accent on the container.
 
 export const FORMAT_IDS = [
   "books",
@@ -21,17 +26,14 @@ export interface FormatStyle {
   label: string
   // Uppercase badge text shown on cards and detail pages.
   badge: string
-  // Accent color as hex and RGB triple (for canvas/gradient interpolation).
+  // Accent ink as hex and RGB triple (for SVG remap/canvas interpolation).
   accent: string
   rgb: readonly [number, number, number]
-  // Tailwind utility classes for the accent.
+  // Tailwind utility classes for the accent (generated from fmt-* tokens).
   text: string
   dot: string
   border: string
   indicator: string
-  // Card backdrop treatments (PostCard).
-  glow: string
-  radial: string
 }
 
 export const FORMAT_STYLES: Record<FormatId, FormatStyle> = {
@@ -39,92 +41,78 @@ export const FORMAT_STYLES: Record<FormatId, FormatStyle> = {
     id: "books",
     label: "Books",
     badge: "BOOKS",
-    accent: "#fbbf24",
-    rgb: [251, 191, 36],
-    text: "text-amber-400",
-    dot: "bg-amber-400",
-    border: "border-amber-400",
-    indicator: "bg-amber-400",
-    glow: "from-amber-600/40",
-    radial: "rgba(251,191,36,0.09)",
+    accent: "#d2a45a",
+    rgb: [210, 164, 90],
+    text: "text-fmt-books",
+    dot: "bg-fmt-books",
+    border: "border-fmt-books",
+    indicator: "bg-fmt-books",
   },
   facts: {
     id: "facts",
     label: "Facts",
     badge: "FACTS",
-    accent: "#22d3ee",
-    rgb: [34, 211, 238],
-    text: "text-cyan-400",
-    dot: "bg-cyan-400",
-    border: "border-cyan-400",
-    indicator: "bg-cyan-400",
-    glow: "from-cyan-500/40",
-    radial: "rgba(34,211,238,0.09)",
+    accent: "#76ada0",
+    rgb: [118, 173, 160],
+    text: "text-fmt-facts",
+    dot: "bg-fmt-facts",
+    border: "border-fmt-facts",
+    indicator: "bg-fmt-facts",
   },
   people: {
     id: "people",
     label: "People",
     badge: "PEOPLE",
-    accent: "#fb7185",
-    rgb: [251, 113, 133],
-    text: "text-rose-400",
-    dot: "bg-rose-400",
-    border: "border-rose-400",
-    indicator: "bg-rose-400",
-    glow: "from-rose-500/40",
-    radial: "rgba(251,113,133,0.09)",
+    accent: "#c5848f",
+    rgb: [197, 132, 143],
+    text: "text-fmt-people",
+    dot: "bg-fmt-people",
+    border: "border-fmt-people",
+    indicator: "bg-fmt-people",
   },
   concepts: {
     id: "concepts",
     label: "Ideas",
     badge: "CONCEPTS",
-    accent: "#a78bfa",
-    rgb: [167, 139, 250],
-    text: "text-violet-400",
-    dot: "bg-violet-400",
-    border: "border-violet-400",
-    indicator: "bg-violet-400",
-    glow: "from-violet-500/40",
-    radial: "rgba(167,139,250,0.09)",
+    accent: "#a08fc9",
+    rgb: [160, 143, 201],
+    text: "text-fmt-concepts",
+    dot: "bg-fmt-concepts",
+    border: "border-fmt-concepts",
+    indicator: "bg-fmt-concepts",
   },
   questions: {
     id: "questions",
     label: "Q&A",
     badge: "QUESTIONS",
-    accent: "#34d399",
-    rgb: [52, 211, 153],
-    text: "text-emerald-400",
-    dot: "bg-emerald-400",
-    border: "border-emerald-400",
-    indicator: "bg-emerald-400",
-    glow: "from-emerald-500/40",
-    radial: "rgba(52,211,153,0.09)",
+    accent: "#93af7c",
+    rgb: [147, 175, 124],
+    text: "text-fmt-questions",
+    dot: "bg-fmt-questions",
+    border: "border-fmt-questions",
+    indicator: "bg-fmt-questions",
   },
   stories: {
     id: "stories",
     label: "Stories",
     badge: "STORIES",
-    accent: "#fb923c",
-    rgb: [251, 146, 60],
-    text: "text-orange-400",
-    dot: "bg-orange-400",
-    border: "border-orange-400",
-    indicator: "bg-orange-400",
-    glow: "from-orange-500/40",
-    radial: "rgba(251,146,60,0.09)",
+    accent: "#c98a62",
+    rgb: [201, 138, 98],
+    text: "text-fmt-stories",
+    dot: "bg-fmt-stories",
+    border: "border-fmt-stories",
+    indicator: "bg-fmt-stories",
   },
   academy: {
     id: "academy",
     label: "Academy",
     badge: "ACADEMY",
-    accent: "#818cf8",
-    rgb: [129, 140, 248],
-    text: "text-indigo-400",
-    dot: "bg-indigo-400",
-    border: "border-indigo-400",
-    indicator: "bg-indigo-400",
-    glow: "from-indigo-500/40",
-    radial: "rgba(129,140,248,0.09)",
+    accent: "#8398c9",
+    rgb: [131, 152, 201],
+    text: "text-fmt-academy",
+    dot: "bg-fmt-academy",
+    border: "border-fmt-academy",
+    indicator: "bg-fmt-academy",
   },
 }
 
@@ -133,16 +121,27 @@ export const FALLBACK_FORMAT_STYLE: FormatStyle = {
   id: "facts",
   label: "Post",
   badge: "POST",
-  accent: "#a1a1aa",
-  rgb: [161, 161, 170],
-  text: "text-zinc-400",
-  dot: "bg-zinc-400",
-  border: "border-zinc-400",
-  indicator: "bg-zinc-400",
-  glow: "from-zinc-500/40",
-  radial: "rgba(161,161,170,0.09)",
+  accent: "#a59c8d",
+  rgb: [165, 156, 141],
+  text: "text-fmt-neutral",
+  dot: "bg-fmt-neutral",
+  border: "border-fmt-neutral",
+  indicator: "bg-fmt-neutral",
 }
 
 export function formatStyle(format: string): FormatStyle {
   return FORMAT_STYLES[format as FormatId] ?? FALLBACK_FORMAT_STYLE
+}
+
+// Render-time SVG re-paletting: seed content SVGs were authored against the
+// pre-redesign accent hexes. SvgBlock rewrites them to the current inks so
+// post visuals match the identity without ever editing content JSON.
+export const LEGACY_SVG_ACCENT_MAP: Record<string, string> = {
+  "#fbbf24": FORMAT_STYLES.books.accent,
+  "#22d3ee": FORMAT_STYLES.facts.accent,
+  "#fb7185": FORMAT_STYLES.people.accent,
+  "#a78bfa": FORMAT_STYLES.concepts.accent,
+  "#34d399": FORMAT_STYLES.questions.accent,
+  "#fb923c": FORMAT_STYLES.stories.accent,
+  "#818cf8": FORMAT_STYLES.academy.accent,
 }

@@ -5,6 +5,8 @@
 // seed/official SVGs (controlled content pipeline) may use
 // dangerouslySetInnerHTML. Never relax this rule.
 
+import { LEGACY_SVG_ACCENT_MAP } from "@/lib/formats"
+
 interface Props {
   svg: string
   isUserContent: boolean
@@ -19,11 +21,23 @@ function toBase64Utf8(svg: string): string {
   return btoa(unescape(encodeURIComponent(svg)))
 }
 
-export default function SvgBlock({ svg, isUserContent, className = "w-full", color = "#e4e4e7" }: Props) {
+// Seed SVGs were authored against the pre-redesign accent hexes. Rewrite
+// them to the Lamplight format inks at render time so visuals match the
+// identity without editing content JSON (styling only, meaning untouched).
+function repaletteSvg(svg: string): string {
+  let out = svg
+  for (const [legacy, ink] of Object.entries(LEGACY_SVG_ACCENT_MAP)) {
+    out = out.split(legacy).join(ink)
+  }
+  return out
+}
+
+export default function SvgBlock({ svg, isUserContent, className = "w-full", color = "#cfc7b8" }: Props) {
+  const themed = repaletteSvg(svg)
   if (isUserContent) {
     return (
       <div className={className}>
-        <img src={`data:image/svg+xml;base64,${toBase64Utf8(svg)}`} alt="" className="w-full" />
+        <img src={`data:image/svg+xml;base64,${toBase64Utf8(themed)}`} alt="" className="w-full" />
       </div>
     )
   }
@@ -31,7 +45,7 @@ export default function SvgBlock({ svg, isUserContent, className = "w-full", col
     <div
       className={className}
       style={{ color }}
-      dangerouslySetInnerHTML={{ __html: svg }}
+      dangerouslySetInnerHTML={{ __html: themed }}
     />
   )
 }

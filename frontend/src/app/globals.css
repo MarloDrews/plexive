@@ -2,51 +2,212 @@
 @import "katex/dist/katex.min.css";
 
 @theme inline {
-  --font-sans: var(--font-geist-sans);
+  --font-serif: var(--font-newsreader);
+  --font-sans: var(--font-source-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 /*
-  Deepscroll design tokens — "editorial dark".
+  Deepscroll design tokens — "Lamplight" (see docs/DESIGN.md).
 
-  The app is permanently dark: flat zinc surfaces separated by hairline
-  borders, no shadows or glows, one format accent per surface. Semantic
-  tokens below generate utilities (bg-surface-1, border-edge, text-ink-dim,
-  rounded-card, ...). Format accent colors live in src/lib/formats.ts.
+  A quiet library at night: warm dark paper surfaces, warm off-white ink,
+  hairline edges, matte everything. The serif (Newsreader) is the voice of
+  the content; the sans (Source Sans 3) is invisible UI chrome. Color is
+  reserved for the format inks and the lamp-gold brand accent.
 
-  Motion convention (built-in utilities, applied consistently):
+  Semantic tokens below generate utilities (bg-surface-1, border-edge,
+  text-ink-dim, text-lamp, bg-fmt-books, rounded-card, ...). Format ink
+  hexes also live in src/lib/formats.ts for non-class use (SVG, canvas).
+
+  Motion convention:
   - duration-150 for state changes (hover, active, toggles)
   - duration-300 for surface transitions (sheets, page slides, reveals)
 */
 @theme {
   /* Surfaces */
-  --color-surface-0: #09090b;              /* page base (zinc-950) */
-  --color-surface-1: rgb(24 24 27 / 0.6);  /* cards (zinc-900/60) */
-  --color-surface-2: #27272a;              /* inputs, inner blocks (zinc-800) */
-  --color-surface-overlay: rgb(9 9 11 / 0.95);  /* bars, sheets (zinc-950/95) */
+  --color-surface-0: #121110;             /* page base */
+  --color-surface-1: #1b1815;             /* cards, panels */
+  --color-surface-2: #23201b;             /* inputs, inner blocks */
+  --color-surface-3: #2b2721;             /* raised elements, hover fills */
+  --color-surface-overlay: rgb(18 17 16 / 0.95); /* bars, sheets */
 
-  /* Borders */
-  --color-edge: rgb(39 39 42 / 0.6);       /* hairline dividers (zinc-800/60) */
-  --color-edge-strong: #3f3f46;            /* inputs, outline buttons (zinc-700) */
+  /* Edges */
+  --color-edge: rgb(168 158 142 / 0.14);        /* hairline dividers */
+  --color-edge-strong: rgb(168 158 142 / 0.3);  /* inputs, outline buttons */
 
-  /* Text levels */
-  --color-ink: #ffffff;                    /* headings, primary */
-  --color-ink-body: #d4d4d8;               /* body prose (zinc-300) */
-  --color-ink-dim: #a1a1aa;                /* secondary (zinc-400) */
-  --color-ink-muted: #71717a;              /* labels, meta (zinc-500) */
-  --color-ink-faint: #52525b;              /* fine print (zinc-600) */
+  /* Ink (text) */
+  --color-ink: #efe9de;                   /* headings, primary */
+  --color-ink-body: #cfc7b8;              /* body prose */
+  --color-ink-dim: #a39b8b;               /* secondary */
+  --color-ink-muted: #7d7567;             /* labels, meta */
+  --color-ink-faint: #5b5448;             /* fine print */
+
+  /* Brand + semantic */
+  --color-lamp: #d2a45a;                  /* brand accent: links, focus, active */
+  --color-good: #7da869;                  /* success, correct answers */
+  --color-bad: #c0604e;                   /* errors, wrong answers, destructive */
+
+  /* Format inks (muted book-spine palette; hexes mirrored in lib/formats.ts) */
+  --color-fmt-books: #d2a45a;
+  --color-fmt-facts: #76ada0;
+  --color-fmt-people: #c5848f;
+  --color-fmt-concepts: #a08fc9;
+  --color-fmt-questions: #93af7c;
+  --color-fmt-stories: #c98a62;
+  --color-fmt-academy: #8398c9;
+  --color-fmt-neutral: #a59c8d;
 
   /* Radii */
-  --radius-card: 1rem;                     /* cards and panels */
-  --radius-field: 0.75rem;                 /* inputs and selects */
+  --radius-card: 0.875rem;                /* cards and panels */
+  --radius-field: 0.625rem;               /* inputs and buttons */
+  --radius-sheet: 1.25rem;                /* bottom sheets (top corners) */
 }
 
-/* The app is dark-only; no light scheme exists, so the base is fixed to
-   avoid a white flash on devices preferring light mode. */
+/* The app is dark-only; the base is fixed to avoid a white flash on devices
+   preferring light mode. --accent is the per-post format ink; post containers
+   override it, everything else inherits the lamp brand accent. */
+:root {
+  --accent: var(--color-lamp);
+  color-scheme: dark;
+}
+
 body {
   background: var(--color-surface-0);
   color: var(--color-ink);
   font-family: var(--font-sans);
+}
+
+/* Barely-there paper grain on the page base; pure decoration, no events. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+}
+
+/* Keyboard focus: a quiet lamp ring, never the browser default blue. */
+:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-lamp) 70%, transparent);
+  outline-offset: 2px;
+}
+
+/* Component vocabulary — the shared visual language every screen uses.
+   See docs/DESIGN.md. Sizing stays at the call site; these own the look. */
+@layer components {
+  .card {
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-edge);
+    border-radius: var(--radius-card);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    border-radius: var(--radius-field);
+    cursor: pointer;
+    transition: background-color 150ms ease-out, color 150ms ease-out,
+      border-color 150ms ease-out, opacity 150ms ease-out;
+  }
+  .btn:disabled {
+    opacity: 0.45;
+    cursor: default;
+  }
+  .btn-primary {
+    background: var(--color-ink);
+    color: var(--color-surface-0);
+  }
+  .btn-primary:hover:not(:disabled) {
+    background: var(--color-ink-body);
+  }
+  .btn-ghost {
+    border: 1px solid var(--color-edge-strong);
+    color: var(--color-ink-body);
+    background: transparent;
+  }
+  .btn-ghost:hover:not(:disabled) {
+    background: var(--color-surface-2);
+    color: var(--color-ink);
+  }
+  .btn-quiet {
+    color: var(--color-ink-dim);
+    background: transparent;
+  }
+  .btn-quiet:hover:not(:disabled) {
+    color: var(--color-ink);
+  }
+
+  .field {
+    width: 100%;
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-edge-strong);
+    border-radius: var(--radius-field);
+    padding: 0.625rem 0.875rem;
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    color: var(--color-ink);
+    transition: border-color 150ms ease-out;
+  }
+  .field::placeholder {
+    color: var(--color-ink-muted);
+  }
+  .field:focus {
+    outline: none;
+    border-color: color-mix(in srgb, var(--color-lamp) 60%, transparent);
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    border-radius: 9999px;
+    padding: 0.375rem 0.875rem;
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.25rem;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: background-color 150ms ease-out, color 150ms ease-out,
+      border-color 150ms ease-out;
+  }
+  .chip-off {
+    border-color: var(--color-edge-strong);
+    color: var(--color-ink-dim);
+    background: transparent;
+  }
+  .chip-off:hover {
+    color: var(--color-ink);
+  }
+  .chip-on {
+    background: var(--color-ink);
+    color: var(--color-surface-0);
+  }
+
+  .label-caps {
+    font-family: var(--font-sans);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+  }
+
+  /* Long-form post prose: the reading voice of the app. */
+  .prose-post {
+    font-family: var(--font-serif);
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    color: var(--color-ink-body);
+  }
 }
 
 @keyframes heart-pop {
@@ -69,4 +230,11 @@ body {
 
 .heart-boom {
   animation: heart-boom 600ms ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heart-pop,
+  .heart-boom {
+    animation-duration: 1ms;
+  }
 }

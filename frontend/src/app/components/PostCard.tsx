@@ -204,15 +204,8 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
       ref={cardRef}
       onClick={handleCardClick}
       style={{ cursor: "pointer" }}
-      className={`h-[100dvh] relative shrink-0 snap-start [scroll-snap-stop:always] flex flex-col bg-zinc-950 bg-gradient-to-b ${style.glow} via-zinc-950 to-zinc-950 pl-5 pr-5 pt-12 pb-8`}
+      className="h-[100dvh] relative shrink-0 snap-start [scroll-snap-stop:always] flex flex-col bg-surface-0 pl-5 pr-5 pt-12 pb-8"
     >
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: `radial-gradient(ellipse 80% 50% at 50% 45%, ${style.radial} 0%, transparent 70%)`,
-        }}
-      />
-
       {/* Double-tap heart overlay */}
       {showHeartAnim && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">

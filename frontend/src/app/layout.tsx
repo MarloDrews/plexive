@@ -1,10 +1,18 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Newsreader, Source_Sans_3, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Providers from "./components/Providers";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+// "Lamplight" type system (docs/DESIGN.md): Newsreader is the serif voice of
+// the content, Source Sans 3 is quiet UI chrome, Geist Mono renders data.
+const newsreader = Newsreader({
+  variable: "--font-newsreader",
+  subsets: ["latin"],
+  style: ["normal", "italic"],
+});
+
+const sourceSans = Source_Sans_3({
+  variable: "--font-source-sans",
   subsets: ["latin"],
 });
 
@@ -26,7 +34,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${newsreader.variable} ${sourceSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <Providers>{children}</Providers>
