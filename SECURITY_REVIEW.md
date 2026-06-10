@@ -17,6 +17,7 @@ Verification: `backend/tests/security_test.py` (18 checks) covers the fixes,
 | 7 | No request body size limit (multi-MB JSON accepted) | 10 MB cap middleware; uploads keep their own much smaller chunked-read limits |
 | 8 | Search endpoints: unbounded query length on a Python-side full scan, no rate limit | Query capped at 100 chars; 60 searches/min per user (or per IP when anonymous) |
 | 9 | No abuse limits on comments and follows | Comments 30 / 5 min, follows 60 / hour per user |
+| 10 | Event `stored` count was an existence oracle for pending post ids (found by the independent verifier pass) | Events only count posts visible to the caller (published, or own pending) |
 
 ## Chat security model (built secure by design)
 
@@ -86,3 +87,14 @@ Verification: `backend/tests/security_test.py` (18 checks) covers the fixes,
 8. **Global stats include pending posts' like/comment counters** (activity
    volume only, never content). Cosmetic; filter by `status == "published"`
    if it bothers you.
+9. **Chat follow gate is creation-time only.** Unfollowing or going private
+   later does not remove someone from an existing conversation, and a group
+   creator can bridge two users who have no relationship with each other.
+   Standard messenger behavior; add leave/block features if you want more.
+10. **The wss requirement trusts `x-forwarded-proto`,** which a direct
+   client can spoof. Real enforcement is the production reverse proxy
+   terminating TLS and stripping inbound forwarding headers — standard
+   setup, but worth remembering at deploy time.
+11. **The 10 MB body cap reads Content-Length only;** a chunked request
+   without the header bypasses it (uploads have their own chunked-read
+   limits). A streaming-aware cap belongs in the reverse proxy.
