@@ -1,25 +1,9 @@
 import type { CoreIdeaItem } from "../../types/post"
+import SvgBlock from "../SvgBlock"
 
 interface Props {
   content: CoreIdeaItem[]
   isUserContent: boolean
-}
-
-function SvgBlock({ svg, isUserContent }: { svg: string; isUserContent: boolean }) {
-  if (isUserContent) {
-    return (
-      <div className="max-w-[360px] mx-auto bg-transparent my-4">
-        <img src={`data:image/svg+xml;base64,${btoa(svg)}`} alt="" className="w-full" />
-      </div>
-    )
-  }
-  return (
-    <div
-      className="w-full max-w-[360px] mx-auto bg-transparent my-4"
-      style={{ color: '#e4e4e7' }}
-      dangerouslySetInnerHTML={{ __html: svg }}
-    />
-  )
 }
 
 export default function CoreIdeasSection({ content, isUserContent }: Props) {
@@ -31,7 +15,7 @@ export default function CoreIdeasSection({ content, isUserContent }: Props) {
           <p className="text-base text-zinc-300 leading-relaxed">{idea.body}</p>
 
           {idea.visual_svg && (
-            <SvgBlock svg={idea.visual_svg} isUserContent={isUserContent} />
+            <SvgBlock svg={idea.visual_svg} isUserContent={isUserContent} className="w-full max-w-[360px] mx-auto my-4" />
           )}
 
           {idea.image_url && (

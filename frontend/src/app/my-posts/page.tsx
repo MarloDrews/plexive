@@ -4,20 +4,11 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/app/lib/auth"
 import { apiFetch } from "@/app/lib/api"
-import { FORMAT_STYLES } from "@/app/components/PostCard"
+import { FORMAT_STYLES, type FormatId } from "@/lib/formats"
 import BottomNav from "@/app/components/BottomNav"
-import type { Post } from "@/types/post"
-
-function relativeTime(iso: string): string {
-  const date = new Date(iso.endsWith("Z") ? iso : iso + "Z")
-  const diff = Date.now() - date.getTime()
-  const mins = Math.floor(diff / 60000)
-  if (mins < 60) return `${mins}m ago`
-  const hours = Math.floor(mins / 60)
-  if (hours < 24) return `${hours}h ago`
-  const days = Math.floor(hours / 24)
-  return `${days}d ago`
-}
+import Spinner from "@/components/Spinner"
+import { relativeTime } from "@/app/lib/relativeTime"
+import { fcStr, type Post } from "@/types/post"
 
 export default function MyPostsPage() {
   const router = useRouter()
@@ -65,7 +56,7 @@ export default function MyPostsPage() {
           {/* Loading */}
           {posts === null && !fetchError && (
             <div className="flex justify-center pt-16">
-              <div className="w-6 h-6 border-2 border-zinc-700 border-t-white rounded-full animate-spin" />
+              <Spinner />
             </div>
           )}
 
@@ -86,18 +77,18 @@ export default function MyPostsPage() {
           {posts !== null && posts.length > 0 && (
             <div className="flex flex-col gap-2 px-4 pt-2">
               {posts.map((post) => {
-                const style = FORMAT_STYLES[post.format as keyof typeof FORMAT_STYLES]
+                const style = FORMAT_STYLES[post.format as FormatId]
                 return (
                   <button
                     key={post.id}
                     onClick={() => router.push(`/post/${post.id}`)}
-                    className="w-full text-left bg-zinc-900/60 rounded-2xl px-4 py-3 flex items-start gap-3"
+                    className="w-full text-left bg-surface-1 rounded-card px-4 py-3 flex items-start gap-3"
                   >
                     {/* Cover thumbnail */}
                     <div className="shrink-0 w-10 h-14 rounded-lg overflow-hidden bg-zinc-800">
-                      {post.feed_card?.cover_url ? (
+                      {fcStr(post.feed_card, "cover_url") ? (
                         <img
-                          src={post.feed_card.cover_url}
+                          src={fcStr(post.feed_card, "cover_url")}
                           alt=""
                           className="w-full h-full object-cover"
                           onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none" }}
@@ -110,7 +101,7 @@ export default function MyPostsPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         {style && (
-                          <span className={`text-xs font-medium ${style.text}`}>{style.label}</span>
+                          <span className={`text-xs font-medium ${style.text}`}>{style.badge}</span>
                         )}
                         {post.status === "pending" && (
                           <span className="bg-amber-500/20 text-amber-300 rounded-full px-2 py-0.5 text-xs">
@@ -124,8 +115,8 @@ export default function MyPostsPage() {
                         )}
                       </div>
                       <p className="text-white font-semibold text-sm mt-0.5 line-clamp-2">{post.title}</p>
-                      {post.feed_card?.author && (
-                        <p className="text-zinc-500 text-xs mt-0.5 truncate">{post.feed_card.author}</p>
+                      {fcStr(post.feed_card, "author") && (
+                        <p className="text-zinc-500 text-xs mt-0.5 truncate">{fcStr(post.feed_card, "author")}</p>
                       )}
                       {post.created_at && (
                         <p className="text-zinc-600 text-xs mt-1">{relativeTime(post.created_at)}</p>

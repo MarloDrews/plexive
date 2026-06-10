@@ -4,11 +4,10 @@ import secrets
 import sys
 
 from dotenv import load_dotenv
-from passlib.context import CryptContext
 
 from app.auth import hash_password
 from app.database import Base, SessionLocal, engine
-from app.models import Interest, Post, User, post_interests
+from app.models import Interest, Post, User
 
 Base.metadata.create_all(bind=engine)
 
@@ -143,9 +142,10 @@ for filename in sorted(os.listdir(examples_dir)):
     sections = example["sections"]
     title = _post_title(feed_card)
 
-    existing = db.query(Post).filter_by(format=post_format, title=title).first()
+    existing = db.query(Post).filter_by(author_id=marlo.id, format=post_format).first()
 
     if existing:
+        existing.title = title
         existing.feed_card = feed_card
         existing.sections = sections
         existing.status = "published"

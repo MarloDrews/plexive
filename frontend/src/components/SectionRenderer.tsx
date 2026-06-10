@@ -37,14 +37,13 @@ import TheirWorldSection from "./sections/TheirWorldSection"
 interface Props {
   sections: Section[]
   isUserContent: boolean
-  format: string
 }
 
 export default function SectionRenderer({ sections, isUserContent }: Props) {
   const sorted = [...sections].sort((a, b) => a.order - b.order)
 
   return (
-    <div className="flex flex-col divide-y divide-zinc-800/60">
+    <div className="flex flex-col divide-y divide-edge">
       {sorted.map((section, i) => {
         const c = section.content
         switch (section.type) {

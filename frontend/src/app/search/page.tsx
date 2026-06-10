@@ -3,34 +3,33 @@
 import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { type Post, FORMAT_STYLES } from "@/app/components/PostCard"
+import { type Post } from "@/app/components/PostCard"
+import { fcStr } from "@/types/post"
+import { FORMAT_IDS, FORMAT_STYLES, type FormatId } from "@/lib/formats"
 import { apiFetch } from "@/app/lib/api"
 import BottomNav from "@/app/components/BottomNav"
+import VerifiedBadge from "@/components/VerifiedBadge"
+import Spinner from "@/components/Spinner"
 
-const FORMAT_CHIPS = [
-  { label: "All",      value: ""          },
-  { label: "Books",    value: "books"     },
-  { label: "Facts",    value: "facts"     },
-  { label: "People",   value: "people"    },
-  { label: "Concepts", value: "concepts"  },
-  { label: "Q&A",      value: "questions" },
-  { label: "Stories",  value: "stories"   },
-] as const
+const FORMAT_CHIPS: { label: string; value: FormatId | "" }[] = [
+  { label: "All", value: "" },
+  ...FORMAT_IDS.map((id) => ({ label: FORMAT_STYLES[id].label, value: id })),
+]
 
-type FormatValue = (typeof FORMAT_CHIPS)[number]["value"]
+type FormatValue = FormatId | ""
 
 function Snippet({ post }: { post: Post }) {
-  const text = post.hook ?? post.body ?? ""
+  const text = fcStr(post.feed_card, "essence") || fcStr(post.feed_card, "headline")
   const snippet = text.length > 120 ? text.slice(0, 120) + "…" : text
   return <p className="text-zinc-400 text-xs mt-1 line-clamp-2">{snippet}</p>
 }
 
 function FormatBadge({ format }: { format: string }) {
-  const style = FORMAT_STYLES[format as keyof typeof FORMAT_STYLES]
+  const style = FORMAT_STYLES[format as FormatId]
   if (!style) return null
   return (
     <span className={`text-xs font-medium ${style.text}`}>
-      {style.label}
+      {style.badge}
     </span>
   )
 }
@@ -120,7 +119,7 @@ export default function SearchPage() {
           <div className="flex gap-2 mt-2 overflow-x-auto [&::-webkit-scrollbar]:hidden [scrollbar-width:none] pb-1">
             {FORMAT_CHIPS.map((chip) => {
               const isActive = formatFilter === chip.value
-              const style = chip.value ? FORMAT_STYLES[chip.value as keyof typeof FORMAT_STYLES] : null
+              const style = chip.value ? FORMAT_STYLES[chip.value] : null
               return (
                 <button
                   key={chip.value}
@@ -144,7 +143,7 @@ export default function SearchPage() {
         <div className="absolute inset-0 top-[108px] overflow-y-auto pb-14 [&::-webkit-scrollbar]:hidden [scrollbar-width:none] px-3">
           {loading ? (
             <div className="flex justify-center pt-16">
-              <div className="w-6 h-6 border-2 border-zinc-700 border-t-white rounded-full animate-spin" />
+              <Spinner />
             </div>
           ) : !query.trim() ? (
             <div className="flex flex-col items-center justify-center pt-20 text-center px-6">
@@ -161,7 +160,7 @@ export default function SearchPage() {
                 <button
                   key={post.id}
                   onClick={() => router.push(`/post/${post.id}`)}
-                  className="w-full text-left bg-zinc-900/60 rounded-2xl px-4 py-3"
+                  className="w-full text-left bg-surface-1 rounded-card px-4 py-3"
                 >
                   <FormatBadge format={post.format} />
                   <p className="text-white font-semibold text-sm mt-0.5 line-clamp-2">{post.title}</p>
@@ -171,12 +170,7 @@ export default function SearchPage() {
                         @{post.author_username}
                       </Link>
                     ) : "Deepscroll"}
-                    {post.is_user_content && post.author_is_verified && (
-                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Verified" className="flex-shrink-0">
-                        <circle cx="8" cy="8" r="8" fill="#60a5fa"/>
-                        <path d="M4.5 8l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    )}
+                    {post.is_user_content && post.author_is_verified && <VerifiedBadge size={14} />}
                   </p>
                   <Snippet post={post} />
                 </button>

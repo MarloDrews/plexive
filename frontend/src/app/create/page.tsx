@@ -4,29 +4,39 @@ import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/app/lib/auth"
 import { apiFetch } from "@/app/lib/api"
-import { FORMAT_STYLES } from "@/app/components/PostCard"
-import type { Post } from "@/types/post"
+import { FORMAT_IDS, FORMAT_STYLES, type FormatId } from "@/lib/formats"
+import { fcStr, type Post } from "@/types/post"
 import { CATEGORIES } from "@/app/onboarding/InterestPicker"
 import BottomNav from "@/app/components/BottomNav"
+import Spinner from "@/components/Spinner"
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
-const FORMATS = [
-  { id: "books",     name: "Books",     accent: "border-amber-400",   description: "Summarize a book's key ideas",   enabled: true  },
-  { id: "facts",     name: "Facts",     accent: "border-cyan-400",    description: "Share a mind-blowing fact",       enabled: false },
-  { id: "people",    name: "People",    accent: "border-rose-400",    description: "Profile an inspiring person",     enabled: false },
-  { id: "concepts",  name: "Concepts",  accent: "border-violet-400",  description: "Explain a mental model",          enabled: false },
-  { id: "questions", name: "Questions", accent: "border-emerald-400", description: "Pose a thought experiment",       enabled: false },
-  { id: "stories",   name: "Stories",   accent: "border-orange-400",  description: "Tell a gripping true story",      enabled: false },
-  { id: "academy",   name: "Academy",   accent: "border-indigo-400",  description: "Teach something valuable",        enabled: false },
-] as const
+const FORMAT_DESCRIPTIONS: Record<FormatId, string> = {
+  books: "Summarize a book's key ideas",
+  facts: "Share a mind-blowing fact",
+  people: "Profile an inspiring person",
+  concepts: "Explain a mental model",
+  questions: "Pose a thought experiment",
+  stories: "Tell a gripping true story",
+  academy: "Teach something valuable",
+}
 
-type FormatId = (typeof FORMATS)[number]["id"]
+// Only the Books wizard exists so far.
+const ENABLED_FORMATS = new Set<FormatId>(["books"])
+
+const FORMATS = FORMAT_IDS.map((id) => ({
+  id,
+  name: FORMAT_STYLES[id].label,
+  accent: FORMAT_STYLES[id].border,
+  description: FORMAT_DESCRIPTIONS[id],
+  enabled: ENABLED_FORMATS.has(id),
+}))
 
 interface Interest { id: number; name: string; slug: string }
 
 const inputCls =
-  "w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder-zinc-500 text-sm focus:outline-none focus:ring-1 focus:ring-zinc-600"
+  "w-full bg-surface-2 border border-edge-strong rounded-field px-4 py-3 text-white placeholder-zinc-500 text-sm focus:outline-none focus:ring-1 focus:ring-zinc-600"
 const labelCls = "text-zinc-400 text-xs uppercase tracking-wider mb-2 mt-4 block"
 
 function FieldError({ msg }: { msg: string | undefined }) {
@@ -445,7 +455,9 @@ export default function CreatePage() {
       <div className="h-[100dvh] bg-zinc-950 flex justify-center">
         <div className="w-full max-w-[430px] h-[100dvh] relative flex flex-col items-center justify-center px-8 text-center gap-4">
           <p className="text-white text-2xl font-bold">Post submitted</p>
-          <p className="text-zinc-400 text-sm">It will appear once approved.</p>
+          <p className="text-zinc-400 text-sm">
+            {user?.is_verified ? "It is now live in the feed." : "It will appear once approved."}
+          </p>
           <div className="flex flex-col gap-3 w-full mt-4">
             <button onClick={resetForm} className="bg-white text-zinc-950 font-semibold rounded-full h-12 w-full text-sm">Create another</button>
             <button onClick={() => router.push("/my-posts")} className="border border-zinc-700 text-white rounded-full h-12 w-full text-sm">View my posts</button>
@@ -484,7 +496,7 @@ export default function CreatePage() {
                   const selected = selectedFormat === fmt.id
                   if (!fmt.enabled) {
                     return (
-                      <div key={fmt.id} className="rounded-2xl p-5 border border-zinc-800 bg-zinc-900/30 opacity-50 relative">
+                      <div key={fmt.id} className="rounded-card p-5 border border-zinc-800 bg-zinc-900/30 opacity-50 relative">
                         <div className="font-semibold text-zinc-400 text-sm">{fmt.name}</div>
                         <div className="text-zinc-600 text-xs mt-0.5">{fmt.description}</div>
                         <span className="absolute top-2 right-2 text-[10px] text-zinc-500 border border-zinc-700 rounded px-1.5 py-0.5">Coming soon</span>
@@ -495,7 +507,7 @@ export default function CreatePage() {
                     <button
                       key={fmt.id}
                       onClick={() => setSelectedFormat(fmt.id)}
-                      className={`rounded-2xl p-5 text-left transition-colors ${selected ? `border-2 ${fmt.accent} bg-zinc-900` : "border border-zinc-800 bg-zinc-900/50"}`}
+                      className={`rounded-card p-5 text-left transition-colors ${selected ? `border-2 ${fmt.accent} bg-zinc-900` : "border border-zinc-800 bg-zinc-900/50"}`}
                     >
                       <div className="font-semibold text-white text-sm">{fmt.name}</div>
                       <div className="text-zinc-400 text-xs mt-0.5">{fmt.description}</div>
@@ -525,19 +537,19 @@ export default function CreatePage() {
                 <input
                   type="search" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search existing posts..."
-                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl pl-9 pr-4 py-3 text-white placeholder-zinc-500 text-sm focus:outline-none focus:ring-1 focus:ring-zinc-600"
+                  className="w-full bg-surface-2 border border-edge-strong rounded-field pl-9 pr-4 py-3 text-white placeholder-zinc-500 text-sm focus:outline-none focus:ring-1 focus:ring-zinc-600"
                 />
               </div>
-              {searchLoading && <div className="flex justify-center py-4"><div className="w-5 h-5 border-2 border-zinc-700 border-t-white rounded-full animate-spin" /></div>}
+              {searchLoading && <div className="flex justify-center py-4"><Spinner size="sm" /></div>}
               {!searchLoading && searchResults.length > 0 && (
                 <div className="flex flex-col gap-2 mb-4">
                   {searchResults.map((post) => {
-                    const style = FORMAT_STYLES[post.format as keyof typeof FORMAT_STYLES]
+                    const style = FORMAT_STYLES[post.format as FormatId]
                     return (
-                      <button key={post.id} onClick={() => window.open(`/post/${post.id}`, "_blank")} className="w-full text-left bg-zinc-900/60 rounded-2xl px-4 py-3">
-                        {style && <span className={`text-xs font-medium ${style.text}`}>{style.label}</span>}
+                      <button key={post.id} onClick={() => window.open(`/post/${post.id}`, "_blank")} className="w-full text-left bg-surface-1 rounded-card px-4 py-3">
+                        {style && <span className={`text-xs font-medium ${style.text}`}>{style.badge}</span>}
                         <p className="text-white font-semibold text-sm mt-0.5 line-clamp-2">{post.title}</p>
-                        {post.feed_card?.essence && <p className="text-zinc-400 text-xs mt-1 line-clamp-2">{post.feed_card.essence}</p>}
+                        {fcStr(post.feed_card, "essence") && <p className="text-zinc-400 text-xs mt-1 line-clamp-2">{fcStr(post.feed_card, "essence")}</p>}
                       </button>
                     )
                   })}

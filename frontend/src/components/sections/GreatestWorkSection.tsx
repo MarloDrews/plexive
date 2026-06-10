@@ -1,3 +1,4 @@
+import SectionLabel from "../SectionLabel"
 interface GreatestWorkContent {
   title: string
   body: string
@@ -7,37 +8,22 @@ interface GreatestWorkContent {
   image_attribution?: string
 }
 
+import SvgBlock from "../SvgBlock"
+
 interface Props {
   content: GreatestWorkContent
   isUserContent: boolean
 }
 
-function SvgBlock({ svg, isUserContent }: { svg: string; isUserContent: boolean }) {
-  if (isUserContent) {
-    return (
-      <div className="w-full max-w-[400px] mx-auto my-4">
-        <img src={`data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svg)))}`} alt="" className="w-full" />
-      </div>
-    )
-  }
-  return (
-    <div
-      className="w-full max-w-[400px] mx-auto my-4"
-      style={{ color: "#e4e4e7" }}
-      dangerouslySetInnerHTML={{ __html: svg }}
-    />
-  )
-}
-
 export default function GreatestWorkSection({ content, isUserContent }: Props) {
   return (
     <div className="px-5 py-6 flex flex-col gap-3">
-      <h3 className="text-xs text-zinc-500 uppercase tracking-wide">Greatest Work</h3>
+      <SectionLabel>Greatest Work</SectionLabel>
       <h2 className="text-lg font-semibold text-rose-400 leading-snug">{content.title}</h2>
       <p className="text-base text-zinc-300 leading-relaxed">{content.body}</p>
 
       {content.visual_svg && (
-        <SvgBlock svg={content.visual_svg} isUserContent={isUserContent} />
+        <SvgBlock svg={content.visual_svg} isUserContent={isUserContent} className="w-full max-w-[400px] mx-auto my-4" />
       )}
 
       {content.image_url && (

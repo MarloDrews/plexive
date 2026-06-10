@@ -25,6 +25,17 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null)
 
+// FastAPI returns detail as a string for HTTPException but as an array of
+// objects for 422 validation errors; both must become a readable message.
+function detailToMessage(detail: unknown, fallback: string): string {
+  if (typeof detail === "string") return detail
+  if (Array.isArray(detail)) {
+    const first = detail[0]
+    if (first && typeof first.msg === "string") return first.msg.replace(/^Value error, /, "")
+  }
+  return fallback
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null)
   const [loading, setLoading] = useState(true)
@@ -56,7 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       body: JSON.stringify({ email, password }),
     })
     const data = await r.json()
-    if (!r.ok) throw new Error(data.detail ?? "Login failed.")
+    if (!r.ok) throw new Error(detailToMessage(data.detail, "Login failed."))
     localStorage.setItem("deepscroll_token", data.access_token)
     setUser(data.user as AuthUser)
   }
@@ -68,7 +79,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       body: JSON.stringify({ email, username, password }),
     })
     const data = await r.json()
-    if (!r.ok) throw new Error(data.detail ?? "Registration failed.")
+    if (!r.ok) throw new Error(detailToMessage(data.detail, "Registration failed."))
     localStorage.setItem("deepscroll_token", data.access_token)
     setUser(data.user as AuthUser)
   }

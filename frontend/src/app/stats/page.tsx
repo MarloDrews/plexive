@@ -18,6 +18,7 @@ import { apiFetch } from "../lib/api"
 import { getSavedPostIds } from "../lib/savedPosts"
 import { getLikedPostIds } from "../lib/likedPosts"
 import BottomNav from "../components/BottomNav"
+import { FORMAT_IDS, FORMAT_STYLES } from "@/lib/formats"
 
 // --- Error boundary ---
 
@@ -47,15 +48,10 @@ class StatsErrorBoundary extends React.Component<
 
 // --- Constants ---
 
-const FORMAT_COLORS: Record<string, string> = {
-  books: "#fbbf24",
-  facts: "#22d3ee",
-  people: "#fb7185",
-  concepts: "#a78bfa",
-  questions: "#34d399",
-  stories: "#fb923c",
-}
-const FORMATS = ["books", "facts", "people", "concepts", "questions", "stories"]
+const FORMAT_COLORS: Record<string, string> = Object.fromEntries(
+  FORMAT_IDS.map((id) => [id, FORMAT_STYLES[id].accent]),
+)
+const FORMATS: string[] = [...FORMAT_IDS]
 const DEFAULT_COLOR = "#a1a1aa"
 const RANK_COLORS = ["#a78bfa", "#7c3aed", "#4c1d95", "#2e1065", "#1e1b4b"]
 

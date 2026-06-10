@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from ..auth import get_optional_user
@@ -18,8 +18,12 @@ def create_events(
     optional_user: Optional[User] = Depends(get_optional_user),
 ):
     new_events = []
+    batch_liked_post_ids: set[int] = set()
     for e in events:
         if e.event_type == "like" and optional_user:
+            # Dedup within this batch as well as against stored events
+            if e.post_id in batch_liked_post_ids:
+                continue
             already_liked = (
                 db.query(Event)
                 .filter(
@@ -31,6 +35,7 @@ def create_events(
             )
             if already_liked:
                 continue
+            batch_liked_post_ids.add(e.post_id)
         new_events.append(Event(
             post_id=e.post_id,
             event_type=e.event_type,
@@ -50,7 +55,6 @@ def get_likes(
 ):
     post = db.query(Post).filter(Post.id == post_id).first()
     if not post:
-        from fastapi import HTTPException, status
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found.")
 
     count = (

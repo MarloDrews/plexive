@@ -1,3 +1,4 @@
+import SectionLabel from "../SectionLabel"
 interface Props {
   content: string[]
 }
@@ -5,7 +6,7 @@ interface Props {
 export default function TangibleSection({ content }: Props) {
   return (
     <div className="px-5 py-6">
-      <p className="text-xs font-semibold tracking-widest text-zinc-500 uppercase mb-4">Make It Tangible</p>
+      <SectionLabel className="mb-4">Make It Tangible</SectionLabel>
       <ul className="flex flex-col gap-3">
         {content.map((line, i) => (
           <li key={i} className="flex items-start gap-3">

@@ -5,7 +5,6 @@ from pathlib import Path
 # accidentally imported or executed as Python modules.
 UPLOAD_DIR = Path(__file__).parent.parent.parent / "user_uploads"
 
-ALLOWED_IMAGE_TYPES = {"image/jpeg", "image/png", "image/webp", "image/gif"}
 MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024   # 5 MB
 MAX_SVG_SIZE_BYTES   = 512 * 1024         # 512 KB
 

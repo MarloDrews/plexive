@@ -1,28 +1,14 @@
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends
-from sqlalchemy import func
 from sqlalchemy.orm import Session, selectinload
 
 from ..database import get_db
-from ..models import Comment, Event, Post
+from ..models import Post
+from ..post_counts import attach_counts
 from ..schemas import PostOut
 
 router = APIRouter()
-
-
-def _attach_counts(post: Post, db: Session) -> Post:
-    post.like_count = (
-        db.query(func.count(Event.id))
-        .filter(Event.post_id == post.id, Event.event_type == "like")
-        .scalar()
-    ) or 0
-    post.comment_count = (
-        db.query(func.count(Comment.id))
-        .filter(Comment.post_id == post.id)
-        .scalar()
-    ) or 0
-    return post
 
 
 def _post_matches(post: Post, q_lower: str) -> bool:
@@ -86,4 +72,4 @@ def search_posts(
     )
 
     results = matched[:50]
-    return [_attach_counts(p, db) for p in results]
+    return attach_counts(results, db)

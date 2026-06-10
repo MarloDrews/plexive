@@ -1,36 +1,18 @@
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import func
 from sqlalchemy.orm import Session, selectinload
 
 from ..auth import get_current_user, get_optional_user
 from ..database import get_db
-from ..models import Comment, Event, Follow, Interest, Post, User
+from ..models import Follow, Interest, Post, User
+from ..post_counts import attach_counts
 from ..schemas import PostOut
 from ..scoring import score_posts
 
 router = APIRouter()
 
 FEED_MIN = 10
-
-
-def _attach_counts(post: Post, db: Session) -> Post:
-    post.like_count = (
-        db.query(func.count(Event.id))
-        .filter(Event.post_id == post.id, Event.event_type == "like")
-        .scalar()
-    ) or 0
-    post.comment_count = (
-        db.query(func.count(Comment.id))
-        .filter(Comment.post_id == post.id)
-        .scalar()
-    ) or 0
-    return post
-
-
-def _attach_counts_many(posts: List[Post], db: Session) -> List[Post]:
-    return [_attach_counts(p, db) for p in posts]
 
 
 @router.get("/feed", response_model=List[PostOut])
@@ -48,7 +30,7 @@ def get_feed(
 
     if not slugs:
         posts = base.all()
-        return _attach_counts_many(score_posts(posts, [], db), db)
+        return attach_counts(score_posts(posts, [], db), db)
 
     # Tier 1: posts directly tagged with the user's selected slugs.
     tier1 = (
@@ -87,7 +69,7 @@ def get_feed(
         tier_map.update({p.id: 3 for p in tier3})
 
     ranked = score_posts(tier1 + tier2 + tier3, slugs, db, tier_map)
-    return _attach_counts_many(ranked, db)
+    return attach_counts(ranked, db)
 
 
 @router.get("/feed/following", response_model=List[PostOut])
@@ -112,7 +94,7 @@ def get_following_feed(
         .limit(50)
         .all()
     )
-    return _attach_counts_many(posts, db)
+    return attach_counts(posts, db)
 
 
 @router.get("/feed/user/{username}", response_model=List[PostOut])
@@ -132,4 +114,4 @@ def get_user_feed(
         .limit(50)
         .all()
     )
-    return _attach_counts_many(posts, db)
+    return attach_counts(posts, db)

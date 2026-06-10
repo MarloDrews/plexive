@@ -6,6 +6,7 @@ import PostCard, { type Post } from "@/app/components/PostCard"
 import { getSavedPostIds } from "@/app/lib/savedPosts"
 import { apiFetch } from "@/app/lib/api"
 import BottomNav from "@/app/components/BottomNav"
+import Spinner from "@/components/Spinner"
 
 export default function SavedPostsPage() {
   const router = useRouter()
@@ -39,7 +40,7 @@ export default function SavedPostsPage() {
         {/* Loading */}
         {posts === null && (
           <div className="flex items-center justify-center h-full">
-            <div className="w-6 h-6 border-2 border-zinc-700 border-t-white rounded-full animate-spin" />
+            <Spinner />
           </div>
         )}
 

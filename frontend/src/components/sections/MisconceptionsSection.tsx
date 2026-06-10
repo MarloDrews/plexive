@@ -1,3 +1,4 @@
+import SectionLabel from "../SectionLabel"
 import type { MisconceptionItem } from "../../types/post"
 
 interface Props {
@@ -7,7 +8,7 @@ interface Props {
 export default function MisconceptionsSection({ content }: Props) {
   return (
     <div className="px-5 py-6">
-      <p className="text-xs font-semibold tracking-widest text-zinc-500 uppercase mb-4">Common Misconceptions</p>
+      <SectionLabel className="mb-4">Common Misconceptions</SectionLabel>
       <div className="flex flex-col gap-4">
         {content.map((item, i) => (
           <div key={i} className="flex flex-col gap-2">

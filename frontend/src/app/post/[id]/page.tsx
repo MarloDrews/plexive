@@ -3,10 +3,11 @@
 import { use, useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { FORMAT_STYLES } from "@/app/components/PostCard"
-import type { Post } from "@/types/post"
+import { formatStyle } from "@/lib/formats"
+import { fcStr, type Post } from "@/types/post"
 import SectionRenderer from "@/components/SectionRenderer"
 import CommentsSection, { type Comment } from "@/app/components/CommentsSection"
+import VerifiedBadge from "@/components/VerifiedBadge"
 import Toast from "@/app/components/Toast"
 import { useAuth } from "@/app/lib/auth"
 import { apiFetch } from "@/app/lib/api"
@@ -14,14 +15,13 @@ import { queueEvent, hasPendingLike, cancelPendingLike } from "@/app/lib/eventQu
 import { savePost, unsavePost, isPostSaved } from "@/app/lib/savedPosts"
 import { likePost, unlikePost, isPostLiked, getCachedLikeCount, setCachedLikeCount, isLikeSent, markLikeSent, unmarkLikeSent } from "@/app/lib/likedPosts"
 
-type Format = keyof typeof FORMAT_STYLES
-
 export default function PostDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
   const router = useRouter()
   const { user } = useAuth()
 
   const [post, setPost] = useState<Post | null>(null)
+  const [notFound, setNotFound] = useState(false)
   const [closing, setClosing] = useState(false)
   const [comments, setComments] = useState<Comment[]>([])
   const [deletingId, setDeletingId] = useState<number | null>(null)
@@ -44,13 +44,17 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
     apiFetch(`/api/posts/${id}`)
       .then((r) => (r.ok ? r.json() : null))
       .then((data: Post | null) => {
-        if (!data) return
+        if (!data) {
+          setNotFound(true)
+          return
+        }
         setPost(data)
         setSaved(isPostSaved(data.id))
         if (!likeInteractedRef.current) {
           setLikesCount(getCachedLikeCount(data.id) ?? data.like_count)
         }
       })
+      .catch(() => setNotFound(true))
     apiFetch(`/api/posts/${id}/comments`)
       .then((r) => r.json())
       .then(setComments)
@@ -136,8 +140,6 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
     } else {
       unsavePost(post.id)
     }
-    // suppress unused var warning
-    void animatingSave
   }
 
   async function handleDelete(commentId: number) {
@@ -180,7 +182,7 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
     const url = window.location.origin + "/post/" + post.id
     try {
       if (navigator.share) {
-        await navigator.share({ title: post.title, text: post.feed_card?.essence ?? "", url })
+        await navigator.share({ title: post.title, text: fcStr(post.feed_card, "essence"), url })
       } else {
         await navigator.clipboard.writeText(url)
         setToastVisible(true)
@@ -191,16 +193,7 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
     }
   }
 
-  const style = post
-    ? FORMAT_STYLES[post.format as Format] ?? {
-        label: post.format.toUpperCase(),
-        dot: "bg-zinc-400",
-        text: "text-zinc-400",
-        glow: "from-zinc-400/40",
-        radial: "rgba(161,161,170,0.09)",
-        accent: "#a1a1aa",
-      }
-    : null
+  const style = post ? formatStyle(post.format) : null
 
   return (
     <div className="h-[100dvh] bg-zinc-950 flex justify-center">
@@ -262,7 +255,7 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                   <div className="flex items-center gap-2 mb-5">
                     <span className={`w-2 h-2 rounded-full shrink-0 ${style.dot}`} />
                     <span className={`text-xs font-semibold tracking-widest ${style.text}`}>
-                      {style.label}
+                      {style.badge}
                     </span>
                   </div>
 
@@ -274,30 +267,22 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                         <Link href={`/profile/${post.author_username}`} className="hover:text-zinc-300 transition-colors">
                           @{post.author_username}
                         </Link>
-                        {post.author_is_verified && (
-                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-label="Verified" className="flex-shrink-0">
-                            <circle cx="8" cy="8" r="8" fill="#60a5fa"/>
-                            <path d="M4.5 8l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                          </svg>
-                        )}
+                        {post.author_is_verified && <VerifiedBadge size={16} />}
                       </span>
                     ) : !post.is_user_content ? (
                       <>
                         <span className="text-zinc-500 text-xs">Deepscroll</span>
-                        <svg viewBox="0 0 16 16" className="w-3 h-3 text-violet-400" fill="currentColor">
-                          <circle cx="8" cy="8" r="8" />
-                          <path d="M5 8.5l2 2 4-4" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-                        </svg>
+                        <VerifiedBadge size={12} variant="official" />
                       </>
                     ) : null}
                   </div>
 
                   {/* Books cover */}
-                  {post.format === "books" && post.feed_card?.cover_url && (
+                  {post.format === "books" && fcStr(post.feed_card, "cover_url") && (
                     <div className="flex justify-center mb-5">
                       <div className="rounded-xl overflow-hidden shadow-xl w-32 h-48 bg-zinc-800">
                         <img
-                          src={post.feed_card.cover_url}
+                          src={fcStr(post.feed_card, "cover_url")}
                           alt=""
                           className="w-full h-full object-cover"
                           onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none" }}
@@ -312,9 +297,9 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                   </h1>
 
                   {/* Author (Books) */}
-                  {post.format === "books" && post.feed_card?.author && (
+                  {post.format === "books" && fcStr(post.feed_card, "author") && (
                     <p className="text-amber-400 text-sm font-medium mb-4">
-                      {post.feed_card.author}
+                      {fcStr(post.feed_card, "author")}
                     </p>
                   )}
 
@@ -335,7 +320,6 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                 <SectionRenderer
                   sections={post.sections}
                   isUserContent={post.is_user_content}
-                  format={post.format}
                 />
 
                 {/* Comments list */}
@@ -348,6 +332,14 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                   />
                 </div>
               </>
+            ) : notFound ? (
+              <div className="flex flex-col items-center justify-center h-full gap-3 px-8 text-center">
+                <p className="text-white font-semibold">Post not found</p>
+                <p className="text-zinc-500 text-sm">It may have been removed or is awaiting review.</p>
+                <button onClick={close} className="text-zinc-400 text-sm underline">
+                  Go back
+                </button>
+              </div>
             ) : (
               <div className="flex items-center justify-center h-full">
                 <span className="text-zinc-600 text-sm">Loading...</span>
@@ -356,7 +348,7 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
           </div>
 
           {/* Sticky comment bar */}
-          <div className="flex-none border-t border-zinc-800/50 bg-zinc-950/95 backdrop-blur-md">
+          <div className="flex-none border-t border-edge bg-surface-overlay backdrop-blur-md">
             <div className="flex items-center gap-2 px-3 py-2">
               <div className="flex-1 min-w-0">
                 {user ? (
@@ -424,7 +416,8 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                       strokeWidth={saved ? 0 : 2}
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      className="w-5 h-5 text-zinc-400"
+                      className={`w-5 h-5 text-zinc-400 ${animatingSave ? "heart-pop" : ""}`}
+                      onAnimationEnd={() => setAnimatingSave(false)}
                     >
                       <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
                     </svg>

@@ -1,38 +1,17 @@
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import func
 from sqlalchemy.orm import Session, selectinload
 
 from ..auth import get_current_user, get_optional_user
 from ..database import get_db
-from ..models import Comment, Event, Interest, Post
+from ..models import Interest, Post
+from ..post_counts import attach_counts, attach_counts_one
 from ..rate_limit import check_rate_limit
 from ..sanitize import sanitize_svg_text
 from ..schemas import PostCreate, PostOut
 
 router = APIRouter()
-
-
-def _attach_counts(post: Post, db: Session) -> Post:
-    """Add like_count and comment_count as plain attributes for PostOut serialization."""
-    like_count = (
-        db.query(func.count(Event.id))
-        .filter(Event.post_id == post.id, Event.event_type == "like")
-        .scalar()
-    ) or 0
-    comment_count = (
-        db.query(func.count(Comment.id))
-        .filter(Comment.post_id == post.id)
-        .scalar()
-    ) or 0
-    post.like_count = like_count
-    post.comment_count = comment_count
-    return post
-
-
-def _attach_counts_many(posts: list[Post], db: Session) -> list[Post]:
-    return [_attach_counts(p, db) for p in posts]
 
 
 def _sanitize_sections_svgs(sections: list) -> list:
@@ -72,7 +51,7 @@ def get_my_posts(
         .order_by(Post.created_at.desc())
         .all()
     )
-    return _attach_counts_many(posts, db)
+    return attach_counts(posts, db)
 
 
 @router.post("/posts", response_model=PostOut, status_code=201)
@@ -119,7 +98,7 @@ def create_post(
         .filter(Post.id == post_id)
         .first()
     )
-    return _attach_counts(post, db)
+    return attach_counts_one(post, db)
 
 
 @router.get("/posts/{post_id}", response_model=PostOut)
@@ -141,4 +120,4 @@ def get_post(
         if current_user is None or post.author_id != current_user.id:
             raise HTTPException(status_code=404, detail="Post not found")
 
-    return _attach_counts(post, db)
+    return attach_counts_one(post, db)

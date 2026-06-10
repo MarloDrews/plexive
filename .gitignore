@@ -16,6 +16,9 @@ node_modules/
 # User uploads (never commit user files)
 user_uploads/
 
+# Logs
+*.log
+
 # OS / Editor
 .DS_Store
 .vscode/

@@ -181,6 +181,19 @@ export interface FactsFeedCard {
   post_difficulty: 1 | 2 | 3
 }
 
+// feed_card is format-specific JSON, so fields arrive as unknown.
+// This accessor narrows a field to string for display without unsafe casts.
+export function fcStr(fc: Record<string, unknown> | undefined, key: string): string {
+  const v = fc?.[key]
+  return typeof v === "string" ? v : ""
+}
+
+// Same narrowing for numeric fields; 0 means absent (no field uses 0 as a real value).
+export function fcNum(fc: Record<string, unknown> | undefined, key: string): number {
+  const v = fc?.[key]
+  return typeof v === "number" ? v : 0
+}
+
 export interface Post {
   id: number
   format: string

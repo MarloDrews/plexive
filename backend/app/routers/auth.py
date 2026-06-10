@@ -170,6 +170,9 @@ def delete_me(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Current password is incorrect.",
         )
-    db.delete(current_user)
+    # Soft delete: a hard DELETE would orphan comments/posts/events/follows
+    # (SQLite does not enforce the FKs here) and crash endpoints that join on
+    # the user. All auth and lookup paths already filter on is_active.
+    current_user.is_active = False
     db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)

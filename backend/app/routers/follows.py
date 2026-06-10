@@ -7,7 +7,6 @@ from sqlalchemy.orm import Session
 from ..auth import get_current_user, get_optional_user
 from ..database import get_db
 from ..models import Follow, Post, User
-from ..schemas import PostOut
 
 router = APIRouter(prefix="/users", tags=["follows"])
 
@@ -18,14 +17,6 @@ class FollowUserOut(BaseModel):
     username: str
     is_verified: bool
     is_private: bool
-
-
-class FollowRequestOut(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    username: str
-    is_verified: bool
-    created_at: str
 
 
 class ProfileOut(BaseModel):

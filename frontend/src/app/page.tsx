@@ -5,20 +5,30 @@ import { useRouter } from "next/navigation"
 import PostCard from "@/app/components/PostCard"
 import BottomNav from "@/app/components/BottomNav"
 import EmptyState from "@/components/EmptyState"
+import Spinner from "@/components/Spinner"
 import type { Post } from "@/types/post"
+import { FORMAT_IDS, FORMAT_STYLES, type FormatId } from "@/lib/formats"
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
-const TABS = [
-  { id: "for-you",   label: "For You",  format: null,        accent: "#ffffff", indicator: "bg-white",       rgb: [255, 255, 255] },
-  { id: "books",     label: "Books",    format: "books",     accent: "#fbbf24", indicator: "bg-amber-400",   rgb: [251, 191,  36] },
-  { id: "facts",     label: "Facts",    format: "facts",     accent: "#22d3ee", indicator: "bg-cyan-400",    rgb: [ 34, 211, 238] },
-  { id: "people",    label: "People",   format: "people",    accent: "#fb7185", indicator: "bg-rose-400",    rgb: [251, 113, 133] },
-  { id: "concepts",  label: "Ideas",    format: "concepts",  accent: "#a78bfa", indicator: "bg-violet-400",  rgb: [167, 139, 250] },
-  { id: "questions", label: "Q&A",      format: "questions", accent: "#34d399", indicator: "bg-emerald-400", rgb: [ 52, 211, 153] },
-  { id: "stories",   label: "Stories",  format: "stories",   accent: "#fb923c", indicator: "bg-orange-400",  rgb: [251, 146,  60] },
-  { id: "academy",   label: "Academy",  format: "academy",   accent: "#818cf8", indicator: "bg-indigo-400",  rgb: [129, 140, 248] },
-] as const
+interface FeedTab {
+  id: string
+  label: string
+  format: FormatId | null
+  accent: string
+  rgb: readonly [number, number, number]
+}
+
+const TABS: FeedTab[] = [
+  { id: "for-you", label: "For You", format: null, accent: "#ffffff", rgb: [255, 255, 255] },
+  ...FORMAT_IDS.map((id) => ({
+    id,
+    label: FORMAT_STYLES[id].label,
+    format: id,
+    accent: FORMAT_STYLES[id].accent,
+    rgb: FORMAT_STYLES[id].rgb,
+  })),
+]
 
 const HALF_IND = 8 // half of w-4 (16px indicator width)
 
@@ -67,7 +77,7 @@ function TabPage({
         <div className="h-full bg-zinc-950" />
       ) : posts === null ? (
         <div className="h-full flex items-center justify-center bg-zinc-950">
-          <div className="w-6 h-6 border-2 border-zinc-700 border-t-white rounded-full animate-spin" />
+          <Spinner />
         </div>
       ) : posts.length === 0 && tab.format ? (
         <div className="h-full flex items-center justify-center bg-zinc-950">
@@ -167,6 +177,7 @@ export default function Home() {
     }
 
     function onSettled() {
+      if (!el) return
       // Restore a brief transition so the final snap feels smooth
       if (indicatorRef.current) {
         indicatorRef.current.style.transition =
@@ -193,16 +204,18 @@ export default function Home() {
       }
     }
 
-    // Fallback: 50ms debounce for older browsers
+    // Fallback: 50ms debounce for older browsers.
+    // Cast needed: lib.dom assumes scrollend always exists, narrowing el to never here.
+    const legacyEl = el as HTMLDivElement
     let timer: ReturnType<typeof setTimeout>
     function onScroll() {
       clearTimeout(timer)
       timer = setTimeout(onSettled, 50)
     }
-    el.addEventListener("scroll", onScroll, { passive: true })
+    legacyEl.addEventListener("scroll", onScroll, { passive: true })
     return () => {
-      el.removeEventListener("scroll", updateIndicator)
-      el.removeEventListener("scroll", onScroll)
+      legacyEl.removeEventListener("scroll", updateIndicator)
+      legacyEl.removeEventListener("scroll", onScroll)
       clearTimeout(timer)
     }
   }, [])

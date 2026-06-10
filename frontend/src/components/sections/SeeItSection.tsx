@@ -1,27 +1,16 @@
+import SectionLabel from "../SectionLabel"
 import type { SeeItContent } from "../../types/post"
+import SvgBlock from "../SvgBlock"
 
 interface Props {
   content: SeeItContent
   isUserContent: boolean
 }
 
-function SvgBlock({ svg, isUserContent }: { svg: string; isUserContent: boolean }) {
-  if (isUserContent) {
-    return <img src={`data:image/svg+xml;base64,${btoa(svg)}`} alt="" className="w-full" />
-  }
-  return (
-    <div
-      className="w-full"
-      style={{ color: "#e4e4e7" }}
-      dangerouslySetInnerHTML={{ __html: svg }}
-    />
-  )
-}
-
 export default function SeeItSection({ content, isUserContent }: Props) {
   return (
     <div className="px-5 py-6 flex flex-col gap-3">
-      <p className="text-xs font-semibold tracking-widest text-zinc-500 uppercase">See It</p>
+      <SectionLabel>See It</SectionLabel>
       {content.visual_svg && (
         <div className="w-full max-w-[360px] mx-auto bg-transparent">
           <SvgBlock svg={content.visual_svg} isUserContent={isUserContent} />

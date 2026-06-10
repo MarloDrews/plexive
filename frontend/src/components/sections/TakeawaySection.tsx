@@ -1,25 +1,9 @@
 import type { TakeawayContent } from "../../types/post"
+import SvgBlock from "../SvgBlock"
 
 interface Props {
   content: TakeawayContent
   isUserContent: boolean
-}
-
-function SvgBlock({ svg, isUserContent }: { svg: string; isUserContent: boolean }) {
-  if (isUserContent) {
-    return (
-      <div className="max-w-[360px] mx-auto bg-transparent mt-4">
-        <img src={`data:image/svg+xml;base64,${btoa(svg)}`} alt="" className="w-full" />
-      </div>
-    )
-  }
-  return (
-    <div
-      className="max-w-[360px] mx-auto bg-transparent mt-4"
-      style={{ color: "inherit" }}
-      dangerouslySetInnerHTML={{ __html: svg }}
-    />
-  )
 }
 
 export default function TakeawaySection({ content, isUserContent }: Props) {
@@ -29,7 +13,7 @@ export default function TakeawaySection({ content, isUserContent }: Props) {
         <div className="bg-amber-400/10 border border-amber-400/40 rounded-xl px-5 py-5">
           <p className="text-base text-amber-100 leading-relaxed font-medium">{content.body}</p>
           {content.visual_svg && (
-            <SvgBlock svg={content.visual_svg} isUserContent={isUserContent} />
+            <SvgBlock svg={content.visual_svg} isUserContent={isUserContent} className="max-w-[360px] mx-auto mt-4" color="inherit" />
           )}
         </div>
       </div>
@@ -42,7 +26,7 @@ export default function TakeawaySection({ content, isUserContent }: Props) {
         {content.body}
       </p>
       {content.visual_svg && (
-        <SvgBlock svg={content.visual_svg} isUserContent={isUserContent} />
+        <SvgBlock svg={content.visual_svg} isUserContent={isUserContent} className="max-w-[360px] mx-auto mt-4" color="inherit" />
       )}
     </div>
   )

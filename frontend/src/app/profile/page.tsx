@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { useAuth } from "@/app/lib/auth"
 import { apiFetch } from "@/app/lib/api"
 import BottomNav from "@/app/components/BottomNav"
+import VerifiedBadge from "@/components/VerifiedBadge"
 
 export default function ProfilePage() {
   const { user, loading, logout, updateUser } = useAuth()
@@ -193,7 +194,7 @@ export default function ProfilePage() {
   const initial = user.username.charAt(0).toUpperCase()
 
   const inputClass =
-    "w-full bg-zinc-800 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 px-4 py-3 text-sm focus:outline-none focus:border-zinc-500 transition-colors"
+    "w-full bg-surface-2 border border-edge-strong rounded-field text-white placeholder-zinc-500 px-4 py-3 text-sm focus:outline-none focus:border-zinc-500 transition-colors"
   const submitClass =
     "w-full bg-white text-zinc-950 font-semibold py-3 rounded-xl text-sm disabled:opacity-50 transition-opacity"
 
@@ -220,12 +221,7 @@ export default function ProfilePage() {
           </div>
           <p className="flex items-center gap-1.5 text-white text-xl font-semibold">
             @{user.username}
-            {user.is_verified && (
-              <svg width="20" height="20" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Verified" className="flex-shrink-0">
-                <circle cx="8" cy="8" r="8" fill="#60a5fa"/>
-                <path d="M4.5 8l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            )}
+            {user.is_verified && <VerifiedBadge size={20} />}
           </p>
           <p className="text-zinc-500 text-sm mt-1">{user.email}</p>
           <button onClick={() => router.push("/my-posts")} className="text-zinc-400 text-sm mt-2">
@@ -245,7 +241,7 @@ export default function ProfilePage() {
             maxLength={160}
             rows={3}
             placeholder="Tell people about yourself..."
-            className="w-full bg-zinc-800 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 px-4 py-3 text-sm focus:outline-none focus:border-zinc-500 transition-colors resize-none"
+            className="w-full bg-surface-2 border border-edge-strong rounded-field text-white placeholder-zinc-500 px-4 py-3 text-sm focus:outline-none focus:border-zinc-500 transition-colors resize-none"
           />
           <div className="flex items-center justify-between mt-1">
             <span className="text-zinc-600 text-xs">{bio.length}/160</span>
@@ -262,7 +258,7 @@ export default function ProfilePage() {
 
         {/* Follow Requests (private accounts only) */}
         {user.is_private && (
-          <div className="mx-6 mb-4 bg-zinc-900/50 rounded-2xl overflow-hidden">
+          <div className="mx-6 mb-4 bg-surface-1 rounded-card overflow-hidden">
             <button
               onClick={() => setShowRequests((v) => !v)}
               className="w-full px-5 py-4 flex items-center justify-between text-left"
@@ -289,12 +285,7 @@ export default function ProfilePage() {
                     <div key={req.username} className="flex items-center justify-between gap-3">
                       <div className="flex items-center gap-1.5">
                         <span className="text-white text-sm font-medium">@{req.username}</span>
-                        {req.is_verified && (
-                          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-label="Verified">
-                            <circle cx="8" cy="8" r="8" fill="#60a5fa"/>
-                            <path d="M4.5 8l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                          </svg>
-                        )}
+                        {req.is_verified && <VerifiedBadge size={14} />}
                       </div>
                       <div className="flex gap-2">
                         <button
@@ -321,10 +312,10 @@ export default function ProfilePage() {
         )}
 
         {/* Settings card */}
-        <div className="mx-6 mb-8 bg-zinc-900/50 rounded-2xl overflow-hidden">
+        <div className="mx-6 mb-8 bg-surface-1 rounded-card overflow-hidden">
 
           {/* Private Account toggle */}
-          <div className="border-b border-zinc-800/60">
+          <div className="border-b border-edge">
             <div className="px-5 py-4 flex items-center justify-between">
               <div>
                 <p className="text-white text-sm">Private account</p>
@@ -346,7 +337,7 @@ export default function ProfilePage() {
           </div>
 
           {/* Change username */}
-          <div className="border-b border-zinc-800/60">
+          <div className="border-b border-edge">
             <button
               onClick={() => togglePanel("username")}
               className="w-full px-5 py-4 flex items-center justify-between text-left"
@@ -377,7 +368,7 @@ export default function ProfilePage() {
           </div>
 
           {/* Change password */}
-          <div className="border-b border-zinc-800/60">
+          <div className="border-b border-edge">
             <button
               onClick={() => togglePanel("password")}
               className="w-full px-5 py-4 flex items-center justify-between text-left"
@@ -417,7 +408,7 @@ export default function ProfilePage() {
           </div>
 
           {/* Sign out */}
-          <div className="border-b border-zinc-800/60">
+          <div className="border-b border-edge">
             <button
               onClick={() => { logout(); router.replace("/") }}
               className="w-full px-5 py-4 text-left text-red-400 text-sm"

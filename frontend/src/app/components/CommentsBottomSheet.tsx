@@ -4,28 +4,17 @@ import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { useAuth } from "../lib/auth"
 import { apiFetch } from "../lib/api"
+import { relativeTime } from "../lib/relativeTime"
 import { type Comment } from "./CommentsSection"
-
-function relativeTime(iso: string): string {
-  const date = new Date(iso.endsWith("Z") ? iso : iso + "Z")
-  const diff = Date.now() - date.getTime()
-  const seconds = Math.floor(diff / 1000)
-  if (seconds < 60) return "just now"
-  const minutes = Math.floor(seconds / 60)
-  if (minutes < 60) return `${minutes}m ago`
-  const hours = Math.floor(minutes / 60)
-  if (hours < 24) return `${hours}h ago`
-  const days = Math.floor(hours / 24)
-  if (days < 7) return `${days}d ago`
-  return date.toLocaleDateString(undefined, { month: "short", day: "numeric" })
-}
 
 interface Props {
   postId: number
   onClose: () => void
+  // Lets the parent card keep its comment counter in sync.
+  onCountChange?: (count: number) => void
 }
 
-export default function CommentsBottomSheet({ postId, onClose }: Props) {
+export default function CommentsBottomSheet({ postId, onClose, onCountChange }: Props) {
   const { user } = useAuth()
   const [comments, setComments] = useState<Comment[]>([])
   const [deletingId, setDeletingId] = useState<number | null>(null)
@@ -34,13 +23,23 @@ export default function CommentsBottomSheet({ postId, onClose }: Props) {
 
   const dragRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  // Avoid reporting the pre-fetch empty list as a count of 0.
+  const loadedRef = useRef(false)
 
   useEffect(() => {
     apiFetch(`/api/posts/${postId}/comments`)
       .then((r) => r.json())
-      .then(setComments)
+      .then((data: Comment[]) => {
+        loadedRef.current = true
+        setComments(data)
+      })
       .catch(() => {})
   }, [postId])
+
+  useEffect(() => {
+    if (loadedRef.current) onCountChange?.(comments.length)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [comments.length])
 
   // Drag-to-close on the handle zone only (avoids conflict with comment list scroll)
   useEffect(() => {

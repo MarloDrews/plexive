@@ -5,10 +5,12 @@ import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import { useAuth } from "@/app/lib/auth"
 import { apiFetch } from "@/app/lib/api"
-import { FORMAT_STYLES } from "@/app/components/PostCard"
 import { getSavedPostIds } from "@/app/lib/savedPosts"
 import { getLikedPostIds } from "@/app/lib/likedPosts"
 import BottomNav from "@/app/components/BottomNav"
+import VerifiedBadge from "@/components/VerifiedBadge"
+import PostRow from "@/components/PostRow"
+import Spinner from "@/components/Spinner"
 
 interface ProfileData {
   username: string
@@ -117,7 +119,7 @@ export default function PublicProfilePage() {
     return (
       <div className="h-[100dvh] bg-zinc-950 flex justify-center">
         <div className="w-full max-w-[430px] flex items-center justify-center">
-          <div className="w-6 h-6 border-2 border-zinc-700 border-t-white rounded-full animate-spin" />
+          <Spinner />
         </div>
       </div>
     )
@@ -173,12 +175,7 @@ export default function PublicProfilePage() {
           {/* Username + verified */}
           <div className="flex items-center gap-1.5 mb-0.5">
             <span className="text-white text-xl font-bold">{username}</span>
-            {profile.is_verified && (
-              <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Verified">
-                <circle cx="8" cy="8" r="8" fill="#60a5fa"/>
-                <path d="M4.5 8l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            )}
+            {profile.is_verified && <VerifiedBadge size={18} />}
           </div>
 
           {/* Private label */}
@@ -271,38 +268,28 @@ export default function PublicProfilePage() {
   )
 }
 
-function PostsTab({ posts }: { posts: Post[] | null }) {
-  const router = useRouter()
+function PostList({ posts, emptyMessage }: { posts: Post[] | null; emptyMessage: string }) {
   if (posts === null) {
     return (
       <div className="flex justify-center pt-8">
-        <div className="w-6 h-6 border-2 border-zinc-700 border-t-white rounded-full animate-spin" />
+        <Spinner />
       </div>
     )
   }
   if (posts.length === 0) {
-    return <p className="text-zinc-400 text-sm text-center pt-8">No posts yet.</p>
+    return <p className="text-zinc-400 text-sm text-center pt-8">{emptyMessage}</p>
   }
   return (
     <div className="flex flex-col gap-2">
-      {posts.map((post) => {
-        const style = FORMAT_STYLES[post.format as keyof typeof FORMAT_STYLES]
-        return (
-          <button
-            key={post.id}
-            onClick={() => router.push(`/post/${post.id}`)}
-            className="w-full text-left bg-zinc-900/60 rounded-2xl px-4 py-3 flex items-start gap-3"
-          >
-            <span className={`w-2 h-2 rounded-full mt-2 shrink-0 ${style?.dot ?? "bg-zinc-500"}`} />
-            <div className="flex-1 min-w-0">
-              {style && <span className={`text-xs font-medium ${style.text}`}>{style.label}</span>}
-              <p className="text-white font-semibold text-sm mt-0.5 line-clamp-2">{post.title}</p>
-            </div>
-          </button>
-        )
-      })}
+      {posts.map((post) => (
+        <PostRow key={post.id} post={post} />
+      ))}
     </div>
   )
+}
+
+function PostsTab({ posts }: { posts: Post[] | null }) {
+  return <PostList posts={posts} emptyMessage="No posts yet." />
 }
 
 function PrivateTabContent({
@@ -318,42 +305,11 @@ function PrivateTabContent({
   lockedMessage: string
   privateMessage: string
 }) {
-  const router = useRouter()
-
   if (!canSee) {
     return <p className="text-zinc-400 text-sm text-center pt-8">{lockedMessage}</p>
   }
   if (!isOwnProfile) {
     return <p className="text-zinc-400 text-sm text-center pt-8">{privateMessage}</p>
   }
-  if (posts === null) {
-    return (
-      <div className="flex justify-center pt-8">
-        <div className="w-6 h-6 border-2 border-zinc-700 border-t-white rounded-full animate-spin" />
-      </div>
-    )
-  }
-  if (posts.length === 0) {
-    return <p className="text-zinc-400 text-sm text-center pt-8">Nothing here yet.</p>
-  }
-  return (
-    <div className="flex flex-col gap-2">
-      {posts.map((post) => {
-        const style = FORMAT_STYLES[post.format as keyof typeof FORMAT_STYLES]
-        return (
-          <button
-            key={post.id}
-            onClick={() => router.push(`/post/${post.id}`)}
-            className="w-full text-left bg-zinc-900/60 rounded-2xl px-4 py-3 flex items-start gap-3"
-          >
-            <span className={`w-2 h-2 rounded-full mt-2 shrink-0 ${style?.dot ?? "bg-zinc-500"}`} />
-            <div className="flex-1 min-w-0">
-              {style && <span className={`text-xs font-medium ${style.text}`}>{style.label}</span>}
-              <p className="text-white font-semibold text-sm mt-0.5 line-clamp-2">{post.title}</p>
-            </div>
-          </button>
-        )
-      })}
-    </div>
-  )
+  return <PostList posts={posts} emptyMessage="Nothing here yet." />
 }

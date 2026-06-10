@@ -38,7 +38,7 @@ export default function LoginPage() {
   return (
     <div className="h-[100dvh] bg-zinc-950 flex justify-center">
       <div className="w-full max-w-[430px] h-[100dvh] flex flex-col items-center justify-center px-6">
-        <div className="w-full bg-zinc-900/50 rounded-2xl px-6 py-8">
+        <div className="w-full bg-surface-1 rounded-card px-6 py-8">
           <h1 className="text-white text-xl font-semibold mb-1">Sign in</h1>
           <p className="text-zinc-500 text-sm mb-6">Welcome back to Deepscroll</p>
 
@@ -50,7 +50,7 @@ export default function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               autoComplete="off"
               required
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 px-4 py-3 text-sm focus:outline-none focus:border-zinc-500 transition-colors"
+              className="w-full bg-surface-2 border border-edge-strong rounded-field text-white placeholder-zinc-500 px-4 py-3 text-sm focus:outline-none focus:border-zinc-500 transition-colors"
             />
             <input
               type="password"
@@ -59,7 +59,7 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               autoComplete="off"
               required
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 px-4 py-3 text-sm focus:outline-none focus:border-zinc-500 transition-colors"
+              className="w-full bg-surface-2 border border-edge-strong rounded-field text-white placeholder-zinc-500 px-4 py-3 text-sm focus:outline-none focus:border-zinc-500 transition-colors"
             />
             {error && <p className="text-red-400 text-sm">{error}</p>}
             <button
