@@ -430,6 +430,7 @@ attributes. Never use `dangerouslySetInnerHTML` to render comment text.
 - Stats page, verification system, saved posts
 - Real-time chat: DMs + group chats over WebSocket (see CHAT / WEBSOCKET DESIGN), conversation list + chat view, chat in bottom nav (search moved top-right)
 - Security hardening pass (June 2026, see SECURITY_REVIEW.md)
+- "Lamplight" visual redesign (June 2026, see docs/DESIGN.md): warm dark token system in globals.css drives every screen; Newsreader serif + Source Sans 3 + Geist Mono type system; muted book-spine format inks; per-post --accent CSS variable replaces hardcoded section colors; seed SVGs re-paletted at render time in SvgBlock (content JSON untouched); shared component vocabulary (.card/.btn/.field/.chip/.label-caps)
 
 **Next**
 - Content for academy format
