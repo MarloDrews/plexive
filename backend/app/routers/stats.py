@@ -272,27 +272,27 @@ def get_global_stats(db: Session = Depends(get_db)):
     ]
 
     # --- Post quality over time ---
-    months = _last_n_months(12)
-    post_quality_over_time = []
-    for month in months:
-        m_posts = (
-            db.query(func.count(Post.id))
-            .filter(_month(Post.created_at) == month)
-            .scalar() or 0
+    # One query: likes grouped by the creation month of the liked post
+    _likes_by_post_month = {
+        r.period: r.cnt
+        for r in db.query(
+            _month(Post.created_at).label("period"),
+            func.count(Event.id).label("cnt"),
         )
-        m_likes = (
-            db.query(func.count(Event.id))
-            .join(Post, Post.id == Event.post_id)
-            .filter(
-                Event.event_type == "like",
-                _month(Post.created_at) == month,
-            )
-            .scalar() or 0
-        )
-        post_quality_over_time.append({
-            "period": month,
-            "avg_likes_per_post": round(m_likes / m_posts, 2) if m_posts > 0 else 0.0,
-        })
+        .join(Event, and_(Event.post_id == Post.id, Event.event_type == "like"))
+        .group_by(_month(Post.created_at))
+        .all()
+    }
+    # posts_over_time already has the post counts for the last 12 months
+    post_quality_over_time = [
+        {
+            "period": entry["period"],
+            "avg_likes_per_post": round(
+                _likes_by_post_month.get(entry["period"], 0) / entry["count"], 2
+            ) if entry["count"] > 0 else 0.0,
+        }
+        for entry in posts_over_time
+    ]
 
     # --- Pending vs published ---
     published_count = (

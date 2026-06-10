@@ -16,7 +16,6 @@ import Link from "next/link"
 import { useAuth } from "../lib/auth"
 import { apiFetch } from "../lib/api"
 import { getSavedPostIds } from "../lib/savedPosts"
-import { getLikedPostIds } from "../lib/likedPosts"
 import BottomNav from "../components/BottomNav"
 import { FORMAT_IDS, FORMAT_STYLES } from "@/lib/formats"
 
@@ -1462,11 +1461,9 @@ function GlobalTab({ data }: { data: GlobalStats }) {
 function MyStatsTab({
   data,
   savedCount,
-  likedByFormat,
 }: {
   data: MyStats
   savedCount: number
-  likedByFormat: { format: string; count: number }[]
 }) {
   const { overview } = data
 
@@ -1945,7 +1942,7 @@ function MyStatsTab({
   // 16. Likes given by format
   const likedByFormatFull = FORMATS.map(f => ({
     format: f,
-    count: likedByFormat.find(d => d.format === f)?.count ?? 0,
+    count: data.my_likes_given_by_format.find(d => d.format === f)?.count ?? 0,
   }))
   const likedByFormatHasData = likedByFormatFull.some(d => d.count > 0)
 
@@ -2179,7 +2176,6 @@ export default function StatsPage() {
   const [globalLoading, setGlobalLoading] = useState(true)
   const [myLoading, setMyLoading] = useState(false)
   const [savedCount, setSavedCount] = useState(0)
-  const [likedByFormat, setLikedByFormat] = useState<{ format: string; count: number }[]>([])
 
   // Fetch global stats on mount
   useEffect(() => {
@@ -2199,22 +2195,10 @@ export default function StatsPage() {
       .finally(() => setMyLoading(false))
   }, [activeTab, user, myData])
 
-  // Read localStorage counts client-side
+  // Read localStorage saved count client-side
   useEffect(() => {
     if (activeTab !== "my" || !user) return
     setSavedCount(getSavedPostIds().length)
-    // Compute liked-by-format: fetch each liked post
-    const ids = getLikedPostIds()
-    if (ids.length === 0) return
-    Promise.all(ids.map(id => apiFetch(`/api/posts/${id}`).then(r => r.ok ? r.json() : null)))
-      .then(posts => {
-        const counts: Record<string, number> = {}
-        for (const post of posts) {
-          if (!post?.format) continue
-          counts[post.format] = (counts[post.format] ?? 0) + 1
-        }
-        setLikedByFormat(Object.entries(counts).map(([format, count]) => ({ format, count })))
-      })
   }, [activeTab, user])
 
   const tabs: { key: "global" | "my"; label: string }[] = [
@@ -2278,7 +2262,7 @@ export default function StatsPage() {
               Loading stats...
             </div>
           ) : myData ? (
-            <MyStatsTab data={myData} savedCount={savedCount} likedByFormat={likedByFormat} />
+            <MyStatsTab data={myData} savedCount={savedCount} />
           ) : (
             <div className="flex items-center justify-center h-40 text-ink-muted text-sm">
               Could not load personal stats.
