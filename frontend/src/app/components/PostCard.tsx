@@ -245,9 +245,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
             {style.badge}
           </span>
         </div>
-        {post.format === "books" && fcNum(fc, "post_reading_time_min") ? (
-          <span className="text-ink-muted text-xs font-mono">{fcNum(fc, "post_reading_time_min")} min read</span>
-        ) : null}
+        {null}
       </div>
 
       {/* Card body — centered vertically */}
@@ -291,6 +289,9 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
               {/* Metadata bar */}
               <div className="flex items-center gap-3 pt-2 border-t border-edge">
                 <DotScale value={fc.post_difficulty as 1 | 2 | 3} />
+                {fcNum(fc, "post_reading_time_min") > 0 && (
+                  <span className="text-ink-muted text-xs font-mono">{fcNum(fc, "post_reading_time_min")} min read</span>
+                )}
                 <span className="text-ink-muted text-xs font-mono">{fc.year as number}</span>
                 <span className="text-ink-faint text-xs">·</span>
                 <span className="text-ink-muted text-xs">{fc.genre as string}</span>
@@ -434,8 +435,39 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
                 )}
               </div>
             </div>
+          ) : post.format === "academy" && fc ? (
+            <div className="card border-l-2 border-l-(--accent) px-5 py-5 flex flex-col gap-3">
+              {fcStr(fc, "field") && (
+                <p className="label-caps text-(--accent)">{fcStr(fc, "field")}</p>
+              )}
+              <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
+                {fcStr(fc, "title") || post.title}
+              </h2>
+              {(fcStr(fc, "authors_compact") || fcStr(fc, "venue")) && (
+                <p className="text-xs text-ink-muted font-mono">
+                  {[fcStr(fc, "authors_compact"), fcStr(fc, "venue")].filter(Boolean).join(" · ")}
+                </p>
+              )}
+              {fcStr(fc, "key_finding_one_line") && (
+                <p className="font-serif italic text-[15px] text-ink-body leading-relaxed">
+                  {fcStr(fc, "key_finding_one_line")}
+                </p>
+              )}
+              {Array.isArray(fc.teasers) && (fc.teasers as string[]).length > 0 && (
+                <Teasers items={fc.teasers as string[]} />
+              )}
+              <div className="flex items-center gap-3 pt-2 border-t border-edge">
+                <DotScale value={fc.post_difficulty as 1 | 2 | 3} />
+                {fcNum(fc, "post_reading_time_min") > 0 && (
+                  <span className="text-ink-muted text-xs font-mono">{fcNum(fc, "post_reading_time_min")} min read</span>
+                )}
+                {(fc.published_year as number) > 0 && (
+                  <span className="text-ink-muted text-xs font-mono">{fc.published_year as number}</span>
+                )}
+              </div>
+            </div>
           ) : (
-            /* Fallback for other formats */
+            /* Fallback for unknown formats */
             <div className="card border-l-2 border-l-(--accent) px-5 py-6 flex flex-col gap-3">
               <h2 className="font-serif text-3xl font-medium tracking-tight text-ink leading-snug">
                 {post.title}
