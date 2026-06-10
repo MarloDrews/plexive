@@ -72,7 +72,7 @@ export default function BottomNav({ activeTab }: { activeTab: ActiveTab }) {
 
         {/* Profile */}
         <button
-          onClick={() => router.push(user ? "/profile" : "/login")}
+          onClick={() => router.push(user ? `/profile/${user.username}` : "/login")}
           className={`flex-1 flex items-center justify-center h-full cursor-pointer transition-colors duration-150 ${icon("profile")}`}
           aria-label="Profile"
         >

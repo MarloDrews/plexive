@@ -391,7 +391,7 @@ attributes. Never use `dangerouslySetInnerHTML` to render comment text.
 | sections/LegacySection.tsx | People: "Legacy" heading + body prose + optional present_day_impact in rose-400/10 callout box |
 | sections/TheirWorldSection.tsx | People: "The World They Lived In" heading + secondary prose |
 | EmptyState.tsx         | format-aware inline SVG icon + "coming soon" message; used by format tabs when posts.length === 0 |
-| BottomNav.tsx          | fixed bottom nav: Chat / Stats / Feed (flame) / Create (plus-circle, white when logged in) / Profile; 5 buttons; active item highlighted; safe-area-inset-bottom aware |
+| BottomNav.tsx          | fixed bottom nav: Chat / Stats / Feed (flame) / Create (plus-circle, white when logged in) / Profile; 5 buttons; active item highlighted; safe-area-inset-bottom aware; Profile tab navigates to /profile/{username} (public view) when logged in, /login otherwise |
 | saved-posts/page.tsx   | bookmarked posts feed: reads IDs from localStorage, fetches each via GET /api/posts/{id}, snap-scroll PostCards; skips missing posts; empty state; BottomNav (profile active) |
 | search/page.tsx        | search input + format chips (All + 7 formats from lib/formats.ts) + compact result cards; debounced 300ms; links to post detail; shows inline verified badge next to author_username if author_is_verified; BottomNav (search active) |
 | InterestPicker.tsx     | onboarding pill grid; 10 category sections + Other; fetches own data; gates entry to feed via localStorage |
