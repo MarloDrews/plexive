@@ -32,7 +32,7 @@ function repaletteSvg(svg: string): string {
   return out
 }
 
-export default function SvgBlock({ svg, isUserContent, className = "w-full", color = "#cfc7b8" }: Props) {
+export default function SvgBlock({ svg, isUserContent, className = "w-full", color = "#c4c8e0" }: Props) {
   const themed = repaletteSvg(svg)
   if (isUserContent) {
     return (

@@ -220,7 +220,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
       onClick={handleCardClick}
       // --accent drives every format-colored detail inside the card.
       style={{ cursor: "pointer", ["--accent" as string]: style.accent }}
-      className="h-[100dvh] relative shrink-0 snap-start [scroll-snap-stop:always] flex flex-col bg-surface-0 pl-5 pr-5 pt-12 pb-8"
+      className="h-[100dvh] relative overflow-hidden shrink-0 snap-start [scroll-snap-stop:always] flex flex-col bg-surface-0 pl-5 pr-5 pt-12 pb-8"
     >
       {/* Double-tap heart overlay */}
       {showHeartAnim && (
@@ -240,8 +240,14 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
       {/* Format indicator row */}
       <div className="flex items-center justify-between relative z-10">
         <div className="flex items-center gap-2">
-          <span className={`w-2 h-2 rounded-full shrink-0 ${style.dot}`} />
-          <span className={`label-caps ${style.text}`}>
+          <span
+            className={`w-2 h-2 rounded-full shrink-0 ${style.dot}`}
+            style={{ boxShadow: `0 0 8px 3px ${style.accent}dd, 0 0 20px 6px ${style.accent}66` }}
+          />
+          <span
+            className={`label-caps ${style.text}`}
+            style={{ textShadow: `0 0 5px ${style.accent}ff, 0 0 14px ${style.accent}dd, 0 0 30px ${style.accent}77` }}
+          >
             {style.badge}
           </span>
         </div>
@@ -251,7 +257,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
       {/* Card body — centered vertically */}
       <div className="flex-1 flex flex-col justify-center relative z-10">
         <div
-          className={`transition-all duration-500 ease-out ${
+          className={`relative transition-all duration-500 ease-out ${
             visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"
           }`}
         >
@@ -477,6 +483,15 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
               )}
             </div>
           )}
+
+          {/* Author avatar — bottom-right corner of the card box */}
+          {post.author_username && (
+            <div className="absolute bottom-3 right-3 w-9 h-9 rounded-full bg-surface-2 border-2 border-edge-strong flex items-center justify-center shrink-0 overflow-hidden z-10">
+              <span className="text-sm font-semibold text-ink-dim uppercase">
+                {post.author_username[0]}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -499,7 +514,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
           <button
             onClick={(e) => { e.stopPropagation(); handleToggleLike() }}
             aria-label={liked ? "Unlike" : "Like"}
-            className={`btn-action${liked ? " btn-action-active" : ""}`}
+            className={`btn-action${liked ? " btn-action-liked" : ""}`}
           >
             <svg
               viewBox="0 0 24 24"
@@ -514,7 +529,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
             </svg>
           </button>
-          <span className={`text-xs font-mono leading-none transition-colors duration-150 ${liked ? "text-lamp" : "text-ink-dim"}`}>{likesCount}</span>
+          <span className={`text-xs font-sans leading-none transition-colors duration-150 ${liked ? "text-[#ff3a5c]" : "text-ink-dim"} ${likesCount === 0 && !liked ? "invisible" : ""}`}>{likesCount}</span>
         </div>
 
         {/* Comment */}
@@ -537,7 +552,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
             </svg>
           </button>
-          <span className="text-xs text-ink-dim font-mono leading-none">{commentsCount}</span>
+          <span className={`text-xs text-ink-dim font-sans leading-none ${commentsCount === 0 ? "invisible" : ""}`}>{commentsCount}</span>
         </div>
 
         {/* Save */}
@@ -545,7 +560,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
           <button
             onClick={handleSaveClick}
             aria-label={saved ? "Unsave" : "Save"}
-            className={`btn-action${saved ? " btn-action-active" : ""}`}
+            className={`btn-action${saved ? " btn-action-saved" : ""}`}
           >
             <svg
               viewBox="0 0 24 24"
@@ -560,7 +575,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
               <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
             </svg>
           </button>
-          <span className={`text-xs font-mono leading-none transition-colors duration-150 ${saved ? "text-lamp" : "text-ink-dim"}`}>{saveCount}</span>
+          <span className={`text-xs font-sans leading-none transition-colors duration-150 ${saved ? "text-[#f5c542]" : "text-ink-dim"} ${saveCount === 0 && !saved ? "invisible" : ""}`}>{saveCount}</span>
         </div>
 
         {/* Share */}

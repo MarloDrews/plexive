@@ -12,7 +12,6 @@ import VerifiedBadge from "@/components/VerifiedBadge"
 interface Props {
   postId: number
   onClose: () => void
-  // Lets the parent card keep its comment counter in sync.
   onCountChange?: (count: number) => void
 }
 
@@ -22,10 +21,13 @@ export default function CommentsBottomSheet({ postId, onClose, onCountChange }: 
   const [deletingId, setDeletingId] = useState<number | null>(null)
   const [draft, setDraft] = useState("")
   const [posting, setPosting] = useState(false)
+  const [expanded, setExpanded] = useState(false)
+  // Positive value = sheet dragged downward (visual feedback only)
+  const [dragDelta, setDragDelta] = useState(0)
 
   const dragRef = useRef<HTMLDivElement>(null)
+  const dragStartY = useRef(0)
   const inputRef = useRef<HTMLInputElement>(null)
-  // Avoid reporting the pre-fetch empty list as a count of 0.
   const loadedRef = useRef(false)
   const [mounted, setMounted] = useState(false)
 
@@ -46,32 +48,42 @@ export default function CommentsBottomSheet({ postId, onClose, onCountChange }: 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [comments.length])
 
-  // Drag-to-close on the handle zone only (avoids conflict with comment list scroll)
+  // Drag handle: swipe up → expand to 75 vh, swipe down → collapse or close
   useEffect(() => {
     const el = dragRef.current
     if (!el) return
 
-    let startX = 0
-    let startY = 0
-
     function onTouchStart(e: TouchEvent) {
-      startX = e.touches[0].clientX
-      startY = e.touches[0].clientY
+      dragStartY.current = e.touches[0].clientY
+    }
+
+    function onTouchMove(e: TouchEvent) {
+      const dy = e.touches[0].clientY - dragStartY.current
+      // Only provide visual feedback for downward drag
+      if (dy > 0) setDragDelta(dy)
     }
 
     function onTouchEnd(e: TouchEvent) {
-      const dx = e.changedTouches[0].clientX - startX
-      const dy = e.changedTouches[0].clientY - startY
-      if (dy > 80 && dy > Math.abs(dx)) onClose()
+      const dy = e.changedTouches[0].clientY - dragStartY.current
+      setDragDelta(0)
+
+      if (dy < -60) {
+        setExpanded(true)
+      } else if (dy > 80) {
+        if (expanded) setExpanded(false)
+        else onClose()
+      }
     }
 
     el.addEventListener("touchstart", onTouchStart, { passive: true })
+    el.addEventListener("touchmove", onTouchMove, { passive: true })
     el.addEventListener("touchend", onTouchEnd, { passive: true })
     return () => {
       el.removeEventListener("touchstart", onTouchStart)
+      el.removeEventListener("touchmove", onTouchMove)
       el.removeEventListener("touchend", onTouchEnd)
     }
-  }, [onClose])
+  }, [expanded, onClose])
 
   async function handleDelete(commentId: number) {
     if (deletingId !== null) return
@@ -110,18 +122,37 @@ export default function CommentsBottomSheet({ postId, onClose, onCountChange }: 
       {/* Backdrop */}
       <div className="absolute inset-0 bg-surface-0/70" />
 
-      {/* Sheet — stopPropagation so clicks inside don't close via backdrop handler */}
+      {/* Sheet */}
       <div
         className="absolute bottom-0 left-0 right-0 max-w-[430px] mx-auto bg-surface-1 border-t border-edge rounded-t-sheet flex flex-col"
-        style={{ maxHeight: "75vh" }}
+        style={{
+          maxHeight: expanded ? "75vh" : "50vh",
+          transform: dragDelta > 0 ? `translateY(${dragDelta}px)` : undefined,
+          transition: dragDelta > 0 ? "none" : "max-height 0.3s ease, transform 0.25s ease",
+        }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Drag handle zone */}
-        <div ref={dragRef} className="flex-none pt-3 pb-3 border-b border-edge">
+        <div ref={dragRef} className="flex-none pt-3 pb-3 border-b border-edge relative touch-none select-none">
+          {/* Pill */}
           <div className="w-10 h-1 bg-edge-strong rounded-full mx-auto mb-3" />
+
+          {/* Comment count */}
           <p className="text-sm text-ink-dim text-center">
             {comments.length === 1 ? "1 comment" : `${comments.length} comments`}
           </p>
+
+          {/* Close button */}
+          <button
+            onClick={onClose}
+            aria-label="Close comments"
+            className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-full text-ink-muted hover:text-ink hover:bg-surface-2 transition-colors"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" className="w-4 h-4">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
         </div>
 
         {/* Comment list */}
@@ -151,8 +182,7 @@ export default function CommentsBottomSheet({ postId, onClose, onCountChange }: 
           )}
         </div>
 
-        {/* Sticky input bar. Safe-area padding keeps the send button above
-            the OS home-indicator bar on real phones (same as BottomNav). */}
+        {/* Sticky input bar */}
         <div
           className="flex-none border-t border-edge bg-surface-1 px-4 py-2"
           style={{ paddingBottom: "calc(0.5rem + env(safe-area-inset-bottom))" }}

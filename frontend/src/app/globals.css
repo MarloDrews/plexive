@@ -7,12 +7,12 @@
 }
 
 /*
-  Deepscroll design tokens — "Lamplight" (see docs/DESIGN.md).
+  Deepscroll design tokens — "Circuit" palette.
 
-  A quiet library at night: warm dark paper surfaces, warm off-white ink,
-  hairline edges, matte everything. The serif (Newsreader) is the voice of
-  the content; the sans (Source Sans 3) is invisible UI chrome. Color is
-  reserved for the format inks and the lamp-gold brand accent.
+  Deep navy-black surfaces, cool near-white ink, hairline cool edges.
+  The serif (Newsreader) is the voice of the content; the sans (Source
+  Sans 3) is invisible UI chrome. Color is reserved for format inks and
+  the electric blue-violet brand accent. Gradients add depth without gloss.
 
   Semantic tokens below generate utilities (bg-surface-1, border-edge,
   text-ink-dim, text-lamp, bg-fmt-books, rounded-card, ...). Format ink
@@ -24,37 +24,39 @@
 */
 @theme {
   /* Surfaces */
-  --color-surface-0: #121110;             /* page base */
-  --color-surface-1: #1e1b17;             /* cards, panels */
-  --color-surface-2: #282420;             /* inputs, inner blocks */
-  --color-surface-3: #332e28;             /* raised elements, hover fills */
-  --color-surface-overlay: rgb(18 17 16 / 0.95); /* bars, sheets */
+  --color-surface-0: #0b0b16;             /* page base */
+  --color-surface-1: #12121f;             /* cards, panels */
+  --color-surface-2: #181829;             /* inputs, inner blocks */
+  --color-surface-3: #1f1f35;             /* raised elements, hover fills */
+  --color-surface-overlay: rgb(11 11 22 / 0.95); /* bars, sheets */
 
   /* Edges */
-  --color-edge: rgb(168 158 142 / 0.14);        /* hairline dividers */
-  --color-edge-strong: rgb(168 158 142 / 0.3);  /* inputs, outline buttons */
+  --color-edge: rgb(130 145 220 / 0.14);        /* hairline dividers */
+  --color-edge-strong: rgb(130 145 220 / 0.28); /* inputs, outline buttons */
 
   /* Ink (text) */
-  --color-ink: #efe9de;                   /* headings, primary */
-  --color-ink-body: #cfc7b8;              /* body prose */
-  --color-ink-dim: #a39b8b;               /* secondary */
-  --color-ink-muted: #7d7567;             /* labels, meta */
-  --color-ink-faint: #5b5448;             /* fine print */
+  --color-ink: #eceeff;                   /* headings, primary */
+  --color-ink-body: #c4c8e0;              /* body prose */
+  --color-ink-dim: #8890b0;               /* secondary */
+  --color-ink-muted: #5c6488;             /* labels, meta */
+  --color-ink-faint: #3c4260;             /* fine print */
 
   /* Brand + semantic */
-  --color-lamp: #d2a45a;                  /* brand accent: links, focus, active */
-  --color-good: #7da869;                  /* success, correct answers */
-  --color-bad: #c0604e;                   /* errors, wrong answers, destructive */
+  --color-lamp: #7c6fff;                  /* brand accent: links, focus, active */
+  --color-like: #ff3a5c;                  /* liked state on action buttons */
+  --color-save: #f5c542;                  /* saved state on action buttons */
+  --color-good: #6abf84;                  /* success, correct answers */
+  --color-bad: #c05870;                   /* errors, wrong answers, destructive */
 
-  /* Format inks (muted book-spine palette; hexes mirrored in lib/formats.ts) */
-  --color-fmt-books: #d2a45a;
-  --color-fmt-facts: #76ada0;
-  --color-fmt-people: #c5848f;
-  --color-fmt-concepts: #a08fc9;
-  --color-fmt-questions: #93af7c;
-  --color-fmt-stories: #c98a62;
-  --color-fmt-academy: #8398c9;
-  --color-fmt-neutral: #a59c8d;
+  /* Format inks (cool technical palette; hexes mirrored in lib/formats.ts) */
+  --color-fmt-books: #6b9eff;
+  --color-fmt-facts: #5bc8bc;
+  --color-fmt-people: #c47dcc;
+  --color-fmt-concepts: #9b8ae0;
+  --color-fmt-questions: #72bb80;
+  --color-fmt-stories: #8a88e8;
+  --color-fmt-academy: #5ba8e0;
+  --color-fmt-neutral: #7888a8;
 
   /* Radii */
   --radius-card: 0.875rem;                /* cards and panels */
@@ -76,31 +78,31 @@ body {
   font-family: var(--font-sans);
 }
 
-/* Lamp light: a barely-perceptible warm glow falling from the top of the
-   page, like a reading lamp over a desk. Painted as a fixed non-interactive
-   layer above the app so every screen inherits the same depth cue. */
+/* Atmospheric depth: a cool blue-violet glow from the top + a secondary
+   blue accent from the bottom-right. Fixed non-interactive layer so every
+   screen inherits the same spatial depth cue. */
 body::after {
   content: "";
   position: fixed;
   inset: 0;
   z-index: 9999;
   pointer-events: none;
-  background: radial-gradient(
-    120% 65% at 50% -12%,
-    rgb(239 233 222 / 0.07),
-    transparent 62%
-  );
+  background:
+    radial-gradient(120% 65% at 50% -12%, rgb(124 111 255 / 0.09), transparent 62%),
+    radial-gradient(80% 60% at 85% 105%, rgb(91 168 224 / 0.06), transparent 55%);
 }
 
-/* Barely-there paper grain on the page base; pure decoration, no events. */
+/* Subtle dot-grid pattern — technical texture, no events. */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.05;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  background-image:
+    radial-gradient(circle, rgb(130 145 220 / 0.25) 1px, transparent 1px);
+  background-size: 32px 32px;
+  opacity: 0.35;
 }
 
 /* Keyboard focus: a quiet lamp ring, never the browser default blue. */
@@ -113,17 +115,19 @@ body::before {
    See docs/DESIGN.md. Sizing stays at the call site; these own the look. */
 @layer components {
   .card {
-    background: var(--color-surface-1);
+    background: linear-gradient(
+      160deg,
+      color-mix(in srgb, var(--color-surface-1), var(--color-lamp) 4%) 0%,
+      var(--color-surface-1) 55%,
+      color-mix(in srgb, var(--color-surface-1), var(--color-surface-0) 25%) 100%
+    );
     border: 1px solid var(--color-edge);
     border-radius: var(--radius-card);
-    /* Paper-edge depth: 1px warm highlight along the top edge plus a small
-       dark drop below. Matte and directional like a sheet on a desk —
-       deliberately not a glow (see docs/DESIGN_AUDIT.md). */
     box-shadow:
-      inset 0 1px 0 rgb(239 233 222 / 0.05),
-      0 1px 2px rgb(0 0 0 / 0.5),
-      0 3px 8px rgb(0 0 0 / 0.35),
-      0 10px 28px rgb(0 0 0 / 0.3);
+      inset 0 1px 0 rgb(124 111 255 / 0.1),
+      0 1px 2px rgb(0 0 0 / 0.6),
+      0 3px 8px rgb(0 0 0 / 0.4),
+      0 10px 28px rgb(0 0 0 / 0.35);
   }
 
   .btn {
@@ -147,42 +151,42 @@ body::before {
     cursor: default;
   }
   .btn-primary {
-    border-color: rgb(168 158 142 / 0.35);
-    background: rgb(210 164 90 / 0.12);
-    color: #d2a45a;
+    border-color: rgb(124 111 255 / 0.4);
+    background: linear-gradient(135deg, rgb(124 111 255 / 0.18) 0%, rgb(91 168 224 / 0.12) 100%);
+    color: #7c6fff;
   }
   .btn-primary:hover:not(:disabled) {
-    border-color: rgb(210 164 90 / 0.6);
-    background: rgb(210 164 90 / 0.18);
+    border-color: rgb(124 111 255 / 0.65);
+    background: linear-gradient(135deg, rgb(124 111 255 / 0.26) 0%, rgb(91 168 224 / 0.18) 100%);
   }
   .btn-ghost {
-    border-color: rgb(168 158 142 / 0.25);
+    border-color: rgb(130 145 220 / 0.25);
     background: transparent;
     color: var(--color-ink-body);
   }
   .btn-ghost:hover:not(:disabled) {
-    border-color: rgb(168 158 142 / 0.45);
-    background: rgb(168 158 142 / 0.06);
+    border-color: rgb(130 145 220 / 0.45);
+    background: rgb(130 145 220 / 0.06);
   }
   .btn-quiet {
-    border-color: rgb(168 158 142 / 0.25);
+    border-color: rgb(130 145 220 / 0.25);
     background: transparent;
     color: var(--color-ink-dim);
     padding: 0.375rem 0.875rem;
     font-size: 0.8125rem;
   }
   .btn-quiet:hover:not(:disabled) {
-    border-color: rgb(168 158 142 / 0.45);
-    background: rgb(168 158 142 / 0.06);
+    border-color: rgb(130 145 220 / 0.45);
+    background: rgb(130 145 220 / 0.06);
   }
   .btn-destructive {
-    border-color: rgb(192 96 78 / 0.35);
+    border-color: rgb(192 88 112 / 0.35);
     background: transparent;
-    color: #c0604e;
+    color: #c05870;
   }
   .btn-destructive:hover:not(:disabled) {
-    border-color: rgb(192 96 78 / 0.6);
-    background: rgb(192 96 78 / 0.08);
+    border-color: rgb(192 88 112 / 0.6);
+    background: rgb(192 88 112 / 0.08);
   }
   .btn-icon {
     display: inline-flex;
@@ -192,7 +196,7 @@ body::before {
     width: 2.5rem;
     height: 2.5rem;
     border-radius: 9999px;
-    border: 1.5px solid rgb(168 158 142 / 0.25);
+    border: 1.5px solid rgb(130 145 220 / 0.25);
     background: transparent;
     color: var(--color-ink-dim);
     cursor: pointer;
@@ -200,15 +204,15 @@ body::before {
       background-color 150ms ease-out;
   }
   .btn-icon:hover:not(:disabled) {
-    border-color: rgb(168 158 142 / 0.45);
-    background: rgb(168 158 142 / 0.06);
+    border-color: rgb(130 145 220 / 0.45);
+    background: rgb(130 145 220 / 0.06);
   }
   .btn-icon:disabled {
     opacity: 0.45;
     cursor: default;
   }
   .btn-icon-active {
-    border-color: rgb(210 164 90 / 0.5);
+    border-color: rgb(124 111 255 / 0.5);
     color: var(--color-lamp);
   }
 
@@ -234,6 +238,12 @@ body::before {
   }
   .btn-action-active {
     color: var(--color-lamp);
+  }
+  .btn-action-liked {
+    color: var(--color-like);
+  }
+  .btn-action-saved {
+    color: var(--color-save);
   }
 
   .field {
@@ -271,19 +281,19 @@ body::before {
       border-color 150ms ease-out;
   }
   .chip-off {
-    border-color: rgb(168 158 142 / 0.25);
+    border-color: rgb(130 145 220 / 0.25);
     color: var(--color-ink-dim);
     background: transparent;
   }
   .chip-off:hover {
-    border-color: rgb(168 158 142 / 0.45);
-    background: rgb(168 158 142 / 0.06);
+    border-color: rgb(130 145 220 / 0.45);
+    background: rgb(130 145 220 / 0.06);
     color: var(--color-ink-body);
   }
   .chip-on {
-    border-color: rgb(210 164 90 / 0.5);
-    background: rgb(210 164 90 / 0.12);
-    color: #d2a45a;
+    border-color: rgb(124 111 255 / 0.5);
+    background: linear-gradient(135deg, rgb(124 111 255 / 0.16) 0%, rgb(91 168 224 / 0.10) 100%);
+    color: #7c6fff;
   }
 
   .label-caps {

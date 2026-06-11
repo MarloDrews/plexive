@@ -24,8 +24,8 @@ interface FeedTab {
 
 const TABS: FeedTab[] = [
   // Non-format tabs use the primary ink color (--color-ink).
-  { id: "for-you", label: "For You", format: null, accent: "#efe9de", rgb: [239, 233, 222] },
-  { id: "following", label: "Following", format: null, accent: "#efe9de", rgb: [239, 233, 222] },
+  { id: "for-you", label: "For You", format: null, accent: "#eceeff", rgb: [236, 238, 255] },
+  { id: "following", label: "Following", format: null, accent: "#eceeff", rgb: [236, 238, 255] },
   ...FORMAT_IDS.map((id) => ({
     id,
     label: FORMAT_STYLES[id].label,
@@ -164,16 +164,22 @@ export default function Home() {
     }
   }, [router])
 
-  // Center the active tab label in the tab bar whenever activeTab changes
+  // Align the active tab: first tab snaps left, last tab snaps right, middle tabs center.
   useEffect(() => {
     const button = tabRefs.current[activeTab]
     if (!button) return
-    button.scrollIntoView({
-      behavior: isFirstTabCenter.current ? "instant" : "smooth",
-      inline: "center",
-      block: "nearest",
-    })
+    const strip = tabStripRef.current
+    const tabIndex = TABS.findIndex((t) => t.id === activeTab)
+    const behavior: ScrollBehavior = isFirstTabCenter.current ? "instant" : "smooth"
     isFirstTabCenter.current = false
+
+    if (tabIndex === 0) {
+      strip?.scrollTo({ left: 0, behavior })
+    } else if (tabIndex === TABS.length - 1) {
+      strip?.scrollTo({ left: strip.scrollWidth, behavior })
+    } else {
+      button.scrollIntoView({ behavior, inline: "center", block: "nearest" })
+    }
   }, [activeTab])
 
   // Real-time indicator + state update on outer feed scroll
