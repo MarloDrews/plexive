@@ -20,7 +20,7 @@ export default function StorySection({ content, isUserContent }: Props) {
       )}
       {content.image_url && !content.visual_svg && (
         <div className="w-full max-w-[360px] mx-auto">
-          <img src={content.image_url} alt="" className="w-full rounded-lg object-cover" />
+          <img src={content.image_url} alt="" loading="lazy" decoding="async" className="w-full rounded-lg object-cover" />
         </div>
       )}
 
@@ -32,6 +32,8 @@ export default function StorySection({ content, isUserContent }: Props) {
                 <img
                   src={fig.image_url}
                   alt={fig.name}
+                  loading="lazy"
+                  decoding="async"
                   className="w-10 h-10 rounded-full object-cover shrink-0 bg-surface-2"
                 />
               )}

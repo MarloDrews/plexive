@@ -37,6 +37,8 @@ export default function Avatar({ username, avatarUrl, size, verified = 0, classN
       <img
         src={resolveUrl(avatarUrl)}
         alt={`@${username}`}
+        loading="lazy"
+        decoding="async"
         width={size}
         height={size}
         className={`rounded-full object-cover shrink-0 ${className}`}

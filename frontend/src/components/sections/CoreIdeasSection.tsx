@@ -23,6 +23,8 @@ export default function CoreIdeasSection({ content, isUserContent }: Props) {
               <img
                 src={idea.image_url}
                 alt=""
+                loading="lazy"
+                decoding="async"
                 className="w-full rounded-lg object-cover"
               />
             </div>

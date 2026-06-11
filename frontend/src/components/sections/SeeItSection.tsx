@@ -18,7 +18,7 @@ export default function SeeItSection({ content, isUserContent }: Props) {
       )}
       {content.image_url && !content.visual_svg && (
         <div className="w-full max-w-[360px] mx-auto">
-          <img src={content.image_url} alt="" className="w-full rounded-lg object-cover" />
+          <img src={content.image_url} alt="" loading="lazy" decoding="async" className="w-full rounded-lg object-cover" />
         </div>
       )}
       {content.image_caption && (

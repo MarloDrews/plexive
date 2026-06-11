@@ -21,6 +21,8 @@ export default function AuthorContextSection({ content }: Props) {
             <img
               src={content.image_url}
               alt=""
+              loading="lazy"
+              decoding="async"
               className="w-16 h-16 rounded-full object-cover bg-surface-3"
             />
             {content.image_attribution && (
