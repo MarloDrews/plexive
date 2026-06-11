@@ -11,6 +11,8 @@ backend/
   tests/chat_test.py            end-to-end chat test (conversation rules, history authz, websocket auth/send/broadcast/rejection) against a throwaway DB; run with .venv\Scripts\python.exe tests\chat_test.py
   tests/security_test.py        regression test for the June 2026 security review fixes; run with .venv\Scripts\python.exe tests\security_test.py
   tests/_db_inspect.py          idempotent helper: adds users.avatar_url to an existing deepscroll.db (create_all never adds columns); alternative to a full reset
+  tests/_fix_bool_columns.py    idempotent helper: converts integer columns to boolean in the live PostgreSQL DB (SQLite-migration leftover; users.is_verified broke registration, fixed June 2026); run with .venv\Scripts\python.exe tests\_fix_bool_columns.py
+  tests/_inspect_bool_columns.py read-only companion: reports the live type of every ORM Boolean column, changes nothing
   deepscroll.db                 SQLite database (gitignored)
   app/
     database.py                 engine (PostgreSQL via DATABASE_URL env var), SessionLocal, Base, get_db dependency
