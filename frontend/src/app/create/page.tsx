@@ -379,8 +379,8 @@ export default function CreatePage() {
       authorContext.image_url,
     ].filter(Boolean)
     for (const url of allImageUrls) {
-      if (url && !url.startsWith("/uploads/")) {
-        errs.image_urls = "All image URLs must start with /uploads/ — use the upload button"
+      if (url && !url.startsWith("https://")) {
+        errs.image_urls = "All image URLs must use the upload button"
         break
       }
     }

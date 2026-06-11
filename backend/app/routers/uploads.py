@@ -6,7 +6,7 @@ from ..auth import get_current_user
 from ..rate_limit import check_rate_limit
 from ..sanitize import sanitize_svg, validate_image
 from ..schemas import SvgUploadResponse, UploadResponse
-from ..upload_config import UPLOAD_DIR
+from ..upload_config import SUPABASE_BUCKET, supabase_client
 
 router = APIRouter()
 
@@ -26,8 +26,14 @@ async def upload_image(
     if ext == "jpeg":
         ext = "jpg"
     filename = f"{uuid.uuid4()}.{ext}"
-    (UPLOAD_DIR / "images" / filename).write_bytes(data)
-    return {"url": f"/uploads/images/{filename}"}
+    path = f"images/{filename}"
+    supabase_client.storage.from_(SUPABASE_BUCKET).upload(
+        path=path,
+        file=data,
+        file_options={"content-type": media_type, "upsert": "false"},
+    )
+    url = supabase_client.storage.from_(SUPABASE_BUCKET).get_public_url(path)
+    return {"url": url}
 
 
 @router.post("/upload/svg", response_model=SvgUploadResponse, status_code=201)
@@ -43,6 +49,4 @@ async def upload_svg(
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
 
-    filename = f"{uuid.uuid4()}.svg"
-    (UPLOAD_DIR / "svgs" / filename).write_text(svg_content, encoding="utf-8")
     return {"svg_content": svg_content}

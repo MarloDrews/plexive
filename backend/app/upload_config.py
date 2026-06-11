@@ -1,13 +1,14 @@
-from pathlib import Path
+import os
 
-# Absolute path three levels up from this file (backend/app/upload_config.py),
-# placing uploads outside the application directory so they can never be
-# accidentally imported or executed as Python modules.
-UPLOAD_DIR = Path(__file__).parent.parent.parent / "user_uploads"
+from supabase import Client, create_client
+
+SUPABASE_URL = os.environ["SUPABASE_URL"]
+_service_key = os.environ["SUPABASE_SERVICE_KEY"]
+SUPABASE_BUCKET = "uploads"
 
 MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024   # 5 MB
 MAX_SVG_SIZE_BYTES   = 512 * 1024         # 512 KB
 
-UPLOAD_DIR.mkdir(exist_ok=True)
-(UPLOAD_DIR / "images").mkdir(exist_ok=True)
-(UPLOAD_DIR / "svgs").mkdir(exist_ok=True)
+# Initialized once at startup; uses the service_role key so it can write to
+# storage without depending on user auth tokens.
+supabase_client: Client = create_client(SUPABASE_URL, _service_key)

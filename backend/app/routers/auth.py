@@ -12,7 +12,7 @@ from ..models import User
 from ..rate_limit import check_rate_limit
 from ..sanitize import validate_image
 from ..schemas import UserOut
-from ..upload_config import UPLOAD_DIR
+from ..upload_config import SUPABASE_BUCKET, supabase_client
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -208,9 +208,15 @@ async def upload_avatar(
     if ext == "jpeg":
         ext = "jpg"
     filename = f"{uuid.uuid4()}.{ext}"
-    (UPLOAD_DIR / "images" / filename).write_bytes(data)
+    path = f"images/{filename}"
+    supabase_client.storage.from_(SUPABASE_BUCKET).upload(
+        path=path,
+        file=data,
+        file_options={"content-type": media_type, "upsert": "false"},
+    )
+    url = supabase_client.storage.from_(SUPABASE_BUCKET).get_public_url(path)
 
-    current_user.avatar_url = f"/uploads/images/{filename}"
+    current_user.avatar_url = url
     db.commit()
     db.refresh(current_user)
     return UserOut.model_validate(current_user)

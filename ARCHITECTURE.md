@@ -4,8 +4,8 @@
 
 ```
 backend/
-  requirements.txt              fastapi, uvicorn, sqlalchemy, psycopg2-binary, passlib[bcrypt], python-jose[cryptography], python-dotenv, email-validator
-  .env.example                  JWT_SECRET and DATABASE_URL templates (copy to .env, never commit .env)
+  requirements.txt              fastapi, uvicorn, sqlalchemy, psycopg2-binary, passlib[bcrypt], python-jose[cryptography], python-dotenv, email-validator, supabase
+  .env.example                  JWT_SECRET, DATABASE_URL, SUPABASE_URL, SUPABASE_SERVICE_KEY templates (copy to .env, never commit .env)
   seed.py                       idempotent: get-or-create 145 interests from taxonomy; reads SEED_ADMIN_PASSWORD from backend/.env; get-or-create @Marlo (marlo07drews@gmail.com, is_verified=True); auto-discovers all *_example.json files in docs/content-structure/examples/ — upserts one post per file (format derived from filename, title from feed_card.title|concept_name|the_question|headline|name); upsert key is (author_id, format) so title changes do not create duplicates; FORMAT_INTEREST_SLUGS dict maps format → interest slugs (books/facts/people/concepts/questions/stories defined); legacy DB preserved as deepscroll.db.legacy_*
   tests/smoke_test.py           end-to-end API smoke test (quiz/Elo, avatar, user search) against a throwaway DB in a temp dir; run with .venv\Scripts\python.exe tests\smoke_test.py (needs httpx)
   tests/chat_test.py            end-to-end chat test (conversation rules, history authz, websocket auth/send/broadcast/rejection) against a throwaway DB; run with .venv\Scripts\python.exe tests\chat_test.py
@@ -14,13 +14,13 @@ backend/
   deepscroll.db                 SQLite database (gitignored)
   app/
     database.py                 engine (PostgreSQL via DATABASE_URL env var), SessionLocal, Base, get_db dependency
-    main.py                     FastAPI app, CORS origins from FRONTEND_ORIGIN env (default localhost:3000, "*" stripped), 10 MB request body cap middleware, router registration, create_all on startup
+    main.py                     FastAPI app, CORS origins from FRONTEND_ORIGIN env (default localhost:3000, "*" stripped), 10 MB request body cap middleware, router registration, create_all on startup; no StaticFiles mount (files served from Supabase Storage)
     models.py                   ORM models: Interest, Post (feed_card JSON not null, sections JSON not null, is_user_content Boolean not null default False, author_id FK→users nullable; indexes on format/status/created_at; author_username and author_is_verified as properties), Event (user_id nullable FK), User (posts relationship, is_verified boolean default false, is_private boolean default false, bio string nullable, avatar_url string nullable), Follow (follower_id FK→users, following_id FK→users, status "pending"|"accepted", created_at; UniqueConstraint uq_follow), UserElo (user_id+format unique, rating float, answered_count), QuizAnswer (user_id+post_id+question_index unique, chosen_index, is_correct, rating_delta), Comment, post_interests join table
     elo.py                      Elo knowledge score: start 1000, floor 100, K=32 first 30 answers per format then 16, question rating 800/1000/1200 from post_difficulty, global = average of per-format ratings (None until first answer)
     auth.py                     hash_password, verify_password, create_access_token, decode_access_token, get_current_user, get_optional_user (returns User|None, used for optional auth)
-    schemas.py                  Pydantic v2 models: 15 section types with Literal discriminator → AnySection union; BooksFeedCard; PostCreate (Books required sections: essence/quiz_badge/voices/at_a_glance/heart/core_ideas/takeaway/quiz/sources; image_url recursive check for /uploads/ prefix); PostOut (feed_card dict, sections list[dict], is_user_content bool, like_count int, comment_count int; strips answer_index+explanation from quiz sections so answers never reach the client); UserOut (incl. avatar_url), InterestOut, EventIn, UploadResponse, SvgUploadResponse
+    schemas.py                  Pydantic v2 models: 15 section types with Literal discriminator → AnySection union; BooksFeedCard; PostCreate (Books required sections: essence/quiz_badge/voices/at_a_glance/heart/core_ideas/takeaway/quiz/sources; image_url recursive check for Supabase storage URL prefix); PostOut (feed_card dict, sections list[dict], is_user_content bool, like_count int, comment_count int; strips answer_index+explanation from quiz sections so answers never reach the client); UserOut (incl. avatar_url), InterestOut, EventIn, UploadResponse, SvgUploadResponse
     sanitize.py                 validate_image() — chunked read, magic-byte check, animated-GIF reject, Pillow re-encode; sanitize_svg() / sanitize_svg_text() — defusedxml XXE check, lxml element+attribute whitelist, dangerous-pattern rejection
-    upload_config.py            UPLOAD_DIR (absolute path at repo root/user_uploads/), size limits (5 MB images, 512 KB SVGs)
+    upload_config.py            Supabase client (SUPABASE_URL + SUPABASE_SERVICE_KEY from env), SUPABASE_BUCKET="uploads", size limits (5 MB images, 512 KB SVGs)
     rate_limit.py               in-memory per-user rate limiter (dict of timestamps); check_rate_limit(user_id, key, max, window_secs); identity may also be a string ("ip:...", "email:...") for unauthenticated endpoints
     post_counts.py              attach_counts(posts, db) / attach_counts_one(post, db) — batched like_count+comment_count attachment shared by posts/feed/search routers
     scoring.py                    score_posts() — interest match (tier-scaled), format engagement, repeat penalty
@@ -34,13 +34,13 @@ backend/
       search.py                 GET /api/search — Python-side search across post.title, feed_card.essence, feed_card.author, heart section content, core_ideas title+body; ranked by title-match then recency; limit 50; GET /api/search/users — username substring search, prefix matches first, limit 20, follow_status per row when authed; both: q max 100 chars, 60/min per user or IP
       quiz.py                   POST /api/quiz/answer (optional auth; validates against stored answer_index; first authed answer per question updates Elo, own posts never scored, 60/min); GET /api/quiz/state/{post_id} (auth, answered questions with corrections); GET /api/users/{username}/elo (public, global + per-format ratings)
       comments.py               GET /api/posts/{id}/comments?count=true → {count} or full list; POST /api/posts/{id}/comments (auth, 30/5min); DELETE /api/comments/{id} (auth, own comment only); pending posts 404 for non-authors
-      uploads.py                POST /api/upload/image (10/hr, validate_image, UUID filename); POST /api/upload/svg (10/hr, sanitize_svg, returns svg_content string not URL)
+      uploads.py                POST /api/upload/image (10/hr, validate_image, uploads to Supabase bucket "uploads", returns public URL); POST /api/upload/svg (10/hr, sanitize_svg, returns svg_content string inline — not stored)
       admin.py                  PATCH /api/admin/users/{user_id}/verify — sets is_verified=True; caller must be authenticated and is_verified; 403 otherwise
       posts.py                  GET /api/posts/mine (auth, any status); POST /api/posts (auth, 20/day, status="published" if verified else "pending", sets is_user_content=True, sanitizes visual_svg fields); GET /api/posts/{id} (pending visible to author only); _attach_counts() helper adds like_count+comment_count as Python attributes before Pydantic serialization
       chat.py                   GET /api/chat/conversations (auth, sorted by last activity, last-message preview); POST /api/chat/conversations (auth, 20/hr; body {usernames[], name?}; DM for 1 username with per-pair dedupe, group for 2-19; each target needs an accepted follow in either direction); GET /api/chat/conversations/{id}/messages?before_id&limit (auth, participant only, 404 otherwise); WS /api/chat/ws (first-frame JWT auth, see SECURITY)
       stats.py                  GET /api/stats/global (no auth, all platform analytics); GET /api/stats/me (auth, personal stats — my_streak/my_milestones/my_engagement_score/my_elo/my_quiz/posts_liked/my_likes_given_by_format computed server-side; posts_saved stays -1, counted client-side from localStorage); FORMATS includes all 7 formats incl. academy; all date/time helpers use PostgreSQL syntax (to_char, extract); raw SQL subqueries use explicit aliases and COUNT(*)/COUNT(col) in HAVING instead of aliases; post_quality_over_time uses one GROUP BY query (no per-month loop)
 
-user_uploads/                 gitignored; absolute path outside backend/ so files are never importable as Python modules; subdirs: images/, svgs/
+user_uploads/                 gitignored; no longer used — images uploaded to Supabase Storage bucket "uploads"
 
 frontend/
   .env.example                  NEXT_PUBLIC_API_URL template
@@ -189,7 +189,7 @@ Join table linking posts ↔ interests (many-to-many).
 | is_verified   | Boolean  | default false; true = bypasses review queue (posts go to "published"), can verify other users via admin endpoint |
 | is_private    | Boolean  | default false; true = follow requests require approval |
 | bio           | String?  | up to 160 chars; shown on public profile  |
-| avatar_url    | String?  | /uploads/images/{uuid}.ext set by POST /api/auth/me/avatar |
+| avatar_url    | String?  | Supabase Storage public URL set by POST /api/auth/me/avatar |
 
 ### follows
 | column       | type              | description                                         |
@@ -267,9 +267,9 @@ GET  /api/posts/{id}/comments?count=true                   → {count: N}  404 i
 POST /api/posts/{id}/comments  Authorization: Bearer <token>  body: {body}  → CommentOut  201  404 if post not found  422 if body empty or >2000 chars
 DELETE /api/comments/{id}      Authorization: Bearer <token>  → 204  403 if not the comment's author  404 if not found
 GET  /api/posts/{id}/likes                                 → {count: N, liked: bool}  auth optional; liked=true only when token present and user has a like event for this post
-POST /api/upload/image  Authorization: Bearer <token>      multipart file field "file"  → {url: "/uploads/images/{uuid}.ext"}  10/hr rate limit  validates magic bytes + Pillow re-encode
+POST /api/upload/image  Authorization: Bearer <token>      multipart file field "file"  → {url: "https://<project>.supabase.co/storage/v1/object/public/uploads/images/{uuid}.ext"}  10/hr rate limit  validates magic bytes + Pillow re-encode; uploads to Supabase bucket "uploads"
 POST /api/upload/svg    Authorization: Bearer <token>      multipart file field "file"  → {svg_content: "<sanitized SVG>"}  10/hr rate limit  defusedxml+lxml whitelist sanitization
-POST /api/posts         Authorization: Bearer <token>      body: {format, title, feed_card, sections, interests}  → PostOut 201  status="pending"  20/day rate limit  Books requires 9 sections; image_url must use /uploads/ prefix; unknown interest slug → 400
+POST /api/posts         Authorization: Bearer <token>      body: {format, title, feed_card, sections, interests}  → PostOut 201  status="pending"  20/day rate limit  Books requires 9 sections; image_url must use Supabase storage URL prefix; unknown interest slug → 400
 GET  /api/posts/mine    Authorization: Bearer <token>                                   → [PostOut]  all statuses  ordered by created_at DESC
 PATCH /api/admin/users/{user_id}/verify  Authorization: Bearer <token>                 → UserOut  sets is_verified=True  403 if caller is not verified  404 if user not found
 GET  /api/stats/global                                                                  → GlobalStats JSON (no auth)
@@ -343,7 +343,7 @@ attributes. Never use `dangerouslySetInnerHTML` to render comment text.
 - **Animated GIFs**: rejected outright (hard to sanitize safely)
 - **UUID filenames**: upload filenames always UUID-generated — user-provided filenames are never used (prevents path traversal like `../../etc/passwd`)
 - **Upload directory**: absolute path outside backend/ (`user_uploads/` at repo root) — files are never on Python's module search path
-- **image_url validation**: user-submitted posts must use `/uploads/` prefix — no external image URLs accepted
+- **image_url validation**: user-submitted posts must use the Supabase storage URL prefix (`{SUPABASE_URL}/storage/v1/object/public/uploads/`) — no arbitrary external image URLs accepted
 - **File size enforced via chunked reads**: Content-Length header is not trusted; reads stop as soon as the running total exceeds the limit
 - **Rate limits**: 10 image uploads/hr, 10 SVG uploads/hr, 20 post submissions/day per user (in-memory, no external dependency)
 
@@ -365,7 +365,7 @@ attributes. Never use `dangerouslySetInnerHTML` to render comment text.
 | sections/CoreIdeasSection.tsx | per-idea: amber title h2, body, SVG block (w-full max-w-[360px] wrapper so flex context doesn't collapse it; dangerouslySetInnerHTML if !isUserContent, base64 img if isUserContent; color #e4e4e7 for currentColor), image, pull-quote, amber callout for in_practice |
 | sections/TakeawaySection.tsx | framework framing: amber card; question framing: large centered amber text; optional SVG |
 | sections/QuizSection.tsx | client component; tappable options POST /api/quiz/answer; green/red correctness + explanation + Elo delta chip; restores answered state from GET /api/quiz/state; summary card with score when all answered; log-in hint for anonymous users |
-| Avatar.tsx (src/components) | shared avatar: uploaded image (resolves /uploads/ via API_URL) or initial-letter fallback; size prop |
+| Avatar.tsx (src/components) | shared avatar: Supabase URLs used as-is; legacy /uploads/ paths get API_URL prepended; initial-letter fallback; size prop |
 | sections/RelatedPostsSection.tsx | horizontal scroll row; post_id empty → non-clickable with "Coming soon" label |
 | sections/WorldContextSection.tsx | secondary text with heading |
 | sections/AuthorContextSection.tsx | portrait + text + Wikipedia external link |

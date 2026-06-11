@@ -8,8 +8,10 @@ interface Props {
   className?: string
 }
 
-// Uploaded avatars live under the backend's /uploads/ mount.
+// Supabase Storage URLs are already absolute; legacy /uploads/ paths get the
+// API base URL prepended for backwards compatibility with existing records.
 function resolveUrl(url: string): string {
+  if (url.startsWith("http://") || url.startsWith("https://")) return url
   return url.startsWith("/uploads/") ? `${API_URL}${url}` : url
 }
 

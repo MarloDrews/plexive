@@ -10,3 +10,4 @@ python-multipart
 Pillow
 lxml
 defusedxml
+supabase
