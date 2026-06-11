@@ -355,8 +355,12 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
             )}
           </div>
 
-          {/* Sticky comment bar */}
-          <div className="flex-none border-t border-edge bg-surface-overlay backdrop-blur-md">
+          {/* Sticky comment bar. Safe-area padding keeps the send button above
+              the OS home-indicator bar on real phones (same as BottomNav). */}
+          <div
+            className="flex-none border-t border-edge bg-surface-overlay backdrop-blur-md"
+            style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+          >
             <div className="flex items-center gap-2 px-3 py-2">
               <div className="flex-1 min-w-0">
                 {user ? (

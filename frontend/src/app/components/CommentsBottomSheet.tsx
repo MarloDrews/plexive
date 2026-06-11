@@ -143,8 +143,12 @@ export default function CommentsBottomSheet({ postId, onClose, onCountChange }: 
           )}
         </div>
 
-        {/* Sticky input bar */}
-        <div className="flex-none border-t border-edge bg-surface-1 px-4 py-2">
+        {/* Sticky input bar. Safe-area padding keeps the send button above
+            the OS home-indicator bar on real phones (same as BottomNav). */}
+        <div
+          className="flex-none border-t border-edge bg-surface-1 px-4 py-2"
+          style={{ paddingBottom: "calc(0.5rem + env(safe-area-inset-bottom))" }}
+        >
           {user ? (
             <form onSubmit={handleSubmit} className="flex gap-2 items-center">
               <input

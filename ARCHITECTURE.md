@@ -45,6 +45,7 @@ backend/
 user_uploads/                 gitignored; absolute path outside backend/ so files are never importable as Python modules; subdirs: images/, svgs/
 
 frontend/
+  next.config.ts                devIndicators disabled (the floating dev badge covered the comment send button at phone width)
   .env.example                  NEXT_PUBLIC_API_URL template
   .env.local                    actual env vars (gitignored)
   src/app/
@@ -76,7 +77,7 @@ frontend/
       page.tsx                  bookmarked posts: reads IDs from localStorage via getSavedPostIds, fetches each via GET /api/posts/{id} (auth optional; pending author-only posts load correctly), renders as full-screen snap-scroll PostCards; skips missing/deleted posts silently; empty state with bookmark icon; BottomNav (profile active)
     post/
       [id]/
-        page.tsx                full-screen detail page; header: format badge, attribution, cover image (Books), title, author, interest tags; SectionRenderer renders all 15 section types in order; sticky comment bar with always-visible round btn-primary send + like/save (lamp gold when active) + share; slide-up animation, swipe-right-to-close; attribution: Submitted by @user (blue verified badge) for user content; Deepscroll + violet badge for seed/official
+        page.tsx                full-screen detail page; header: format badge, attribution, cover image (Books), title, author, interest tags; SectionRenderer renders all 15 section types in order; sticky comment bar (safe-area aware) with always-visible round btn-primary send + like/save (lamp gold when active) + share; slide-up animation, swipe-right-to-close; attribution: Submitted by @user (blue verified badge) for user content; Deepscroll + violet badge for seed/official
     components/
       PostCard.tsx               full-screen snap card; format-aware layout with image, stat/meta highlight, hook, inline SVG; action rail with 44px tap targets, like/save light up lamp gold; re-exports Post type; format styles come from lib/formats.ts
       BottomNav.tsx              fixed bottom nav: Chat (message bubble) / Stats / Feed (flame) / Create (plus-circle, center, white when logged in) / Profile; 5 buttons; active item highlighted; safe-area-inset-bottom aware
@@ -404,7 +405,7 @@ attributes. Never use `dangerouslySetInnerHTML` to render comment text.
 | Providers.tsx          | client boundary so layout.tsx (Server Component) can mount AuthProvider     |
 | profile/page.tsx       | account settings: avatar, identity display (inline verified badge if is_verified), Posts/Followers/Following stats row (counts from /api/users/{me}/profile; tapping Followers or Following opens bottom-sheet user list), change username/password, sign out, delete account; BottomNav (profile active) |
 | CommentsSection.tsx    | read-only display component; receives comments/currentUsername/onDelete/deletingId as props; relative timestamps (UTC-aware); plain-text only (no dangerouslySetInnerHTML); exports Comment interface |
-| CommentsBottomSheet.tsx | bottom sheet modal for feed card comments; self-contained state (fetch/post/delete); drag-to-close on handle bar; sticky input with round btn-primary send; fixed overlay with max-w-[430px] sheet |
+| CommentsBottomSheet.tsx | bottom sheet modal for feed card comments; self-contained state (fetch/post/delete); drag-to-close on handle bar; sticky input (safe-area aware) with round btn-primary send; fixed overlay with max-w-[430px] sheet |
 | Toast.tsx              | fixed bottom-center pill notification; visible prop controls opacity via CSS transition; pointer-events-none |
 | chat/page.tsx          | conversation list + New chat overlay (multi-select user picker, optional group name); BottomNav (chat active) |
 | chat/[id]/page.tsx     | conversation view: REST history + live websocket messages, bubble layout, plain-text rendering only |
