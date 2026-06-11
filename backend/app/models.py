@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, JSON, String, Table, Text, UniqueConstraint
+from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Index, Integer, JSON, String, Table, Text, UniqueConstraint
 from sqlalchemy.orm import relationship
 
 from .database import Base
@@ -51,13 +51,21 @@ class Post(Base):
 
 class Event(Base):
     __tablename__ = "events"
+    # PostgreSQL does not index FK columns automatically. Like counts and
+    # dedup checks filter on (post_id, event_type); scoring filters on
+    # created_at; per-user queries filter on user_id. create_all only adds
+    # these on fresh databases - scripts/add_indexes.py applies them to the
+    # existing one.
+    __table_args__ = (
+        Index("ix_events_post_id_event_type", "post_id", "event_type"),
+    )
 
     id          = Column(Integer, primary_key=True)
     post_id     = Column(Integer, ForeignKey("posts.id"), nullable=False)
     event_type  = Column(String, nullable=False)
     duration_ms = Column(Integer, nullable=True)
-    created_at  = Column(DateTime, default=datetime.utcnow)
-    user_id     = Column(Integer, ForeignKey("users.id"), nullable=True)
+    created_at  = Column(DateTime, default=datetime.utcnow, index=True)
+    user_id     = Column(Integer, ForeignKey("users.id"), nullable=True, index=True)
 
 
 class User(Base):
@@ -79,7 +87,12 @@ class User(Base):
 
 class Follow(Base):
     __tablename__ = "follows"
-    __table_args__ = (UniqueConstraint("follower_id", "following_id", name="uq_follow"),)
+    # uq_follow already serves follower_id-prefixed lookups; follower counts
+    # filter on (following_id, status) and need their own index.
+    __table_args__ = (
+        UniqueConstraint("follower_id", "following_id", name="uq_follow"),
+        Index("ix_follows_following_id_status", "following_id", "status"),
+    )
 
     id           = Column(Integer, primary_key=True, index=True)
     follower_id  = Column(Integer, ForeignKey("users.id"), nullable=False)
@@ -162,7 +175,7 @@ class Comment(Base):
     __tablename__ = "comments"
 
     id         = Column(Integer, primary_key=True)
-    post_id    = Column(Integer, ForeignKey("posts.id"), nullable=False)
+    post_id    = Column(Integer, ForeignKey("posts.id"), nullable=False, index=True)
     user_id    = Column(Integer, ForeignKey("users.id"), nullable=False)
     body       = Column(Text, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
