@@ -10,6 +10,7 @@ backend/
   tests/smoke_test.py           end-to-end API smoke test (quiz/Elo, avatar, user search) against a throwaway DB in a temp dir; run with .venv\Scripts\python.exe tests\smoke_test.py (needs httpx)
   tests/chat_test.py            end-to-end chat test (conversation rules, history authz, websocket auth/send/broadcast/rejection) against a throwaway DB; run with .venv\Scripts\python.exe tests\chat_test.py
   tests/security_test.py        regression test for the June 2026 security review fixes; run with .venv\Scripts\python.exe tests\security_test.py
+  tests/perf_probe.py           endpoint timing probe against a running backend (--out saves timings + bodies for before/after comparison); authed endpoints via seed-admin login, token cached to respect rate limits
   tests/_db_inspect.py          legacy SQLite helper (no longer used; DB is Supabase PostgreSQL)
   app/
     database.py                 engine (PostgreSQL via DATABASE_URL env var), SessionLocal, Base, get_db dependency
