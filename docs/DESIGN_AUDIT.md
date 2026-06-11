@@ -65,7 +65,8 @@ Stats page.
     state, chart accents — and not decoratively. Correct. No change.
 14. Tab strip clips the rightmost tab label under the search button with a
     hard cut instead of a fade. Minor; noted, not fixed in this pass
-    (layout risk for cosmetic gain).
+    (layout risk for cosmetic gain). **Fixed in the second pass** — a CSS
+    mask-image gradient on the strip container, no layout change.
 
 ### P5 — Stats performance — FIX (measured)
 15. Measured warm timings against the running backend:
@@ -88,3 +89,30 @@ Stats page.
   which read flat (P3/#9). The shadow is matte and directional like a
   sheet of paper on a desk — within the "matte, not glossy" rule.
 - No token values changed; no new colors introduced.
+
+## Second pass (June 2026) — what the first pass left undone
+
+Every finding above was re-checked against the branch; #1–7, #9 and #15
+were confirmed implemented. The rest of this pass:
+
+16. #14 implemented: tab labels now fade out under the search button via a
+    mask-image gradient on the strip container.
+17. Like/save buttons redesigned: lamp gold when active (was semantic red,
+    which made "liked" look like an error state), ink-dim outline when not,
+    44x40 tap targets (was a bare 24px icon), 150ms color transition. The
+    double-tap heart overlay is gold too — one like color everywhere.
+18. Comment send: the bottom sheet's quiet "Post" text became the round
+    `.btn-primary` send used in chat; the detail-bar send is always visible
+    (disabled until text is entered) instead of appearing mid-typing.
+19. Depth, screenshot-verified at 390x844: the first-pass paper-edge shadow
+    was *not* visible on the page base — strengthened (deeper drop, added a
+    soft 28px ambient layer). Surface steps 1–3 widened
+    (#1B1815→#1E1B17, #23201B→#282420, #2B2721→#332E28) because cards read
+    as the same color as the base. A fixed "lamp light" gradient
+    (warm ink at 3.5% alpha, radial from top center) now falls over every
+    screen — the page base no longer reads as one flat black sheet.
+20. Honest re-verdict after the depth fixes: the identity holds. The warm
+    cast, the serif voice, the restrained gold and the new top-light
+    together read as "reading lamp over paper", not as a generic dark
+    theme. No direction change needed; tokens and vocabulary unchanged
+    apart from the documented surface-step widening.
