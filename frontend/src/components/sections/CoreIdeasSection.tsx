@@ -8,11 +8,11 @@ interface Props {
 
 export default function CoreIdeasSection({ content, isUserContent }: Props) {
   return (
-    <div className="px-5 py-6 flex flex-col gap-10">
+    <div className="px-6 py-8 flex flex-col gap-10">
       {content.map((idea, i) => (
         <div key={i} className="flex flex-col gap-3">
           <h2 className="text-lg font-semibold text-(--accent) leading-snug">{idea.title}</h2>
-          <p className="text-base text-ink-body leading-relaxed">{idea.body}</p>
+          <p className="prose-post">{idea.body}</p>
 
           {idea.visual_svg && (
             <SvgBlock svg={idea.visual_svg} isUserContent={isUserContent} className="w-full max-w-[360px] mx-auto my-4" />

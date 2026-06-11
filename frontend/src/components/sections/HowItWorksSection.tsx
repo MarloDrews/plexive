@@ -12,7 +12,7 @@ interface Props {
 
 export default function HowItWorksSection({ content }: Props) {
   return (
-    <div className="px-5 py-6 flex flex-col gap-8">
+    <div className="px-6 py-8 flex flex-col gap-8">
       <SectionLabel className="-mb-4">How It Works</SectionLabel>
       {content.map((step, i) => (
         <div key={i} className="flex gap-4">
@@ -21,7 +21,7 @@ export default function HowItWorksSection({ content }: Props) {
           </span>
           <div className="flex flex-col gap-1.5">
             <h3 className="text-sm font-semibold text-(--accent) leading-snug">{step.title}</h3>
-            <p className="text-sm text-ink-dim leading-relaxed">{step.body}</p>
+            <p className="prose-post text-ink-dim">{step.body}</p>
           </div>
         </div>
       ))}

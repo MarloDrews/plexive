@@ -4,8 +4,8 @@ interface Props {
 
 export default function HeartSection({ content }: Props) {
   return (
-    <div className="px-5 py-6">
-      <p className="text-base text-ink-body leading-relaxed">{content}</p>
+    <div className="px-6 py-8">
+      <p className="prose-post">{content}</p>
     </div>
   )
 }

@@ -17,9 +17,9 @@ interface Props {
 
 export default function FormalDefinitionSection({ content }: Props) {
   return (
-    <div className="px-5 py-6 flex flex-col gap-4">
+    <div className="px-6 py-8 flex flex-col gap-4">
       <SectionLabel>Formal Definition</SectionLabel>
-      <p className="text-sm text-ink-dim leading-relaxed">{content.body}</p>
+      <p className="prose-post text-ink-dim">{content.body}</p>
       {content.formula && (
         <div className="bg-surface-1 border border-edge rounded-card px-4 py-3">
           <p className="font-mono text-sm text-(--accent) tracking-wide">{content.formula}</p>

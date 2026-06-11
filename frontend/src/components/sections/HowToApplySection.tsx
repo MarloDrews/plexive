@@ -14,9 +14,9 @@ interface Props {
 
 export default function HowToApplySection({ content, isUserContent }: Props) {
   return (
-    <div className="px-5 py-6 flex flex-col gap-4">
+    <div className="px-6 py-8 flex flex-col gap-4">
       <SectionLabel>How to Apply It</SectionLabel>
-      <p className="text-sm text-ink-dim leading-relaxed">{content.body}</p>
+      <p className="prose-post text-ink-dim">{content.body}</p>
       {content.checklist && content.checklist.length > 0 && (
         <ul className="flex flex-col gap-2">
           {content.checklist.map((item, i) => (

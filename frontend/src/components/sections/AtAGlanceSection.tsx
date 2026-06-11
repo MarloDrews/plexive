@@ -61,7 +61,7 @@ export default function AtAGlanceSection({ content }: Props) {
       { label: "Difficulty", value: <DotScale value={content.post_difficulty} /> },
     ]
     return (
-      <div className="px-5 py-6">
+      <div className="px-6 py-8">
         <div className="grid grid-cols-2 gap-x-6 gap-y-3">
           {rows.map(({ label, value }) => (
             <div key={label} className="flex flex-col gap-0.5">
@@ -86,7 +86,7 @@ export default function AtAGlanceSection({ content }: Props) {
     ]
 
     return (
-      <div className="px-5 py-6">
+      <div className="px-6 py-8">
         <div className="grid grid-cols-2 gap-x-6 gap-y-3">
           {rows.map(({ label, value }) => (
             <div key={label} className="flex flex-col gap-0.5">
@@ -110,7 +110,7 @@ export default function AtAGlanceSection({ content }: Props) {
     ]
 
     return (
-      <div className="px-5 py-6">
+      <div className="px-6 py-8">
         <div className="grid grid-cols-2 gap-x-6 gap-y-3">
           {rows.map(({ label, value }) => (
             <div key={label} className="flex flex-col gap-0.5">
@@ -134,7 +134,7 @@ export default function AtAGlanceSection({ content }: Props) {
     ]
 
     return (
-      <div className="px-5 py-6">
+      <div className="px-6 py-8">
         <div className="grid grid-cols-2 gap-x-6 gap-y-3 mb-4">
           {rows.map(({ label, value }) => (
             <div key={label} className="flex flex-col gap-0.5">
@@ -162,7 +162,7 @@ export default function AtAGlanceSection({ content }: Props) {
   ]
 
   return (
-    <div className="px-5 py-6">
+    <div className="px-6 py-8">
       <div className="grid grid-cols-2 gap-x-6 gap-y-3 mb-4">
         {rows.map(({ label, value }) => (
           <div key={label} className="flex flex-col gap-0.5">

@@ -7,12 +7,12 @@ interface Props {
 
 export default function ChaptersSection({ content }: Props) {
   return (
-    <div className="px-5 py-6 flex flex-col gap-10">
+    <div className="px-6 py-8 flex flex-col gap-10">
       <SectionLabel className="-mb-4">Chapters</SectionLabel>
       {content.map((chapter, i) => (
         <div key={i} className="flex flex-col gap-3">
           <h3 className="text-base font-semibold text-(--accent) leading-snug">{chapter.title}</h3>
-          <p className="text-sm text-ink-body leading-relaxed">{chapter.body}</p>
+          <p className="prose-post">{chapter.body}</p>
           {chapter.image_url && (
             <div className="flex flex-col gap-1">
               <img

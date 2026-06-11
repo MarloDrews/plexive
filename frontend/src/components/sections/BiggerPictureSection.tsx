@@ -5,9 +5,9 @@ interface Props {
 
 export default function BiggerPictureSection({ content }: Props) {
   return (
-    <div className="px-5 py-6">
+    <div className="px-6 py-8">
       <SectionLabel className="mb-3">The Bigger Picture</SectionLabel>
-      <p className="text-base text-ink leading-relaxed font-medium">{content}</p>
+      <p className="prose-post text-ink font-medium">{content}</p>
     </div>
   )
 }

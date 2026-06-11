@@ -22,7 +22,7 @@ function ExternalLinkIcon() {
 
 export default function SourcesSection({ content }: Props) {
   return (
-    <div className="px-5 py-6">
+    <div className="px-6 py-8">
       <ul className="flex flex-col gap-2">
         {content.map((source, i) => (
           <li key={i}>

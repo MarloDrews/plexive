@@ -256,7 +256,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
           }`}
         >
           {post.format === "books" && fc ? (
-            <div className="card border-l-2 border-l-(--accent) px-5 py-5 flex flex-col gap-3">
+            <div className="card border-l-2 border-l-(--accent) px-6 py-7 flex flex-col gap-4">
               {/* Title row + cover */}
               <div className="flex gap-4 items-start">
                 <div className="flex-1 min-w-0">
@@ -279,7 +279,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
               </div>
 
               {/* Essence */}
-              <p className="font-serif italic text-[15px] text-ink-body leading-relaxed">{fc.essence as string}</p>
+              <p className="font-serif italic text-base text-ink-body leading-relaxed">{fc.essence as string}</p>
 
               {/* Teasers */}
               {Array.isArray(fc.teasers) && (fc.teasers as string[]).length > 0 && (
@@ -298,7 +298,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
               </div>
             </div>
           ) : post.format === "people" && fc ? (
-            <div className="card border-l-2 border-l-(--accent) px-5 py-5 flex flex-col gap-3">
+            <div className="card border-l-2 border-l-(--accent) px-6 py-7 flex flex-col gap-4">
               <div className="flex gap-4 items-start">
                 {(fc.portrait as { image_url?: string } | undefined)?.image_url && (
                   <div className="shrink-0 w-20 h-20 rounded-full overflow-hidden bg-surface-2 border border-(--accent)/40">
@@ -326,7 +326,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
                 </div>
               </div>
 
-              <p className="font-serif italic text-[15px] text-ink-body leading-relaxed">{fc.essence as string}</p>
+              <p className="font-serif italic text-base text-ink-body leading-relaxed">{fc.essence as string}</p>
 
               {Array.isArray(fc.teasers) && (fc.teasers as string[]).length > 0 && (
                 <Teasers items={fc.teasers as string[]} />
@@ -340,7 +340,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
               </div>
             </div>
           ) : post.format === "facts" && fc ? (
-            <div className="card border-l-2 border-l-(--accent) px-5 py-5 flex flex-col gap-3">
+            <div className="card border-l-2 border-l-(--accent) px-6 py-7 flex flex-col gap-4">
               {fcStr(fc, "field") && (
                 <p className="label-caps text-(--accent)">{fcStr(fc, "field")}</p>
               )}
@@ -360,7 +360,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
               </div>
             </div>
           ) : post.format === "concepts" && fc ? (
-            <div className="card border-l-2 border-l-(--accent) px-5 py-5 flex flex-col gap-3">
+            <div className="card border-l-2 border-l-(--accent) px-6 py-7 flex flex-col gap-4">
               {fcStr(fc, "field") && (
                 <p className="label-caps text-(--accent)">{fcStr(fc, "field")}</p>
               )}
@@ -368,7 +368,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
                 {fcStr(fc, "concept_name")}
               </h2>
               {fcStr(fc, "one_line") && (
-                <p className="font-serif italic text-[15px] text-ink-body leading-relaxed">{fcStr(fc, "one_line")}</p>
+                <p className="font-serif italic text-base text-ink-body leading-relaxed">{fcStr(fc, "one_line")}</p>
               )}
 
               {Array.isArray(fc.teasers) && (fc.teasers as string[]).length > 0 && (
@@ -383,7 +383,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
               </div>
             </div>
           ) : post.format === "questions" && fc ? (
-            <div className="card border-l-2 border-l-(--accent) px-5 py-5 flex flex-col gap-3">
+            <div className="card border-l-2 border-l-(--accent) px-6 py-7 flex flex-col gap-4">
               {fcStr(fc, "field") && (
                 <p className="label-caps text-(--accent)">{fcStr(fc, "field")}</p>
               )}
@@ -391,7 +391,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
                 {fcStr(fc, "the_question")}
               </h2>
               {fcStr(fc, "framing_line") && (
-                <p className="font-serif italic text-[15px] text-ink-body leading-relaxed">{fcStr(fc, "framing_line")}</p>
+                <p className="font-serif italic text-base text-ink-body leading-relaxed">{fcStr(fc, "framing_line")}</p>
               )}
 
               {Array.isArray(fc.teasers) && (fc.teasers as string[]).length > 0 && (
@@ -406,7 +406,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
               </div>
             </div>
           ) : post.format === "stories" && fc ? (
-            <div className="card border-l-2 border-l-(--accent) px-5 py-5 flex flex-col gap-3">
+            <div className="card border-l-2 border-l-(--accent) px-6 py-7 flex flex-col gap-4">
               <div className="flex items-center gap-2 flex-wrap">
                 {fcStr(fc, "era_label") && (
                   <span className="label-caps text-(--accent)">
@@ -436,7 +436,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
               </div>
             </div>
           ) : post.format === "academy" && fc ? (
-            <div className="card border-l-2 border-l-(--accent) px-5 py-5 flex flex-col gap-3">
+            <div className="card border-l-2 border-l-(--accent) px-6 py-7 flex flex-col gap-4">
               {fcStr(fc, "field") && (
                 <p className="label-caps text-(--accent)">{fcStr(fc, "field")}</p>
               )}
@@ -449,7 +449,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
                 </p>
               )}
               {fcStr(fc, "key_finding_one_line") && (
-                <p className="font-serif italic text-[15px] text-ink-body leading-relaxed">
+                <p className="font-serif italic text-base text-ink-body leading-relaxed">
                   {fcStr(fc, "key_finding_one_line")}
                 </p>
               )}
@@ -468,7 +468,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
             </div>
           ) : (
             /* Fallback for unknown formats */
-            <div className="card border-l-2 border-l-(--accent) px-5 py-6 flex flex-col gap-3">
+            <div className="card border-l-2 border-l-(--accent) px-6 py-7 flex flex-col gap-4">
               <h2 className="font-serif text-3xl font-medium tracking-tight text-ink leading-snug">
                 {post.title}
               </h2>

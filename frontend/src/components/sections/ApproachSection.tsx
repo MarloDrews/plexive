@@ -10,9 +10,9 @@ interface Props {
 
 export default function ApproachSection({ content, isUserContent }: Props) {
   return (
-    <div className="px-5 py-6 flex flex-col gap-4">
+    <div className="px-6 py-8 flex flex-col gap-4">
       <SectionLabel>Approach</SectionLabel>
-      <p className="text-sm text-ink-dim leading-relaxed">
+      <p className="prose-post text-ink-dim">
         <MathText text={content.body} />
       </p>
       {content.visual_svg && (

@@ -103,7 +103,7 @@ function QuizCard({
               <button
                 onClick={() => answer(i)}
                 disabled={!!result || submitting}
-                className={`w-full text-left px-3 py-2 rounded-field text-sm font-sans border transition-colors duration-150 disabled:cursor-default ${optionClass(i, result)} ${
+                className={`w-full text-left px-4 py-3 rounded-field text-[15px] font-sans border transition-colors duration-150 disabled:cursor-default ${optionClass(i, result)} ${
                   submitting && !result ? "opacity-60" : ""
                 }`}
               >
@@ -121,7 +121,7 @@ function QuizCard({
             {result.correct ? "Correct" : "Incorrect"}
           </p>
           {result.explanation && (
-            <p className="text-sm text-ink-dim leading-relaxed">
+            <p className="text-sm text-ink-dim leading-relaxed font-sans">
               <MathText text={result.explanation} />
             </p>
           )}
@@ -173,7 +173,7 @@ export default function QuizSection({ content, postId }: Props) {
   }
 
   return (
-    <div className="px-5 py-6 flex flex-col gap-4">
+    <div className="px-6 py-8 flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <h3 className="label-caps">Quiz</h3>
         <span className="text-xs text-ink-muted font-mono">

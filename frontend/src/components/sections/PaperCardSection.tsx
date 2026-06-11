@@ -6,7 +6,7 @@ interface Props {
 
 export default function PaperCardSection({ content }: Props) {
   return (
-    <div className="px-5 py-6">
+    <div className="px-6 py-8">
       <div className="border border-edge-strong rounded-card px-4 py-4 flex flex-col gap-3">
         <p className="text-sm font-semibold text-ink leading-snug">{content.title}</p>
         <div className="flex flex-col gap-1">

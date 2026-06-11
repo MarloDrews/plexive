@@ -7,7 +7,7 @@ interface Props {
 
 export default function MisconceptionsSection({ content }: Props) {
   return (
-    <div className="px-5 py-6">
+    <div className="px-6 py-8">
       <SectionLabel className="mb-4">Common Misconceptions</SectionLabel>
       <div className="flex flex-col gap-4">
         {content.map((item, i) => (
@@ -18,7 +18,7 @@ export default function MisconceptionsSection({ content }: Props) {
             </div>
             <div className="flex items-start gap-2">
               <span className="text-good text-xs mt-0.5 shrink-0 font-bold">✓</span>
-              <span className="text-sm text-ink-body leading-relaxed">{item.reality}</span>
+              <span className="prose-post">{item.reality}</span>
             </div>
           </div>
         ))}

@@ -6,9 +6,9 @@ interface Props {
 
 export default function WhatWeLearnSection({ content }: Props) {
   return (
-    <div className="px-5 py-6">
+    <div className="px-6 py-8">
       <SectionLabel className="mb-3">What We Learn</SectionLabel>
-      <p className="text-sm text-ink-dim leading-relaxed">{content}</p>
+      <p className="prose-post text-ink-dim">{content}</p>
     </div>
   )
 }

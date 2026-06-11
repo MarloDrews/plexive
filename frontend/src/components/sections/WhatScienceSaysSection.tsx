@@ -9,9 +9,9 @@ interface Props {
 
 export default function WhatScienceSaysSection({ content, isUserContent }: Props) {
   return (
-    <div className="px-5 py-6 flex flex-col gap-4">
+    <div className="px-6 py-8 flex flex-col gap-4">
       <SectionLabel>What Science Says</SectionLabel>
-      <p className="text-sm text-ink-body leading-relaxed">{content.body}</p>
+      <p className="prose-post">{content.body}</p>
       {content.key_findings && content.key_findings.length > 0 && (
         <ul className="flex flex-col gap-2">
           {content.key_findings.map((finding, i) => (

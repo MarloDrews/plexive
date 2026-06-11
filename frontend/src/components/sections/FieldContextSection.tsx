@@ -7,9 +7,9 @@ interface Props {
 
 export default function FieldContextSection({ content }: Props) {
   return (
-    <div className="px-5 py-6 flex flex-col gap-4">
+    <div className="px-6 py-8 flex flex-col gap-4">
       <SectionLabel>Field Context</SectionLabel>
-      <p className="text-sm text-ink-dim leading-relaxed">{content.body}</p>
+      <p className="prose-post text-ink-dim">{content.body}</p>
       {content.key_priors.length > 0 && (
         <div className="flex flex-col gap-3">
           <p className="text-xs uppercase tracking-widest text-ink-faint">Key prior work</p>

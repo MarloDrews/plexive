@@ -17,9 +17,9 @@ interface Props {
 
 export default function OriginSection({ content }: Props) {
   return (
-    <div className="px-5 py-6 flex flex-col gap-4">
+    <div className="px-6 py-8 flex flex-col gap-4">
       <SectionLabel>Origin</SectionLabel>
-      <p className="text-sm text-ink-dim leading-relaxed">{content.body}</p>
+      <p className="prose-post text-ink-dim">{content.body}</p>
       {content.key_thinkers && content.key_thinkers.length > 0 && (
         <div className="flex flex-col gap-2">
           {content.key_thinkers.map((thinker, i) => (

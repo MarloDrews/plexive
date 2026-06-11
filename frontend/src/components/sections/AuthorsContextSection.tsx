@@ -7,7 +7,7 @@ interface Props {
 
 export default function AuthorsContextSection({ content }: Props) {
   return (
-    <div className="px-5 py-6 flex flex-col gap-4">
+    <div className="px-6 py-8 flex flex-col gap-4">
       <SectionLabel>{content.length === 1 ? "Author" : "Authors"}</SectionLabel>
       {content.map((author, i) => (
         <div key={i} className="flex flex-col gap-1">

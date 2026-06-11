@@ -9,12 +9,12 @@ interface Props {
 
 export default function AnglesSection({ content, isUserContent }: Props) {
   return (
-    <div className="px-5 py-6 flex flex-col gap-8">
+    <div className="px-6 py-8 flex flex-col gap-8">
       <SectionLabel>Multiple Angles</SectionLabel>
       {content.map((angle, i) => (
         <div key={i} className="flex flex-col gap-2">
           <h3 className="text-base font-semibold text-(--accent) leading-snug">{angle.title}</h3>
-          <p className="text-sm text-ink-body leading-relaxed">{angle.body}</p>
+          <p className="prose-post">{angle.body}</p>
           {angle.visual_svg && (
             <div className="w-full max-w-[360px] mx-auto bg-transparent mt-2">
               <SvgBlock svg={angle.visual_svg} isUserContent={isUserContent} />

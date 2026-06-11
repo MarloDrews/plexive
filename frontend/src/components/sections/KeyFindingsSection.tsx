@@ -10,12 +10,12 @@ interface Props {
 
 export default function KeyFindingsSection({ content, isUserContent }: Props) {
   return (
-    <div className="px-5 py-6 flex flex-col gap-5">
+    <div className="px-6 py-8 flex flex-col gap-5">
       <SectionLabel>Key Findings</SectionLabel>
       {content.map((item, i) => (
         <div key={i} className="flex flex-col gap-2">
           <p className="text-sm font-semibold text-ink">{item.title}</p>
-          <p className="text-sm text-ink-dim leading-relaxed">
+          <p className="prose-post text-ink-dim">
             <MathText text={item.finding} />
           </p>
           {item.visual_svg && (

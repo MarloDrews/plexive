@@ -40,7 +40,7 @@ function RelatedCard({ item }: { item: RelatedPostItem }) {
 
 export default function RelatedPostsSection({ content }: Props) {
   return (
-    <div className="px-5 py-6">
+    <div className="px-6 py-8">
       <div className="flex gap-3 overflow-x-auto pb-1">
         {content.map((item, i) => (
           <RelatedCard key={i} item={item} />

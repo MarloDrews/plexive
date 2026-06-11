@@ -13,9 +13,9 @@ interface Props {
 
 export default function MentalTakeawaySection({ content, isUserContent }: Props) {
   return (
-    <div className="px-5 py-6 flex flex-col gap-4">
+    <div className="px-6 py-8 flex flex-col gap-4">
       <SectionLabel>Mental Takeaway</SectionLabel>
-      <p className="text-sm text-ink-body leading-relaxed">{content.body}</p>
+      <p className="prose-post">{content.body}</p>
       {content.visual_svg && (
         <SvgBlock
           svg={content.visual_svg}

@@ -13,7 +13,7 @@ interface Props {
 
 export default function VisualExplanationSection({ content, isUserContent }: Props) {
   return (
-    <div className="px-5 py-6 flex flex-col gap-3">
+    <div className="px-6 py-8 flex flex-col gap-3">
       <SectionLabel>Visual Explanation</SectionLabel>
       <SvgBlock
         svg={content.visual_svg}

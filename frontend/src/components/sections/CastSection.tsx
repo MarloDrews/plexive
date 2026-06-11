@@ -7,7 +7,7 @@ interface Props {
 
 export default function CastSection({ content }: Props) {
   return (
-    <div className="px-5 py-6 flex flex-col gap-4">
+    <div className="px-6 py-8 flex flex-col gap-4">
       <SectionLabel>Cast</SectionLabel>
       <div className="flex flex-col gap-3">
         {content.map((member, i) => (

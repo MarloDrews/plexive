@@ -9,9 +9,9 @@ interface Props {
 
 export default function StorySection({ content, isUserContent }: Props) {
   return (
-    <div className="px-5 py-6 flex flex-col gap-5">
+    <div className="px-6 py-8 flex flex-col gap-5">
       <SectionLabel>The Story Behind It</SectionLabel>
-      <p className="text-base text-ink-body leading-relaxed">{content.body}</p>
+      <p className="prose-post">{content.body}</p>
 
       {content.visual_svg && (
         <div className="w-full max-w-[360px] mx-auto bg-transparent">

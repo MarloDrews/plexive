@@ -5,9 +5,9 @@ interface Props {
 
 export default function WhatDroveThemSection({ content }: Props) {
   return (
-    <div className="px-5 py-6">
+    <div className="px-6 py-8">
       <SectionLabel className="mb-3">What Drove Them</SectionLabel>
-      <p className="text-base text-ink-body leading-relaxed">{content}</p>
+      <p className="prose-post">{content}</p>
     </div>
   )
 }

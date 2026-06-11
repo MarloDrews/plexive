@@ -14,7 +14,7 @@ function ExternalLinkIcon() {
 
 export default function AuthorContextSection({ content }: Props) {
   return (
-    <div className="px-5 py-6">
+    <div className="px-6 py-8">
       <div className={`flex gap-4 ${content.image_url ? "items-start" : ""}`}>
         {content.image_url && (
           <div className="shrink-0">
@@ -31,7 +31,7 @@ export default function AuthorContextSection({ content }: Props) {
           </div>
         )}
         <div className="flex flex-col gap-2">
-          <p className="text-sm text-ink-dim leading-relaxed">{content.body}</p>
+          <p className="prose-post text-ink-dim">{content.body}</p>
           {content.wikipedia_url && (
             <a
               href={content.wikipedia_url}

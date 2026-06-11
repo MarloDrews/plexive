@@ -19,10 +19,10 @@ function DisplayMath({ latex }: { latex: string }) {
 
 export default function FormalismSection({ content }: Props) {
   return (
-    <div className="px-5 py-6 flex flex-col gap-5">
+    <div className="px-6 py-8 flex flex-col gap-5">
       <SectionLabel>Formalism</SectionLabel>
 
-      <p className="text-sm text-ink-dim leading-relaxed">
+      <p className="prose-post text-ink-dim">
         <MathText text={content.body} />
       </p>
 
@@ -33,7 +33,7 @@ export default function FormalismSection({ content }: Props) {
             <div className="bg-surface-1 rounded-card px-4 py-3 border border-edge">
               <DisplayMath latex={eq.latex} />
             </div>
-            <p className="text-sm text-ink-dim leading-relaxed">
+            <p className="prose-post text-ink-dim">
               <MathText text={eq.description} />
             </p>
           </div>

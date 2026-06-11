@@ -19,7 +19,7 @@ interface Props {
 
 export default function DefiningMomentsSection({ content, isUserContent }: Props) {
   return (
-    <div className="px-5 py-6 flex flex-col gap-10">
+    <div className="px-6 py-8 flex flex-col gap-10">
       <SectionLabel className="-mb-4">Defining Moments</SectionLabel>
       {content.map((episode, i) => (
         <div key={i} className="flex flex-col gap-3">
@@ -30,7 +30,7 @@ export default function DefiningMomentsSection({ content, isUserContent }: Props
             )}
           </div>
           <h4 className="text-lg font-semibold text-ink leading-snug">{episode.title}</h4>
-          <p className="text-base text-ink-body leading-relaxed">{episode.body}</p>
+          <p className="prose-post">{episode.body}</p>
 
           {episode.visual_svg && episode.visual_svg.length > 0 && (
             <SvgBlock svg={episode.visual_svg} isUserContent={isUserContent} className="w-full max-w-[400px] mx-auto my-3" />

@@ -17,10 +17,10 @@ interface Props {
 
 export default function GreatestWorkSection({ content, isUserContent }: Props) {
   return (
-    <div className="px-5 py-6 flex flex-col gap-3">
+    <div className="px-6 py-8 flex flex-col gap-3">
       <SectionLabel>Greatest Work</SectionLabel>
       <h2 className="text-lg font-semibold text-(--accent) leading-snug">{content.title}</h2>
-      <p className="text-base text-ink-body leading-relaxed">{content.body}</p>
+      <p className="prose-post">{content.body}</p>
 
       {content.visual_svg && (
         <SvgBlock svg={content.visual_svg} isUserContent={isUserContent} className="w-full max-w-[400px] mx-auto my-4" />

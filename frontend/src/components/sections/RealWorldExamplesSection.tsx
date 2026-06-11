@@ -12,7 +12,7 @@ interface Props {
 
 export default function RealWorldExamplesSection({ content }: Props) {
   return (
-    <div className="px-5 py-6 flex flex-col gap-8">
+    <div className="px-6 py-8 flex flex-col gap-8">
       <SectionLabel className="-mb-4">Real-World Examples</SectionLabel>
       {content.map((example, i) => (
         <div key={i} className="flex flex-col gap-2">
@@ -20,7 +20,7 @@ export default function RealWorldExamplesSection({ content }: Props) {
             <h3 className="text-sm font-semibold text-ink leading-snug">{example.title}</h3>
             <p className="text-xs text-(--accent)/80 font-semibold tracking-widest uppercase mt-0.5">{example.domain}</p>
           </div>
-          <p className="text-sm text-ink-dim leading-relaxed">{example.body}</p>
+          <p className="prose-post text-ink-dim">{example.body}</p>
         </div>
       ))}
     </div>
