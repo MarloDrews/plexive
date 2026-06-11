@@ -1,3 +1,4 @@
+import time
 from datetime import datetime, timedelta
 from typing import List
 
@@ -76,8 +77,22 @@ def _milestone_date(dt) -> str | None:
     return dt.strftime("%Y-%m-%d")
 
 
+# The global stats payload is identical for every caller, so one in-process
+# snapshot serves all requests for its lifetime (the data lives in a remote
+# DB and the endpoint costs ~16 round trips). Cache reads and the swap below
+# are single assignments of one tuple, safe under FastAPI's threadpool
+# without a lock.
+_GLOBAL_STATS_TTL_SECONDS = 60
+_global_stats_cache: tuple | None = None  # (monotonic_timestamp, payload)
+
+
 @router.get("/stats/global")
 def get_global_stats(db: Session = Depends(get_db)):
+    global _global_stats_cache
+    cached = _global_stats_cache
+    if cached is not None and time.monotonic() - cached[0] < _GLOBAL_STATS_TTL_SECONDS:
+        return cached[1]
+
     # --- Overview ---
     # One round trip instead of four scalar queries: the DB is remote, so
     # every query costs a full network round trip regardless of data size.
@@ -330,7 +345,7 @@ def get_global_stats(db: Session = Depends(get_db)):
         .all()
     ]
 
-    return {
+    payload = {
         "overview": {
             "total_posts": total_posts,
             "total_users": total_users,
@@ -358,6 +373,8 @@ def get_global_stats(db: Session = Depends(get_db)):
         "pending_vs_published": {"published": published_count, "pending": pending_count},
         "comment_activity_by_user": comment_activity_by_user,
     }
+    _global_stats_cache = (time.monotonic(), payload)
+    return payload
 
 
 @router.get("/stats/me")
