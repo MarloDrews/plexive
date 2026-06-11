@@ -1,14 +1,16 @@
 import os
+from typing import Optional
 
 from supabase import Client, create_client
 
-SUPABASE_URL = os.environ["SUPABASE_URL"]
-_service_key = os.environ["SUPABASE_SERVICE_KEY"]
-SUPABASE_BUCKET = "uploads"
-
 MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024   # 5 MB
 MAX_SVG_SIZE_BYTES   = 512 * 1024         # 512 KB
+SUPABASE_BUCKET = "uploads"
 
-# Initialized once at startup; uses the service_role key so it can write to
-# storage without depending on user auth tokens.
-supabase_client: Client = create_client(SUPABASE_URL, _service_key)
+_url = os.environ.get("SUPABASE_URL", "")
+_key = os.environ.get("SUPABASE_SERVICE_KEY", "")
+
+# None when env vars are missing (local dev without Supabase).
+# Upload endpoints will return 503 in that case.
+supabase_client: Optional[Client] = create_client(_url, _key) if _url and _key else None
+SUPABASE_URL = _url

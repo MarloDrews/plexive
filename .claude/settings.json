@@ -6,5 +6,26 @@
       "Skill(code-review)",
       "Skill(code-review:*)"
     ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(git commit *)",
+            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"COMMIT RULES (.claude/skills/commit.md): type(scope): description — types: feat/fix/docs/style/refactor/chore. English only. Short and clear. NO co-author lines.\"}}'",
+            "shell": "bash"
+          },
+          {
+            "type": "command",
+            "if": "Bash(git merge *)",
+            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"COMMIT RULES (.claude/skills/commit.md): Any merge commit must follow conventional commits format. English only. NO co-author lines.\"}}'",
+            "shell": "bash"
+          }
+        ]
+      }
+    ]
   }
 }

@@ -219,8 +219,8 @@ body::before {
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    width: 2.75rem;
-    height: 2.75rem;
+    width: 2.25rem;
+    height: 2.25rem;
     border-radius: 9999px;
     border: none;
     background: transparent;

@@ -27,6 +27,8 @@ async def upload_image(
         ext = "jpg"
     filename = f"{uuid.uuid4()}.{ext}"
     path = f"images/{filename}"
+    if supabase_client is None:
+        raise HTTPException(status_code=503, detail="Storage not configured")
     supabase_client.storage.from_(SUPABASE_BUCKET).upload(
         path=path,
         file=data,

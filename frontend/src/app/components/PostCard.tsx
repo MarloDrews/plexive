@@ -493,7 +493,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
       </div>
 
       {/* Action buttons — icon-only pill buttons per the Lamplight design spec. */}
-      <div className="absolute right-2 z-10 flex flex-col items-center gap-0" style={{ bottom: "calc(3.5rem + env(safe-area-inset-bottom) + 0.5rem)" }}>
+      <div className="absolute right-2 z-10 flex flex-col items-center gap-1" style={{ bottom: "64px" }}>
         {/* Like */}
         <div className="flex flex-col items-center">
           <button
@@ -514,7 +514,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
             </svg>
           </button>
-          <span className={`text-xs font-mono leading-none mb-2 transition-colors duration-150 ${liked ? "text-lamp" : "text-ink-dim"}`}>{likesCount}</span>
+          <span className={`text-xs font-mono leading-none transition-colors duration-150 ${liked ? "text-lamp" : "text-ink-dim"}`}>{likesCount}</span>
         </div>
 
         {/* Comment */}
@@ -537,7 +537,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
             </svg>
           </button>
-          <span className="text-xs text-ink-dim font-mono leading-none mb-2">{commentsCount}</span>
+          <span className="text-xs text-ink-dim font-mono leading-none">{commentsCount}</span>
         </div>
 
         {/* Save */}
@@ -560,7 +560,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
               <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
             </svg>
           </button>
-          <span className={`text-xs font-mono leading-none mb-2 transition-colors duration-150 ${saved ? "text-lamp" : "text-ink-dim"}`}>{saveCount}</span>
+          <span className={`text-xs font-mono leading-none transition-colors duration-150 ${saved ? "text-lamp" : "text-ink-dim"}`}>{saveCount}</span>
         </div>
 
         {/* Share */}
