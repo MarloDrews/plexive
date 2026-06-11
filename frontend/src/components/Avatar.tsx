@@ -1,10 +1,21 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
+const RING_COLOR: Record<number, string> = {
+  1: "var(--color-fmt-concepts)",
+  2: "var(--color-good)",
+  3: "var(--color-fmt-academy)",
+}
+
+function ringColor(level: number): string {
+  return RING_COLOR[level] ?? RING_COLOR[3]
+}
+
 interface Props {
   username: string
   avatarUrl?: string | null
   // diameter in px
   size: number
+  verified?: number
   className?: string
 }
 
@@ -15,7 +26,11 @@ function resolveUrl(url: string): string {
   return url.startsWith("/uploads/") ? `${API_URL}${url}` : url
 }
 
-export default function Avatar({ username, avatarUrl, size, className = "" }: Props) {
+export default function Avatar({ username, avatarUrl, size, verified = 0, className = "" }: Props) {
+  const ringStyle = verified > 0
+    ? { boxShadow: `0 0 0 2px var(--color-surface-0), 0 0 0 4px ${ringColor(verified)}` }
+    : {}
+
   if (avatarUrl) {
     return (
       // eslint-disable-next-line @next/next/no-img-element
@@ -25,14 +40,14 @@ export default function Avatar({ username, avatarUrl, size, className = "" }: Pr
         width={size}
         height={size}
         className={`rounded-full object-cover shrink-0 ${className}`}
-        style={{ width: size, height: size }}
+        style={{ width: size, height: size, ...ringStyle }}
       />
     )
   }
   return (
     <div
       className={`rounded-full bg-surface-3 border border-edge flex items-center justify-center shrink-0 ${className}`}
-      style={{ width: size, height: size }}
+      style={{ width: size, height: size, ...ringStyle }}
     >
       {/* Serif initial, like a drop cap (Lamplight identity). */}
       <span
