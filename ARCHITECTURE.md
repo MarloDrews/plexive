@@ -63,7 +63,7 @@ frontend/
     profile/
       page.tsx                  account page: Avatar with camera-button upload (POST /api/auth/me/avatar), @username, email, "View public profile" link, knowledge score card (global + per-format chips from /api/users/{me}/elo), My posts / Saved posts card rows, bio card (160 chars), private account toggle (PATCH /api/auth/me), follow requests panel with avatars (private accounts only, accept/decline each), inline forms for change username / change password / sign out / delete account; BottomNav (profile active)
       [username]/
-        page.tsx                public profile: header with back + settings/more-options, 72px Avatar (uploaded picture or initial), verified badge, bio, stats row (posts/followers/following/knowledge Elo); followers+following counts open a bottom-sheet user list; follow/unfollow button (optimistic update written into the SWR cache, revalidate false), Posts|Saved|Liked tabs; profile/elo/posts via useSWR (/api/users/{username}/profile, /elo, /api/feed/user/{username}) — revisits render cached instantly with silent background refresh; BottomNav (profile active)
+        page.tsx                public profile: header with back + settings/more-options, 72px Avatar (uploaded picture or initial), verified badge, bio, stats row (posts/followers/following/knowledge Elo); followers+following counts open a bottom-sheet user list; follow/unfollow button (optimistic update written into the SWR cache, revalidate false), Posts|Saved|Liked tabs (own-profile Saved/Liked per-id fetches run on first tab open, not on mount); profile/elo/posts via useSWR (/api/users/{username}/profile, /elo, /api/feed/user/{username}) — revisits render cached instantly with silent background refresh; BottomNav (profile active)
     search/
       page.tsx                  search input + Posts|Accounts scope toggle; posts scope: format chips + compact result cards; accounts scope: /api/search/users rows with Avatar, verified badge, bio and follow/unfollow button; debounced 300ms; BottomNav (search active)
     create/
@@ -85,7 +85,6 @@ frontend/
       Providers.tsx              "use client" boundary; wraps children with AuthProvider + SWRConfig (jsonFetcher as default fetcher; focus/reconnect revalidation off to keep request patterns unchanged) so layout.tsx stays a Server Component
     lib/
       eventQueue.ts             module-level batch queue; flushes every 5s or at 5 events to POST /api/events with Authorization header when token present; exports hasPendingLike/cancelPendingLike so unlike-before-flush can cancel an in-flight event; deduplicates "like" events per post_id within the current queue
-      useWikipediaImage.ts      hook — fetches portrait from Wikipedia REST API for people posts without image_url; returns thumbnail or original size
       auth.tsx                  AuthContext + AuthProvider: stores JWT in localStorage under "deepscroll_token", restores session via /api/auth/me on load, exposes user/login/register/logout/updateUser/loading; normalizes FastAPI string/array error details; clears the SWR cache on login/register/logout so no cached data crosses accounts
       api.ts                    apiFetch wrapper: prepends NEXT_PUBLIC_API_URL, attaches Authorization: Bearer header when token present; skips Content-Type for FormData bodies
       swr.ts                    SWR cache plumbing: jsonFetcher (apiFetch-backed, throws ApiError with status), clearApiCache() global wipe used by auth.tsx; updatePostInFeedCaches(postId, patch) patches a post in all cached /api/feed* lists (comment-count write-through), invalidateFeedCaches() drops them (called after post creation)
@@ -371,7 +370,7 @@ attributes. Never use `dangerouslySetInnerHTML` to render comment text.
 | sections/CoreIdeasSection.tsx | per-idea: amber title h2, body, SVG block (w-full max-w-[360px] wrapper so flex context doesn't collapse it; dangerouslySetInnerHTML if !isUserContent, base64 img if isUserContent; color #e4e4e7 for currentColor), image, pull-quote, amber callout for in_practice |
 | sections/TakeawaySection.tsx | framework framing: amber card; question framing: large centered amber text; optional SVG |
 | sections/QuizSection.tsx | client component; tappable options POST /api/quiz/answer; green/red correctness + explanation + Elo delta chip; restores answered state from GET /api/quiz/state; summary card with score when all answered; log-in hint for anonymous users |
-| Avatar.tsx (src/components) | shared avatar: Supabase URLs used as-is; legacy /uploads/ paths get API_URL prepended; initial-letter fallback; size prop; verified: number prop adds boxShadow ring (1=slate-blue, 2=gold, 3+=purple) |
+| Avatar.tsx (src/components) | shared avatar: Supabase URLs used as-is; legacy /uploads/ paths get API_URL prepended; initial-letter fallback; size prop; verified: number prop adds boxShadow ring (1=slate-blue, 2=gold, 3+=purple); img lazy-loaded (loading=lazy decoding=async, same attrs added to my-posts thumbnails and section images missing them; detail hero stays eager) |
 | sections/RelatedPostsSection.tsx | horizontal scroll row; post_id empty → non-clickable with "Coming soon" label |
 | sections/WorldContextSection.tsx | secondary text with heading |
 | sections/AuthorContextSection.tsx | portrait + text + Wikipedia external link |
@@ -402,7 +401,6 @@ attributes. Never use `dangerouslySetInnerHTML` to render comment text.
 | search/page.tsx        | search input + format chips (All + 7 formats from lib/formats.ts) + compact result cards; debounced 300ms; links to post detail; shows inline verified badge next to author_username if author_is_verified; BottomNav (search active) |
 | InterestPicker.tsx     | onboarding pill grid; 10 category sections + Other; fetches own data; gates entry to feed via localStorage |
 | eventQueue.ts          | batches view/like events and POSTs them in groups rather than one-by-one    |
-| useWikipediaImage.ts   | fetches Wikipedia portrait for people posts lacking image_url; thumbnail or original size |
 | auth.tsx               | AuthContext/Provider: JWT in localStorage, session restore via /me, login/register/logout/loading; AuthUser includes is_private and bio |
 | api.ts                 | apiFetch: adds Authorization header when token present                      |
 | Providers.tsx          | client boundary so layout.tsx (Server Component) can mount AuthProvider     |
