@@ -116,7 +116,7 @@ export default function HomeScreen() {
         tabs={TABS}
         activeIndex={activeIndex}
         onTabPress={goToTab}
-        onSearchPress={onComingSoon}
+        onSearchPress={() => router.push("/search")}
       />
       <BottomNav active="feed" onComingSoon={onComingSoon} />
       <Toast message={message} />
