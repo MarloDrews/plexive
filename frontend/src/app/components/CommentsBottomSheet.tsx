@@ -4,9 +4,8 @@ import { useEffect, useRef, useState } from "react"
 import { createPortal } from "react-dom"
 import Link from "next/link"
 import { useAuth } from "../lib/auth"
-import { apiFetch } from "../lib/api"
+import { useComments } from "../lib/useComments"
 import { relativeTime } from "../lib/relativeTime"
-import { type Comment } from "./CommentsSection"
 import VerifiedBadge from "@/components/VerifiedBadge"
 
 interface Props {
@@ -17,10 +16,8 @@ interface Props {
 
 export default function CommentsBottomSheet({ postId, onClose, onCountChange }: Props) {
   const { user } = useAuth()
-  const [comments, setComments] = useState<Comment[]>([])
-  const [deletingId, setDeletingId] = useState<number | null>(null)
+  const { comments, posting, deletingId, postComment, deleteComment } = useComments(postId, onCountChange)
   const [draft, setDraft] = useState("")
-  const [posting, setPosting] = useState(false)
   const [expanded, setExpanded] = useState(false)
   // Positive value = sheet dragged downward (visual feedback only)
   const [dragDelta, setDragDelta] = useState(0)
@@ -28,25 +25,9 @@ export default function CommentsBottomSheet({ postId, onClose, onCountChange }: 
   const dragRef = useRef<HTMLDivElement>(null)
   const dragStartY = useRef(0)
   const inputRef = useRef<HTMLInputElement>(null)
-  const loadedRef = useRef(false)
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => { setMounted(true) }, [])
-
-  useEffect(() => {
-    apiFetch(`/api/posts/${postId}/comments`)
-      .then((r) => r.json())
-      .then((data: Comment[]) => {
-        loadedRef.current = true
-        setComments(data)
-      })
-      .catch(() => {})
-  }, [postId])
-
-  useEffect(() => {
-    if (loadedRef.current) onCountChange?.(comments.length)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [comments.length])
 
   // Drag handle: swipe up → expand to 75 vh, swipe down → collapse or close
   useEffect(() => {
@@ -85,34 +66,9 @@ export default function CommentsBottomSheet({ postId, onClose, onCountChange }: 
     }
   }, [expanded, onClose])
 
-  async function handleDelete(commentId: number) {
-    if (deletingId !== null) return
-    setDeletingId(commentId)
-    try {
-      const r = await apiFetch(`/api/comments/${commentId}`, { method: "DELETE" })
-      if (r.ok) setComments((prev) => prev.filter((c) => c.id !== commentId))
-    } finally {
-      setDeletingId(null)
-    }
-  }
-
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    const body = draft.trim()
-    if (!body || posting) return
-    setPosting(true)
-    try {
-      const r = await apiFetch(`/api/posts/${postId}/comments`, {
-        method: "POST",
-        body: JSON.stringify({ body }),
-      })
-      if (!r.ok) return
-      const created: Comment = await r.json()
-      setComments((prev) => [created, ...prev])
-      setDraft("")
-    } finally {
-      setPosting(false)
-    }
+    if (await postComment(draft)) setDraft("")
   }
 
   if (!mounted) return null
@@ -168,7 +124,7 @@ export default function CommentsBottomSheet({ postId, onClose, onCountChange }: 
                   <span className="text-xs text-ink-muted">{relativeTime(comment.created_at)}</span>
                   {user?.username === comment.username && (
                     <button
-                      onClick={() => handleDelete(comment.id)}
+                      onClick={() => deleteComment(comment.id)}
                       disabled={deletingId === comment.id}
                       className="btn btn-destructive ml-auto px-2.5 py-1 text-xs"
                     >
