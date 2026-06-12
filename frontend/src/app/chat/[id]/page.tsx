@@ -4,7 +4,6 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import Avatar from "@/components/Avatar"
-import Spinner from "@/components/Spinner"
 import { apiFetch } from "@/app/lib/api"
 import { useAuth } from "@/app/lib/auth"
 import {
@@ -71,11 +70,13 @@ export default function ConversationPage() {
 
   if (!authLoading && !user) {
     return (
-      <div className="h-[100dvh] bg-surface-0 flex flex-col items-center justify-center gap-3 px-8 text-center">
-        <p className="font-serif text-ink font-medium text-lg">Log in to see your messages</p>
-        <Link href="/login" className="btn btn-primary px-5 py-2">
-          Log in
-        </Link>
+      <div className="h-[100dvh] bg-surface-0 flex items-center justify-center px-6">
+        <div className="card px-8 py-10 text-center max-w-xs flex flex-col items-center gap-3">
+          <p className="font-serif text-ink font-medium text-lg">Log in to see your messages</p>
+          <Link href="/login" className="btn btn-primary px-5 py-2">
+            Log in
+          </Link>
+        </div>
       </div>
     )
   }
@@ -88,8 +89,8 @@ export default function ConversationPage() {
     <div className="h-[100dvh] bg-surface-0 flex justify-center">
       <div className="w-full max-w-[430px] h-[100dvh] flex flex-col">
 
-        {/* Header */}
-        <div className="flex items-center gap-2 px-3 py-2.5 border-b border-edge">
+        {/* Header — quiet chrome row, no hairline */}
+        <div className="flex items-center gap-2 px-3 py-2.5">
           <button
             onClick={() => router.push("/chat")}
             className="btn-icon shrink-0"
@@ -124,8 +125,11 @@ export default function ConversationPage() {
               <p className="text-ink-muted text-sm">Conversation not found.</p>
             </div>
           ) : messages === null ? (
-            <div className="flex-1 flex items-center justify-center">
-              <Spinner />
+            // Loading: pulsing bubbles where the history will appear.
+            <div className="flex-1 flex flex-col justify-end gap-2 pb-2">
+              <div className="stage-pulse self-start w-48 h-10 rounded-2xl bg-white/[0.04]" />
+              <div className="stage-pulse self-end w-40 h-10 rounded-2xl bg-white/[0.04]" />
+              <div className="stage-pulse self-start w-32 h-10 rounded-2xl bg-white/[0.04]" />
             </div>
           ) : messages.length === 0 ? (
             <div className="flex-1 flex items-center justify-center">
@@ -145,7 +149,7 @@ export default function ConversationPage() {
                   )}
                   <div
                     className={`max-w-[80%] rounded-2xl px-3.5 py-2 text-sm whitespace-pre-wrap break-words ${
-                      own ? "bg-ink text-surface-0" : "bg-surface-2 text-ink-body"
+                      own ? "bg-white/[0.14] text-ink" : "bg-surface-2 text-ink-body"
                     }`}
                   >
                     {m.body}
@@ -157,9 +161,9 @@ export default function ConversationPage() {
           <div ref={bottomRef} />
         </div>
 
-        {/* Input */}
+        {/* Input — borderless bar, safe-area aware */}
         <div
-          className="px-3 py-2 border-t border-edge"
+          className="px-3 py-2"
           style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 8px)" }}
         >
           {error && <p className="text-bad text-xs pb-1.5">{error}</p>}

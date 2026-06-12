@@ -7,7 +7,6 @@ import useSWR from "swr"
 import BottomNav from "@/app/components/BottomNav"
 import Avatar from "@/components/Avatar"
 import VerifiedBadge from "@/components/VerifiedBadge"
-import Spinner from "@/components/Spinner"
 import { apiFetch } from "@/app/lib/api"
 import { useAuth } from "@/app/lib/auth"
 import { relativeTime } from "@/app/lib/relativeTime"
@@ -23,7 +22,7 @@ interface UserResult {
 function ConversationAvatar({ conv, me }: { conv: Conversation; me: string }) {
   if (conv.is_group) {
     return (
-      <div className="w-[48px] h-[48px] rounded-full bg-surface-3 border border-edge flex items-center justify-center shrink-0">
+      <div className="w-[48px] h-[48px] rounded-full bg-white/[0.06] flex items-center justify-center shrink-0">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-ink-dim">
           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
           <circle cx="9" cy="7" r="4" />
@@ -107,7 +106,7 @@ function NewChatOverlay({ onClose, onCreated }: { onClose: () => void; onCreated
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search people you follow…"
           autoFocus
-          className="field mt-2 text-sm py-2.5"
+          className="field rounded-full mt-2 text-sm py-2.5"
         />
         {selected.length > 0 && (
           <div className="flex gap-2 mt-2 flex-wrap">
@@ -115,7 +114,7 @@ function NewChatOverlay({ onClose, onCreated }: { onClose: () => void; onCreated
               <button
                 key={u.username}
                 onClick={() => toggle(u)}
-                className="flex items-center gap-1.5 bg-surface-2 border border-edge rounded-full pl-1 pr-2.5 py-1 text-xs text-ink cursor-pointer"
+                className="flex items-center gap-1.5 bg-white/[0.06] rounded-full pl-1 pr-2.5 py-1 text-xs text-ink cursor-pointer"
               >
                 <Avatar username={u.username} avatarUrl={u.avatar_url} size={20} />
                 @{u.username}
@@ -131,7 +130,7 @@ function NewChatOverlay({ onClose, onCreated }: { onClose: () => void; onCreated
             onChange={(e) => setGroupName(e.target.value)}
             placeholder="Group name (optional)"
             maxLength={80}
-            className="field mt-2 text-sm py-2.5"
+            className="field rounded-full mt-2 text-sm py-2.5"
           />
         )}
         {error && <p className="text-bad text-xs mt-2">{error}</p>}
@@ -224,30 +223,37 @@ export default function ChatPage() {
 
         <div className="flex-1 overflow-y-auto pb-24 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
           {!authLoading && !user ? (
-            <div className="h-full flex flex-col items-center justify-center gap-3 px-8 text-center">
-              <p className="font-serif text-ink font-medium text-lg">Message people you follow</p>
-              <Link href="/login" className="btn btn-primary px-5 py-2">
-                Log in
-              </Link>
+            <div className="h-full flex items-center justify-center px-6">
+              <div className="card px-8 py-10 text-center max-w-xs flex flex-col items-center gap-3">
+                <p className="font-serif text-ink font-medium text-lg">Message people you follow</p>
+                <Link href="/login" className="btn btn-primary px-5 py-2">
+                  Log in
+                </Link>
+              </div>
             </div>
           ) : conversations === null ? (
-            <div className="h-full flex items-center justify-center">
-              <Spinner />
+            // Loading: pulsing slab rows where conversations will appear.
+            <div className="flex flex-col gap-2 px-3 pt-2">
+              <div className="stage-pulse card h-16 w-full" />
+              <div className="stage-pulse card h-16 w-full" />
+              <div className="stage-pulse card h-16 w-full" />
             </div>
           ) : conversations.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center gap-3 px-8 text-center">
-              <p className="font-serif text-ink font-medium text-lg">No chats yet</p>
-              <p className="text-ink-muted text-sm">Start a conversation with someone you follow.</p>
-              <button onClick={() => setShowNew(true)} className="btn btn-primary px-5 py-2">
-                New chat
-              </button>
+            <div className="h-full flex items-center justify-center px-6">
+              <div className="card px-8 py-10 text-center max-w-xs flex flex-col items-center gap-3">
+                <p className="font-serif text-ink font-medium text-lg">No chats yet</p>
+                <p className="text-ink-muted text-sm">Start a conversation with someone you follow.</p>
+                <button onClick={() => setShowNew(true)} className="btn btn-primary px-5 py-2">
+                  New chat
+                </button>
+              </div>
             </div>
           ) : (
             conversations.map((conv) => (
               <button
                 key={conv.id}
                 onClick={() => router.push(`/chat/${conv.id}`)}
-                className="w-full flex items-center gap-3 px-4 py-3 text-left cursor-pointer active:bg-surface-1 hover:bg-surface-1 transition-colors duration-150"
+                className="w-full flex items-center gap-3 px-4 py-3 text-left cursor-pointer active:bg-white/[0.05] hover:bg-white/[0.05] transition-colors duration-150"
               >
                 <ConversationAvatar conv={conv} me={user?.username ?? ""} />
                 <div className="flex-1 min-w-0">
