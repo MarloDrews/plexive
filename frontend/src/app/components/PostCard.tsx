@@ -11,35 +11,77 @@ import { likePost, unlikePost, isPostLiked, getCachedLikeCount, setCachedLikeCou
 import { updatePostInFeedCaches } from "@/app/lib/swr"
 import { fcNum, fcStr, type Post } from "@/types/post"
 import { formatStyle } from "@/lib/formats"
+import Avatar from "@/components/Avatar"
+import VerifiedBadge from "@/components/VerifiedBadge"
 
 export type { Post }
 
 const MIN_DWELL_MS = 500
 
-// Difficulty dots take the per-format ink from the card's --accent variable.
+// Difficulty as three neutral dots; the per-format accent stays on the
+// format marker and the teaser bullets only.
 function DotScale({ value }: { value: 1 | 2 | 3 }) {
   return (
-    <span className="flex gap-0.5">
+    <span className="flex gap-1" aria-hidden="true">
       {[1, 2, 3].map((i) => (
         <span
           key={i}
-          className={`inline-block w-1.5 h-1.5 rounded-full ${i <= value ? "bg-(--accent)" : "bg-surface-3"}`}
+          className={`inline-block w-1 h-1 rounded-full ${i <= value ? "bg-ink-dim" : "bg-white/15"}`}
         />
       ))}
     </span>
   )
 }
 
-// Teaser bullet list shared by every format card.
+// Teaser bullets — a plain list, deliberately not container-shaped so the
+// teasers never read as tappable. The small accent markers are one of the
+// few post-owned accent elements.
 function Teasers({ items }: { items: string[] }) {
   return (
-    <div className="mt-2 space-y-1.5">
+    <div className="mt-1 space-y-2">
       {items.map((teaser, i) => (
         <div key={i} className="flex items-start gap-2.5">
-          <span className="text-(--accent) text-sm mt-0.5 shrink-0">&mdash;</span>
+          <span className="w-1 h-1 rounded-full bg-(--accent)/70 mt-[0.45rem] shrink-0" />
           <span className="text-sm text-ink-dim leading-snug">{teaser}</span>
         </div>
       ))}
+    </div>
+  )
+}
+
+// Slab footer: creator byline on the left, neutral reading metadata on the
+// right. Lives inside the slab so the card carries its own context.
+function CardFooter({
+  post,
+  fc,
+  extras = [],
+}: {
+  post: Post
+  fc: Post["feed_card"]
+  extras?: (string | number | null | undefined)[]
+}) {
+  const difficulty = fcNum(fc, "post_difficulty")
+  const minutes = fcNum(fc, "post_reading_time_min")
+  const metaText = [minutes > 0 ? `${minutes} min` : null, ...extras]
+    .filter((x) => x !== null && x !== undefined && x !== "" && x !== 0)
+    .join(" · ")
+  return (
+    <div className="flex items-center gap-2 pt-1 min-w-0">
+      {post.author_username && (
+        <span className="flex items-center gap-1.5 min-w-0">
+          <Avatar username={post.author_username} avatarUrl={post.author_avatar_url} size={24} />
+          <span className="text-xs text-ink-dim truncate">@{post.author_username}</span>
+          {(post.author_is_verified ?? 0) > 0 && (
+            <VerifiedBadge size={12} level={post.author_is_verified ?? 1} />
+          )}
+        </span>
+      )}
+      <span className="ml-auto flex items-center gap-2 shrink-0">
+        {difficulty > 0 && <DotScale value={difficulty as 1 | 2 | 3} />}
+        {metaText && (
+          <span className="text-[11px] font-mono text-ink-muted leading-none">{metaText}</span>
+        )}
+      </span>
     </div>
   )
 }
@@ -221,7 +263,9 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
       onClick={handleCardClick}
       // --accent drives every format-colored detail inside the card.
       style={{ cursor: "pointer", ["--accent" as string]: style.accent }}
-      className="h-[100dvh] relative overflow-hidden shrink-0 snap-start [scroll-snap-stop:always] flex flex-col bg-surface-0 pl-5 pr-5 pt-12 pb-8"
+      // Invariant wrapper: the vertical snap feed and scroll restore depend
+      // on these classes. One post fills the screen; nothing bleeds in.
+      className="h-[100dvh] relative overflow-hidden shrink-0 snap-start [scroll-snap-stop:always] bg-surface-0"
     >
       {/* Double-tap heart overlay */}
       {showHeartAnim && (
@@ -238,42 +282,33 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
         </div>
       )}
 
-      {/* Format indicator row */}
-      <div className="flex items-center justify-between relative z-10">
-        <div className="flex items-center gap-2">
-          <span
-            className={`w-2 h-2 rounded-full shrink-0 ${style.dot}`}
-            style={{ boxShadow: `0 0 8px 3px ${style.accent}dd, 0 0 20px 6px ${style.accent}66` }}
-          />
-          <span
-            className={`label-caps ${style.text}`}
-            style={{ textShadow: `0 0 5px ${style.accent}ff, 0 0 14px ${style.accent}dd, 0 0 30px ${style.accent}77` }}
-          >
-            {style.badge}
-          </span>
-        </div>
-        {null}
-      </div>
-
-      {/* Card body — centered vertically */}
-      <div className="flex-1 flex flex-col justify-center relative z-10">
+      {/* Content floats in the dark: marker + slab, centered vertically. */}
+      <div className="relative h-full flex flex-col justify-center px-5 pt-16 pb-28 z-10">
         <div
-          className={`relative transition-all duration-500 ease-out ${
-            visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"
+          className={`transition-all duration-500 ease-out ${
+            visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
+          {/* Format marker floating above the slab — the only accent chrome. */}
+          <div className="flex items-center gap-2 mb-3 pl-2">
+            <span className="w-1.5 h-1.5 rounded-full shrink-0 bg-(--accent)" />
+            <span className="text-xs font-mono lowercase tracking-widest text-ink-muted">
+              {style.badge.toLowerCase()}
+            </span>
+          </div>
+
           {post.format === "books" && fc ? (
-            <div className="card border-l-2 border-l-(--accent) px-6 py-7 flex flex-col gap-4">
+            <div className="card px-6 py-7 flex flex-col gap-4">
               {/* Title row + cover */}
               <div className="flex gap-4 items-start">
                 <div className="flex-1 min-w-0">
                   <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
                     {fc.title as string}
                   </h2>
-                  <p className="text-(--accent) text-sm font-medium mt-1">{fc.author as string}</p>
+                  <p className="text-ink-dim text-sm font-medium mt-1">{fc.author as string}</p>
                 </div>
                 {fcStr(fc, "cover_url") && (
-                  <div className="shrink-0 rounded-md overflow-hidden w-16 h-24 bg-surface-2 border border-edge">
+                  <div className="shrink-0 rounded-xl overflow-hidden w-16 h-24 bg-white/[0.06]">
                     <img
                       src={fcStr(fc, "cover_url")}
                       alt=""
@@ -293,22 +328,13 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
                 <Teasers items={fc.teasers as string[]} />
               )}
 
-              {/* Metadata bar */}
-              <div className="flex items-center gap-3 pt-2 border-t border-edge">
-                <DotScale value={fc.post_difficulty as 1 | 2 | 3} />
-                {fcNum(fc, "post_reading_time_min") > 0 && (
-                  <span className="text-ink-muted text-xs font-mono">{fcNum(fc, "post_reading_time_min")} min read</span>
-                )}
-                <span className="text-ink-muted text-xs font-mono">{fc.year as number}</span>
-                <span className="text-ink-faint text-xs">·</span>
-                <span className="text-ink-muted text-xs">{fc.genre as string}</span>
-              </div>
+              <CardFooter post={post} fc={fc} extras={[fc.year as number, fc.genre as string]} />
             </div>
           ) : post.format === "people" && fc ? (
-            <div className="card border-l-2 border-l-(--accent) px-6 py-7 flex flex-col gap-4">
+            <div className="card px-6 py-7 flex flex-col gap-4">
               <div className="flex gap-4 items-start">
                 {(fc.portrait as { image_url?: string } | undefined)?.image_url && (
-                  <div className="shrink-0 w-20 h-20 rounded-full overflow-hidden bg-surface-2 border border-(--accent)/40">
+                  <div className="shrink-0 w-20 h-20 rounded-full overflow-hidden bg-white/[0.06]">
                     <img
                       src={(fc.portrait as { image_url: string }).image_url}
                       alt=""
@@ -320,7 +346,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
                 )}
                 <div className="flex-1 min-w-0">
                   {fcStr(fc, "role") && (
-                    <p className="label-caps text-(--accent) mb-0.5">
+                    <p className="label-caps text-ink-muted mb-0.5">
                       {fcStr(fc, "role")}
                     </p>
                   )}
@@ -339,17 +365,12 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
                 <Teasers items={fc.teasers as string[]} />
               )}
 
-              <div className="flex items-center gap-3 pt-2 border-t border-edge">
-                <DotScale value={fc.post_difficulty as 1 | 2 | 3} />
-                {fcNum(fc, "post_reading_time_min") > 0 && (
-                  <span className="text-ink-muted text-xs font-mono">{fcNum(fc, "post_reading_time_min")} min read</span>
-                )}
-              </div>
+              <CardFooter post={post} fc={fc} />
             </div>
           ) : post.format === "facts" && fc ? (
-            <div className="card border-l-2 border-l-(--accent) px-6 py-7 flex flex-col gap-4">
+            <div className="card px-6 py-7 flex flex-col gap-4">
               {fcStr(fc, "field") && (
-                <p className="label-caps text-(--accent)">{fcStr(fc, "field")}</p>
+                <p className="label-caps text-ink-muted">{fcStr(fc, "field")}</p>
               )}
               <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
                 {fc.headline as string}
@@ -359,17 +380,12 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
                 <Teasers items={fc.teasers as string[]} />
               )}
 
-              <div className="flex items-center gap-3 pt-2 border-t border-edge">
-                <DotScale value={fc.post_difficulty as 1 | 2 | 3} />
-                {fcNum(fc, "post_reading_time_min") > 0 && (
-                  <span className="text-ink-muted text-xs font-mono">{fcNum(fc, "post_reading_time_min")} min read</span>
-                )}
-              </div>
+              <CardFooter post={post} fc={fc} />
             </div>
           ) : post.format === "concepts" && fc ? (
-            <div className="card border-l-2 border-l-(--accent) px-6 py-7 flex flex-col gap-4">
+            <div className="card px-6 py-7 flex flex-col gap-4">
               {fcStr(fc, "field") && (
-                <p className="label-caps text-(--accent)">{fcStr(fc, "field")}</p>
+                <p className="label-caps text-ink-muted">{fcStr(fc, "field")}</p>
               )}
               <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
                 {fcStr(fc, "concept_name")}
@@ -382,17 +398,12 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
                 <Teasers items={fc.teasers as string[]} />
               )}
 
-              <div className="flex items-center gap-3 pt-2 border-t border-edge">
-                <DotScale value={fc.post_difficulty as 1 | 2 | 3} />
-                {fcNum(fc, "post_reading_time_min") > 0 && (
-                  <span className="text-ink-muted text-xs font-mono">{fcNum(fc, "post_reading_time_min")} min read</span>
-                )}
-              </div>
+              <CardFooter post={post} fc={fc} />
             </div>
           ) : post.format === "questions" && fc ? (
-            <div className="card border-l-2 border-l-(--accent) px-6 py-7 flex flex-col gap-4">
+            <div className="card px-6 py-7 flex flex-col gap-4">
               {fcStr(fc, "field") && (
-                <p className="label-caps text-(--accent)">{fcStr(fc, "field")}</p>
+                <p className="label-caps text-ink-muted">{fcStr(fc, "field")}</p>
               )}
               <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
                 {fcStr(fc, "the_question")}
@@ -405,18 +416,13 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
                 <Teasers items={fc.teasers as string[]} />
               )}
 
-              <div className="flex items-center gap-3 pt-2 border-t border-edge">
-                <DotScale value={fc.post_difficulty as 1 | 2 | 3} />
-                {fcNum(fc, "post_reading_time_min") > 0 && (
-                  <span className="text-ink-muted text-xs font-mono">{fcNum(fc, "post_reading_time_min")} min read</span>
-                )}
-              </div>
+              <CardFooter post={post} fc={fc} />
             </div>
           ) : post.format === "stories" && fc ? (
-            <div className="card border-l-2 border-l-(--accent) px-6 py-7 flex flex-col gap-4">
+            <div className="card px-6 py-7 flex flex-col gap-4">
               <div className="flex items-center gap-2 flex-wrap">
                 {fcStr(fc, "era_label") && (
-                  <span className="label-caps text-(--accent)">
+                  <span className="label-caps text-ink-muted">
                     {fcStr(fc, "era_label")}
                   </span>
                 )}
@@ -432,20 +438,12 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
                 <Teasers items={fc.teasers as string[]} />
               )}
 
-              <div className="flex items-center gap-3 pt-2 border-t border-edge">
-                <DotScale value={fc.post_difficulty as 1 | 2 | 3} />
-                {fcNum(fc, "post_reading_time_min") > 0 && (
-                  <span className="text-ink-muted text-xs font-mono">{fcNum(fc, "post_reading_time_min")} min read</span>
-                )}
-                {fcStr(fc, "era") && (
-                  <span className="text-ink-faint text-xs font-mono">{fcStr(fc, "era")}</span>
-                )}
-              </div>
+              <CardFooter post={post} fc={fc} extras={[fcStr(fc, "era")]} />
             </div>
           ) : post.format === "academy" && fc ? (
-            <div className="card border-l-2 border-l-(--accent) px-6 py-7 flex flex-col gap-4">
+            <div className="card px-6 py-7 flex flex-col gap-4">
               {fcStr(fc, "field") && (
-                <p className="label-caps text-(--accent)">{fcStr(fc, "field")}</p>
+                <p className="label-caps text-ink-muted">{fcStr(fc, "field")}</p>
               )}
               <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
                 {fcStr(fc, "title") || post.title}
@@ -463,50 +461,36 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
               {Array.isArray(fc.teasers) && (fc.teasers as string[]).length > 0 && (
                 <Teasers items={fc.teasers as string[]} />
               )}
-              <div className="flex items-center gap-3 pt-2 border-t border-edge">
-                <DotScale value={fc.post_difficulty as 1 | 2 | 3} />
-                {fcNum(fc, "post_reading_time_min") > 0 && (
-                  <span className="text-ink-muted text-xs font-mono">{fcNum(fc, "post_reading_time_min")} min read</span>
-                )}
-                {(fc.published_year as number) > 0 && (
-                  <span className="text-ink-muted text-xs font-mono">{fc.published_year as number}</span>
-                )}
-              </div>
+              <CardFooter post={post} fc={fc} extras={[fc.published_year as number]} />
             </div>
           ) : (
             /* Fallback for unknown formats */
-            <div className="card border-l-2 border-l-(--accent) px-6 py-7 flex flex-col gap-4">
+            <div className="card px-6 py-7 flex flex-col gap-4">
               <h2 className="font-serif text-3xl font-medium tracking-tight text-ink leading-snug">
                 {post.title}
               </h2>
               {fcStr(fc, "essence") && (
                 <p className="font-serif italic text-base text-ink-body leading-relaxed">{fcStr(fc, "essence")}</p>
               )}
-            </div>
-          )}
-
-          {/* Author avatar — bottom-right corner of the card box */}
-          {post.author_username && (
-            <div className="absolute bottom-3 right-3 w-9 h-9 rounded-full bg-surface-2 border-2 border-edge-strong flex items-center justify-center shrink-0 overflow-hidden z-10">
-              <span className="text-sm font-semibold text-ink-dim uppercase">
-                {post.author_username[0]}
-              </span>
+              <CardFooter post={post} fc={fc} />
             </div>
           )}
         </div>
       </div>
 
-      {/* Interest tags */}
-      <div className="absolute top-[calc(100%-88px)] left-5 right-10 flex flex-wrap gap-2 z-10">
-        {post.interests.map((name) => (
-          <span
-            key={name}
-            className="bg-surface-2/90 border border-edge text-ink-dim text-xs px-2.5 py-1 rounded-full"
-          >
-            {name}
-          </span>
-        ))}
-      </div>
+      {/* Interest tags — floating pills bottom-left, clear of the actions. */}
+      {post.interests.length > 0 && (
+        <div className="absolute left-4 right-20 bottom-24 flex flex-wrap gap-2 z-10">
+          {post.interests.slice(0, 2).map((name) => (
+            <span
+              key={name}
+              className="rounded-full bg-white/[0.05] backdrop-blur-md text-ink-dim text-xs px-3 py-1.5"
+            >
+              {name}
+            </span>
+          ))}
+        </div>
+      )}
 
       {/* Action buttons — icon-only pill buttons per the Lamplight design spec. */}
       <div className="absolute right-2 z-10 flex flex-col items-center gap-1" style={{ bottom: "64px" }}>
