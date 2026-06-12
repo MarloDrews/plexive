@@ -8,9 +8,9 @@ import { Frosted } from "./stage"
 
 // Port of frontend/src/app/components/BottomNav.tsx (Stage): a frosted pill
 // dock floating inset from every edge; the active item is a filled neutral
-// circle — functional, never glow. Feed/Profile navigate like the web
+// circle — functional, never glow. Feed/Stats/Profile navigate like the web
 // (Profile goes to the own public profile, settings live behind its gear);
-// Chat/Stats/Create still report "coming soon" until those screens exist.
+// Chat/Create still report "coming soon" until those screens exist.
 
 const ICON_PROPS = {
   width: 20,
@@ -93,7 +93,10 @@ export default function BottomNav({
           </NavButton>
 
           {/* Stats — line chart (axes + rising trend), matching the web glyph */}
-          <NavButton onPress={active === "stats" ? () => {} : onComingSoon} active={active === "stats"}>
+          <NavButton
+            onPress={active === "stats" ? () => {} : () => router.push("/stats")}
+            active={active === "stats"}
+          >
             <Svg {...ICON_PROPS} stroke={iconColor("stats")}>
               <Path d="M3 3v18h18" />
               <Path d="m7 14 4-4 3 3 5-6" />
