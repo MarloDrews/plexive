@@ -201,8 +201,10 @@ export function GaugeChart({
   return (
     <View style={{ alignItems: "center" }}>
       <Svg width={size} height={size * 0.65}>
+        {/* Sweep flag 1: clockwise from the left end over the top — with
+            flag 0 the arc runs under the gauge and is clipped away. */}
         <Path
-          d={`M ${sx} ${sy} A ${r} ${r} 0 0 0 ${ex} ${ey}`}
+          d={`M ${sx} ${sy} A ${r} ${r} 0 0 1 ${ex} ${ey}`}
           fill="none"
           stroke={GAUGE_TRACK}
           strokeWidth={size * 0.065}
@@ -210,7 +212,7 @@ export function GaugeChart({
         />
         {pct > 0 && (
           <Path
-            d={`M ${sx} ${sy} A ${r} ${r} 0 0 0 ${fillEnd[0]} ${fillEnd[1]}`}
+            d={`M ${sx} ${sy} A ${r} ${r} 0 0 1 ${fillEnd[0]} ${fillEnd[1]}`}
             fill="none"
             stroke={color}
             strokeWidth={size * 0.065}
