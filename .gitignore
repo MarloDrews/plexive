@@ -16,6 +16,9 @@ node_modules/
 # User uploads (never commit user files)
 user_uploads/
 
+# Performance audit artifacts
+.perf/
+
 # Logs
 *.log
 .claude/skills/ui-ux-pro-max
