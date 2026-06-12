@@ -57,9 +57,9 @@ frontend/
       page.tsx                  server component — renders InterestPicker (no props)
       InterestPicker.tsx        client — fetches /api/interests, groups 145 frosted pills into 10 categories (chip-on neutral active fill), stage-pulse pill loading placeholders, sticky header/footer, saves slugs to localStorage
     login/
-      page.tsx                  login form in a frosted slab: pill email + password fields, inline error messages, redirects to / on success or if already logged in
+      page.tsx                  Stage sign-in: frosted back circle top-left (router.back()), Deepscroll label-caps + serif heading floating above the slab, form-only frosted slab (pill email + password fields, inline error, pill CTA), register link floating below; redirects to / on success or if already logged in
     register/
-      page.tsx                  register form in a frosted slab: pill email + username + password fields, inline error messages, redirects to / on success or if already logged in
+      page.tsx                  Stage register: same composition as login (back circle, floating heading, form-only slab with pill email + username + password fields, sign-in link below); redirects to / on success or if already logged in
     profile/
       page.tsx                  account page in Stage slabs: Avatar with frosted camera-button upload (POST /api/auth/me/avatar), @username, email, "View public profile" link, knowledge score slab (global + per-format frosted chips from /api/users/{me}/elo), My posts / Saved posts slab rows, bio slab (160 chars), private account toggle (off = white/10% fill, on = lamp), follow requests panel with avatars (private accounts only, accept/decline each), inline forms for change username / change password / sign out / delete account; followers/following list opens a Stage floating sheet (inset rounded-3xl, stage-sheet-in); BottomNav (profile active)
       [username]/

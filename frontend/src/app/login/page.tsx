@@ -35,13 +35,30 @@ export default function LoginPage() {
   // Render nothing while loading or redirecting to avoid a flash.
   if (loading || user) return null
 
+  // Stage composition: heading floats in the dark above the slab, the
+  // frosted slab holds only the form, the cross-link floats below it.
   return (
     <div className="h-[100dvh] bg-surface-0 flex justify-center">
-      <div className="w-full max-w-[430px] h-[100dvh] flex flex-col items-center justify-center px-6">
-        <div className="w-full card px-6 py-8">
-          <h1 className="font-serif text-ink text-2xl font-medium mb-1">Sign in</h1>
-          <p className="text-ink-muted text-sm mb-6">Welcome back to Deepscroll</p>
+      <div className="w-full max-w-[430px] h-[100dvh] relative flex flex-col justify-center px-6">
 
+        {/* Back — for someone who tapped into sign-in but wants to return */}
+        <button
+          onClick={() => router.back()}
+          className="btn-icon absolute top-4 left-4"
+          aria-label="Go back"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+        </button>
+
+        <div className="px-2 mb-5">
+          <p className="label-caps text-lamp">Deepscroll</p>
+          <h1 className="font-serif text-ink text-3xl font-medium leading-tight mt-3">Sign in</h1>
+          <p className="text-ink-dim text-sm mt-1.5">Welcome back</p>
+        </div>
+
+        <div className="card px-6 py-7">
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <input
               type="email"
@@ -50,7 +67,7 @@ export default function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               autoComplete="off"
               required
-              className="field rounded-full text-sm py-3"
+              className="field rounded-full text-sm px-5 py-3.5"
             />
             <input
               type="password"
@@ -59,9 +76,9 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               autoComplete="off"
               required
-              className="field rounded-full text-sm py-3"
+              className="field rounded-full text-sm px-5 py-3.5"
             />
-            {error && <p className="text-bad text-sm">{error}</p>}
+            {error && <p className="text-bad text-sm px-2">{error}</p>}
             <button
               type="submit"
               disabled={submitting}
@@ -70,14 +87,14 @@ export default function LoginPage() {
               {submitting ? "Signing in..." : "Sign in"}
             </button>
           </form>
-
-          <p className="text-ink-muted text-sm text-center mt-6">
-            Don&apos;t have an account?{" "}
-            <Link href="/register" className="text-lamp hover:text-ink transition-colors">
-              Register
-            </Link>
-          </p>
         </div>
+
+        <p className="text-ink-muted text-sm text-center mt-6">
+          Don&apos;t have an account?{" "}
+          <Link href="/register" className="text-lamp hover:text-ink transition-colors">
+            Register
+          </Link>
+        </p>
       </div>
     </div>
   )
