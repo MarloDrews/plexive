@@ -17,7 +17,9 @@ import useSWR from "swr"
 import { useAuth } from "../lib/auth"
 import { apiFetch } from "../lib/api"
 import { getSavedPostIds } from "../lib/savedPosts"
+import { useSwipeTabs } from "../lib/useSwipeTabs"
 import BottomNav from "../components/BottomNav"
+import SegmentedTabs from "../components/SegmentedTabs"
 import { FORMAT_IDS, FORMAT_STYLES } from "@/lib/formats"
 
 // --- Error boundary ---
@@ -218,7 +220,7 @@ function ActivityHeatmap({
   const maxCount = Math.max(...data.map(d => d.count), 1)
   const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto overscroll-x-contain">
       <div className="flex gap-0.5 min-w-max">
         <div className="flex flex-col gap-0.5 mr-1 mt-4">
           {days.map(d => (
@@ -370,7 +372,7 @@ function CategorySection({ title, charts }: { title: string; charts: ChartOption
         {title}
       </div>
       {charts.length > 1 && (
-        <div className="flex gap-1.5 mb-4 overflow-x-auto [&::-webkit-scrollbar]:hidden [scrollbar-width:none] pb-1">
+        <div className="flex gap-1.5 mb-4 overflow-x-auto overscroll-x-contain [&::-webkit-scrollbar]:hidden [scrollbar-width:none] pb-1">
           {charts.map((c, i) => (
             <button
               key={c.label}
@@ -473,7 +475,7 @@ function GlobalTab({ data }: { data: GlobalStats }) {
     </ResponsiveContainer>
   )
   const topByPostsTable = (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto overscroll-x-contain">
       <table className="w-full text-xs">
         <thead>
           <tr className="text-ink-muted border-b border-edge">
@@ -540,7 +542,7 @@ function GlobalTab({ data }: { data: GlobalStats }) {
     </ResponsiveContainer>
   )
   const topByLikesTable = (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto overscroll-x-contain">
       <table className="w-full text-xs">
         <thead>
           <tr className="text-ink-muted border-b border-edge">
@@ -604,7 +606,7 @@ function GlobalTab({ data }: { data: GlobalStats }) {
     </ResponsiveContainer>
   )
   const topByCommentsTable = (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto overscroll-x-contain">
       <table className="w-full text-xs">
         <thead>
           <tr className="text-ink-muted border-b border-edge">
@@ -657,7 +659,7 @@ function GlobalTab({ data }: { data: GlobalStats }) {
     </ResponsiveContainer>
   )
   const topByReadTimeTable = (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto overscroll-x-contain">
       <table className="w-full text-xs">
         <thead>
           <tr className="text-ink-muted border-b border-edge">
@@ -734,7 +736,7 @@ function GlobalTab({ data }: { data: GlobalStats }) {
     )
     const maxVal = Math.max(...Object.values(userTotals), 1)
     return (
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto overscroll-x-contain">
         <div className="min-w-max">
           <div className="flex gap-0.5 mb-1">
             <div className="w-16" />
@@ -822,7 +824,7 @@ function GlobalTab({ data }: { data: GlobalStats }) {
     </ResponsiveContainer>
   )
   const topPostsTable = (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto overscroll-x-contain">
       <table className="w-full text-xs">
         <thead>
           <tr className="text-ink-muted border-b border-edge">
@@ -1218,7 +1220,7 @@ function GlobalTab({ data }: { data: GlobalStats }) {
     </ResponsiveContainer>
   )
   const commentersTable = (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto overscroll-x-contain">
       <table className="w-full text-xs">
         <thead>
           <tr className="text-ink-muted border-b border-edge">
@@ -1774,7 +1776,7 @@ function MyStatsTab({
     </ResponsiveContainer>
   )
   const myTopLikesTable = (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto overscroll-x-contain">
       <table className="w-full text-xs">
         <thead>
           <tr className="text-ink-muted border-b border-edge">
@@ -1818,7 +1820,7 @@ function MyStatsTab({
     </ResponsiveContainer>
   )
   const myTopCommentsTable = (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto overscroll-x-contain">
       <table className="w-full text-xs">
         <thead>
           <tr className="text-ink-muted border-b border-edge">
@@ -1913,7 +1915,7 @@ function MyStatsTab({
 
   // 15. Milestones timeline
   const milestonesTimeline = (
-    <div className="overflow-x-auto pb-2 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
+    <div className="overflow-x-auto overscroll-x-contain pb-2 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
       <div className="flex gap-4 min-w-max">
         {data.my_milestones.map(m => (
           <div key={m.label} className="flex flex-col items-center gap-2 w-20">
@@ -2342,7 +2344,7 @@ function FriendsTab({ username, verifiedLevel }: { username: string; verifiedLev
   )
 
   const eloTable = (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto overscroll-x-contain">
       <table className="w-full text-xs">
         <thead>
           <tr className="text-ink-muted border-b border-edge">
@@ -2545,7 +2547,7 @@ function FriendsTab({ username, verifiedLevel }: { username: string; verifiedLev
   )
 
   const effTable = (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto overscroll-x-contain">
       <table className="w-full text-xs">
         <thead>
           <tr className="text-ink-muted border-b border-edge">
@@ -2652,7 +2654,7 @@ function FriendsTab({ username, verifiedLevel }: { username: string; verifiedLev
   )
 
   const postTable = (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto overscroll-x-contain">
       <table className="w-full text-xs">
         <thead>
           <tr className="text-ink-muted border-b border-edge">
@@ -2816,8 +2818,13 @@ function FriendsTab({ username, verifiedLevel }: { username: string; verifiedLev
 
 export default function StatsPage() {
   const { user } = useAuth()
-  const [activeTab, setActiveTab] = useState<"global" | "my" | "friends">("global")
   const [savedCount, setSavedCount] = useState(0)
+
+  // Swipeable Global/Personal/Friends pager; the capsule indicator tracks
+  // the swipe. activatedIndices keeps lazy mounting: a page renders nothing
+  // until first visited (FriendsTab's fan-out fetch must not run on load).
+  const { activeIndex, activatedIndices, pagerRef, indicatorRef, tabRefs, selectTab } =
+    useSwipeTabs({ count: 3 })
 
   // Global stats via SWR: a revisit renders the cached data instantly and
   // refreshes silently in the background (stats are aggregates, no reorder).
@@ -2829,97 +2836,97 @@ export default function StatsPage() {
   const { data: myData, error: myError } = useSWR<MyStats>(user ? "/api/stats/me" : null)
   const myLoading = !myData && !myError
 
-  // Read localStorage saved count client-side
+  // Read localStorage saved count client-side (Personal tab is index 1)
   useEffect(() => {
-    if (activeTab !== "my" || !user) return
+    if (activeIndex !== 1 || !user) return
     setSavedCount(getSavedPostIds().length)
-  }, [activeTab, user])
+  }, [activeIndex, user])
 
-  const tabs: { key: "global" | "my" | "friends"; label: string }[] = [
-    { key: "global", label: "Global" },
-    { key: "my", label: "Personal" },
-    { key: "friends", label: "Friends" },
-  ]
+  // Shared page wrapper: each pager page scrolls vertically on its own, so
+  // every tab keeps its own scroll position.
+  const pageClass =
+    "w-full shrink-0 snap-start h-full overflow-y-auto overscroll-y-contain pt-1 pb-24 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]"
 
   return (
     <StatsErrorBoundary>
     <div className="relative max-w-[430px] mx-auto bg-surface-0 h-[100dvh] flex flex-col">
       {/* Tab switcher — floating frosted segmented capsule */}
-      <div className="sticky top-0 z-20 px-3 pt-3 pb-2">
-        <div className="h-11 rounded-full backdrop-blur-xl bg-white/[0.06] flex items-center p-1 gap-1">
-          {tabs.map(t => (
-            <button
-              key={t.key}
-              onClick={() => setActiveTab(t.key)}
-              className={`flex-1 h-9 rounded-full text-sm cursor-pointer transition-colors duration-150 ${
-                activeTab === t.key
-                  ? "bg-white/[0.12] text-ink font-semibold"
-                  : "text-ink-muted font-medium hover:text-ink-dim"
-              }`}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
+      <div className="z-20 px-3 pt-3 pb-2">
+        <SegmentedTabs
+          labels={["Global", "Personal", "Friends"]}
+          activeIndex={activeIndex}
+          onSelect={selectTab}
+          tabRefs={tabRefs}
+          indicatorRef={indicatorRef}
+        />
       </div>
 
-      {/* Scrollable content */}
-      <div className="flex-1 overflow-y-auto pt-1 pb-24 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
-        {activeTab === "global" && (
-          globalLoading ? (
-            <div className="flex flex-col px-3 gap-3 pt-2">
-              <div className="stage-pulse card h-40 w-full" />
-              <div className="stage-pulse card h-64 w-full" />
-            </div>
-          ) : globalData ? (
-            <GlobalTab data={globalData} />
-          ) : (
-            <div className="card mx-3 mt-2 px-8 py-10 text-center">
-              <p className="text-ink-muted text-sm">Could not load stats.</p>
-            </div>
-          )
-        )}
+      {/* Horizontal pager — one full-width, vertically scrolling page per
+          tab. min-h-0 keeps flex-1 inside the viewport; overflow-y-hidden
+          because overflow-x: scroll would otherwise force it to auto. */}
+      <div
+        ref={pagerRef}
+        className="flex-1 min-h-0 flex overflow-x-scroll overflow-y-hidden snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [scrollbar-width:none]"
+      >
+        <div className={pageClass}>
+          {activatedIndices.has(0) && (
+            globalLoading ? (
+              <div className="flex flex-col px-3 gap-3 pt-2">
+                <div className="stage-pulse card h-40 w-full" />
+                <div className="stage-pulse card h-64 w-full" />
+              </div>
+            ) : globalData ? (
+              <GlobalTab data={globalData} />
+            ) : (
+              <div className="card mx-3 mt-2 px-8 py-10 text-center">
+                <p className="text-ink-muted text-sm">Could not load stats.</p>
+              </div>
+            )
+          )}
+        </div>
 
-        {activeTab === "my" && !user && (
-          <div className="flex items-center justify-center h-60 px-6">
-            <div className="card px-8 py-10 text-center max-w-xs flex flex-col items-center gap-4">
-              <p className="text-ink-dim text-sm">Log in to see your personal stats</p>
-              <a href="/login" className="btn btn-primary px-5 py-2">
-                Log in
-              </a>
-            </div>
-          </div>
-        )}
+        <div className={pageClass}>
+          {activatedIndices.has(1) && (
+            !user ? (
+              <div className="flex items-center justify-center h-60 px-6">
+                <div className="card px-8 py-10 text-center max-w-xs flex flex-col items-center gap-4">
+                  <p className="text-ink-dim text-sm">Log in to see your personal stats</p>
+                  <a href="/login" className="btn btn-primary px-5 py-2">
+                    Log in
+                  </a>
+                </div>
+              </div>
+            ) : myLoading ? (
+              <div className="flex flex-col px-3 gap-3 pt-2">
+                <div className="stage-pulse card h-40 w-full" />
+                <div className="stage-pulse card h-64 w-full" />
+              </div>
+            ) : myData ? (
+              <MyStatsTab data={myData} savedCount={savedCount} />
+            ) : (
+              <div className="card mx-3 mt-2 px-8 py-10 text-center">
+                <p className="text-ink-muted text-sm">Could not load personal stats.</p>
+              </div>
+            )
+          )}
+        </div>
 
-        {activeTab === "my" && user && (
-          myLoading ? (
-            <div className="flex flex-col px-3 gap-3 pt-2">
-              <div className="stage-pulse card h-40 w-full" />
-              <div className="stage-pulse card h-64 w-full" />
-            </div>
-          ) : myData ? (
-            <MyStatsTab data={myData} savedCount={savedCount} />
-          ) : (
-            <div className="card mx-3 mt-2 px-8 py-10 text-center">
-              <p className="text-ink-muted text-sm">Could not load personal stats.</p>
-            </div>
-          )
-        )}
-
-        {activeTab === "friends" && !user && (
-          <div className="flex items-center justify-center h-60 px-6">
-            <div className="card px-8 py-10 text-center max-w-xs flex flex-col items-center gap-4">
-              <p className="text-ink-dim text-sm">Log in to compare stats with friends</p>
-              <a href="/login" className="btn btn-primary px-5 py-2">
-                Log in
-              </a>
-            </div>
-          </div>
-        )}
-
-        {activeTab === "friends" && user && (
-          <FriendsTab username={user.username} verifiedLevel={user.is_verified} />
-        )}
+        <div className={pageClass}>
+          {activatedIndices.has(2) && (
+            !user ? (
+              <div className="flex items-center justify-center h-60 px-6">
+                <div className="card px-8 py-10 text-center max-w-xs flex flex-col items-center gap-4">
+                  <p className="text-ink-dim text-sm">Log in to compare stats with friends</p>
+                  <a href="/login" className="btn btn-primary px-5 py-2">
+                    Log in
+                  </a>
+                </div>
+              </div>
+            ) : (
+              <FriendsTab username={user.username} verifiedLevel={user.is_verified} />
+            )
+          )}
+        </div>
       </div>
 
       <BottomNav activeTab="stats" />
