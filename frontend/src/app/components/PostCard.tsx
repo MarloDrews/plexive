@@ -492,14 +492,16 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
         </div>
       )}
 
-      {/* Action buttons — icon-only pill buttons per the Lamplight design spec. */}
-      <div className="absolute right-2 z-10 flex flex-col items-center gap-1" style={{ bottom: "64px" }}>
+      {/* Action rail — bare glyphs floating at the right edge, no borders or
+          containers, each count rendered underneath its button. Press
+          feedback is a springy scale-down. */}
+      <div className="absolute right-2 bottom-24 z-10 flex flex-col items-center gap-3">
         {/* Like */}
         <div className="flex flex-col items-center">
           <button
             onClick={(e) => { e.stopPropagation(); handleToggleLike() }}
             aria-label={liked ? "Unlike" : "Like"}
-            className={`btn-action${liked ? " btn-action-liked" : ""}`}
+            className={`w-11 h-11 flex items-center justify-center cursor-pointer transition-all duration-150 active:scale-90 ${liked ? "text-like" : "text-ink-dim"}`}
           >
             <svg
               viewBox="0 0 24 24"
@@ -514,7 +516,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
             </svg>
           </button>
-          <span className={`text-xs font-sans leading-none transition-colors duration-150 ${liked ? "text-[#ff3a5c]" : "text-ink-dim"} ${likesCount === 0 && !liked ? "invisible" : ""}`}>{likesCount}</span>
+          <span className={`text-[11px] font-mono leading-none transition-colors duration-150 ${liked ? "text-like" : "text-ink-dim"} ${likesCount === 0 && !liked ? "invisible" : ""}`}>{likesCount}</span>
         </div>
 
         {/* Comment */}
@@ -522,7 +524,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
           <button
             onClick={(e) => { e.stopPropagation(); setShowComments(true) }}
             aria-label="Comments"
-            className="btn-action"
+            className="w-11 h-11 flex items-center justify-center cursor-pointer transition-all duration-150 active:scale-90 text-ink-dim"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -537,7 +539,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
             </svg>
           </button>
-          <span className={`text-xs text-ink-dim font-sans leading-none ${commentsCount === 0 ? "invisible" : ""}`}>{commentsCount}</span>
+          <span className={`text-[11px] font-mono text-ink-dim leading-none ${commentsCount === 0 ? "invisible" : ""}`}>{commentsCount}</span>
         </div>
 
         {/* Save */}
@@ -545,7 +547,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
           <button
             onClick={handleSaveClick}
             aria-label={saved ? "Unsave" : "Save"}
-            className={`btn-action${saved ? " btn-action-saved" : ""}`}
+            className={`w-11 h-11 flex items-center justify-center cursor-pointer transition-all duration-150 active:scale-90 ${saved ? "text-save" : "text-ink-dim"}`}
           >
             <svg
               viewBox="0 0 24 24"
@@ -560,7 +562,33 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
               <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
             </svg>
           </button>
-          <span className={`text-xs font-sans leading-none transition-colors duration-150 ${saved ? "text-[#f5c542]" : "text-ink-dim"} ${saveCount === 0 && !saved ? "invisible" : ""}`}>{saveCount}</span>
+          <span className={`text-[11px] font-mono leading-none transition-colors duration-150 ${saved ? "text-save" : "text-ink-dim"} ${saveCount === 0 && !saved ? "invisible" : ""}`}>{saveCount}</span>
+        </div>
+
+        {/* Read aloud — disabled placeholder reserving its spot in the rail;
+            no functionality yet. */}
+        <div className="flex flex-col items-center">
+          <button
+            disabled
+            aria-disabled="true"
+            aria-label="Read aloud (coming soon)"
+            className="w-11 h-11 flex items-center justify-center text-ink-dim opacity-40 cursor-default"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="w-6 h-6"
+            >
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+            </svg>
+          </button>
+          <span className="text-[11px] font-mono leading-none invisible">0</span>
         </div>
 
         {/* Share */}
@@ -568,7 +596,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
           <button
             onClick={handleShare}
             aria-label="Share"
-            className="btn-action"
+            className="w-11 h-11 flex items-center justify-center cursor-pointer transition-all duration-150 active:scale-90 text-ink-dim"
           >
             <svg
               viewBox="0 0 24 24"
@@ -583,6 +611,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
               <polygon points="22 2 15 22 11 13 2 9 22 2" />
             </svg>
           </button>
+          <span className="text-[11px] font-mono leading-none invisible">0</span>
         </div>
       </div>
 
