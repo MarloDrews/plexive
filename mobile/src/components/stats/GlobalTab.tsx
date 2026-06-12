@@ -53,7 +53,7 @@ function UserCell({ username, verified }: { username: string; verified?: number 
   )
 }
 
-function formatDatums(byFormat: Record<string, number>): Datum[] {
+function formatDatums(byFormat: Record<string, number>): { label: string; value: number; color: string }[] {
   return FORMATS.map((f) => ({ label: f, value: byFormat[f] ?? 0, color: FORMAT_COLORS[f] }))
 }
 
