@@ -9,19 +9,21 @@ import { resolveImageUrl } from "../../config"
 import { formatStyle } from "../../lib/formats"
 import { AccentProvider } from "../../lib/accent"
 import { usePostActions } from "../../lib/usePostActions"
-import { sharePost } from "../../lib/share"
 import { fcStr, type Post } from "../../types/post"
-import { colors, fonts } from "../../theme/tokens"
+import { colors, fills, fonts, radius } from "../../theme/tokens"
+import { Frosted, MessageSlab, PulsingSlab, SlabAccent, SlabGlow, ghostPillStyle } from "../../components/stage"
 import SectionRenderer from "../../components/SectionRenderer"
 import CommentsBottomSheet from "../../components/CommentsBottomSheet"
 import VerifiedBadge from "../../components/VerifiedBadge"
-import { HeartIcon, BookmarkIcon, BackIcon, ShareIcon } from "../../components/icons"
+import { HeartIcon, BackIcon } from "../../components/icons"
 
-// Port of frontend/src/app/post/[id]/page.tsx: full-screen detail that
-// slides up over the feed (Stack animation), swipe right to close (same
-// dx > 80 && dx > |dy| rule as the web touch handler). The AccentProvider
-// replaces the web's --accent CSS variable for everything below the header.
-// Comments live in the shared bottom sheet instead of an inline list.
+// Port of frontend/src/app/post/[id]/page.tsx (Stage): full-screen detail
+// that slides up over the feed (Stack animation), swipe right to close (same
+// dx > 80 && dx > |dy| rule as the web touch handler). Floating frosted back
+// circle, header slab with the format glow + accent edge, and a floating
+// pill comment bar carrying only comment + like — save/share live on the
+// feed card's action rail, like the web. The AccentProvider replaces the
+// web's --accent CSS variable for everything below the header.
 
 export default function PostDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
@@ -33,7 +35,7 @@ export default function PostDetailScreen() {
   const [notFound, setNotFound] = useState(false)
   const [showComments, setShowComments] = useState(false)
 
-  const { liked, likesCount, saved, toggleLike, toggleSave } = usePostActions(postId, 0)
+  const { liked, toggleLike } = usePostActions(postId, 0)
 
   const isClosingRef = useRef(false)
 
@@ -72,140 +74,151 @@ export default function PostDetailScreen() {
     <View style={{ flex: 1, backgroundColor: colors["surface-0"] }}>
       <Stack.Screen options={{ animation: "slide_from_bottom", animationDuration: 300 }} />
 
-      {/* Back button */}
-      <Pressable
-        onPress={close}
-        hitSlop={8}
-        style={{
-          position: "absolute",
-          top: insets.top + 12,
-          left: 16,
-          zIndex: 10,
-          width: 40,
-          height: 40,
-          borderRadius: 20,
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: colors["surface-overlay"],
-          borderWidth: 1,
-          borderColor: colors.edge,
-        }}
+      {/* Floating frosted back circle (web btn-icon) */}
+      <Frosted
+        borderRadius={999}
+        style={{ position: "absolute", top: insets.top + 12, left: 16, zIndex: 10, width: 44, height: 44 }}
       >
-        <BackIcon size={24} color={colors.ink} />
-      </Pressable>
+        <Pressable
+          onPress={close}
+          hitSlop={8}
+          style={({ pressed }) => ({
+            flex: 1,
+            alignItems: "center",
+            justifyContent: "center",
+            transform: [{ scale: pressed ? 0.95 : 1 }],
+          })}
+        >
+          <BackIcon size={24} color={colors["ink-dim"]} />
+        </Pressable>
+      </Frosted>
 
       {post && style ? (
         <AccentProvider value={style.accent}>
           <GestureDetector gesture={swipeClose}>
           <ScrollView
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingTop: insets.top + 64, paddingBottom: 32 }}
+            contentContainerStyle={{ paddingTop: insets.top + 64, paddingBottom: insets.bottom + 96 }}
             style={{ flex: 1 }}
           >
-            {/* Header: badge + attribution + cover + title + tags */}
-            <View style={{ paddingHorizontal: 24, paddingBottom: 8 }}>
-              {/* Format badge */}
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 20 }}>
-                <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: style.accent }} />
-                <Text
-                  style={{
-                    fontFamily: fonts.sansSemiBold,
-                    fontSize: 11,
-                    letterSpacing: 2,
-                    textTransform: "uppercase",
-                    color: style.accent,
-                  }}
-                >
-                  {style.badge}
-                </Text>
-              </View>
-
-              {/* Attribution */}
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginBottom: 16 }}>
-                {post.is_user_content && post.author_username ? (
-                  <>
-                    <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: colors["ink-muted"] }}>
-                      Submitted by @{post.author_username}
-                    </Text>
-                    {post.author_is_verified != null && post.author_is_verified > 0 && (
-                      <VerifiedBadge size={16} level={post.author_is_verified} />
-                    )}
-                  </>
-                ) : !post.is_user_content ? (
-                  <>
-                    <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: colors["ink-muted"] }}>
-                      Deepscroll
-                    </Text>
-                    <VerifiedBadge size={12} variant="official" />
-                  </>
-                ) : null}
-              </View>
-
-              {/* Books cover */}
-              {post.format === "books" && fcStr(post.feed_card, "cover_url") !== "" && (
-                <View style={{ alignItems: "center", marginBottom: 20 }}>
-                  <Image
-                    source={{ uri: resolveImageUrl(fcStr(post.feed_card, "cover_url")) }}
-                    style={{
-                      width: 128,
-                      height: 192,
-                      borderRadius: 8,
-                      backgroundColor: colors["surface-2"],
-                      borderWidth: 1,
-                      borderColor: colors.edge,
-                    }}
-                    contentFit="cover"
-                    transition={150}
-                  />
-                </View>
-              )}
-
-              {/* Title */}
-              <Text
+            {/* Header — frosted slab inset from the edges, with the same
+                format glow as the feed card behind it. The glow box stays at
+                container width and bleeds only a little vertically, so the
+                floating back circle keeps a near-black backdrop. */}
+            <View>
+              <SlabGlow
+                accent={style.accent}
+                style={{ position: "absolute", left: 0, right: 0, top: -56, bottom: -56 }}
+              />
+              <View
                 style={{
-                  fontFamily: fonts.serifMedium,
-                  fontSize: 30,
-                  lineHeight: 38,
-                  color: colors.ink,
-                  marginBottom: 4,
+                  marginHorizontal: 12,
+                  marginBottom: 12,
+                  backgroundColor: fills.slab,
+                  borderRadius: radius.slab,
+                  overflow: "hidden",
+                  paddingHorizontal: 20,
+                  paddingVertical: 24,
                 }}
               >
-                {post.title}
-              </Text>
+                <SlabAccent accent={style.accent} />
 
-              {/* Author (Books) */}
-              {post.format === "books" && fcStr(post.feed_card, "author") !== "" && (
-                <Text
-                  style={{
-                    fontFamily: fonts.sansMedium,
-                    fontSize: 14,
-                    color: style.accent,
-                    marginBottom: 16,
-                  }}
-                >
-                  {fcStr(post.feed_card, "author")}
-                </Text>
-              )}
-
-              {/* Interest tags */}
-              <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, marginBottom: 8 }}>
-                {post.interests.map((name) => (
-                  <View
-                    key={name}
+                {/* Format marker — dot and label carry the accent */}
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 16 }}>
+                  <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: style.accent }} />
+                  <Text
                     style={{
-                      backgroundColor: colors["surface-2"],
-                      borderWidth: 1,
-                      borderColor: colors.edge,
-                      borderRadius: 999,
-                      paddingHorizontal: 12,
-                      paddingVertical: 4,
+                      fontFamily: fonts.mono,
+                      fontSize: 12,
+                      letterSpacing: 1.2,
+                      textTransform: "lowercase",
+                      color: style.accent,
                     }}
                   >
-                    <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: colors["ink-dim"] }}>
-                      {name}
-                    </Text>
+                    {style.badge.toLowerCase()}
+                  </Text>
+                </View>
+
+                {/* Books cover */}
+                {post.format === "books" && fcStr(post.feed_card, "cover_url") !== "" && (
+                  <View style={{ alignItems: "center", marginBottom: 20 }}>
+                    <Image
+                      source={{ uri: resolveImageUrl(fcStr(post.feed_card, "cover_url")) }}
+                      style={{ width: 128, height: 192, borderRadius: 12, backgroundColor: fills.chrome }}
+                      contentFit="cover"
+                      transition={150}
+                    />
                   </View>
-                ))}
+                )}
+
+                {/* Title */}
+                <Text
+                  style={{
+                    fontFamily: fonts.serifMedium,
+                    fontSize: 30,
+                    lineHeight: 38,
+                    color: colors.ink,
+                    marginBottom: 4,
+                  }}
+                >
+                  {post.title}
+                </Text>
+
+                {/* Author (Books) */}
+                {post.format === "books" && fcStr(post.feed_card, "author") !== "" && (
+                  <Text
+                    style={{
+                      fontFamily: fonts.sansMedium,
+                      fontSize: 14,
+                      color: colors["ink-dim"],
+                      marginBottom: 12,
+                    }}
+                  >
+                    {fcStr(post.feed_card, "author")}
+                  </Text>
+                )}
+
+                {/* Attribution */}
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginBottom: 16 }}>
+                  {post.is_user_content && post.author_username ? (
+                    <>
+                      <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: colors["ink-muted"] }}>
+                        Submitted by @{post.author_username}
+                      </Text>
+                      {post.author_is_verified != null && post.author_is_verified > 0 && (
+                        <VerifiedBadge size={16} level={post.author_is_verified} />
+                      )}
+                    </>
+                  ) : !post.is_user_content ? (
+                    <>
+                      <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: colors["ink-muted"] }}>
+                        Deepscroll
+                      </Text>
+                      <VerifiedBadge size={12} variant="official" />
+                    </>
+                  ) : null}
+                </View>
+
+                {/* Interest tags as frosted pills */}
+                {post.interests.length > 0 && (
+                  <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+                    {post.interests.map((name) => (
+                      <View
+                        key={name}
+                        style={{
+                          backgroundColor: fills.chrome,
+                          borderRadius: 999,
+                          paddingHorizontal: 12,
+                          paddingVertical: 4,
+                        }}
+                      >
+                        <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: colors["ink-dim"] }}>
+                          {name}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
+                )}
               </View>
             </View>
 
@@ -218,91 +231,84 @@ export default function PostDetailScreen() {
           </ScrollView>
           </GestureDetector>
 
-          {/* Bottom action bar (web sticky comment bar): comment field opens
-              the bottom sheet; like/save light up lamp like the web detail. */}
-          <View
-            style={{
-              borderTopWidth: 1,
-              borderTopColor: colors.edge,
-              backgroundColor: colors["surface-overlay"],
-              paddingHorizontal: 12,
-              paddingTop: 8,
-              paddingBottom: 8 + insets.bottom,
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 8,
-            }}
+          {/* Floating pill comment bar — detached from every edge, carrying
+              only comment + like (web detail bar). The comment pill opens
+              the shared bottom sheet. */}
+          <Frosted
+            borderRadius={999}
+            style={{ position: "absolute", left: 12, right: 12, bottom: insets.bottom + 12, zIndex: 10 }}
           >
-            <Pressable
-              onPress={() => setShowComments(true)}
+            <View
               style={{
-                flex: 1,
-                backgroundColor: colors["surface-2"],
-                borderWidth: 1,
-                borderColor: colors.edge,
-                borderRadius: 999,
-                paddingHorizontal: 16,
-                paddingVertical: 9,
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 6,
+                paddingHorizontal: 8,
+                paddingVertical: 6,
               }}
             >
-              <Text style={{ fontFamily: fonts.sans, fontSize: 14, color: colors["ink-muted"] }}>
-                Add a comment...
-              </Text>
-            </Pressable>
+              <Pressable
+                onPress={() => setShowComments(true)}
+                style={{
+                  flex: 1,
+                  height: 44,
+                  backgroundColor: fills.chrome,
+                  borderRadius: 999,
+                  paddingHorizontal: 16,
+                  justifyContent: "center",
+                }}
+              >
+                <Text style={{ fontFamily: fonts.sans, fontSize: 14, color: colors["ink-muted"] }}>
+                  Add a comment...
+                </Text>
+              </Pressable>
 
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
               <Pressable
                 onPress={toggleLike}
                 hitSlop={4}
-                style={{ width: 40, height: 40, alignItems: "center", justifyContent: "center" }}
+                style={({ pressed }) => ({
+                  width: 44,
+                  height: 44,
+                  borderRadius: 22,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: liked ? colors.like + "1A" : fills.chrome,
+                  transform: [{ scale: pressed ? 0.95 : 1 }],
+                })}
               >
-                <HeartIcon size={20} color={liked ? colors.lamp : colors["ink-dim"]} filled={liked} />
-              </Pressable>
-              <Pressable
-                onPress={toggleSave}
-                hitSlop={4}
-                style={{ width: 40, height: 40, alignItems: "center", justifyContent: "center" }}
-              >
-                <BookmarkIcon size={20} color={saved ? colors.lamp : colors["ink-dim"]} filled={saved} />
-              </Pressable>
-              <Pressable
-                onPress={() => sharePost(post)}
-                hitSlop={4}
-                style={{ width: 40, height: 40, alignItems: "center", justifyContent: "center" }}
-              >
-                <ShareIcon size={20} color={colors["ink-dim"]} />
+                <HeartIcon size={20} color={liked ? colors.like : colors["ink-dim"]} filled={liked} />
               </Pressable>
             </View>
-          </View>
+          </Frosted>
 
           {showComments && (
             <CommentsBottomSheet postId={post.id} onClose={() => setShowComments(false)} />
           )}
         </AccentProvider>
       ) : notFound ? (
-        <View style={{ flex: 1, alignItems: "center", justifyContent: "center", gap: 12, paddingHorizontal: 32 }}>
-          <Text style={{ fontFamily: fonts.serifMedium, fontSize: 18, color: colors.ink, textAlign: "center" }}>
-            Post not found
-          </Text>
-          <Text style={{ fontFamily: fonts.sans, fontSize: 14, color: colors["ink-muted"], textAlign: "center" }}>
-            It may have been removed or is awaiting review.
-          </Text>
-          <Pressable onPress={close}>
-            <Text
-              style={{
-                fontFamily: fonts.sans,
-                fontSize: 14,
-                color: colors["ink-dim"],
-                textDecorationLine: "underline",
-              }}
-            >
-              Go back
+        <View style={{ flex: 1, justifyContent: "center", paddingHorizontal: 24 }}>
+          <MessageSlab>
+            <Text style={{ fontFamily: fonts.serifMedium, fontSize: 18, color: colors.ink, textAlign: "center" }}>
+              Post not found
             </Text>
-          </Pressable>
+            <Text style={{ fontFamily: fonts.sans, fontSize: 14, color: colors["ink-muted"], textAlign: "center" }}>
+              It may have been removed or is awaiting review.
+            </Text>
+            <Pressable
+              onPress={close}
+              style={({ pressed }) => [ghostPillStyle, { transform: [{ scale: pressed ? 0.96 : 1 }] }]}
+            >
+              <Text style={{ fontFamily: fonts.sansMedium, fontSize: 14, color: colors["ink-body"] }}>
+                Go back
+              </Text>
+            </Pressable>
+          </MessageSlab>
         </View>
       ) : (
-        <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-          <Text style={{ fontFamily: fonts.sans, fontSize: 14, color: colors["ink-faint"] }}>Loading...</Text>
+        // Loading: pulsing slabs where the header and body will appear.
+        <View style={{ flex: 1, paddingTop: insets.top + 64, paddingHorizontal: 12, gap: 12 }}>
+          <PulsingSlab height={224} />
+          <PulsingSlab height={112} style={{ width: "75%" }} />
         </View>
       )}
     </View>
