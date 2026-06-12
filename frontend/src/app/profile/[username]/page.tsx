@@ -155,8 +155,6 @@ export default function PublicProfilePage() {
     }
   }
 
-  const canSeePrivateContent = isOwnProfile || profile?.follow_status === "accepted" || !profile?.is_private
-
   if (error) {
     return (
       <div className="h-[100dvh] bg-surface-0 flex justify-center">
@@ -291,38 +289,49 @@ export default function PublicProfilePage() {
           )}
         </div>
 
-        {/* Tab bar — frosted segmented capsule with sliding indicator */}
-        <SegmentedTabs
-          className="mx-3 mt-2"
-          labels={["Posts", "Saved", "Liked"]}
-          activeIndex={activeIndex}
-          onSelect={selectTab}
-          tabRefs={tabRefs}
-          indicatorRef={indicatorRef}
-        />
+        {/* Own profile: swipeable Posts/Saved/Liked pager. Foreign profile:
+            Posts only — Saved and Liked are private, so the switcher and
+            the swipe gesture have no place there. */}
+        {isOwnProfile ? (
+          <>
+            {/* Tab bar — frosted segmented capsule with sliding indicator */}
+            <SegmentedTabs
+              className="mx-3 mt-2"
+              labels={["Posts", "Saved", "Liked"]}
+              activeIndex={activeIndex}
+              onSelect={selectTab}
+              tabRefs={tabRefs}
+              indicatorRef={indicatorRef}
+            />
 
-        {/* Tab content — swipeable pager inside the vertical scroller; the
-            wrapper height-clamps to the active page so short tabs don't
-            inherit the tallest page's scroll length. */}
-        <div
-          className="overflow-hidden transition-[height] duration-200"
-          style={{ height: pagerHeight }}
-        >
-          <div
-            ref={pagerRef}
-            className="flex items-start overflow-x-scroll overflow-y-hidden snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [scrollbar-width:none]"
-          >
-            <div ref={(el) => { pageRefs.current[0] = el }} className="w-full shrink-0 snap-start px-4 pt-3 min-h-[160px]">
-              <PostsTab posts={posts} />
+            {/* Tab content — swipeable pager inside the vertical scroller;
+                the wrapper height-clamps to the active page so short tabs
+                don't inherit the tallest page's scroll length. */}
+            <div
+              className="overflow-hidden transition-[height] duration-200"
+              style={{ height: pagerHeight }}
+            >
+              <div
+                ref={pagerRef}
+                className="flex items-start overflow-x-scroll overflow-y-hidden snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [scrollbar-width:none]"
+              >
+                <div ref={(el) => { pageRefs.current[0] = el }} className="w-full shrink-0 snap-start px-4 pt-3 min-h-[160px]">
+                  <PostsTab posts={posts} />
+                </div>
+                <div ref={(el) => { pageRefs.current[1] = el }} className="w-full shrink-0 snap-start px-4 pt-3 min-h-[160px]">
+                  <PostList posts={savedPosts} emptyMessage="Nothing here yet." />
+                </div>
+                <div ref={(el) => { pageRefs.current[2] = el }} className="w-full shrink-0 snap-start px-4 pt-3 min-h-[160px]">
+                  <PostList posts={likedPosts} emptyMessage="Nothing here yet." />
+                </div>
+              </div>
             </div>
-            <div ref={(el) => { pageRefs.current[1] = el }} className="w-full shrink-0 snap-start px-4 pt-3 min-h-[160px]">
-              <PrivateTabContent canSee={canSeePrivateContent} isOwnProfile={isOwnProfile} posts={savedPosts} lockedMessage="Follow to see saved posts" privateMessage="Saved posts are private" />
-            </div>
-            <div ref={(el) => { pageRefs.current[2] = el }} className="w-full shrink-0 snap-start px-4 pt-3 min-h-[160px]">
-              <PrivateTabContent canSee={canSeePrivateContent} isOwnProfile={isOwnProfile} posts={likedPosts} lockedMessage="Follow to see liked posts" privateMessage="Liked posts are private" />
-            </div>
+          </>
+        ) : (
+          <div className="px-4 pt-3 min-h-[160px]">
+            <PostsTab posts={posts} />
           </div>
-        </div>
+        )}
         </div>
 
         {/* Followers / Following bottom sheet */}
@@ -401,24 +410,3 @@ function PostsTab({ posts }: { posts: Post[] | null }) {
   return <PostList posts={posts} emptyMessage="No posts yet." />
 }
 
-function PrivateTabContent({
-  canSee,
-  isOwnProfile,
-  posts,
-  lockedMessage,
-  privateMessage,
-}: {
-  canSee: boolean
-  isOwnProfile: boolean
-  posts: Post[] | null
-  lockedMessage: string
-  privateMessage: string
-}) {
-  if (!canSee) {
-    return <p className="text-ink-muted text-sm text-center pt-8">{lockedMessage}</p>
-  }
-  if (!isOwnProfile) {
-    return <p className="text-ink-muted text-sm text-center pt-8">{privateMessage}</p>
-  }
-  return <PostList posts={posts} emptyMessage="Nothing here yet." />
-}
