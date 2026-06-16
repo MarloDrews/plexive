@@ -9,6 +9,7 @@ import { colors } from "../theme/tokens"
 import { PulsingSlab } from "../components/stage"
 import FeedTab from "../components/FeedTab"
 import Marathon from "../components/train/Marathon"
+import Battle from "../components/battle/Battle"
 import FeedTabBar, { type FeedTabBarHandle } from "../components/FeedTabBar"
 import BottomNav from "../components/BottomNav"
 import Toast, { useToast } from "../components/Toast"
@@ -89,6 +90,11 @@ export default function HomeScreen() {
           ref={pagerRef}
           style={{ flex: 1 }}
           initialPage={DEFAULT_TAB_INDEX}
+          // Tabs switch by tapping the capsule only. Horizontal swipe is
+          // reserved for the feed card's swipe-left-to-open gesture (and the
+          // post detail's swipe-right-to-close), so the pager must not also
+          // claim it. setPage from the tab bar still works and still animates.
+          scrollEnabled={false}
           onPageScroll={(e) =>
             tabBarRef.current?.onPageScroll(e.nativeEvent.position, e.nativeEvent.offset)
           }
@@ -110,6 +116,17 @@ export default function HomeScreen() {
                 ) : (
                   <View style={{ flex: 1, backgroundColor: colors["surface-0"] }} />
                 )
+              ) : tab.id === "battle" ? (
+                // The Battle tab hosts the 1v1 duel. Gate on activation like
+                // Train so the socket does not connect until first opened.
+                activated.has(i) ? (
+                  <Battle onExit={() => goToTab(DEFAULT_TAB_INDEX)} />
+                ) : (
+                  <View style={{ flex: 1, backgroundColor: colors["surface-0"] }} />
+                )
+              ) : tab.id === "spotlight" ? (
+                // Spotlight is an empty placeholder tab for now.
+                <View style={{ flex: 1, backgroundColor: colors["surface-0"] }} />
               ) : (
                 <FeedTab
                   tab={tab}

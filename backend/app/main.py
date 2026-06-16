@@ -11,7 +11,7 @@ from .database import Base, engine
 load_dotenv()
 from . import models  # noqa: F401 — registers models with Base before create_all
 from .routers import admin as admin_router, auth as auth_router, comments as comments_router, events as events_router, feed, follows as follows_router, interests as interests_router, posts as posts_router, search as search_router, stats as stats_router
-from .routers import chat as chat_router, quiz as quiz_router, train as train_router, uploads as uploads_router
+from .routers import battle as battle_router, chat as chat_router, quiz as quiz_router, train as train_router, uploads as uploads_router
 
 
 @asynccontextmanager
@@ -64,6 +64,7 @@ app.include_router(follows_router.router, prefix="/api")
 app.include_router(quiz_router.router, prefix="/api")
 app.include_router(train_router.router, prefix="/api")
 app.include_router(chat_router.router, prefix="/api")
+app.include_router(battle_router.router, prefix="/api")
 
 
 @app.get("/health")
