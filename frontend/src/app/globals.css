@@ -47,7 +47,9 @@
   --color-good: #6abf84;                  /* success, correct answers */
   --color-bad: #c05870;                   /* errors, wrong answers, destructive */
 
-  /* Format inks (cool technical palette; hexes mirrored in lib/formats.ts) */
+  /* Format inks — web source of truth for format colors. Hexes are mirrored by
+     hand in src/lib/formats.ts (accent + rgb) and in mobile/src/theme/tokens.ts;
+     update all together. */
   --color-fmt-books: #6b9eff;
   --color-fmt-facts: #5bc8bc;
   --color-fmt-people: #c47dcc;

@@ -182,7 +182,7 @@ mobile/                         React Native app (Expo SDK 56, TypeScript, expo-
   src/lib/usePostActions.ts     shared like/save hook for PostCard + detail: AsyncStorage state, eventQueue like, web server-count reconciliation formula (GET /likes)
   src/lib/share.ts              sharePost() via RN Share API (system sheet; title + WEB_URL/post/{id}); expo-sharing deliberately not used (files only)
   src/lib/feedTabs.ts           TABS: Following + For You + Train + Battle + Spotlight (Spotlight empty placeholder; Battle filled) (FeedTabDef {id,label,format,accent,rgb}) + DEFAULT_TAB_INDEX (For You opens first); format filtering moved to search view
-  src/lib/formats.ts            FORMAT_IDS/FORMAT_STYLES/formatStyle/LEGACY_SVG_ACCENT_MAP port (web Tailwind class strings dropped, accent hex kept)
+  src/lib/formats.ts            FORMAT_IDS/FORMAT_STYLES/formatStyle/LEGACY_SVG_ACCENT_MAP port (web Tailwind class strings dropped, accent/rgb derived from src/theme/tokens.ts fmt-* inks via hexToRgb)
   src/lib/relativeTime.ts       relativeTime(iso) port, unchanged
   src/lib/follow.ts             toggleFollow(username, status) request helper shared by public profile + search rows (DELETE when accepted/pending, else POST; returns new status); callers keep their own optimistic state
   src/lib/chatSocket.ts         useChatSocket hook + ChatMessage/ChatParticipant/Conversation types + MESSAGE_MAX_CHARS; port of frontend chatSocket.ts: one RN WebSocket (WS_URL from config + getAuthToken, never hardcoded), first-frame JWT auth, 3s reconnect plus AppState foreground reconnect, send(conversationId, body)

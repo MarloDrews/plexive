@@ -3,8 +3,12 @@
 // utility class strings per format; those are dropped here — React Native
 // styles use the accent hex directly.
 //
-// "Circuit" palette: muted technical inks in blue/purple tones at matched
-// lightness, mirroring --color-fmt-* in frontend/src/app/globals.css.
+// "Circuit" palette: the per-format accent hex and rgb triple are NOT hardcoded
+// here. They derive from the fmt-* inks in src/theme/tokens.ts (the mobile
+// source of truth for format colors, mirroring --color-fmt-* in
+// frontend/src/app/globals.css), so the value lives in one place per platform.
+
+import { colors } from "../theme/tokens"
 
 export const FORMAT_IDS = [
   "books",
@@ -29,56 +33,26 @@ export interface FormatStyle {
   rgb: readonly [number, number, number]
 }
 
+// Parse a "#rrggbb" token into its decimal RGB triple.
+function hexToRgb(hex: string): readonly [number, number, number] {
+  const n = parseInt(hex.slice(1), 16)
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255] as const
+}
+
+// Pull a format ink from the theme tokens and expose it as accent + rgb.
+function ink(key: `fmt-${FormatId}` | "fmt-neutral") {
+  const accent = colors[key]
+  return { accent, rgb: hexToRgb(accent) }
+}
+
 export const FORMAT_STYLES: Record<FormatId, FormatStyle> = {
-  books: {
-    id: "books",
-    label: "Books",
-    badge: "BOOKS",
-    accent: "#6b9eff",
-    rgb: [107, 158, 255],
-  },
-  facts: {
-    id: "facts",
-    label: "Facts",
-    badge: "FACTS",
-    accent: "#5bc8bc",
-    rgb: [91, 200, 188],
-  },
-  people: {
-    id: "people",
-    label: "People",
-    badge: "PEOPLE",
-    accent: "#c47dcc",
-    rgb: [196, 125, 204],
-  },
-  concepts: {
-    id: "concepts",
-    label: "Ideas",
-    badge: "CONCEPTS",
-    accent: "#9b8ae0",
-    rgb: [155, 138, 224],
-  },
-  questions: {
-    id: "questions",
-    label: "Q&A",
-    badge: "QUESTIONS",
-    accent: "#72bb80",
-    rgb: [114, 187, 128],
-  },
-  stories: {
-    id: "stories",
-    label: "Stories",
-    badge: "STORIES",
-    accent: "#8a88e8",
-    rgb: [138, 136, 232],
-  },
-  academy: {
-    id: "academy",
-    label: "Academy",
-    badge: "ACADEMY",
-    accent: "#5ba8e0",
-    rgb: [91, 168, 224],
-  },
+  books: { id: "books", label: "Books", badge: "BOOKS", ...ink("fmt-books") },
+  facts: { id: "facts", label: "Facts", badge: "FACTS", ...ink("fmt-facts") },
+  people: { id: "people", label: "People", badge: "PEOPLE", ...ink("fmt-people") },
+  concepts: { id: "concepts", label: "Ideas", badge: "CONCEPTS", ...ink("fmt-concepts") },
+  questions: { id: "questions", label: "Q&A", badge: "QUESTIONS", ...ink("fmt-questions") },
+  stories: { id: "stories", label: "Stories", badge: "STORIES", ...ink("fmt-stories") },
+  academy: { id: "academy", label: "Academy", badge: "ACADEMY", ...ink("fmt-academy") },
 }
 
 // Neutral fallback for unknown formats (keeps rendering safe).
@@ -86,8 +60,7 @@ export const FALLBACK_FORMAT_STYLE: FormatStyle = {
   id: "facts",
   label: "Post",
   badge: "POST",
-  accent: "#7888a8",
-  rgb: [120, 136, 168],
+  ...ink("fmt-neutral"),
 }
 
 export function formatStyle(format: string): FormatStyle {

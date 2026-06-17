@@ -4,9 +4,11 @@
 // system stays consistent.
 //
 // "Circuit" palette: muted technical inks in blue/purple tones at matched
-// lightness. The hexes are mirrored as --color-fmt-* tokens in globals.css;
-// the Tailwind classes below reference those tokens. Inside post rendering
-// the active ink is exposed as the CSS variable --accent on the container.
+// lightness. The accent hexes here are a hand-maintained mirror of the
+// --color-fmt-* tokens in globals.css (web source of truth) and of
+// mobile/src/theme/tokens.ts; update all together. The Tailwind classes below
+// reference the globals.css tokens. Inside post rendering the active ink is
+// exposed as the CSS variable --accent on the container.
 
 export const FORMAT_IDS = [
   "books",

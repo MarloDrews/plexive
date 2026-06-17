@@ -30,7 +30,9 @@ export const colors = {
   good: "#6abf84",
   bad: "#c05870",
 
-  // Format inks (hexes also live in src/lib/formats.ts per format)
+  // Format inks — mobile source of truth for format colors. src/lib/formats.ts
+  // derives each format's accent + rgb from these. Keep in sync by hand with
+  // --color-fmt-* in frontend/src/app/globals.css.
   "fmt-books": "#6b9eff",
   "fmt-facts": "#5bc8bc",
   "fmt-people": "#c47dcc",
