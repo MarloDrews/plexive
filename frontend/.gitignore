@@ -40,3 +40,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# design-sync (claude.ai/design import) — staged scripts, build output, machine state.
+# The durable set (.design-sync/config.json, NOTES.md, conventions.md, previews/,
+# overrides/, build-inputs.mjs) is committed; everything below is regenerable.
+/.ds-sync/
+/ds-bundle/
+/.design-sync/.cache/
+/.design-sync/learnings/
+/.design-sync/node_modules
+/.design-sync/build/
