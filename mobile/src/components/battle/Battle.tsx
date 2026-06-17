@@ -84,6 +84,11 @@ export default function Battle({ onExit }: Props) {
   const [results, setResults] = useState<UserResult[] | null>(null)
   const [searching, setSearching] = useState(false)
 
+  // The people the user follows, shown as a tappable list in the lobby so a
+  // friend can be challenged straight away without typing a search.
+  const [friends, setFriends] = useState<UserResult[] | null>(null)
+  const [friendsLoading, setFriendsLoading] = useState(false)
+
   // The paired opponent's username (for the live strip, summary and rematch).
   const [opponent, setOpponent] = useState("")
 
@@ -196,6 +201,30 @@ export default function Battle({ onExit }: Props) {
     }, 300)
     return () => clearTimeout(timer)
   }, [query])
+
+  // Load the user's following list once so the lobby can show friends ready to
+  // battle before any search. Returns the same {username, is_verified,
+  // avatar_url} shape the rows expect (is_self is absent, so rows stay tappable).
+  useEffect(() => {
+    if (!user) {
+      setFriends(null)
+      return
+    }
+    let cancelled = false
+    setFriendsLoading(true)
+    apiFetch(`/api/users/${encodeURIComponent(user.username)}/following`)
+      .then(async (r) => (r.ok ? ((await r.json()) as UserResult[]) : []))
+      .catch(() => [])
+      .then((list) => {
+        if (!cancelled) setFriends(list)
+      })
+      .finally(() => {
+        if (!cancelled) setFriendsLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [user])
 
   // Both players finished -> reveal the result.
   useEffect(() => {
@@ -395,12 +424,16 @@ export default function Battle({ onExit }: Props) {
   }
 
   function renderLobby() {
-    const q = query.trim()
+    // With no search typed the lobby shows the friends list; typing switches to
+    // live search results. Each branch tracks its own loading and empty state.
+    const searchingUsers = query.trim().length > 0
+    const list = searchingUsers ? results : friends
+    const loadingList = searchingUsers ? searching : friendsLoading
     return (
       <View style={{ gap: 16 }}>
         <Text style={{ fontFamily: fonts.serifMedium, fontSize: 34, color: colors.ink }}>Battle</Text>
         <Text style={[sans(15, colors["ink-dim"]), { textAlign: "center" }]}>
-          Search for a friend and challenge them to a 1v1. Same questions, head to head.
+          Pick a friend below or search by username, then challenge them to a 1v1.
         </Text>
 
         <TextInput
@@ -428,16 +461,22 @@ export default function Battle({ onExit }: Props) {
           </MessageSlab>
         ) : null}
 
-        {searching ? (
+        {!searchingUsers ? <Text style={labelCaps}>Your friends</Text> : null}
+
+        {loadingList ? (
           <View style={{ gap: 8 }}>
             <PulsingSlab height={68} />
             <PulsingSlab height={68} />
           </View>
-        ) : results && results.length > 0 ? (
-          <View style={{ gap: 8 }}>{results.map(renderUserRow)}</View>
-        ) : q && results !== null ? (
+        ) : list && list.length > 0 ? (
+          <View style={{ gap: 8 }}>{list.map(renderUserRow)}</View>
+        ) : searchingUsers ? (
           <Text style={[sans(14, colors["ink-muted"]), { textAlign: "center", paddingTop: 24 }]}>
             No one found for “{query}”.
+          </Text>
+        ) : friends !== null ? (
+          <Text style={[sans(14, colors["ink-muted"]), { textAlign: "center", paddingTop: 24 }]}>
+            You are not following anyone yet. Search by username to find a friend.
           </Text>
         ) : null}
       </View>
