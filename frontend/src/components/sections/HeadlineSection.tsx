@@ -7,7 +7,9 @@ function WithCyanNumbers({ text }: { text: string }) {
   let match: RegExpExecArray | null
   while ((match = PATTERN.exec(text)) !== null) {
     if (match.index > last) parts.push(text.slice(last, match.index))
-    parts.push(<span key={match.index} className="text-(--accent)">{match[0]}</span>)
+    // whitespace-nowrap keeps a multi-word accent unit (e.g. "1 billion") whole:
+    // it never splits across a line wrap, moving to the next line together instead.
+    parts.push(<span key={match.index} className="text-(--accent) whitespace-nowrap">{match[0]}</span>)
     last = match.index + match[0].length
   }
   if (last < text.length) parts.push(text.slice(last))
