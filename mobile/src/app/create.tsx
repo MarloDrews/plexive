@@ -330,7 +330,6 @@ export default function CreateScreen() {
 
   // Section states — simple text sections
   const [sEssence, setSEssence] = useState("")
-  const [sQuizBadge, setSQuizBadge] = useState("")
   const [sWhyEndures, setSWhyEndures] = useState("")
   const [sHeart, setSHeart] = useState("")
   const [sWorldContext, setSWorldContext] = useState("")
@@ -366,7 +365,6 @@ export default function CreateScreen() {
     reading_time: "", difficulty: "2" as "1" | "2" | "3",
   })
   const [genericBody, setGenericBody] = useState("")
-  const [genericQuizBadge, setGenericQuizBadge] = useState("")
 
   // Interests
   const [selectedInterests, setSelectedInterests] = useState<string[]>([])
@@ -468,7 +466,6 @@ export default function CreateScreen() {
     const sections: Array<{ type: string; order: number; content: unknown }> = []
 
     if (sEssence.trim()) sections.push({ type: "essence", order: 1, content: sEssence.trim() })
-    if (sQuizBadge.trim()) sections.push({ type: "quiz_badge", order: 2, content: sQuizBadge.trim() })
 
     const validVoices = voices.filter((v) => v.quote.trim() && v.attribution.trim())
     if (validVoices.length >= 3) sections.push({
@@ -580,7 +577,6 @@ export default function CreateScreen() {
     }
 
     if (!sEssence.trim()) errs.s_essence = "Required"
-    if (!sQuizBadge.trim()) errs.s_quiz_badge = "Required"
     if (!sHeart.trim()) errs.s_heart = "Required"
 
     const validVoices = voices.filter((v) => v.quote.trim() && v.attribution.trim())
@@ -639,7 +635,6 @@ export default function CreateScreen() {
 
   function buildGenericSections() {
     const sections: Array<{ type: string; order: number; content: unknown }> = []
-    if (genericQuizBadge.trim()) sections.push({ type: "quiz_badge", order: 1, content: genericQuizBadge.trim() })
     if (genericBody.trim()) sections.push({ type: "heart", order: 2, content: genericBody.trim() })
     const validQuiz = quizItems.filter((q) => q.question.trim() && q.options.every((o) => o.trim()) && q.explanation.trim())
     if (validQuiz.length >= 5) sections.push({
@@ -778,10 +773,10 @@ export default function CreateScreen() {
 
   function resetForm() {
     setGFc({ field: "", headline: "", name: "", role: "", born: "", died: "", nationality: "", concept_name: "", one_liner: "", the_question: "", framing: "empirical", era: "", location: "", authors_compact: "", venue: "", key_finding_one_line: "", published_year: "", essence: "", teaser1: "", teaser2: "", teaser3: "", reading_time: "", difficulty: "2" })
-    setGenericBody(""); setGenericQuizBadge("")
+    setGenericBody("")
     setStep(1); setSelectedFormat(null); setSearchQuery(""); setSearchResults([])
     setFc({ cover_url: "", title: "", author: "", essence: "", teaser1: "", teaser2: "", teaser3: "", reading_time: "", difficulty: "2", year: "", genre: "" })
-    setSEssence(""); setSQuizBadge(""); setSWhyEndures(""); setSHeart(""); setSWorldContext(""); setSCritique("")
+    setSEssence(""); setSWhyEndures(""); setSHeart(""); setSWorldContext(""); setSCritique("")
     setAtAGlance({ genre: "", year: "", country: "", pages: "", reading_ease: "2", post_reading_time_min: "", post_difficulty: "2", best_for: "" })
     setVoices([emptyVoice(), emptyVoice(), emptyVoice()])
     setStructure(["", "", ""])
@@ -1194,11 +1189,6 @@ export default function CreateScreen() {
 
             <Caps text="Sections" style={{ marginTop: 20, marginBottom: 12 }} />
 
-            <Accordion title="Quiz Badge" required defaultOpen>
-              <Help text="Short pill text above the quiz (e.g. 'Test your knowledge')" />
-              <Field value={genericQuizBadge} onChangeText={setGenericQuizBadge} maxLength={60} placeholder="Test your knowledge" />
-            </Accordion>
-
             <Accordion title="Body" required defaultOpen>
               <Help text="The main content — explain, describe, or narrate in full" />
               <Field value={genericBody} onChangeText={(t) => { setGenericBody(t); clearError("generic_body") }} multiline rows={10} placeholder="Write the full content here..." />
@@ -1298,12 +1288,6 @@ export default function CreateScreen() {
               <Help text="The core insight in one strong sentence (shown full-screen on the detail page)" />
               <Field value={sEssence} onChangeText={(t) => { setSEssence(t); clearError("s_essence") }} multiline rows={2} maxLength={300} placeholder="Why our fast intuitive thinking often misleads us..." />
               <FieldError msg={errors.s_essence} />
-            </Accordion>
-
-            <Accordion title="Quiz Badge" required defaultOpen>
-              <Help text="Short gold pill text above the quiz (e.g. 'Test your understanding')" />
-              <Field value={sQuizBadge} onChangeText={(t) => { setSQuizBadge(t); clearError("s_quiz_badge") }} maxLength={60} placeholder="Test your understanding" />
-              <FieldError msg={errors.s_quiz_badge} />
             </Accordion>
 
             <Accordion title="Voices (3–4 quotes)" required defaultOpen>

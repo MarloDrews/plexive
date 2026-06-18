@@ -1,6 +1,5 @@
 import type { Section } from "../types/post"
 import EssenceSection from "./sections/EssenceSection"
-import QuizBadgeSection from "./sections/QuizBadgeSection"
 import VoicesSection from "./sections/VoicesSection"
 import AtAGlanceSection from "./sections/AtAGlanceSection"
 import WhyEnduresSection from "./sections/WhyEnduresSection"
@@ -91,7 +90,6 @@ interface Props {
 const NO_READ_SECTIONS = new Set([
   "at_a_glance",
   "quiz",
-  "quiz_badge",
   "paper_card",
   "related_posts",
   "sources",
@@ -112,8 +110,6 @@ export default function SectionRenderer({ sections, isUserContent, postId }: Pro
         switch (section.type) {
           case "essence":
             return <EssenceSection key={i} content={c as string} />
-          case "quiz_badge":
-            return <QuizBadgeSection key={i} content={c as string} />
           case "voices":
             return <VoicesSection key={i} content={c as any} />
           case "at_a_glance":

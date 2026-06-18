@@ -33,11 +33,6 @@
       }
     },
     {
-      "type": "quiz_badge",
-      "order": 2,
-      "content": "🎯 7 questions at the end, earn Elo"
-    },
-    {
       "type": "tldr",
       "order": 3,
       "content": "A system that resists dispersion into disorder must keep its sensory states within narrow bounds, which is the same as keeping the surprise of those states low. An agent cannot evaluate surprise directly, because that requires the intractable model evidence $p(\\tilde{s} \\mid m)$, but it can minimize variational free energy $F$, an upper bound on surprise built only from quantities the agent already encodes. Minimizing $F$ performs approximate Bayesian inference about the causes of sensation, and when the same quantity is reduced by acting on the world instead of by revising beliefs, perception and action become two routes to one objective."

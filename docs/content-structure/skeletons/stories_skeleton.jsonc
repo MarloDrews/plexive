@@ -26,7 +26,7 @@
 //      not invent quotes, scenes, or figures to fill a gap in the record.
 //
 // Section order follows the spec exactly:
-//   Part 1 (Opening):    cold_open → quiz_badge → at_a_glance
+//   Part 1 (Opening):    cold_open → at_a_glance
 //   Part 2 (The Story):  setting → chapters → the_turn → the_aftermath
 //   Part 3 (Reflection): what_it_means → what_we_learn? → unanswered?
 //   Part 4 (Test):       quiz → related_posts?
@@ -127,20 +127,6 @@
                             // turn. Show the reader a door, do not tell them
                             // what is behind it. No em-dashes; no ta-da framings
                             // ("Picture this:", "Here's the thing:").
-    },
-
-    {
-      "type": "quiz_badge",  // REQUIRED — signposts that a graded quiz waits at
-      "order": 2,            // the end. Pure retention signal, no story content
-                             // of its own: it gives the reader a reason to scroll
-                             // past the reflection to "earn Elo". Keep it; posts
-                             // without it lose the pull.
-      "content": ""          // string — format: "🎯 N questions at the end, earn
-                             // Elo" where N matches the actual quiz array length
-                             // below. Note the COMMA: the em-dash ban applies to
-                             // this string too (it is user-facing), so do not
-                             // write "end — earn Elo". Keep N in sync if the quiz
-                             // grows or shrinks.
     },
 
     {

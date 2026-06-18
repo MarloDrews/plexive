@@ -19,7 +19,7 @@
 //      told how to wield it (how_to_apply).
 //
 // Section order follows the spec exactly:
-//   Part 1 (Opening): one_liner → quiz_badge → intuition → visual_explanation
+//   Part 1 (Opening): one_liner → intuition → visual_explanation
 //   Part 2 (Mechanism): how_it_works → formal_definition?
 //   Part 3 (Core): real_world_examples → how_to_apply → where_it_breaks
 //   Part 4 (Takeaway): mental_takeaway
@@ -110,18 +110,6 @@
                             // Length guideline: one sentence, ~10–25 words.
                             // Treat as a guideline; the header explains the
                             // rule. No em-dashes inside the content string.
-    },
-
-    {
-      "type": "quiz_badge",  // REQUIRED — signposts that a graded quiz waits
-      "order": 2,            // at the end. Pure retention signal, no teaching
-                             // content of its own: it gives the reader a
-                             // reason to scroll past the takeaway to "earn
-                             // Elo". Keep it; posts without it lose the pull.
-      "content": ""          // string — format exactly: "🎯 N questions at
-                             // the end — earn Elo" where N matches the actual
-                             // quiz array length below. Keep N in sync if the
-                             // quiz grows or shrinks.
     },
 
     {

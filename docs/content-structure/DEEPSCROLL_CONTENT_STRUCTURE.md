@@ -115,7 +115,6 @@ These section types are used across multiple formats with **identical** content 
 
 | Type | Content shape | Purpose |
 |---|---|---|
-| `quiz_badge` | `string` — short teaser line | Promise of quiz at the end |
 | `quiz` | array of `{question, options[4], answer_index, explanation}` | 5–10 multiple-choice questions, affects Elo |
 | `related_posts` | array of `{post_id, title, format, mini_teaser}` (length 3) | Internal links to similar posts |
 | `sources` | array of `{label, url, type}` where type ∈ `wikipedia|paper|book|article|database` | References |
@@ -228,7 +227,6 @@ What the user sees in the feed *before* tapping. Must catch within 2 seconds. Li
 | # | Type | Section | Status | Content shape |
 |---|------|---------|--------|---------------|
 | 1 | `essence` | **Essence** — one dense sentence, large typography, white space | REQUIRED | `string` |
-| 2 | `quiz_badge` | **Quiz Badge** — small line under essence: "🎯 7 questions at the end — earn Elo" | REQUIRED | `string` |
 | 3 | `voices` | **Voices from the Book** — 3–4 quotes from the book, large typography, minimal attribution (~5 words max, e.g. "— on habits"). Quote length flexible | REQUIRED | array of `{quote, attribution}` |
 | 4 | `at_a_glance` | **At a Glance** — visual card: genre · year · country · pages · reading_ease (1–3) · post_reading_time_min · post_difficulty (1–3) · best_for (one line: "Readers who…") | REQUIRED | object |
 
@@ -342,7 +340,6 @@ SECTIONS
 Include every REQUIRED section. For each OPTIONAL section, include it only if it adds real value for this specific book. Use this order:
 
 1. essence — REQUIRED. content: string. One dense sentence stating what the book is.
-2. quiz_badge — REQUIRED. content: string. Format: "🎯 N questions at the end — earn Elo" where N matches your quiz length.
 3. voices — REQUIRED. content: array of {quote, attribution}, length 3–4. Quotes from the book. Attribution max ~5 words ("— on habits", "— Raskolnikov to Sonya"). Quote length flexible.
 4. at_a_glance — REQUIRED. content: { genre, year, country, pages, reading_ease (1-3), post_reading_time_min, post_difficulty (1-3), best_for (one line "Readers who…") }.
 5. why_endures — OPTIONAL. content: string, 2–3 sentences. What makes this book special among all books on its topic? Skip if you don't have a sharp answer.
@@ -398,7 +395,6 @@ The in-post "read next" list is built from featured `connections` plus featured 
 | # | Type | Section | Status | Content shape |
 |---|------|---------|--------|---------------|
 | 1 | `headline` | **The Headline** — the fact stated cleanly, large typography, key number in accent | REQUIRED | `string` |
-| 2 | `quiz_badge` | **Quiz Badge** | REQUIRED | `string` |
 | 3 | `see_it` | **See It** — the main visual. SVG diagram, size comparison, timeline, map, or structural sketch | REQUIRED | `{visual_svg?, image_url?, image_caption?, image_attribution?}` |
 | 4 | `key_numbers` | **Key Numbers** — compact card with all relevant numbers | OPTIONAL | array of `{label, value, unit?}` |
 | 5 | `tangible` | **Make It Tangible** — 2–3 concrete comparisons ("That's like…", "Equivalent to…") + optional scale/timeline SVG | OPTIONAL | `{items: array of string, visual_svg?}` |
@@ -512,7 +508,6 @@ SECTIONS
 Include every REQUIRED section. For each OPTIONAL section, include it only if it adds real value for this specific fact. Use this order:
 
 1. headline — REQUIRED. content: string. The fact stated cleanly, with the key number/claim positioned for emphasis.
-2. quiz_badge — REQUIRED. content: string. Format: "🎯 N questions at the end — earn Elo" where N matches your quiz length.
 3. see_it — REQUIRED. content: { visual_svg?, image_url?, image_caption?, image_attribution? }. The main visual that makes the insight tangible. Use SVG for diagrams, scales, timelines, charts. Use image_url for historical images, maps, photos. One of visual_svg or image_url required.
 4. key_numbers — OPTIONAL. content: array of { label, value, unit? }. Include when the fact involves multiple quantitative data points.
 5. tangible — OPTIONAL. content: { items: array of strings (2–3 concrete comparisons), visual_svg? (optional scale/timeline graphic) }. Include for abstract scales (cosmic, microscopic, deep time). Skip when the fact is already tangible.
@@ -556,7 +551,6 @@ SOURCE MATERIAL:
 | # | Type | Section | Status | Content shape |
 |---|------|---------|--------|---------------|
 | 1 | `identity` | **Identity** — one dense sentence: who this person was/is | REQUIRED | `string` |
-| 2 | `quiz_badge` | **Quiz Badge** | REQUIRED | `string` |
 | 3 | `portrait` | **Portrait** — large Wikimedia image with caption (year, context, source). For People essential, not decorative | REQUIRED | `{image_url, image_caption?, image_attribution?}` |
 | 4 | `voices` | **In Their Own Words** — 3–4 quotes by the person themselves, large typography, minimal attribution context ("— 1923, letter to Bohr") | REQUIRED | array of `{quote, attribution}` |
 | 5 | `at_a_glance` | **At a Glance** — compact card: birth/death dates · nationality · field(s) · known_for (one line) · movement or era · post_reading_time_min · post_difficulty | REQUIRED | object |
@@ -671,7 +665,6 @@ SECTIONS
 Include every REQUIRED section. For each OPTIONAL section, include it only if it adds real value for this specific person. Use this order:
 
 1. identity — REQUIRED. content: string. One dense sentence: who this person was/is, distilled.
-2. quiz_badge — REQUIRED. content: string. Format: "🎯 N questions at the end — earn Elo" where N matches your quiz length.
 3. portrait — REQUIRED. content: { image_url (Wikimedia URL preferred), image_caption? (year + context, one line), image_attribution? }. The face is the first hook.
 4. voices — REQUIRED. content: array of {quote, attribution}, length 3–4. Quotes by the person themselves. Attribution context ~5 words ("— 1923, letter to Bohr", "— Long Walk to Freedom").
 5. at_a_glance — REQUIRED. content: { birth_date, death_date or null, nationality, fields (array), known_for (one line), movement_or_era, post_reading_time_min, post_difficulty (1-3) }.
@@ -718,7 +711,6 @@ SOURCE MATERIAL:
 | # | Type | Section | Status | Content shape |
 |---|------|---------|--------|---------------|
 | 1 | `one_liner` | **The Concept in One Line** — plain-language definition, large typography. No jargon, no hedge | REQUIRED | `string` |
-| 2 | `quiz_badge` | **Quiz Badge** | REQUIRED | `string` |
 | 3 | `intuition` | **The Intuition** — analogy or thought experiment that lands the core idea *before* any technical explanation ("Imagine you only see the planes that come back…") | REQUIRED | `string` |
 | 4 | `visual_explanation` | **See How It Works** — the main SVG diagram showing the concept's mechanism. For Concepts this is constitutive — without it, the concept stays abstract | REQUIRED | `{visual_svg?, image_url?, image_caption?, image_attribution?}` (at least one of visual_svg or image_url required) |
 
@@ -828,7 +820,6 @@ SECTIONS
 Include every REQUIRED section. For each OPTIONAL section, include it only if it adds real value for this specific concept. Use this order:
 
 1. one_liner — REQUIRED. content: string. Plain-language definition. No jargon, no hedge.
-2. quiz_badge — REQUIRED. content: string. Format: "🎯 N questions at the end — earn Elo" where N matches your quiz length.
 3. intuition — REQUIRED. content: string. An analogy or thought experiment that lands the core idea before any technical explanation. Lowers the cognitive barrier.
 4. visual_explanation — REQUIRED. content: { visual_svg?, image_url?, image_caption?, image_attribution? }. At least one of visual_svg or image_url must be present. The main visual showing the concept's mechanism. This is constitutive for concepts — without it, the idea stays abstract.
 5. how_it_works — REQUIRED. content: array of length 3–6, each item { step_number, title, body, visual_svg? }. Step-by-step mechanism. Technical but concrete.
@@ -873,7 +864,6 @@ SOURCE MATERIAL:
 | # | Type | Section | Status | Content shape |
 |---|------|---------|--------|---------------|
 | 1 | `the_question` | **The Question** — stated cleanly, large typography, isolated for impact. No commentary | REQUIRED | `string` |
-| 2 | `quiz_badge` | **Quiz Badge** | REQUIRED | `string` |
 | 3 | `setup` | **The Setup** — concrete scenario or framing that makes the question vivid. Thought experiments: the scenario. Open questions: what's at stake. 3–5 sentences, scenic writing | REQUIRED | `string` |
 | 4 | `why_its_hard` | **Why It's Hard** — what makes this question genuinely difficult? Where does intuition fail, what's the tension between competing values or concepts? A diagnosis, not a teaser | REQUIRED | `string` |
 
@@ -982,7 +972,6 @@ SECTIONS
 Include every REQUIRED section. For each OPTIONAL section, include it only if it adds real value for this specific question. Use this order:
 
 1. the_question — REQUIRED. content: string. The question stated cleanly, no commentary.
-2. quiz_badge — REQUIRED. content: string. Format: "🎯 N questions at the end — earn Elo" where N matches your quiz length.
 3. setup — REQUIRED. content: string, 3–5 sentences. The concrete scenario or framing that makes the question vivid.
 4. why_its_hard — REQUIRED. content: string. A diagnosis of where intuition fails, what tensions exist between competing values or concepts.
 5. at_a_glance — REQUIRED. content: { field, type ("thought experiment" | "open question" | "paradox"), first_posed_by, year, still_debated (boolean), post_reading_time_min, post_difficulty (1-3) }.
@@ -1029,7 +1018,6 @@ SOURCE MATERIAL:
 | # | Type | Section | Status | Content shape |
 |---|------|---------|--------|---------------|
 | 1 | `cold_open` | **The Cold Open** — first sentence/paragraph that drops the reader into the moment. Like a film's opening shot. No exposition, just immersion. 2–4 sentences max | REQUIRED | `string` |
-| 2 | `quiz_badge` | **Quiz Badge** | REQUIRED | `string` |
 | 3 | `at_a_glance` | **At a Glance** — compact card: era · location · category · sources_reliability (1–3, where 3 = primary documents, 1 = mostly oral/legendary) · post_reading_time_min · post_difficulty (1–3). Crucially: *no plot summary* | REQUIRED | object |
 
 ### Part 2 — The Story (the heart, ~5–12 min read)
@@ -1150,7 +1138,6 @@ SECTIONS
 Include every REQUIRED section. For each OPTIONAL section, include it only if it adds real value for this specific story. Use this order:
 
 1. cold_open — REQUIRED. content: string, 2–4 sentences max. Drops the reader into a moment. Like a film's opening shot. No exposition.
-2. quiz_badge — REQUIRED. content: string. Format: "🎯 N questions at the end — earn Elo" where N matches your quiz length.
 3. at_a_glance — REQUIRED. content: { era, location, category, sources_reliability (1–3 where 3 = primary documents, 1 = mostly oral/legendary), post_reading_time_min, post_difficulty (1–3) }. Crucially: NO plot summary fields.
 4. setting — REQUIRED. content: { body, image_url?, image_caption? }. Time, place, who matters, what the world was like. Establishes stakes before action. No spoilers.
 5. chapters — REQUIRED. content: array of length 3–7, each item { title (scenically titled, not summary-titled), body (4–10 sentences of narrative prose), image_url? (period image), image_caption? }. The actual story, written as prose. Pacing matters — chapters can vary in length, building tension.
@@ -1198,7 +1185,6 @@ Academy posts target domain experts and advanced students. The goal is **not** s
 | # | Type | Section | Status | Content shape |
 |---|------|---------|--------|---------------|
 | 1 | `paper_card` | **Paper Card** — citation block: title, authors with affiliations, venue, year, DOI, arXiv ID, code/data URLs, funding source (optional), conflicts of interest (optional) | REQUIRED | `{title, authors: array of {name, affiliation}, venue, year, doi?, arxiv_id?, code_url?, data_url?, funding_source?, conflicts_of_interest?}` |
-| 2 | `quiz_badge` | **Quiz Badge** | REQUIRED | `string` |
 | 3 | `tldr` | **TL;DR** — 2–3 sentences with the core finding stated technically. The kind of summary an expert would give a colleague | REQUIRED | `string` |
 | 4 | `headline_figure` | **Headline Figure** — the central visual evidence. Either the paper's most important figure (with attribution) or a rebuilt SVG. Caption is technical *and* conceptually accessible | REQUIRED | `{visual_svg?, image_url?, image_caption?, image_attribution?}` (at least one of visual_svg or image_url required) |
 | 5 | `at_a_glance` | **At a Glance** — methodological card: study_type · sample_size · pre_registered · open_data · open_code · replication_status · peer_review_status · result_direction · post_reading_time_min · post_difficulty | REQUIRED | object |
@@ -1346,7 +1332,6 @@ SECTIONS
 Include every REQUIRED section. For each OPTIONAL section, include it only if it adds real value for this specific paper. Use this order:
 
 1. paper_card — REQUIRED. content: { title, authors: array of {name, affiliation}, venue, year, doi?, arxiv_id?, code_url?, data_url?, funding_source? (string), conflicts_of_interest? (string) }. Full citation block.
-2. quiz_badge — REQUIRED. content: string. Format: "🎯 N questions at the end — earn Elo" where N matches your quiz length.
 3. tldr — REQUIRED. content: string, 2–3 technical sentences. The summary an expert would give a colleague.
 4. headline_figure — REQUIRED. content: { visual_svg?, image_url?, image_caption?, image_attribution? }. At least one of visual_svg or image_url must be present. The central visual evidence. Use image_url for the paper's most important figure (with image_attribution for source credit), or visual_svg for a rebuilt version if the original cannot be reproduced. The image_caption is technical AND conceptually accessible.
 5. at_a_glance — REQUIRED. content: { study_type ("RCT" | "observational" | "theoretical" | "computational" | "meta-analysis" | "review" | other), sample_size? (where applicable), pre_registered (boolean), open_data (boolean), open_code (boolean), replication_status ("none" | "partial" | "full" | "failed"), peer_review_status ("preprint" | "under_review" | "published"), result_direction ("positive" | "negative" | "null" | "mixed"), post_reading_time_min, post_difficulty (1-3) }.

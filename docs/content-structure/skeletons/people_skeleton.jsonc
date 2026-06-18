@@ -96,14 +96,6 @@
     },
 
     {
-      "type": "quiz_badge",  // REQUIRED
-      "order": 2,
-      "content": ""          // string — format exactly: "🎯 N questions at
-                             // the end — earn Elo" where N matches the
-                             // actual quiz array length below.
-    },
-
-    {
       "type": "portrait",  // REQUIRED — for People, the portrait is the
       "order": 3,          // primary visual anchor, not decorative. Use
                            // the same image as feed_card.portrait if no

@@ -40,12 +40,6 @@
     },
 
     {
-      "type": "quiz_badge",  // REQUIRED
-      "order": 2,
-      "content": ""          // string — format: "🎯 N questions at the end, earn Elo"
-    },
-
-    {
       "type": "voices",  // REQUIRED — "Voices from the Book"
       "order": 3,
       "content": [       // array[3–4]. Three roles, not three of the same:

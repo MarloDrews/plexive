@@ -40,7 +40,7 @@
 //      difficulty before any named school of thought arrives.
 //
 // Section order follows the spec exactly:
-//   Part 1 (The Question): the_question → quiz_badge → setup → why_its_hard
+//   Part 1 (The Question): the_question → setup → why_its_hard
 //   Part 2 (The Stakes):   at_a_glance → what_hangs_on_it?
 //   Part 3 (Perspectives): perspectives → where_they_clash → what_science_says?
 //   Part 4 (Your Turn):    your_turn
@@ -134,18 +134,6 @@
                                // or render it without the quotation marks the
                                // card uses. No em-dashes.
                                // Length guideline: one sentence.
-    },
-
-    {
-      "type": "quiz_badge",  // REQUIRED — signposts that a graded quiz waits
-      "order": 2,            // at the end. Pure retention signal, no teaching
-                             // content of its own: it gives the reader a
-                             // reason to scroll past the reflection to "earn
-                             // Elo". Keep it; posts without it lose the pull.
-      "content": ""          // string — format exactly: "🎯 N questions at
-                             // the end — earn Elo" where N matches the actual
-                             // quiz array length below. Keep N in sync if the
-                             // quiz grows or shrinks.
     },
 
     {

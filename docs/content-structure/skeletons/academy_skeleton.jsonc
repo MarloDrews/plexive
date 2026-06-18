@@ -57,7 +57,7 @@
 //      framed as a disappointment.
 //
 // Section order follows the spec exactly:
-//   Part 1 (The Paper at a Glance): paper_card -> quiz_badge -> tldr ->
+//   Part 1 (The Paper at a Glance): paper_card -> tldr ->
 //           headline_figure -> at_a_glance
 //   Part 2 (The Research Question): the_question -> the_big_idea? ->
 //           field_context?
@@ -217,20 +217,6 @@
                                 // part of reading the work critically, not an
                                 // accusation.
       }
-    },
-
-    {
-      "type": "quiz_badge",  // REQUIRED — signposts the graded quiz at the end.
-      "order": 2,            // Pure retention signal, no teaching content: it
-                             // gives the reader a reason to scroll past
-                             // implications to "earn Elo". Academy readers are
-                             // competitive about their own field, so the badge
-                             // pulls harder here than elsewhere.
-      "content": ""          // string — format exactly: "🎯 N questions at the
-                             // end — earn Elo" where N matches the actual quiz
-                             // array length below. Keep N in sync if the quiz
-                             // grows or shrinks. (Fixed UI template string; the
-                             // em-dash here is part of the template, not prose.)
     },
 
     {

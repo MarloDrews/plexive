@@ -291,7 +291,6 @@ export interface AuthorsContextItem {
 
 export type SectionType =
   | "essence"
-  | "quiz_badge"
   | "voices"
   | "at_a_glance"
   | "why_endures"

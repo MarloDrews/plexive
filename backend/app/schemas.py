@@ -136,12 +136,6 @@ class EssenceSection(BaseModel):
     content: str
 
 
-class QuizBadgeSection(BaseModel):
-    type: Literal["quiz_badge"]
-    order: int = Field(ge=1)
-    content: str
-
-
 class VoicesSection(BaseModel):
     type: Literal["voices"]
     order: int = Field(ge=1)
@@ -262,7 +256,6 @@ class SourcesSection(BaseModel):
 AnySection = Annotated[
     Union[
         EssenceSection,
-        QuizBadgeSection,
         VoicesSection,
         AtAGlanceSection,
         WhyEnduresSection,
@@ -281,7 +274,7 @@ AnySection = Annotated[
 ]
 
 BOOKS_REQUIRED_SECTIONS = {
-    "essence", "quiz_badge", "voices", "at_a_glance",
+    "essence", "voices", "at_a_glance",
     "heart", "core_ideas", "takeaway", "quiz", "sources",
 }
 

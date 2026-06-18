@@ -113,7 +113,6 @@ export default function CreatePage() {
 
   // Section states — simple text sections
   const [sEssence, setSEssence] = useState("")
-  const [sQuizBadge, setSQuizBadge] = useState("")
   const [sWhyEndures, setSWhyEndures] = useState("")
   const [sHeart, setSHeart] = useState("")
   const [sWorldContext, setSWorldContext] = useState("")
@@ -149,7 +148,6 @@ export default function CreatePage() {
     reading_time: "", difficulty: "2" as "1"|"2"|"3",
   })
   const [genericBody, setGenericBody] = useState("")
-  const [genericQuizBadge, setGenericQuizBadge] = useState("")
 
   // Interests
   const [selectedInterests, setSelectedInterests] = useState<string[]>([])
@@ -234,7 +232,6 @@ export default function CreatePage() {
     const sections: Array<{ type: string; order: number; content: unknown }> = []
 
     if (sEssence.trim()) sections.push({ type: "essence", order: 1, content: sEssence.trim() })
-    if (sQuizBadge.trim()) sections.push({ type: "quiz_badge", order: 2, content: sQuizBadge.trim() })
 
     const validVoices = voices.filter((v) => v.quote.trim() && v.attribution.trim())
     if (validVoices.length >= 3) sections.push({
@@ -346,7 +343,6 @@ export default function CreatePage() {
     }
 
     if (!sEssence.trim()) errs.s_essence = "Required"
-    if (!sQuizBadge.trim()) errs.s_quiz_badge = "Required"
     if (!sHeart.trim()) errs.s_heart = "Required"
 
     const validVoices = voices.filter((v) => v.quote.trim() && v.attribution.trim())
@@ -405,7 +401,6 @@ export default function CreatePage() {
 
   function buildGenericSections() {
     const sections: Array<{ type: string; order: number; content: unknown }> = []
-    if (genericQuizBadge.trim()) sections.push({ type: "quiz_badge", order: 1, content: genericQuizBadge.trim() })
     if (genericBody.trim()) sections.push({ type: "heart", order: 2, content: genericBody.trim() })
     const validQuiz = quizItems.filter(q => q.question.trim() && q.options.every(o => o.trim()) && q.explanation.trim())
     if (validQuiz.length >= 5) sections.push({
@@ -549,10 +544,10 @@ export default function CreatePage() {
 
   function resetForm() {
     setGFc({ field: "", headline: "", name: "", role: "", born: "", died: "", nationality: "", concept_name: "", one_liner: "", the_question: "", framing: "empirical", era: "", location: "", authors_compact: "", venue: "", key_finding_one_line: "", published_year: "", essence: "", teaser1: "", teaser2: "", teaser3: "", reading_time: "", difficulty: "2" })
-    setGenericBody(""); setGenericQuizBadge("")
+    setGenericBody("")
     setStep(1); setSelectedFormat(null); setSearchQuery(""); setSearchResults([])
     setFc({ cover_url: "", title: "", author: "", essence: "", teaser1: "", teaser2: "", teaser3: "", reading_time: "", difficulty: "2", year: "", genre: "" })
-    setSEssence(""); setSQuizBadge(""); setSWhyEndures(""); setSHeart(""); setSWorldContext(""); setSCritique("")
+    setSEssence(""); setSWhyEndures(""); setSHeart(""); setSWorldContext(""); setSCritique("")
     setAtAGlance({ genre: "", year: "", country: "", pages: "", reading_ease: "2", post_reading_time_min: "", post_difficulty: "2", best_for: "" })
     setVoices([emptyVoice(), emptyVoice(), emptyVoice()])
     setStructure(["", "", ""])
@@ -856,11 +851,6 @@ export default function CreatePage() {
                 {/* Sections */}
                 <p className="label-caps mb-3 mt-5">Sections</p>
 
-                <Accordion title="Quiz Badge" required defaultOpen>
-                  <p className="text-ink-muted text-xs mb-2">Short pill text above the quiz (e.g. &ldquo;Test your knowledge&rdquo;)</p>
-                  <input type="text" value={genericQuizBadge} onChange={e => setGenericQuizBadge(e.target.value)} maxLength={60} placeholder="Test your knowledge" className={inputCls} />
-                </Accordion>
-
                 <Accordion title="Body" required defaultOpen>
                   <p className="text-ink-muted text-xs mb-2">The main content — explain, describe, or narrate in full</p>
                   <textarea value={genericBody} onChange={e => { setGenericBody(e.target.value); clearError("generic_body") }} rows={10} placeholder="Write the full content here..." className={`${inputCls} resize-none`} />
@@ -1024,12 +1014,6 @@ export default function CreatePage() {
                 <p className="text-ink-muted text-xs mb-2">The core insight in one strong sentence (shown full-screen on the detail page)</p>
                 <textarea value={sEssence} onChange={(e) => { setSEssence(e.target.value); clearError("s_essence") }} rows={2} maxLength={300} placeholder="Why our fast intuitive thinking often misleads us..." className={`${inputCls} resize-none`} />
                 <FieldError msg={errors.s_essence} />
-              </Accordion>
-
-              <Accordion title="Quiz Badge" required defaultOpen>
-                <p className="text-ink-muted text-xs mb-2">Short gold pill text above the quiz (e.g. &ldquo;Test your understanding&rdquo;)</p>
-                <input type="text" value={sQuizBadge} onChange={(e) => { setSQuizBadge(e.target.value); clearError("s_quiz_badge") }} maxLength={60} placeholder="Test your understanding" className={inputCls} />
-                <FieldError msg={errors.s_quiz_badge} />
               </Accordion>
 
               <Accordion title="Voices (3–4 quotes)" required defaultOpen>

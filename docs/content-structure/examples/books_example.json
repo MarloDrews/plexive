@@ -21,11 +21,6 @@
       "content": "A Nobel-winning psychologist's account of why your most confident judgments so often go wrong."
     },
     {
-      "type": "quiz_badge",
-      "order": 2,
-      "content": "🎯 8 questions at the end, earn Elo"
-    },
-    {
       "type": "voices",
       "order": 3,
       "content": [

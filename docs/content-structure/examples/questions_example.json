@@ -18,11 +18,6 @@
       "content": "Do we have moral obligations to future generations?"
     },
     {
-      "type": "quiz_badge",
-      "order": 2,
-      "content": "🎯 8 questions at the end, earn Elo"
-    },
-    {
       "type": "setup",
       "order": 3,
       "content": "Onkalo is a network of tunnels cut into the bedrock of western Finland, built to bury spent nuclear fuel. It is designed to stay sealed, and to remember its own danger, for a hundred thousand years. The people it is meant to warn are separated from its engineers by more time than separates us from the first cave paintings. They cannot vote in our elections, pay into our pension funds, or thank us for our care. They may speak no language any living person knows. Yet the whole project rests on an assumption almost nobody questions: that we owe them, at the very least, a warning."

@@ -77,7 +77,6 @@
     "PaperCardSection": "src/components/sections/PaperCardSection.tsx",
     "PerspectivesSection": "src/components/sections/PerspectivesSection.tsx",
     "PortraitSection": "src/components/sections/PortraitSection.tsx",
-    "QuizBadgeSection": "src/components/sections/QuizBadgeSection.tsx",
     "QuizSection": "src/components/sections/QuizSection.tsx",
     "RealWorldExamplesSection": "src/components/sections/RealWorldExamplesSection.tsx",
     "RelatedPostsSection": "src/components/sections/RelatedPostsSection.tsx",

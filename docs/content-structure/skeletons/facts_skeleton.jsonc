@@ -18,7 +18,7 @@
 // expected. Do not renumber to close them.
 //
 // ─── POST SHAPE ──────────────────────────────────────────────────────
-// Always present (the spine): headline, quiz_badge, see_it, surprises,
+// Always present (the spine): headline, see_it, surprises,
 // bigger_picture, quiz, sources. Beyond the spine, include an OPTIONAL
 // section only where this specific fact passes that section's own Include
 // test. Do not include every optional every time; that is the main way
@@ -138,16 +138,6 @@
       //      A reader who reads only this already has the fact.
       "content": ""  // string. Same fact as feed_card.headline, no rephrasing.
                      // The key number renders in the format accent.
-    },
-
-    {
-      "type": "quiz_badge",   // Quiz Badge (REQUIRED)
-      "order": 2,
-      // JOB: signal that a graded quiz waits at the end, so the reader has a
-      //      reason to scroll past the payoff to earn Elo. Retention signal,
-      //      not content. Belongs to the header zone, render compact.
-      "content": ""  // string. Format: "🎯 N questions at the end, earn Elo".
-                     // HARD: N matches the quiz array length below exactly.
     },
 
     {

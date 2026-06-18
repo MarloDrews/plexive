@@ -2,7 +2,6 @@ import { View } from "react-native"
 import type { Section } from "../types/post"
 import { colors } from "../theme/tokens"
 import EssenceSection from "./sections/EssenceSection"
-import QuizBadgeSection from "./sections/QuizBadgeSection"
 import VoicesSection from "./sections/VoicesSection"
 import AtAGlanceSection from "./sections/AtAGlanceSection"
 import WhyEnduresSection from "./sections/WhyEnduresSection"
@@ -98,8 +97,6 @@ function renderSection(section: Section, isUserContent: boolean, postId: number)
   switch (section.type) {
     case "essence":
       return <EssenceSection content={c as string} />
-    case "quiz_badge":
-      return <QuizBadgeSection content={c as string} />
     case "voices":
       return <VoicesSection content={c as any} />
     case "at_a_glance":

@@ -49,11 +49,6 @@
       "content": "Most mammals get about 1 billion heartbeats in a lifetime, whether they live two years or seventy."
     },
     {
-      "type": "quiz_badge",
-      "order": 2,
-      "content": "🎯 7 questions at the end, earn Elo"
-    },
-    {
       "type": "see_it",
       "order": 3,
       "content": {
