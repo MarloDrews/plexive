@@ -41,8 +41,10 @@ Two uses:
   still read as bars.
 - **Type:** label text uses `font-family="var(--font-sans), system-ui,
   sans-serif"`; numbers and units inside a diagram use `var(--font-mono),
-  ui-monospace, monospace`. `font-weight` 600 to 700 for labels, `font-size`
-  11 to 15. Keep every label to 1 or 2 words.
+  ui-monospace, monospace`. `font-weight` 600 to 700 for labels. `font-size`
+  13 to 16, never below 13: the 400-wide viewBox is scaled down on a phone, so
+  anything smaller turns unreadable. Use 15 to 16 for the primary label or key
+  number, 13 to 14 for secondary labels and axes. Keep every label to 1 or 2 words.
 - **`text-anchor="middle"`** for centered labels. Position edge labels
   deliberately and keep them inside the box.
 
@@ -182,7 +184,7 @@ For contrast concepts (e.g. Fixed vs Growth Mindset).
   <g fill="currentColor" font-family="var(--font-sans), system-ui, sans-serif" text-anchor="middle">
     <text x="100" y="105" font-size="15" font-weight="700">Fixed</text>
     <text x="300" y="105" font-size="15" font-weight="700">Growth</text>
-    <g font-size="12" opacity="0.8">
+    <g font-size="13" opacity="0.8">
       <text x="100" y="150">Avoids</text>
       <text x="100" y="172">challenge</text>
       <text x="300" y="150">Seeks</text>
@@ -204,13 +206,13 @@ they stay within the viewBox.
     <line x1="70" y1="150" x2="350" y2="150"/>
   </g>
   <rect x="202" y="52" width="146" height="96" rx="8" fill="var(--accent)" opacity="0.12"/>
-  <g fill="currentColor" font-family="var(--font-sans), system-ui, sans-serif" font-size="12" text-anchor="middle" opacity="0.85">
+  <g fill="currentColor" font-family="var(--font-sans), system-ui, sans-serif" font-size="13" text-anchor="middle" opacity="0.85">
     <text x="135" y="105">Do now</text>
     <text x="275" y="105">Schedule</text>
     <text x="135" y="205">Delegate</text>
     <text x="275" y="205">Delete</text>
   </g>
-  <g fill="currentColor" font-family="var(--font-sans), system-ui, sans-serif" font-size="11" font-weight="600" opacity="0.6">
+  <g fill="currentColor" font-family="var(--font-sans), system-ui, sans-serif" font-size="13" font-weight="600" opacity="0.6">
     <text x="200" y="42" text-anchor="middle">Important</text>
     <text x="345" y="138" text-anchor="end">Urgent</text>
   </g>
@@ -224,7 +226,7 @@ For graduated concepts (e.g. Overton window).
 <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" fill="none">
   <rect x="50" y="140" width="300" height="14" rx="7" stroke="currentColor" stroke-width="2" opacity="0.4"/>
   <rect x="170" y="137" width="90" height="20" rx="10" fill="var(--accent)" opacity="0.25" stroke="var(--accent)" stroke-width="2"/>
-  <g fill="currentColor" font-family="var(--font-sans), system-ui, sans-serif" font-size="12" text-anchor="middle">
+  <g fill="currentColor" font-family="var(--font-sans), system-ui, sans-serif" font-size="13" text-anchor="middle">
     <text x="60" y="185" opacity="0.7">Unthinkable</text>
     <text x="215" y="120" font-weight="700">Acceptable</text>
     <text x="340" y="185" opacity="0.7">Policy</text>
@@ -243,7 +245,7 @@ narrow top.
     <path d="M145 130 L275 130 L300 200 L120 200 Z"/>
     <path d="M120 200 L300 200 L325 270 L95 270 Z"/>
   </g>
-  <g fill="currentColor" font-family="var(--font-sans), system-ui, sans-serif" font-size="12" font-weight="600" text-anchor="middle">
+  <g fill="currentColor" font-family="var(--font-sans), system-ui, sans-serif" font-size="13" font-weight="600" text-anchor="middle">
     <text x="200" y="108" font-size="10">Self-actual.</text>
     <text x="210" y="172" opacity="0.85">Esteem</text>
     <text x="210" y="242" opacity="0.7">Basic needs</text>
@@ -257,7 +259,34 @@ at low opacity, numeric labels in `var(--font-mono)`.
 
 ---
 
-## 6. Embedding (context for Claude Code)
+## 6. The card visual (small square emblem)
+
+The feed card always carries a small anchor, about 64 to 72 px square, sitting
+top-right beside the headline. It is filled by a real licensed image when one
+fits the fact (preferred), or by an emblem SVG when none does. This section
+covers the emblem SVG; the image path is governed by `IMAGE_STANDARD.md`
+(licensing, attribution, display).
+
+A card emblem is **not a shrunk diagram**. At this size, fine labels and data
+encoding are unreadable. It is a symbol, read in one glance.
+
+- **viewBox `0 0 100 100`** (square), not the body's `0 0 400 300`. No width or
+  height, transparent, `fill="none"` by default.
+- **One idea, a few strokes.** Reduce the fact to a single mark: a pulse line, a
+  spiral, an orbit, a seed, a wave. No more than a handful of paths.
+- **No text labels.** If it needs words to read, it is the wrong mark.
+- **Bolder strokes:** `stroke-width` 3 to 5; at 64 px a 2 px line vanishes.
+- **Color:** the mark in `var(--accent)`, any secondary geometry in
+  `currentColor` at low opacity. Same flat rules as the body (no gradients,
+  shadows, filters).
+- Round caps and joins, matching the Stage softness.
+
+It should still read, and stay on-brand, as a tiny accent-colored glyph in the
+corner of the card.
+
+---
+
+## 7. Embedding (context for Claude Code)
 
 This is how the graphic resolves its colors; it is not an authoring rule.
 
@@ -276,7 +305,7 @@ This is how the graphic resolves its colors; it is not an authoring rule.
 
 ---
 
-## 7. Pre-save checklist
+## 8. Pre-save checklist
 
 - [ ] `viewBox="0 0 400 300"`, no width/height
 - [ ] Nothing exits the viewBox, especially edge labels

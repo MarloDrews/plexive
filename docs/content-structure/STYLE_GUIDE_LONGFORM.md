@@ -64,8 +64,10 @@ The rules that follow push hard toward specificity. This rule is the leash on
 all of them: be concrete, but only with what is true.
 
 This covers media as much as text. Use only images you can point to, real and
-licensed for reuse, with attribution; never paste an invented or unverified
-image URL. A made-up source is a made-up source whether it is a statistic or a
+licensed for reuse, with attribution, and about the subject at hand rather than
+generic decoration; never paste an invented or unverified image URL. The
+specifics, which licenses qualify, how to attribute, how images are shown, live
+in `IMAGE_STANDARD.md`. A made-up source is a made-up source whether it is a statistic or a
 picture. The acceptable licenses and the attribution format are a sourcing
 question settled elsewhere, but the integrity line is absolute: no fabricated
 number, date, name, quote, source, or URL, ever. When a fitting licensed image
@@ -100,6 +102,14 @@ if a word shows up more in model output than in good human writing, cut it.
 - The tricolon crescendo: everything arriving in threes.
 - "Whether you are X or Y" reader-bucketing.
 - The summarizing sign-off: "Ultimately," "In the end, it's clear that."
+- The per-unit mic-drop: ending every section or paragraph on a short, weighty,
+  quotable line. One earned landing line in a whole post is fine; a punch at the
+  close of every unit is a machine habit and the reader feels the metronome. Let
+  most sections end plainly, on a fact, or mid-thought.
+- The reflex antithesis: "X, not Y," "X rather than Y," "less a clock than a
+  budget," "beats, not years." It is the quiet cousin of the contrast frame. A
+  fact that is itself a symmetry may justify one; reaching for the balance in
+  paragraph after paragraph is the tell.
 
 **Punctuation:**
 - Zero em-dashes. They are the single most reliable AI tell. Use a comma, a
@@ -111,6 +121,17 @@ if a word shows up more in model output than in good human writing, cut it.
 
 **The positive directive:** write the way a sharp, well-read person writes when
 they care about being understood and have no template in front of them.
+
+**The uniformity tell (the deepest one).** The strongest giveaway is not any
+single phrase, it is sameness. Every sentence equally smooth and equally
+measured, the same medium length, the same calm explanatory register, every
+paragraph built to the same shape. Human writing has texture: an abrupt
+three-word sentence, a flat or blunt statement that does not try to be elegant,
+a sentence that opens on an odd word, a sudden concrete detail, a small aside.
+If a passage reads as uniformly polished, it reads as machine. So vary the
+openings, most sentences should not start with "The," "A," "In," or "That";
+vary length hard, not gently; and let some sentences be plain and unclever on
+purpose. When in doubt, rough it up.
 
 ## A4. Sentence rhythm
 

@@ -30,14 +30,31 @@
 // run of two or more text sections passes without one. A wall of plain
 // text is the fastest way to tire a reader, so density matters as much as
 // count. Never two visuals back-to-back with no prose between them (two in
-// one section separated by a text item is fine). Visual-capable sections:
-// see_it (always, HARD), tangible, story (a diagram and/or key_figure
-// portraits), angles. The mid-post run of surprises, tangible, how_we_know
-// must not be visual-free; tangible carries the visual there. key_figure
-// portraits in story count as anchors and are encouraged when a verifiable,
-// properly licensed image exists (Wikimedia Commons, attribution required);
-// never invent an image URL. How a visual looks: SVG_STANDARD.md. Captions
-// and labels: STYLE_GUIDE_LONGFORM.md.
+// one section separated by a text item is fine).
+//
+// Three kinds of anchor, all legitimate:
+//   1. Data graphic (SVG). Shows structure or quantity. The backbone; see_it
+//      always carries one (HARD). Per SVG_STANDARD.md.
+//   2. Illustrative image. A real, licensed, attributed photo or artwork that
+//      is ABOUT the subject (an animal, an object, an archival scene), giving
+//      the eye a rest the way images do in a good nonfiction book. It need not
+//      encode data, but it must be anchored to THIS fact, never generic stock,
+//      never invented. Use the image_url slots in story or angles.
+//   3. Portrait. A key figure's face, same licensing rule.
+// Kinds 2 and 3 depend on a fitting licensed image existing; when none does,
+// use none there and lean on the data graphics. Never invent an image URL.
+//
+// Visual-capable sections: see_it (always, HARD), tangible, story, angles.
+// The mid-post run of surprises, tangible, how_we_know must not be visual-
+// free; tangible carries the visual there.
+//
+// The feed card is separate and ALWAYS carries a small square anchor
+// (card_visual: a licensed image if one fits, else an emblem SVG). See the
+// feed_card field and SVG_STANDARD.md card rules.
+//
+// How a drawn visual looks: SVG_STANDARD.md. How a sourced image is licensed,
+// attributed, and shown: IMAGE_STANDARD.md. Caption and label wording:
+// STYLE_GUIDE_LONGFORM.md.
 //
 // ─── CROSS-SECTION RULE ──────────────────────────────────────────────
 // see_it, tangible, and key_numbers all present the same quantity in
@@ -48,6 +65,7 @@
 // ─── PROSE ───────────────────────────────────────────────────────────
 // Zero em-dashes in user-facing text. Full prose rules: STYLE_GUIDE_LONGFORM.md.
 // Schema and rationale: DEEPSCROLL_CONTENT_STRUCTURE.md. Diagrams: SVG_STANDARD.md.
+// Sourced images (photos, portraits, card images): IMAGE_STANDARD.md.
 
 {
   // ─── GRAPH FIELDS ───────────────────────────────────────────────────
@@ -78,10 +96,19 @@
     "headline": "",           // string. Guideline: 8-16 words, the fact stated
                               // cleanly, the key number positioned for emphasis.
                               // Avoid: "Did you know", preamble, question marks.
-    "mini_visual_svg": null,  // string | null. OPTIONAL, keep the null when
-                              // unused (this is a reserved card slot). Fill only
-                              // if a tiny SVG makes the fact graspable on the
-                              // card itself. Per SVG_STANDARD.md.
+    "card_visual": {          // REQUIRED. The card always carries a small
+                              // square anchor (~64-72px, top-right). Fill
+                              // exactly one of the two below; never leave both
+                              // empty. Prefer a real anchored image; fall back
+                              // to an emblem SVG when no licensed image fits.
+      "image_url": "",        // string | omit. A real, licensed, attributed
+                              // image that is ABOUT this fact, per
+                              // IMAGE_STANDARD.md. Never stock, never invented.
+      "image_attribution": "",// string. HARD if image_url present.
+      "svg": ""               // string | omit. A small SQUARE emblem, viewBox
+                              // 0 0 100 100, per SVG_STANDARD.md card rules.
+                              // Used when no fitting licensed image exists.
+    },
     "teasers": ["", "", ""],  // HARD: exactly 3. Guideline: 5-10 words each,
                               // vary structure (one evidence, one counter-
                               // intuition, one consequence). Avoid: category labels.
@@ -125,11 +152,13 @@
         "visual_svg": "",         // string | omit. Per SVG_STANDARD.md (accent
                                   // is var(--accent)). For diagrams, scales,
                                   // comparisons, timelines, maps.
-        "image_url": "",          // string | omit. Wikimedia Commons preferred.
-                                  // For photos, archival images, satellite views.
+        "image_url": "",          // string | omit. Sourced image per
+                                  // IMAGE_STANDARD.md (licensed, verified, about
+                                  // the subject). For photos, archival images.
         "image_caption": "",      // string | omit. With image_url only, one
                                   // sentence on what is shown.
-        "image_attribution": ""   // string | omit. HARD: required if image_url present.
+        "image_attribution": ""   // string | omit. HARD if image_url present.
+                                  // Format per IMAGE_STANDARD.md.
       }
     },
 
@@ -239,12 +268,18 @@
                                // people edge. Omit if genuinely unknown; never guess.
             "featured": false, // OPTIONAL. true = surface this person in "read
                                // next" (cap 3, shared with featured connections).
-            "image_url": ""    // string | omit. Wikimedia portrait preferred,
-                               // attribution required; never invent a URL.
+            "image_url": "",         // string | omit. Portrait per IMAGE_STANDARD.md
+                                     // (licensed, verified to be this person);
+                                     // never invent a URL.
+            "image_attribution": ""  // string | omit. HARD if image_url present.
           }
         ],
         "visual_svg": "",      // string | omit. E.g. a discovery timeline.
-        "image_url": ""        // string | omit. Historical artifact or photo.
+        "image_url": "",       // string | omit. Illustrative or archival image
+                               // per IMAGE_STANDARD.md (a real, licensed photo of
+                               // the subject, scene, or artifact).
+        "image_caption": "",   // string | omit. With image_url only, one sentence.
+        "image_attribution": ""// string | omit. HARD if image_url present.
       }
     },
 
@@ -268,7 +303,10 @@
                              // opening word across angles.
           "body": "",        // string. Guideline: 2-4 sentences, concrete first.
           "visual_svg": "",  // string | omit. Per SVG_STANDARD.md.
-          "image_url": ""    // string | omit.
+          "image_url": "",   // string | omit. Illustrative image per
+                             // IMAGE_STANDARD.md (real, licensed, about this point).
+          "image_caption": "",   // string | omit. With image_url only, one sentence.
+          "image_attribution": ""// string | omit. HARD if image_url present.
         }
         // Guideline: up to 5 distinct angles. No floor. The last must be as
         // strong as the first or cut it.

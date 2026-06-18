@@ -170,7 +170,7 @@ Every section that may contain a visual element uses the same four field names. 
 
 **Not part of Visual Conventions:**
 - `formalism` section in Academy uses `equations` (array of LaTeX strings) — that's a separate primitive, not a visual
-- `mini_visual_svg` and `teaser_visual_svg` in feed cards — different context (pre-click teasers), kept as their own fields
+- `card_visual` (Facts feed card) — the pre-click square anchor `{image_url?, image_attribution?, svg?}`, set exactly one of image_url or svg; different context from in-post visuals, kept as its own field (see IMAGE_STANDARD.md)
 
 ---
 
@@ -414,8 +414,8 @@ The in-post "read next" list is built from featured `connections` plus featured 
 | # | Type | Section | Status | Content shape |
 |---|------|---------|--------|---------------|
 | 7 | `surprises` | **Why It Surprises Us** — the aha moment. Which intuition does the fact break? | REQUIRED | `string` |
-| 8 | `angles` | **Multiple Angles** — 3–7 different aspects/dimensions, each briefly explained. Each angle may have its own visual | OPTIONAL | array of `{title, body, visual_svg?, image_url?}` (length 3–7) |
-| 9 | `story` | **The Story Behind It** — discovery + prehistory merged. Who found this out, when, how? For constructs: "How it came to be" | REQUIRED | `{body, key_figures?: array of {name, role, one_line?, lifespan?, birth_year?, featured?, image_url?}, visual_svg?, image_url?}` |
+| 8 | `angles` | **Multiple Angles** — 3–7 different aspects/dimensions, each briefly explained. Each angle may have its own visual | OPTIONAL | array of `{title, body, visual_svg?, image_url?, image_caption?, image_attribution?}` (length 3–7) |
+| 9 | `story` | **The Story Behind It** — discovery + prehistory merged. Who found this out, when, how? For constructs: "How it came to be" | REQUIRED | `{body, key_figures?: array of {name, role, one_line?, lifespan?, birth_year?, featured?, image_url?, image_attribution?}, visual_svg?, image_url?, image_caption?, image_attribution?}` |
 | 10 | `bigger_picture` | **The Bigger Picture** — what the fact means scientifically, philosophically, practically. Climax before the quiz | REQUIRED | `string` |
 
 ### Part 4 — Test Yourself
@@ -439,7 +439,7 @@ For Facts, visuals are *constitutive*, not decorative.
 - Section 9 (`story`): Wikimedia portraits of researchers, historical illustrations
 - Section 10 (`bigger_picture`): another diagram welcome if it shows the implication
 
-Images preferred Wikimedia Commons + royalty-free. Diagrams as SVGs per standard.
+Images preferred Wikimedia Commons + royalty-free. Diagrams as SVGs per `SVG_STANDARD.md`; sourced images (licensing, attribution, display) per `IMAGE_STANDARD.md`.
 
 ## Size & Tension
 
@@ -498,7 +498,7 @@ FEED CARD
 {
   "field": string ("Astronomy", "History", "Biology", "Mathematics", etc.),
   "headline": string (the fact stated cleanly),
-  "mini_visual_svg": string or null (small SVG if it helps; otherwise null),
+  "card_visual": { image_url?, image_attribution?, svg? } (the square card anchor beside the headline; set exactly one of image_url or svg. See IMAGE_STANDARD.md),
   "teasers": [string, string, string] (e.g. "How we measured it", "Why intuition fails", "What it changed"),
   "post_reading_time_min": integer,
   "post_difficulty": 1 | 2 | 3
