@@ -1,0 +1,232 @@
+{
+  "tags": [
+    "ancient-egypt",
+    "ancient-history",
+    "archaeology"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": "Deep time",
+      "featured": true
+    },
+    {
+      "format": "concepts",
+      "ref": "Radiocarbon dating",
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "field": "Ancient Egypt",
+    "headline": "Cleopatra lived closer in time to the Moon landing than to the building of the Great Pyramid.",
+    "card_visual": {
+      "image_url": "",
+      "image_attribution": "",
+      "svg": "<svg viewBox='0 0 56 32' xmlns='http://www.w3.org/2000/svg' fill='none'><path d='M28 6 L44 26 H12 Z' stroke='var(--accent)' stroke-width='3.5' stroke-linejoin='round'/><path d='M7 26 H49' stroke='var(--accent)' stroke-width='3.5' stroke-linecap='round'/></svg>"
+    },
+    "teasers": [
+      "The monument that was ancient even to her",
+      "Why the last pharaoh spoke Greek at court",
+      "Mammoths that outlived the finished pyramid"
+    ],
+    "post_reading_time_min": 8,
+    "post_difficulty": 1
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "Cleopatra lived closer in time to the Moon landing than to the building of the Great Pyramid."
+    },
+    {
+      "type": "see_it",
+      "order": 3,
+      "content": {
+        "visual_svg": "<svg viewBox='0 94 400 124' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='102' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>From the pyramid to the Moon landing</text><path d='M44 122 V128 H214 V122' stroke='currentColor' stroke-width='2' opacity='0.55' stroke-linecap='round' stroke-linejoin='round'/><text x='129' y='117' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' opacity='0.7' text-anchor='middle'>2,530 years</text><path d='M224 122 V128 H356 V122' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/><text x='290' y='117' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' font-weight='700' text-anchor='middle'>~2,000 years</text><line x1='40' y1='170' x2='360' y2='170' stroke='currentColor' stroke-width='2' opacity='0.5' stroke-linecap='round'/><line x1='40' y1='162' x2='40' y2='178' stroke='currentColor' stroke-width='2.5' opacity='0.7' stroke-linecap='round'/><line x1='219' y1='160' x2='219' y2='182' stroke='currentColor' stroke-width='2.5' opacity='0.85' stroke-linecap='round'/><line x1='360' y1='162' x2='360' y2='178' stroke='currentColor' stroke-width='2.5' opacity='0.7' stroke-linecap='round'/><g font-family='var(--font-sans), system-ui, sans-serif' font-size='13' fill='currentColor'><text x='40' y='192' text-anchor='start' opacity='0.85'>Great Pyramid</text><text x='219' y='192' text-anchor='middle' opacity='0.85'>Cleopatra</text><text x='360' y='192' text-anchor='end' opacity='0.85'>Moon landing</text></g><g font-family='var(--font-mono), ui-monospace, monospace' font-size='13' fill='currentColor' opacity='0.65'><text x='40' y='208' text-anchor='start'>2560 BC</text><text x='219' y='208' text-anchor='middle'>30 BC</text><text x='360' y='208' text-anchor='end'>1969</text></g></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 4,
+      "content": "Stack the two facts and the mind balks. The Great Pyramid was finished around 2560 BC. Cleopatra died in 30 BC. Apollo 11 landed in 1969. The pyramid was already some two and a half thousand years old when she was born, older to her than she is to us. We bundle Cleopatra and the pyramid builders into one bin marked ancient Egypt, as if they shared a world, when the gap between them is wider than the distance from her reign to the first bootprint on the Moon. Egypt did not have a golden age so much as a deep one, long enough to hold its own antiquity."
+    },
+    {
+      "type": "tangible",
+      "order": 5,
+      "content": {
+        "items": [
+          "When Cleopatra took the throne, the Great Pyramid had stood for about twenty-five centuries, close to the stretch that now separates us from her.",
+          "The pyramids were a deeper antiquity to Cleopatra than the fall of the Roman Empire is to anyone alive today."
+        ],
+        "visual_svg": "<svg viewBox='0 106 400 128' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='120' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>About as far back as forward</text><text x='40' y='146' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.8' text-anchor='start'>Pyramid to Cleopatra</text><rect x='40' y='152' width='300' height='30' rx='8' stroke='currentColor' stroke-width='2' opacity='0.55'/><text x='332' y='172' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='14' font-weight='700' opacity='0.8' text-anchor='end'>~2,500 yr</text><text x='40' y='202' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='start'>Cleopatra to today</text><rect x='40' y='208' width='243.8' height='30' rx='8' fill='var(--accent)' fill-opacity='0.16' stroke='var(--accent)' stroke-width='2.5'/><text x='275' y='228' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='14' font-weight='700' text-anchor='end'>~2,050 yr</text></svg>"
+      }
+    },
+    {
+      "type": "how_we_know",
+      "order": 6,
+      "content": "The two dates rest on very different kinds of record, which is part of why one is sharp and the other soft. Cleopatra lived inside the well-documented Roman world, fixed by dated consular records, struck coins and the accounts of historians who knew people who knew her, so her death in 30 BC is about as firm as an ancient date can be. The pyramid sits far behind all that. Its age is rebuilt from Egyptian king lists like the Turin canon, from the recorded risings of the star Sirius against the calendar, and from radiocarbon on bits of organic material left in the mortar and the workers' camps. Those methods place Khufu's reign in the twenty-sixth century BC, and even the disagreement among them amounts to decades, far short of the millennia that would be needed to close the gap with Cleopatra."
+    },
+    {
+      "type": "angles",
+      "order": 9,
+      "content": [
+        {
+          "title": "By her day the pyramids were already a tourist site",
+          "body": "Cleopatra did not look on the pyramids as new wonders. They had been landmarks for so long that Greek and Roman travelers came to gawk at them as ancient marvels, and Herodotus had written up his visit four centuries before she was born. Visitors carved their names into the stone the way tourists always have. The Sphinx beside the pyramids had already been dug out of the sand and restored once by the pharaoh Thutmose IV around 1400 BC, more than a thousand years before Cleopatra, and it was an ancient relic even to him.",
+          "image_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Kheops-Pyramid.jpg",
+          "image_caption": "The Great Pyramid at Giza, roughly 2,500 years old by the time Cleopatra ruled and long a destination for ancient travelers.",
+          "image_attribution": "Nina Aldin Thune, \"Kheops-Pyramid\", CC BY-SA 3.0 (Wikimedia Commons)"
+        },
+        {
+          "title": "The last pharaoh of Egypt was Greek",
+          "body": "The queen we treat as the face of ancient Egypt came from a Macedonian Greek family. The Ptolemies took Egypt after Alexander the Great died and ruled it for nearly three centuries from Alexandria, keeping Greek as the language of the court and rarely bothering with Egyptian at all. Cleopatra was the only one of her line known to have learned the Egyptian tongue. In blood and culture she stood closer to Athens and Rome than to the people who raised the pyramids, another reminder of how much the single word ancient hides."
+        },
+        {
+          "title": "Mammoths outlasted the finished pyramid",
+          "body": "Run the surprise the other way and it holds. A population of woolly mammoths clung on at Wrangel Island in the Arctic until about 2000 BC, more than five centuries after the Great Pyramid was completed. For that stretch a finished wonder of cut stone and a herd of living mammoths shared the same planet, even as we shelve mammoths under prehistory and the pyramid under ancient history. The labels sit in the wrong order because we picture the past as shallower than it was."
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 10,
+      "content": "The mind files the past into a few flat layers, ancient and medieval and modern, and inside ancient it drops everything older than Rome into one undivided heap. Cleopatra and the pyramid builders land in the same layer only because both fall on the far side of that line, though more time runs between them than between her and us. Real history has a depth the labels paper over. A civilization can last so long that its own founders harden into its ancient legend, and the people we treat as the dawn of recorded time were, to those who came long after, already old beyond imagining."
+    },
+    {
+      "type": "quiz",
+      "order": 11,
+      "content": [
+        {
+          "question": "Why does lumping Cleopatra together with the pyramid builders mislead?",
+          "options": [
+            "They lived on different continents",
+            "About 2,500 years separate them, more than separates Cleopatra from today",
+            "The pyramid builders came after Cleopatra",
+            "Cleopatra never saw the pyramids in person"
+          ],
+          "answer_index": 1,
+          "explanation": "The Great Pyramid was finished around 2560 BC and Cleopatra died in 30 BC, a gap near 2,500 years, while only about 2,000 stand between her and now. The label ancient Egypt swallows that distance whole."
+        },
+        {
+          "question": "To Cleopatra, the Great Pyramid was about as old as which of these is to us?",
+          "options": [
+            "The first steam engines",
+            "The fall of the Roman Empire",
+            "The reign of Cleopatra herself",
+            "The last ice age"
+          ],
+          "answer_index": 2,
+          "explanation": "She lived roughly 2,500 years after the pyramid, close to the 2,000-odd years that separate us from her. The monument was as deep an antiquity to her as her own age now is to us."
+        },
+        {
+          "question": "Cleopatra is pictured as the embodiment of native Egyptian royalty. What does her ancestry show?",
+          "options": [
+            "She descended directly from the pyramid-building pharaohs",
+            "She was born and raised in Rome",
+            "She was the first foreign ruler Egypt ever had",
+            "She belonged to a Greek dynasty that had ruled Egypt for nearly three centuries"
+          ],
+          "answer_index": 3,
+          "explanation": "The Ptolemies were Macedonian Greeks who took Egypt after Alexander's death and spoke Greek at court. Cleopatra was the only one of that line known to have learned the Egyptian language."
+        },
+        {
+          "question": "Woolly mammoths surviving on Wrangel Island until about 2000 BC tells us what?",
+          "options": [
+            "Mammoths must have helped haul the pyramid's stones",
+            "The pyramids are younger than usually claimed",
+            "A population of mammoths was still alive centuries after the Great Pyramid was built",
+            "Egypt had a cold climate in the Old Kingdom"
+          ],
+          "answer_index": 2,
+          "explanation": "The Great Pyramid was completed around 2560 BC, so mammoths on a remote Arctic island outlasted it by more than five centuries, while we still file them as prehistoric and the pyramid as ancient history."
+        },
+        {
+          "question": "Why can Cleopatra's death be dated far more precisely than the building of the Great Pyramid?",
+          "options": [
+            "She lived in the well-documented Roman period, with dated records and accounts",
+            "The pyramid has no link to any known historical figure",
+            "Radiocarbon cannot be used on stone at all",
+            "The Egyptians kept no records before her reign"
+          ],
+          "answer_index": 0,
+          "explanation": "Her life is fixed by Roman dating, coins and classical historians, while the pyramid's age is reconstructed from king lists, star risings and radiocarbon, which leave a wider margin the deeper back they reach."
+        },
+        {
+          "question": "What does the sheer length of ancient Egyptian civilization reveal about the word ancient?",
+          "options": [
+            "Everything before Rome happened at roughly one time",
+            "A civilization can last long enough that its own beginnings grow ancient to its later generations",
+            "Ancient dates are too uncertain to be worth fixing",
+            "The pyramids mark the true start of recorded history"
+          ],
+          "answer_index": 1,
+          "explanation": "Egypt's dynastic span ran some three thousand years, long enough that the pyramid was a remote relic to Cleopatra. Ancient flattens differences that were, to the people living them, vast."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 12,
+      "content": [
+        {
+          "myth": "Cleopatra belonged to the age of the pyramid builders.",
+          "reality": "Around 2,500 years separate them, more than separates Cleopatra from us. She lived nearer to the Roman Empire than to the Old Kingdom that raised the pyramids."
+        },
+        {
+          "myth": "Cleopatra was Egyptian by blood.",
+          "reality": "She came from a Macedonian Greek dynasty that had ruled Egypt for nearly three centuries, and she was the only one of that line known to have learned the Egyptian language."
+        },
+        {
+          "myth": "The pyramids were gleaming new wonders in Cleopatra's lifetime.",
+          "reality": "They were roughly 2,500-year-old monuments by then, already visited as ancient marvels and long worn by the desert."
+        }
+      ]
+    },
+    {
+      "type": "open_questions",
+      "order": 13,
+      "content": {
+        "body": "The comparison holds by a margin of centuries, but the pyramid's exact age is not pinned to a single year. Dates this old are rebuilt from king lists, the recorded risings of Sirius and radiocarbon, and the further back the reconstruction reaches the wider its uncertainty grows, running to a few decades or so for the Old Kingdom. Egyptologists still argue the precise chronology, and radiocarbon results have at times pulled against the dates drawn from written records.",
+        "items": [
+          "How far can the absolute date of Khufu's reign be tightened, and can radiocarbon and the written king lists be brought fully into line?"
+        ]
+      }
+    },
+    {
+      "type": "sources",
+      "order": 14,
+      "content": [
+        {
+          "label": "Great Pyramid of Giza. Wikipedia (completed around 2560 BC under Khufu; tallest structure for about 3,800 years; original height about 146 m)",
+          "url": "https://en.wikipedia.org/wiki/Great_Pyramid_of_Giza",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Cleopatra. Wikipedia (born 69 BC, died 30 BC; last active ruler of the Macedonian Ptolemaic dynasty)",
+          "url": "https://en.wikipedia.org/wiki/Cleopatra",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Ptolemaic dynasty. Wikipedia (Macedonian Greek dynasty 305-30 BC; Cleopatra the only member known to have learned Egyptian)",
+          "url": "https://en.wikipedia.org/wiki/Ptolemaic_dynasty",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Apollo 11. NASA (crewed lunar landing, 20 July 1969)",
+          "url": "https://www.nasa.gov/mission/apollo-11/",
+          "type": "article"
+        },
+        {
+          "label": "Woolly mammoth. Wikipedia (the last population, on Wrangel Island, survived until about 4,000 years ago, around 2000 BC)",
+          "url": "https://en.wikipedia.org/wiki/Woolly_mammoth",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Great Sphinx of Giza. Wikipedia (restored from the sand by Thutmose IV around 1400 BC, the Dream Stele)",
+          "url": "https://en.wikipedia.org/wiki/Great_Sphinx_of_Giza",
+          "type": "wikipedia"
+        }
+      ]
+    }
+  ]
+}
