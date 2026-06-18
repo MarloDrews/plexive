@@ -67,7 +67,7 @@
         "items": [
           "At one beat every second without stopping, a billion beats would take 31 years and 8 months.",
           "A typical adult passes their billionth heartbeat at around age 27.",
-          "An elephant spends its whole billion over about 63 years; a mouse burns through it in three."
+          "An elephant spends its whole billion over about 63 years, while a mouse burns through it in three."
         ],
         "visual_svg": "<svg viewBox='0 33 400 184' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='52' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>One human life</text><rect x='40' y='140' width='320' height='22' rx='11' stroke='currentColor' stroke-width='2' opacity='0.4'/><rect x='40' y='140' width='102' height='22' rx='11' fill='var(--accent)' opacity='0.22'/><line x1='142' y1='116' x2='142' y2='186' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><text x='142' y='108' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='700' text-anchor='middle'>1 billionth beat</text><text x='142' y='204' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>age 27</text><text x='251' y='132' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='middle'>beyond the budget</text><text x='42' y='204' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='start'>birth</text><text x='358' y='204' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='end'>~80 yrs</text></svg>"
       }
@@ -75,7 +75,7 @@
     {
       "type": "how_we_know",
       "order": 6,
-      "content": "There is no clever measurement behind this. You take an animal's resting pulse, you take how long it lives, you multiply. People have been writing both numbers down for over a century, from zoo logs to field studies. The catch is that you cannot see it in any single animal; a mouse is just a mouse with a fast heart and a short life. It shows up only when you line up species of wildly different sizes and watch their totals come to rest in the same place."
+      "content": "There is no clever measurement behind this. You take an animal's resting pulse, you take how long it lives, you multiply. People have been writing both numbers down for over a century, from zoo logs to field studies. The catch is that you cannot see it in any single animal. A mouse is just a mouse with a fast heart and a short life. It shows up only when you line up species of wildly different sizes and watch their totals come to rest in the same place."
     },
     {
       "type": "story",
@@ -115,7 +115,7 @@
       "content": [
         {
           "title": "Modern humans live past the biological budget",
-          "body": "A human heart at seventy beats a minute over eighty years runs up about three billion beats, three times what most mammals get. The hearts themselves are nothing special; at 70 bpm we sit right where the formula puts an animal our size. What moved was lifespan. Before antibiotics, clean water, and safe childbirth, people typically died somewhere near thirty or forty, squarely on the universal billion. We stopped dying when biology used to kill us, and the meter kept running.",
+          "body": "A human heart at seventy beats a minute over eighty years runs up about three billion beats, three times what most mammals get. The hearts themselves are nothing special. At 70 bpm we sit right where the formula puts an animal our size. What moved was lifespan. Before antibiotics, clean water, and safe childbirth, people typically died somewhere near thirty or forty, squarely on the universal billion. We stopped dying when biology used to kill us, and the meter kept running.",
           "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><g stroke='currentColor' stroke-width='2' stroke-linecap='round' opacity='0.5'><line x1='60' y1='250' x2='370' y2='250'/><line x1='60' y1='250' x2='60' y2='40'/></g><line x1='70' y1='185' x2='360' y2='185' stroke='currentColor' stroke-width='1.5' opacity='0.4' stroke-dasharray='6 6'/><text x='70' y='178' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.65' text-anchor='start'>~1B budget</text><g fill='currentColor' opacity='0.85'><circle cx='110' cy='188' r='3.5'/><circle cx='175' cy='183' r='3.5'/><circle cx='245' cy='186' r='3.5'/><circle cx='320' cy='182' r='3.5'/></g><circle cx='210' cy='95' r='5.5' fill='var(--accent)'/><text x='210' y='82' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='700' text-anchor='middle'>Humans ~3B</text><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7'><text x='215' y='278' text-anchor='middle'>Mammals by size</text><text x='22' y='150' text-anchor='middle' transform='rotate(-90 22 150)'>Lifetime beats</text></g></svg>"
         },
         {
@@ -127,7 +127,7 @@
         },
         {
           "title": "Inside a single species, the rule turns over",
-          "body": "Across species, bigger means longer-lived. Within a species it reverses. A Great Dane is old at seven or eight; a Chihuahua often passes fifteen while weighing thirty times less. The same shows up in lab mice, where the larger strains die younger and extra growth hormone shortens life. The billion-beat rule describes the differences evolution built between species, not how size plays out among individuals of one.",
+          "body": "Across species, bigger means longer-lived. Within a species it reverses. A Great Dane is old at seven or eight. A Chihuahua often passes fifteen while weighing thirty times less. The same shows up in lab mice, where the larger strains die younger and extra growth hormone shortens life. The billion-beat rule describes the differences evolution built between species, not how size plays out among individuals of one.",
           "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='44' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Within one species</text><line x1='60' y1='250' x2='340' y2='250' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><rect x='110' y='177' width='60' height='73' rx='12' stroke='currentColor' stroke-width='2' opacity='0.5'/><text x='140' y='168' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>Great Dane</text><text x='140' y='219' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.8' text-anchor='middle'>7-8 yr</text><text x='140' y='270' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='middle'>~30 kg</text><rect x='230' y='95' width='60' height='155' rx='12' stroke='var(--accent)' stroke-width='2.5'/><text x='260' y='86' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>Chihuahua</text><text x='260' y='178' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>15+ yr</text><text x='260' y='270' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='middle'>~2 kg</text></svg>"
         }
       ]
@@ -202,7 +202,7 @@
             "Larger individuals tend to live shorter lives, reversing the cross-species pattern",
             "It matches the cross-species pattern, so larger individuals live longer",
             "There is no relationship between size and lifespan within a species",
-            "Only birth weight matters; adult size is irrelevant"
+            "Only birth weight matters, not adult size"
           ],
           "answer_index": 0,
           "explanation": "Great Danes die years before Chihuahuas, and larger mouse strains die younger than small ones. The billion-beat rule describes differences evolution built between species, not how size affects an individual within one."
@@ -226,7 +226,7 @@
       "content": [
         {
           "myth": "A faster heart rate means a less efficient cardiovascular system.",
-          "reality": "A small body simply requires a fast heart; a shrew's thousand-beat pulse is what the physics of its size demands, and its heart is no less efficient than an elephant's."
+          "reality": "A small body needs a fast heart. A shrew's thousand-beat pulse is what the physics of its size demands, and its heart is no less efficient than an elephant's."
         },
         {
           "myth": "All mammals get exactly one billion heartbeats.",

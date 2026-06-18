@@ -29,7 +29,7 @@
   ],
   "feed_card": {
     "field": "Economics",
-    "headline": "In the UK, banks create about 97% of all money; only 3% is cash the state issued.",
+    "headline": "In the UK, banks create about 97% of all money, and only 3% is cash the state issued.",
     "card_visual": {
       "image_url": "",
       "image_attribution": "",
@@ -47,19 +47,19 @@
     {
       "type": "headline",
       "order": 1,
-      "content": "In the UK, banks create about 97% of all money; only 3% is cash the state issued."
+      "content": "In the UK, banks create about 97% of all money, and only 3% is cash the state issued."
     },
     {
       "type": "see_it",
       "order": 3,
       "content": {
-        "visual_svg": "<svg viewBox='0 0 400 210' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='30' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='600' opacity='0.75' text-anchor='middle'>Money in the UK economy</text><text x='358' y='66' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.85' text-anchor='end'>3% cash</text><line x1='362' y1='72' x2='362' y2='96' stroke='currentColor' stroke-width='1.5' opacity='0.6' stroke-linecap='round'/><rect x='30' y='98' width='340' height='58' rx='20' stroke='currentColor' stroke-width='2' opacity='0.4'/><rect x='30' y='98' width='330' height='58' rx='20' fill='var(--accent)' fill-opacity='0.18' stroke='var(--accent)' stroke-width='2.5'/><text x='195' y='124' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='22' font-weight='700' text-anchor='middle'>97%</text><text x='195' y='144' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' text-anchor='middle'>bank deposits</text><text x='200' y='190' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='middle'>created by banks when they lend</text></svg>"
+        "visual_svg": "<svg viewBox='0 0 400 200' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='28' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='600' opacity='0.75' text-anchor='middle'>The instant a bank makes a 100 pound loan</text><rect x='28' y='66' width='158' height='70' rx='14' stroke='currentColor' stroke-width='2' opacity='0.55'/><text x='107' y='90' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' letter-spacing='0.06em' opacity='0.6' text-anchor='middle'>WHAT THE BANK OWNS</text><text x='107' y='118' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='17' font-weight='700' text-anchor='middle'>+100 loan</text><text x='200' y='107' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='20' font-weight='700' opacity='0.5' text-anchor='middle'>=</text><rect x='214' y='66' width='158' height='70' rx='14' fill='var(--accent)' fill-opacity='0.12' stroke='var(--accent)' stroke-width='2.5'/><text x='293' y='90' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' letter-spacing='0.06em' text-anchor='middle'>WHAT IT OWES YOU</text><text x='293' y='118' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='17' font-weight='700' text-anchor='middle'>+100 deposit</text><text x='200' y='168' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>Both appear at once. The deposit is new money,</text><text x='200' y='186' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>not money moved from somewhere else.</text></svg>"
       }
     },
     {
       "type": "surprises",
       "order": 4,
-      "content": "Picture what a bank does with your savings. The natural assumption is that it keeps your deposit somewhere safe and lends it on to someone else, passing a fixed pile of money from savers to borrowers. That picture is wrong. When a bank grants a loan it hands over no one else's money; it writes a new number into the borrower's account. The loan the bank now owns and the deposit it now owes appear together on its books, and that deposit is money that did not exist a second earlier. The balances sitting in everyone's accounts are mostly not stored cash, they are debts the banks brought into being by lending."
+      "content": "Picture what a bank does with your savings. The natural assumption is that it keeps your deposit somewhere safe and lends it on to someone else, passing a fixed pile of money from savers to borrowers. That picture is wrong. When a bank grants a loan it hands over no one else's money. It writes a new number into the borrower's account. The loan the bank now owns and the deposit it now owes appear together on its books, and that deposit is money that did not exist a second earlier. The balances sitting in everyone's accounts are mostly not stored cash, they are debts the banks brought into being by lending."
     },
     {
       "type": "story",
@@ -78,13 +78,13 @@
           {
             "name": "Richard Werner",
             "role": "Ran the first empirical test",
-            "one_line": "In 2014 he borrowed from a cooperating German bank and recorded it creating the loan as a new deposit, settling a century-old dispute over how banking works.",
+            "one_line": "In 2014 he borrowed from a cooperating German bank and recorded it creating the loan as a new deposit, the first clean empirical test of how banking works.",
             "lifespan": "born 1967",
             "birth_year": 1967,
             "featured": true
           }
         ],
-        "visual_svg": "<svg viewBox='0 0 400 170' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='30' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='600' opacity='0.75' text-anchor='middle'>When the textbooks caught up</text><line x1='40' y1='100' x2='360' y2='100' stroke='currentColor' stroke-width='2' opacity='0.5' stroke-linecap='round'/><circle cx='80' cy='100' r='4' fill='currentColor'/><text x='80' y='84' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='14' font-weight='700' text-anchor='middle'>1954</text><text x='80' y='126' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.85' text-anchor='middle'>Schumpeter</text><text x='205' y='150' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='middle'>multiplier era</text><circle cx='330' cy='100' r='5.5' fill='var(--accent)'/><text x='330' y='82' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='14' font-weight='700' text-anchor='middle'>2014</text><text x='330' y='126' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>settled</text></svg>"
+        "visual_svg": "<svg viewBox='0 0 400 170' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='30' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='600' opacity='0.75' text-anchor='middle'>When the textbooks caught up</text><line x1='40' y1='100' x2='360' y2='100' stroke='currentColor' stroke-width='2' opacity='0.5' stroke-linecap='round'/><circle cx='80' cy='100' r='4' fill='currentColor'/><text x='80' y='84' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='14' font-weight='700' text-anchor='middle'>1954</text><text x='80' y='126' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.85' text-anchor='middle'>Schumpeter</text><text x='205' y='150' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='middle'>multiplier era</text><circle cx='330' cy='100' r='5.5' fill='var(--accent)'/><text x='330' y='82' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='14' font-weight='700' text-anchor='middle'>2014</text><text x='330' y='126' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>confirmed</text></svg>"
       }
     },
     {
@@ -93,7 +93,7 @@
       "content": [
         {
           "title": "Paying off a loan quietly destroys money",
-          "body": "Money creation runs in reverse too. When you repay a bank loan, the bank cancels the deposit against the loan, and that money stops existing, the same way it appeared when the loan was first made. In months when households and firms across a country repay more debt than they take on, the total money supply can shrink. The pool of money in an economy is not a fixed reservoir; it rises and falls with how much borrowing is happening.",
+          "body": "Money creation runs in reverse too. When you repay a bank loan, the bank cancels the deposit against the loan, and that money stops existing, the same way it appeared when the loan was first made. In months when households and firms across a country repay more debt than they take on, the total money supply can shrink. The pool of money in an economy is not a fixed reservoir. It rises and falls with how much borrowing is happening.",
           "visual_svg": "<svg viewBox='0 0 400 185' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='30' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='600' opacity='0.75' text-anchor='middle'>The same money, created then destroyed</text><rect x='18' y='78' width='104' height='58' rx='14' stroke='currentColor' stroke-width='2'/><text x='70' y='112' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' text-anchor='middle'>Bank lends</text><rect x='148' y='78' width='104' height='58' rx='14' fill='var(--accent)' fill-opacity='0.12' stroke='var(--accent)' stroke-width='2.5'/><text x='200' y='104' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='16' font-weight='700' text-anchor='middle'>+100</text><text x='200' y='124' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='12' text-anchor='middle'>money created</text><rect x='278' y='78' width='104' height='58' rx='14' stroke='currentColor' stroke-width='2'/><text x='330' y='104' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' text-anchor='middle'>Loan repaid</text><text x='330' y='124' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='12' opacity='0.8' text-anchor='middle'>money gone</text><g stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' opacity='0.55'><path d='M122 107 h26'/><path d='M148 107 l-12 -6 m12 6 l-12 6'/><path d='M252 107 h26'/><path d='M278 107 l-12 -6 m12 6 l-12 6'/></g></svg>"
         },
         {
@@ -109,7 +109,7 @@
     {
       "type": "bigger_picture",
       "order": 10,
-      "content": "So the money in a modern economy is mostly private credit, brought into being by thousands of commercial banks deciding, loan by loan, who is worth lending to. That gives those decisions a long reach: when banks lend freely the money supply swells, and when they turn cautious it contracts, which is why credit booms and busts move the whole economy and not only the people borrowing. The central bank, the institution most people imagine controls the money, mainly sets the price of borrowing and supervises the system; it does not create most of the money itself. Seeing that changes where you look for the engine of an economy, away from the mint and the printing press and toward the lending desks of ordinary banks."
+      "content": "So the money in a modern economy is mostly private credit, brought into being by thousands of commercial banks deciding, loan by loan, who is worth lending to. That gives those decisions a long reach: when banks lend freely the money supply swells, and when they turn cautious it contracts, which is why credit booms and busts move the whole economy and not only the people borrowing. The central bank, the institution most people imagine controls the money, mainly sets the price of borrowing and supervises the system. It does not create most of the money itself. Seeing that changes where you look for the engine of an economy, away from the mint and the printing press and toward the lending desks of ordinary banks."
     },
     {
       "type": "quiz",
@@ -124,10 +124,10 @@
             "Physical cash the bank keeps in its vault"
           ],
           "answer_index": 0,
-          "explanation": "The loan and the deposit are created together, as a matching asset and liability. No existing money is moved; the deposit is new money that the act of lending brings into being."
+          "explanation": "The loan and the deposit are created together, as a matching asset and liability. No existing money is moved, and the deposit is new money the act of lending brings into being."
         },
         {
-          "question": "Why can the total amount of money in an economy actually fall in a given month?",
+          "question": "Why can the total amount of money in an economy fall in a given month?",
           "options": [
             "The central bank physically removes banknotes",
             "People repay more loans than they take out, destroying deposits",
@@ -189,19 +189,19 @@
       "content": [
         {
           "myth": "Banks lend out the money their customers deposit.",
-          "reality": "A bank creates a fresh deposit when it lends; your balance is a record of what the bank owes you, not a sum it ships off to the borrower."
+          "reality": "A bank creates a fresh deposit when it lends. Your balance is a record of what the bank owes you, not a sum it ships off to the borrower."
         },
         {
           "myth": "The government prints all the money.",
-          "reality": "The state issues notes and coin, only about 3% of the money in the UK, with Bank of England notes worth roughly 82 billion pounds in early 2024; commercial banks create the other 97% as deposits when they lend."
+          "reality": "The state issues notes and coin, only about 3% of the money in the UK, with Bank of England notes worth roughly 82 billion pounds in early 2024. Commercial banks create the other 97% as deposits when they lend."
         },
         {
           "myth": "Banks gather reserves first and multiply them into loans.",
-          "reality": "Lending comes first and creates the deposit; the reserves needed to settle it are obtained afterward, so the famous multiplier runs backward."
+          "reality": "Lending comes first and creates the deposit. The reserves needed to settle it are obtained afterward, so the famous multiplier runs backward."
         },
         {
           "myth": "Exactly 97% of money everywhere is bank-created.",
-          "reality": "The 97 to 3 split is the UK figure; the exact share differs by country and shifts over time, though bank deposits dwarf physical cash in every advanced economy."
+          "reality": "The 97 to 3 split is the UK figure. The exact share differs by country and shifts over time, though bank deposits dwarf physical cash in every advanced economy."
         }
       ]
     },
