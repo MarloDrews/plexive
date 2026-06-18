@@ -57,7 +57,7 @@ frontend/
     page.tsx                    home feed: 11-tab bar (Following + For You + Train + Battle + 7 formats derived from lib/formats.ts; For You is the default open tab, so the pager instant-aligns to it on mount) rendered by FeedHeader, horizontal snap between tabs, vertical snap within each; the Train tab renders <Marathon onExit=back-to-ForYou/> and the Battle tab renders <Battle onExit=back-to-ForYou/> (each gated on activation: empty surface-0 page until first opened, so the marathon does not run and the battle socket does not connect early) instead of a card feed; swipe pager + real-time indicator via the shared useSwipeTabs hook (no color interpolation — accents live on the cards and switch hard on snap-settle); page keeps sessionStorage tab restore + tab-strip auto-centering; tabs read via useSWR cache-first (revalidateIfStale false — server jitters feed order, a background refetch would reshuffle visibly), so revisiting the feed renders instantly from cache; tab alignment: first tab snaps left, last tab snaps right, middle tabs center; Stage states per tab (stage-pulse slab loading, slab empty/login states); TabPage pb-24 clears the floating dock; BottomNav (feed active)
     onboarding/
       page.tsx                  server component — renders InterestPicker (no props)
-      InterestPicker.tsx        client — fetches /api/interests, groups 145 frosted pills into 10 categories (chip-on neutral active fill), stage-pulse pill loading placeholders, sticky header/footer, saves slugs to localStorage
+      InterestPicker.tsx        client — fetches /api/interests, groups 148 frosted pills into 10 categories (chip-on neutral active fill), stage-pulse pill loading placeholders, sticky header/footer, saves slugs to localStorage
     login/
       page.tsx                  Stage sign-in: frosted back circle top-left (router.back()), Deepscroll label-caps + serif heading floating above the slab, form-only frosted slab (pill email + password fields, inline error, pill CTA), register link floating below; redirects to / on success or if already logged in
     register/
@@ -528,7 +528,7 @@ attributes. Never use `dangerouslySetInnerHTML` to render comment text.
 - FastAPI backend with PostgreSQL (Supabase), CORS, full API
 - Section-based post schema: feed_card JSON + sections JSON array; old per-format fields removed
 - 15 section types for Books format (validated via Pydantic v2 discriminated union)
-- Seed script: 145 interests + auto-discovers all *_example.json files (currently Books + Facts + People); FORMAT_INTEREST_SLUGS maps format → interests; _post_title falls back to feed_card.name for People
+- Seed script: 148 interests + auto-discovers all *_example.json files (currently Books + Facts + People); FORMAT_INTEREST_SLUGS maps format → interests; _post_title falls back to feed_card.name for People
 - Legacy DB preserved as backend/deepscroll.db.legacy_*
 - Onboarding: interest picker → slugs saved to localStorage → gates feed
 - Feed: 9-tab horizontal swipe (For You + Following + 7 formats) + vertical snap scroll per tab

@@ -14,7 +14,8 @@ Base.metadata.create_all(bind=engine)
 SLUGS = [
     "physics", "quantum-physics", "astronomy", "cosmology", "chemistry",
     "biology", "genetics", "neuroscience", "evolution", "ecology", "climate",
-    "geology", "oceans", "animals", "mathematics", "statistics", "medicine",
+    "geology", "oceans", "animals", "paleontology", "botany", "microbiology",
+    "mathematics", "statistics", "medicine",
     "materials-science", "artificial-intelligence", "machine-learning",
     "computing", "internet", "cybersecurity", "robotics", "biotech",
     "space-tech", "energy-tech", "engineering", "gadgets", "cryptography",
