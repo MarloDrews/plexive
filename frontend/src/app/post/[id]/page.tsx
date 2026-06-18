@@ -26,8 +26,11 @@ import { updatePostInFeedCaches } from "@/app/lib/swr"
 
 // "Read next" is built from the post's featured graph edges: featured key_figures
 // (in the story section) plus featured top-level connections, capped at 3. The old
-// related_posts section is gone. Targets may be latent (post_id empty), which
-// RelatedPostsSection renders as "Coming soon".
+// related_posts section is gone. An entry is shown only if its target post actually
+// exists (a resolved, non-empty post_id); latent edges whose target does not exist
+// yet are omitted rather than shown as dead links, and when none remain the caller
+// drops the whole block (see ROADMAP "Latent-edge display"). Display only: the
+// stored connection/key_figure data is never changed.
 function buildReadNext(post: Post): RelatedPostItem[] {
   const figures: RelatedPostItem[] = []
   const story = post.sections.find((s) => s.type === "story")
@@ -40,7 +43,9 @@ function buildReadNext(post: Post): RelatedPostItem[] {
   const connections: RelatedPostItem[] = (post.connections ?? [])
     .filter((c) => c.featured)
     .map((c) => ({ post_id: "", title: c.ref, format: c.format, mini_teaser: "" }))
-  return [...figures, ...connections].slice(0, 3)
+  return [...figures, ...connections]
+    .filter((item) => item.post_id.trim() !== "")
+    .slice(0, 3)
 }
 
 // Small field glyph at the right end of the facts field line, mirroring the
@@ -378,6 +383,17 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                         </Link>
                       )}
                       <span className="ml-auto flex items-center gap-2 shrink-0">
+                        {/* Quiz teaser — derived from the quiz array length, not
+                            stored in content. Signals a graded quiz waits at the end. */}
+                        {(() => {
+                          const q = post.sections.find((s) => s.type === "quiz")
+                          const n = Array.isArray(q?.content) ? q.content.length : 0
+                          return n > 0 ? (
+                            <span className="text-[11px] font-mono text-(--accent) leading-none">
+                              {n} questions
+                            </span>
+                          ) : null
+                        })()}
                         {fcNum(post.feed_card, "post_difficulty") > 0 && (
                           <DotScale value={fcNum(post.feed_card, "post_difficulty") as 1 | 2 | 3} />
                         )}
