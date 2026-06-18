@@ -43,33 +43,19 @@ function buildReadNext(post: Post): RelatedPostItem[] {
   return [...figures, ...connections].slice(0, 3)
 }
 
-// Full-width banner across the top of the facts detail header: the sourced
-// image (wide crop) when present, else the emblem SVG (viewBox 0 0 400 100,
-// naturally 4:1 from SvgBlock's width:100%). Mirrors the feed card banner so the
-// two carry continuity. The top bar's pt-16 keeps it clear of the floating
-// back/audio/format chrome above.
-function FactsBanner({ cv, isUserContent }: { cv: CardVisual | undefined; isUserContent: boolean }) {
-  if (!cv) return null
-  if (cv.image_url) {
-    return (
-      <div data-no-read className="bg-white/[0.06]">
-        <img
-          src={cv.image_url}
-          alt=""
-          className="w-full aspect-[4/1] object-cover"
-          onError={(e) => { (e.currentTarget.parentElement as HTMLElement).style.display = "none" }}
-        />
-      </div>
-    )
-  }
-  if (cv.svg) {
-    return (
-      <div data-no-read>
-        <SvgBlock svg={cv.svg} isUserContent={isUserContent} className="w-full" />
-      </div>
-    )
-  }
-  return null
+// Small field glyph at the right end of the facts field line, mirroring the
+// feed card (~28px tall, aspect preserved). The glyph belongs to the field, not
+// the post (a future field-to-glyph set, see ROADMAP.md); for now it renders the
+// inline card_visual.svg (compact viewBox). SVG security split handled by SvgBlock.
+function FieldGlyph({ cv, isUserContent }: { cv: CardVisual | undefined; isUserContent: boolean }) {
+  if (!cv?.svg) return null
+  return (
+    <SvgBlock
+      svg={cv.svg}
+      isUserContent={isUserContent}
+      className="shrink-0 [&_svg]:h-7 [&_svg]:w-auto [&_img]:h-7 [&_img]:w-auto"
+    />
+  )
 }
 
 export default function PostDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -354,20 +340,23 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                     Comments stay outside so they are never spoken. */}
                 <div ref={readableRef}>
                 {post.format === "facts" ? (
-                  /* Facts header per LAYOUT_STANDARD: full-width banner, field
-                     label, the serif headline once, then the meta row. The
-                     format label lives in the top bar; the headline section is
-                     filtered out of the body below so it never doubles. */
+                  /* Facts header per LAYOUT_STANDARD: a field line (field label
+                     left, small glyph at its right end, same as the card), the
+                     serif headline once, then the meta row. The format label
+                     lives in the top bar; the headline section is filtered out of
+                     the body below so it never doubles. */
                   <div className="relative">
-                    <FactsBanner
-                      cv={(post.feed_card as { card_visual?: CardVisual }).card_visual}
-                      isUserContent={post.is_user_content}
-                    />
-                    {fcStr(post.feed_card, "field") && (
-                      <p className="px-6 pt-5 label-caps text-(--accent) text-center">
-                        {fcStr(post.feed_card, "field")}
-                      </p>
-                    )}
+                    <div className="px-6 pt-4 flex items-start justify-between gap-3">
+                      {fcStr(post.feed_card, "field") && (
+                        <p className="label-caps text-(--accent)">
+                          {fcStr(post.feed_card, "field")}
+                        </p>
+                      )}
+                      <FieldGlyph
+                        cv={(post.feed_card as { card_visual?: CardVisual }).card_visual}
+                        isUserContent={post.is_user_content}
+                      />
+                    </div>
                     <HeadlineSection content={post.title} />
                     {/* Meta row — round avatar + creator, reading time,
                         difficulty. Reads the same author fields as the feed
