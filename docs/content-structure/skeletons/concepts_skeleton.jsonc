@@ -436,6 +436,10 @@
             "one_line": "",    // string | omit — brief description of the
                                // contribution.
             "lifespan": "",    // string | omit — "1934–present" or "1903–1995".
+            "birth_year": 0,   // integer | omit. The graph match key for the
+                               // people edge. Omit if genuinely unknown; never guess.
+            "featured": false, // OPTIONAL. true = surface this person in "read
+                               // next" (cap 3, shared with featured connections).
             "image_url": ""    // string | omit — Wikimedia portrait.
           }
         ],

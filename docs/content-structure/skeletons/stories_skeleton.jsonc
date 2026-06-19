@@ -427,6 +427,10 @@
                              // what they did.
           "lifespan": "",    // string | omit — "1867–1934" or "1929–present".
                              // En-dash allowed inside this range field only.
+          "birth_year": 0,   // integer | omit. The graph match key for the
+                             // people edge. Omit if genuinely unknown; never guess.
+          "featured": false, // OPTIONAL. true = surface this person in "read
+                             // next" (cap 3, shared with featured connections).
           "image_url": ""    // string | omit — Wikimedia portrait. NOTE: the
                              // shared person shape has no attribution or caption
                              // field, so there is no place to credit a licence
