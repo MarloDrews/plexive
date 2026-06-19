@@ -76,9 +76,9 @@ does not exist, use none; a graphic we control is always better than a guess.
 Cross-post references obey the same rule. When a post links to another (a
 person, a book, a concept, another fact), it names the target by its real
 natural identity, a fact the post already knows, and never invents a handle to
-force a link. If the linked post does not exist yet, the reference still names
-the real thing and simply waits; an unbuilt link is fine, a fabricated one is
-not.
+force a link. Naming a real target whose post does not exist yet is fine. It is not a
+fabrication, and how an unbuilt link behaves is settled in
+`SKELETON_COMMENT_STANDARD.md` section 10.
 
 ## A3. No AI fingerprints
 

@@ -224,11 +224,12 @@ by the target's format: people `{ "name": "", "birth_year": 0 }`, books
 but list only links that are genuinely about the same subject. Never invent a
 target to inflate the graph.
 
-**Person edges come from `key_figures`, not duplicated in `connections`.** Each
-key figure carries `birth_year` (integer, for matching; omit if genuinely
-unknown, never guess) and an optional `featured` (to surface that person in
-"read next"). A person who appears as a key figure is already an edge; do not
-also list them under `connections`.
+**Person edges come from the format's person-list field, not duplicated in
+`connections`.** That field is `key_figures`, `key_thinkers`, `cast`, or
+`authors_context`, depending on the format. Each entry carries `birth_year`
+(integer, for matching; omit if genuinely unknown, never guess) and an optional
+`featured` (to surface that person in "read next"). A person who appears in that
+list is already an edge; do not also list them under `connections`.
 
 **Latent edges (person edges only).** Only a person edge may be latent. A
 person referenced before their post exists is kept as written, and the system
@@ -258,8 +259,8 @@ Checklist for these fields:
 - [ ] `tags` present, 1-4, all from the fixed taxonomy, first matches `field`.
 - [ ] `connections` present (may be empty); each is a real link with a stated
       structured `ref`, no invented targets.
-- [ ] Person links live in `key_figures` with `birth_year`, not duplicated in
-      `connections`.
+- [ ] Person links live in the format's person-list field with `birth_year`, not
+      duplicated in `connections`.
 - [ ] At most three items total are `featured` across key figures and connections.
 
 ---

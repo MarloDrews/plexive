@@ -68,3 +68,15 @@ the lookup later.
   at the top of the detail page is settled when those formats get their pass.
 - Assess the 145-tag taxonomy for the three flagged gaps (paleontology, botany,
   microbiology) and the optional one (creativity).
+- Skeleton spec pointers (post-slim): the header line in the concepts, people,
+  books, questions, stories, and academy skeletons still sends the reader to
+  DEEPSCROLL_CONTENT_STRUCTURE.md for the full per-format spec, but the slim moved
+  that spec into the skeleton itself; the doc now holds only the schema, the
+  shared shapes, and the rationale. Reword each pointer to the facts skeleton's
+  form ("Schema and rationale: DEEPSCROLL_CONTENT_STRUCTURE.md") when that format
+  gets its pass. The facts skeleton is already correct.
+- Detail-header dek: LAYOUT_STANDARD section 2 gives the feed card a one-line dek
+  for short-title formats, but the detail header (section 3) has none, so the
+  one-line gloss does not persist on the detail page. Decide per short-title
+  format (concepts first) whether the detail header repeats the dek or relies on
+  the opening section, then update LAYOUT_STANDARD section 3.
