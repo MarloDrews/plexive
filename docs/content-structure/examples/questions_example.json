@@ -1,4 +1,28 @@
 {
+  "connections": [
+    {
+      "format": "questions",
+      "ref": {
+        "title": "Is it ever right to sacrifice one to save five?"
+      },
+      "featured": false
+    },
+    {
+      "format": "people",
+      "ref": {
+        "name": "Derek Parfit",
+        "birth_year": 1942
+      },
+      "featured": false
+    },
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "The Social Contract"
+      },
+      "featured": false
+    }
+  ],
   "feed_card": {
     "field": "Ethics",
     "the_question": "\"Do we have moral obligations to future generations?\"",
@@ -202,30 +226,6 @@
           ],
           "answer_index": 1,
           "explanation": "Climate and demographic projections quantify how far present choices reach and how many people are at stake, and conception-dependence underlies the non-identity problem, but none of this decides what is owed."
-        }
-      ]
-    },
-    {
-      "type": "related_posts",
-      "order": 12,
-      "content": [
-        {
-          "post_id": "",
-          "title": "Is it ever right to sacrifice one to save five?",
-          "format": "questions",
-          "mini_teaser": "The same strain between counting individuals and counting numbers, compressed into a single track and a lever."
-        },
-        {
-          "post_id": "",
-          "title": "Derek Parfit",
-          "format": "people",
-          "mini_teaser": "The philosopher who made the far future a rigorous problem, then handed it its hardest complication."
-        },
-        {
-          "post_id": "",
-          "title": "The Social Contract",
-          "format": "concepts",
-          "mini_teaser": "The idea that morality is an agreement among those who can hold each other to it, which is exactly what the future cannot do."
         }
       ]
     },

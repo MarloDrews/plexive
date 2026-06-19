@@ -1,4 +1,29 @@
 {
+  "connections": [
+    {
+      "format": "people",
+      "ref": {
+        "name": "Johannes Vermeer",
+        "birth_year": 1632
+      },
+      "featured": false
+    },
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Motivated Reasoning"
+      },
+      "featured": false
+    },
+    {
+      "format": "books",
+      "ref": {
+        "title": "The Forger's Spell",
+        "author": "Edward Dolnick"
+      },
+      "featured": false
+    }
+  ],
   "feed_card": {
     "era_label": "1945",
     "headline": "In the summer of 1945, a Dutch painter sat in an Amsterdam cell, charged with selling a Vermeer to Hermann Göring. The penalty for that was death.",
@@ -187,30 +212,6 @@
       ]
     },
     {
-      "type": "related_posts",
-      "order": 12,
-      "content": [
-        {
-          "post_id": "",
-          "title": "Johannes Vermeer",
-          "format": "people",
-          "mini_teaser": "The painter whose thin, half-documented body of work left the gap a forger could fill."
-        },
-        {
-          "post_id": "",
-          "title": "Motivated Reasoning",
-          "format": "concepts",
-          "mini_teaser": "The habit of believing what we hope is true, which turned the experts into easy marks."
-        },
-        {
-          "post_id": "",
-          "title": "The Forger's Spell",
-          "format": "books",
-          "mini_teaser": "Edward Dolnick's account of how van Meegeren's fakes conquered the art world."
-        }
-      ]
-    },
-    {
       "type": "cast",
       "order": 13,
       "content": [
@@ -218,25 +219,29 @@
           "name": "Han van Meegeren",
           "role": "The forger on trial",
           "one_line": "A scorned Dutch painter who fooled the experts who had dismissed him, then confessed to save his own life.",
-          "lifespan": "1889–1947"
+          "lifespan": "1889–1947",
+          "birth_year": 1889
         },
         {
           "name": "Abraham Bredius",
           "role": "The authority who certified the fake",
           "one_line": "The leading Vermeer scholar of his day, whose endorsement made the Supper at Emmaus a national treasure.",
-          "lifespan": "1855–1946"
+          "lifespan": "1855–1946",
+          "birth_year": 1855
         },
         {
           "name": "Hermann Göring",
           "role": "The buyer",
           "one_line": "The Nazi leader whose hunger for masterpieces drew one of the forgeries into his collection.",
-          "lifespan": "1893–1946"
+          "lifespan": "1893–1946",
+          "birth_year": 1893
         },
         {
           "name": "Paul Coremans",
           "role": "The scientist who proved the forgery",
           "one_line": "The Belgian chemist whose analysis of the paint confirmed the celebrated Vermeers were modern work.",
-          "lifespan": "1908–1965"
+          "lifespan": "1908–1965",
+          "birth_year": 1908
         }
       ]
     },

@@ -8,12 +8,16 @@
   "connections": [
     {
       "format": "concepts",
-      "ref": "Trade winds",
+      "ref": {
+        "title": "Trade winds"
+      },
       "featured": true
     },
     {
       "format": "concepts",
-      "ref": "Phosphorus cycle",
+      "ref": {
+        "title": "Phosphorus cycle"
+      },
       "featured": false
     }
   ],

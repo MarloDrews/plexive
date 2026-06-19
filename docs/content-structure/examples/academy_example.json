@@ -1,4 +1,28 @@
 {
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Bayesian Inference"
+      },
+      "featured": false
+    },
+    {
+      "format": "people",
+      "ref": {
+        "name": "Hermann von Helmholtz",
+        "birth_year": 1821
+      },
+      "featured": false
+    },
+    {
+      "format": "academy",
+      "ref": {
+        "title": "Auto-Encoding Variational Bayes"
+      },
+      "featured": false
+    }
+  ],
   "feed_card": {
     "field": "Computational Neuroscience",
     "title": "The free-energy principle: a unified brain theory?",
@@ -320,35 +344,12 @@
       ]
     },
     {
-      "type": "related_posts",
-      "order": 18,
-      "content": [
-        {
-          "post_id": "",
-          "title": "Bayesian Inference",
-          "format": "concepts",
-          "mini_teaser": "The rule for updating beliefs with evidence that the free-energy principle approximates when it casts perception as posterior inference."
-        },
-        {
-          "post_id": "",
-          "title": "Hermann von Helmholtz",
-          "format": "people",
-          "mini_teaser": "The physicist and physiologist who first argued that perception is unconscious inference, the idea the free-energy principle formalizes."
-        },
-        {
-          "post_id": "",
-          "title": "Auto-Encoding Variational Bayes",
-          "format": "academy",
-          "mini_teaser": "Kingma and Welling's variational autoencoder minimizes the same evidence lower bound, the machine-learning twin of free energy."
-        }
-      ]
-    },
-    {
       "type": "authors_context",
       "order": 19,
       "content": [
         {
           "name": "Karl J. Friston",
+          "birth_year": 1959,
           "role": "Sole author",
           "one_line": "Neuroscientist who introduced statistical parametric mapping and the free-energy principle, and one of the most cited researchers in neuroimaging.",
           "affiliation": "Wellcome Trust Centre for Neuroimaging, University College London"

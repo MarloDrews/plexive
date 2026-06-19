@@ -7,12 +7,16 @@
   "connections": [
     {
       "format": "concepts",
-      "ref": "Deep time",
+      "ref": {
+        "title": "Deep time"
+      },
       "featured": true
     },
     {
       "format": "concepts",
-      "ref": "Radiocarbon dating",
+      "ref": {
+        "title": "Radiocarbon dating"
+      },
       "featured": false
     }
   ],

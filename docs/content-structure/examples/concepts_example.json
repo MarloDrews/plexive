@@ -1,4 +1,29 @@
 {
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Survivorship Bias"
+      },
+      "featured": false
+    },
+    {
+      "format": "people",
+      "ref": {
+        "name": "Francis Galton",
+        "birth_year": 1822
+      },
+      "featured": false
+    },
+    {
+      "format": "books",
+      "ref": {
+        "title": "Thinking, Fast and Slow",
+        "author": "Daniel Kahneman"
+      },
+      "featured": false
+    }
+  ],
   "feed_card": {
     "field": "Statistics",
     "concept_name": "Regression to the Mean",
@@ -222,30 +247,6 @@
       ]
     },
     {
-      "type": "related_posts",
-      "order": 12,
-      "content": [
-        {
-          "post_id": "",
-          "title": "Survivorship Bias",
-          "format": "concepts",
-          "mini_teaser": "Another way selection quietly distorts the conclusions we draw, by hiding the cases that did not make it into view."
-        },
-        {
-          "post_id": "",
-          "title": "Francis Galton",
-          "format": "people",
-          "mini_teaser": "The Victorian polymath who found regression while measuring heredity, and whose eugenics gave the same data a darker purpose."
-        },
-        {
-          "post_id": "",
-          "title": "Thinking, Fast and Slow",
-          "format": "books",
-          "mini_teaser": "Kahneman uses regression to the mean to explain why we misread feedback, luck, and our own track records."
-        }
-      ]
-    },
-    {
       "type": "origin",
       "order": 13,
       "content": {
@@ -255,13 +256,15 @@
             "name": "Francis Galton",
             "role": "Named and first described the effect",
             "one_line": "Victorian polymath who measured heredity, coined the term 'regression,' and also founded eugenics.",
-            "lifespan": "1822–1911"
+            "lifespan": "1822–1911",
+            "birth_year": 1822
           },
           {
             "name": "Karl Pearson",
             "role": "Formalized the underlying mathematics",
             "one_line": "Galton's student, who turned the idea into the correlation coefficient and much of modern statistics.",
-            "lifespan": "1857–1936"
+            "lifespan": "1857–1936",
+            "birth_year": 1857
           }
         ]
       }

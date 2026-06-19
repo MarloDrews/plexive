@@ -8,22 +8,31 @@
   "connections": [
     {
       "format": "questions",
-      "ref": "Should private banks be allowed to create money?",
+      "ref": {
+        "title": "Should private banks be allowed to create money?"
+      },
       "featured": true
     },
     {
       "format": "books",
-      "ref": "Where Does Money Come From? by Josh Ryan-Collins",
+      "ref": {
+        "title": "Where Does Money Come From?",
+        "author": "Josh Ryan-Collins"
+      },
       "featured": true
     },
     {
       "format": "concepts",
-      "ref": "Fractional-reserve banking",
+      "ref": {
+        "title": "Fractional-reserve banking"
+      },
       "featured": false
     },
     {
       "format": "concepts",
-      "ref": "Quantitative easing",
+      "ref": {
+        "title": "Quantitative easing"
+      },
       "featured": false
     }
   ],

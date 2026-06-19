@@ -7,12 +7,16 @@
   "connections": [
     {
       "format": "concepts",
-      "ref": "Radiocarbon dating",
+      "ref": {
+        "title": "Radiocarbon dating"
+      },
       "featured": true
     },
     {
       "format": "concepts",
-      "ref": "Cell turnover",
+      "ref": {
+        "title": "Cell turnover"
+      },
       "featured": false
     }
   ],
@@ -64,6 +68,7 @@
         "key_figures": [
           {
             "name": "Jonas Frisen",
+            "birth_year": 1966,
             "role": "Turned the bomb pulse into a cell clock",
             "one_line": "His Karolinska lab realized Cold War carbon-14 could date when human cells were born, and used it to show cortical neurons last a lifetime.",
             "featured": true

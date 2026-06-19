@@ -7,17 +7,24 @@
   "connections": [
     {
       "format": "concepts",
-      "ref": "Random walk",
+      "ref": {
+        "title": "Random walk"
+      },
       "featured": true
     },
     {
       "format": "concepts",
-      "ref": "Nuclear fusion",
+      "ref": {
+        "title": "Nuclear fusion"
+      },
       "featured": false
     },
     {
       "format": "books",
-      "ref": "The Internal Constitution of the Stars by Arthur Eddington",
+      "ref": {
+        "title": "The Internal Constitution of the Stars",
+        "author": "Arthur Eddington"
+      },
       "featured": false
     }
   ],

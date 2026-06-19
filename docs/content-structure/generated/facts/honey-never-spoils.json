@@ -7,12 +7,16 @@
   "connections": [
     {
       "format": "concepts",
-      "ref": "Water activity",
+      "ref": {
+        "title": "Water activity"
+      },
       "featured": true
     },
     {
       "format": "concepts",
-      "ref": "Osmosis",
+      "ref": {
+        "title": "Osmosis"
+      },
       "featured": false
     }
   ],

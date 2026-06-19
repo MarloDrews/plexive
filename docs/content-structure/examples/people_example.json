@@ -1,4 +1,29 @@
 {
+  "connections": [
+    {
+      "format": "people",
+      "ref": {
+        "name": "Otto Frisch",
+        "birth_year": 1904
+      },
+      "featured": false
+    },
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "The Liquid-Drop Model"
+      },
+      "featured": false
+    },
+    {
+      "format": "books",
+      "ref": {
+        "title": "Lise Meitner: A Life in Physics",
+        "author": "Ruth Lewin Sime"
+      },
+      "featured": false
+    }
+  ],
   "feed_card": {
     "portrait": {
       "image_url": "/seed-images/Lise_Meitner12.jpg",
@@ -7,6 +32,7 @@
     "name": "Lise Meitner",
     "role": "Physicist",
     "lifespan": "1878–1968",
+    "birth_year": 1878,
     "essence": "Austrian-Swedish physicist who interpreted the experiment that proved uranium nuclei could split, then refused to help build the bomb her theory made possible.",
     "teasers": [
       "Smuggled out of Berlin with ten marks",
@@ -276,30 +302,6 @@
           ],
           "answer_index": 1,
           "explanation": "Hahn did real chemistry; he was not a fraud. The omission emerged from a combination of forces: the prize was categorised as chemistry, Meitner was an exile cut off from the Stockholm community, and her work was published separately because joint publication with Berlin was impossible. The committee has never reversed the decision."
-        }
-      ]
-    },
-    {
-      "type": "related_posts",
-      "order": 13,
-      "content": [
-        {
-          "post_id": "",
-          "title": "Otto Frisch",
-          "format": "people",
-          "mini_teaser": "Meitner's nephew, who coined the word fission and confirmed the prediction experimentally within weeks of Christmas 1938."
-        },
-        {
-          "post_id": "",
-          "title": "The Liquid-Drop Model",
-          "format": "concepts",
-          "mini_teaser": "Why physicists model a heavy nucleus as a charged droplet and how that picture predicted everything Meitner needed in the snow."
-        },
-        {
-          "post_id": "",
-          "title": "Lise Meitner: A Life in Physics",
-          "format": "books",
-          "mini_teaser": "Ruth Lewin Sime's 1996 biography that pulled Meitner out of the footnotes by reading the Hahn correspondence letter by letter."
         }
       ]
     },

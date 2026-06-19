@@ -7,22 +7,31 @@
   "connections": [
     {
       "format": "concepts",
-      "ref": "Allometric scaling",
+      "ref": {
+        "title": "Allometric scaling"
+      },
       "featured": true
     },
     {
       "format": "facts",
-      "ref": "Naked mole rats and aging",
+      "ref": {
+        "title": "Naked mole rats and aging"
+      },
       "featured": true
     },
     {
       "format": "concepts",
-      "ref": "Kleiber's law",
+      "ref": {
+        "title": "Kleiber's law"
+      },
       "featured": false
     },
     {
       "format": "books",
-      "ref": "Scale by Geoffrey West",
+      "ref": {
+        "title": "Scale",
+        "author": "Geoffrey West"
+      },
       "featured": false
     }
   ],
@@ -101,6 +110,7 @@
           },
           {
             "name": "Herbert J. Levine",
+            "birth_year": 1928,
             "role": "Named the heartbeat budget",
             "one_line": "The cardiologist who brought the billion-beat budget into medicine, plotting heart rate against lifespan across fifteen species in 1997.",
             "featured": false

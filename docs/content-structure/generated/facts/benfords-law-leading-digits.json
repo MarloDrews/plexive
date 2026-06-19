@@ -7,12 +7,16 @@
   "connections": [
     {
       "format": "concepts",
-      "ref": "Logarithmic scale",
+      "ref": {
+        "title": "Logarithmic scale"
+      },
       "featured": true
     },
     {
       "format": "concepts",
-      "ref": "Power law",
+      "ref": {
+        "title": "Power law"
+      },
       "featured": false
     }
   ],
