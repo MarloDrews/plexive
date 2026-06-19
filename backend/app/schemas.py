@@ -379,6 +379,16 @@ def _check_image_urls(data: dict) -> None:
                     _check_image_urls(item)
 
 
+class ReadNextItem(BaseModel):
+    # One resolved "read next" edge for the post-detail page (see
+    # graph_edges.resolved_read_next). target_post_id is the live target's id, or
+    # None when the edge is latent (target does not exist / is not published yet).
+    target_post_id: int | None = None
+    format: str
+    title: str
+    latent: bool
+
+
 class PostOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -389,6 +399,10 @@ class PostOut(BaseModel):
     sections: list[dict]
     tags: List[str] = []
     connections: List[dict] = []
+    # Server-resolved featured edges for the detail page. Raw connections stay
+    # above as-is; this is the resolved projection so the frontend resolves
+    # nothing. Empty on list endpoints (only GET /posts/{id} populates it).
+    read_next: List[ReadNextItem] = []
     author_id: int | None = None
     author_username: str | None = None
     author_is_verified: int | None = None
