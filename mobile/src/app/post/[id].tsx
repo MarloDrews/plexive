@@ -13,6 +13,8 @@ import { fcStr, type Post } from "../../types/post"
 import { colors, fills, fonts, radius } from "../../theme/tokens"
 import { Frosted, MessageSlab, PulsingSlab, SlabAccent, SlabGlow, ghostPillStyle } from "../../components/stage"
 import SectionRenderer from "../../components/SectionRenderer"
+import RelatedPostsSection from "../../components/sections/RelatedPostsSection"
+import { SectionLabel } from "../../components/sections/primitives"
 import CommentsBottomSheet from "../../components/CommentsBottomSheet"
 import VerifiedBadge from "../../components/VerifiedBadge"
 import { sharePost } from "../../lib/share"
@@ -229,6 +231,22 @@ export default function PostDetailScreen() {
               isUserContent={post.is_user_content}
               postId={post.id}
             />
+
+            {/* Read Next — server-resolved featured edges (graph_edges.
+                resolved_read_next). Rendered directly; never re-derived here.
+                Defensively capped at 3 even though the server already caps it. */}
+            {(() => {
+              const readNext = (post.read_next ?? []).slice(0, 3)
+              if (readNext.length === 0) return null
+              return (
+                <View style={{ borderTopWidth: 1, borderTopColor: colors.edge }}>
+                  <View style={{ paddingHorizontal: 24, paddingTop: 24 }}>
+                    <SectionLabel color={style.accent}>Read Next</SectionLabel>
+                  </View>
+                  <RelatedPostsSection content={readNext} />
+                </View>
+              )
+            })()}
           </ScrollView>
           </GestureDetector>
 
