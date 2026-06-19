@@ -194,14 +194,14 @@ Every post is a node in the Plexive graph. Edges are the connections one post
 declares to others. These rules are identical across all seven formats; a
 format never invents its own linking scheme.
 
-**Identity.** The system assigns each post a unique internal id (a UUID) on
-insert and derives a readable URL slug. The generator writes neither. What the
-generator writes is the post's content plus the fields below. Posts are matched
-to one another by **natural identity**, never by a guessed id:
+**Identity.** The system assigns each post an integer `id` on insert and derives
+a readable URL slug. The generator writes neither. What the generator writes is
+the post's content plus the fields below. Posts are matched to one another by
+**natural identity**, stated in structured form, never by a guessed id:
 
-- people: full name plus birth year, e.g. `Max Kleiber (1893)`
-- books: title plus author, e.g. `Scale by Geoffrey West`
-- concepts, facts, stories, questions, academy: the title or concept name
+- people: name plus birth year, e.g. `{ "name": "Max Kleiber", "birth_year": 1893 }`
+- books: title plus author, e.g. `{ "title": "Scale", "author": "Geoffrey West" }`
+- concepts, facts, stories, questions, academy: the title, e.g. `{ "title": "Regression to the Mean" }`
 
 A natural identity is a fact the post already states, not an address to invent.
 That is the whole point: a generator states what it knows (a real name, a real
@@ -215,11 +215,14 @@ pad. Tags drive thematic clustering in the graph.
 
 **`connections` (top-level array, REQUIRED, may be empty).** Every real link to
 another post that is NOT already a `key_figure`. Each entry:
-`{ "format": "", "ref": "", "featured": false }` where `ref` is the target's
-natural identity stated from known facts. `featured: true` marks the few links
-shown in the in-post "read next" strip (cap 3, shared with featured key_figures).
-`connections` is otherwise unbounded, but list only links that are genuinely
-about the same subject. Never invent a target to inflate the graph.
+`{ "format": "", "ref": { ... }, "featured": false }` where `ref` is the
+target's natural identity as a structured object, not a pre-joined string, shaped
+by the target's format: people `{ "name": "", "birth_year": 0 }`, books
+`{ "title": "", "author": "" }`, any other format `{ "title": "" }`.
+`featured: true` marks the few links shown in the in-post "read next" strip
+(cap 3, shared with featured key_figures). `connections` is otherwise unbounded,
+but list only links that are genuinely about the same subject. Never invent a
+target to inflate the graph.
 
 **Person edges come from `key_figures`, not duplicated in `connections`.** Each
 key figure carries `birth_year` (integer, for matching; omit if genuinely
@@ -233,17 +236,22 @@ natural identity is later created. The generator does nothing special for this:
 it states the real identity, and the edge waits. Because identity is a stated
 fact and not a guessed slug, the match is robust.
 
-**Disambiguation is the system's job, not the generator's.** If two posts would
-share a natural identity (same name and birth year), the system flags the
-collision on insert and a human adds a third discriminator (field or country) to
-those two posts only. Generators never pre-guess discriminators and never append
-a year "just in case"; they state the plain natural identity every time.
+**Node identity and disambiguation are the system's job, not the generator's.**
+The system normalizes each post's stated identity into an `identity_key`, and a
+node is the pair `(format, identity_key)`, not a globally unique value. Because
+every edge carries `format`, identities never collide across formats: a Books
+post "Scale" and a Concepts post "Scale" are different nodes. Collisions are
+possible, and flagged, only within one format; when two posts in the same format
+share an `identity_key`, the system flags it on insert and a human adds a third
+discriminator (field or country) to those two posts only. Generators never
+pre-guess discriminators and never append a year "just in case"; they state the
+plain natural identity every time.
 
 Checklist for these fields:
 
 - [ ] `tags` present, 1-4, all from the fixed taxonomy, first matches `field`.
 - [ ] `connections` present (may be empty); each is a real link with a stated
-      natural-identity `ref`, no invented targets.
+      structured `ref`, no invented targets.
 - [ ] Person links live in `key_figures` with `birth_year`, not duplicated in
       `connections`.
 - [ ] At most three items total are `featured` across key figures and connections.
