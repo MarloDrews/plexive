@@ -230,11 +230,17 @@ unknown, never guess) and an optional `featured` (to surface that person in
 "read next"). A person who appears as a key figure is already an edge; do not
 also list them under `connections`.
 
-**Latent edges.** A connection whose target post does not exist yet is kept as
-written. The system activates it automatically when a post with the matching
-natural identity is later created. The generator does nothing special for this:
-it states the real identity, and the edge waits. Because identity is a stated
-fact and not a guessed slug, the match is robust.
+**Latent edges (person edges only).** Only a person edge may be latent. A
+person referenced before their post exists is kept as written, and the system
+activates that edge automatically when the matching People post is later
+created. Because the identity is a stated fact (name plus birth year) and not a
+guessed slug, the match is robust. A non-person connection (to a concept, book,
+fact, question, story, or academy post) is never latent: it forms an edge only
+if the target post already exists when this post is seeded, and is otherwise
+discarded. Such a link can still form later, but only by re-seeding this post
+once the target exists. It does not wait and does not activate on its own.
+Authoring rule: a person may be referenced ahead of their post, but a non-person
+target should already exist, or the source is re-seeded after the target does.
 
 **Node identity and disambiguation are the system's job, not the generator's.**
 The system normalizes each post's stated identity into an `identity_key`, and a

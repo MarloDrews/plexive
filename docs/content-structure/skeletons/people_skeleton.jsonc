@@ -31,7 +31,7 @@
 {
   // ─── GRAPH FIELDS ───────────────────────────────────────────────────
   // Cross-format. Full rules: SKELETON_COMMENT_STANDARD.md, section 10.
-  // The system assigns the UUID and slug; the generator writes only these.
+  // The system assigns the integer id and slug; the generator writes only these.
   "tags": [],         // HARD: 1-4 slugs from the fixed taxonomy ONLY, never
                       // invent one. First is primary and matches feed_card.role.
   "connections": [    // REQUIRED, may be empty. Every real link to another post.
@@ -43,7 +43,10 @@
       "ref": {            // target natural identity as a structured object, shaped
                           // by the target format: people { "name", "birth_year" },
                           // books { "title", "author" }, any other { "title" }.
-                          // Latent until a matching post exists.
+                          // Person refs may be latent (written before their
+                          // post). A non-person ref forms an edge only if
+                          // the target post already exists, else it is
+                          // dropped.
         "title": ""       // example shown for a non-person, non-book target.
       },
       "featured": false   // true = show in "read next" (cap 3).

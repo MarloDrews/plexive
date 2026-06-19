@@ -58,11 +58,12 @@ the lookup later.
 - Per-format key section: each format designates the one section marked with the
   accent left-border (see `LAYOUT_STANDARD.md` section 7). Decide it in each
   format's own chat. Facts: the surprises section. The others: open.
-- Latent-edge display: a connection may point at a post that does not exist yet
-  (the edge activates when that post is created). Anywhere connections surface,
-  "Read next" now and the graph view later, a connection whose target post does
-  not yet exist must be hidden or shown non-clickable, never a dead link. The
-  stored connection stays; only the display is gated on the target existing.
+- Latent-edge display: only a person edge can point at a post that does not exist
+  yet, activating when that person's post is created. Non-person connections to a
+  missing target are not stored at all. Anywhere edges surface, "Read next" now
+  and the graph view later, a latent person edge whose target does not yet exist
+  must be hidden or shown non-clickable, never a dead link. The stored person edge
+  stays, and only its display is gated on the target existing.
 - Cover-format detail header: how the book cover (books) and portrait (people) sit
   at the top of the detail page is settled when those formats get their pass.
 - Assess the 145-tag taxonomy for the three flagged gaps (paleontology, botany,
