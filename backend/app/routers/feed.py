@@ -5,14 +5,12 @@ from sqlalchemy.orm import Session, selectinload
 
 from ..auth import get_current_user, get_optional_user
 from ..database import get_db
-from ..models import Follow, Interest, Post, User
+from ..models import Follow, Post, User
 from ..post_counts import attach_counts
 from ..schemas import PostListOut
 from ..scoring import score_posts
 
 router = APIRouter()
-
-FEED_MIN = 10
 
 
 def _fetch_posts(ids: Set[int], db: Session) -> List[Post]:
@@ -34,67 +32,43 @@ def get_feed(
 ):
     slugs: List[str] = [s.strip() for s in interests.split(",")] if interests else []
 
-    # Query only Post.id (integer) so DISTINCT has no equality-operator issue
-    # with the json-typed feed_card/sections columns.
+    # Query only Post.id (integer) here; the full rows (with the json-typed
+    # feed_card/sections columns) are fetched separately by _fetch_posts.
     id_base = db.query(Post.id).filter(Post.status == "published")
     if format:
         id_base = id_base.filter(Post.format == format)
 
+    # For You always shows every published post; interests only affect ordering,
+    # never inclusion. Fetch all of them once (interests eager-loaded).
+    posts = _fetch_posts({row[0] for row in id_base.all()}, db)
     if not slugs:
-        ids = {row[0] for row in id_base.all()}
-        posts = _fetch_posts(ids, db)
         return attach_counts(score_posts(posts, [], db), db)
 
-    # Tier 1: posts tagged with any of the user's selected interests
-    tier1_ids: Set[int] = {
-        row[0]
-        for row in id_base.join(Post.interests)
-                          .filter(Interest.slug.in_(slugs))
-                          .distinct()
-                          .all()
-    }
-    tier_map = {i: 1 for i in tier1_ids}
-
-    # Tier 2: posts co-tagged with interests found in Tier 1 posts
-    tier2_ids: Set[int] = set()
+    # Rank by tier: Tier 1 shares an interest with the user's selection, Tier 2
+    # shares a co-tag with a Tier 1 post, Tier 3 is everything else. score_posts
+    # gives Tier 1 the full interest bonus, Tier 2 half, Tier 3 none. Computed in
+    # Python from the already-loaded interests, so no extra queries, and no post
+    # is ever dropped.
+    selected = set(slugs)
+    tier_map: dict[int, int] = {}
     tier1_posts: List[Post] = []
-    if len(tier1_ids) < FEED_MIN:
-        tier1_posts = _fetch_posts(tier1_ids, db)
-        related_slugs = {
-            i.slug
-            for p in tier1_posts
-            for i in p.interests
-            if i.slug not in slugs
-        }
-        if related_slugs:
-            tier2_ids = {
-                row[0]
-                for row in id_base.join(Post.interests)
-                                  .filter(Interest.slug.in_(related_slugs))
-                                  .filter(Post.id.notin_(tier1_ids))
-                                  .distinct()
-                                  .all()
-            }
-        tier_map.update({i: 2 for i in tier2_ids})
+    for p in posts:
+        if any(i.slug in selected for i in p.interests):
+            tier_map[p.id] = 1
+            tier1_posts.append(p)
 
-    # Tier 3: any remaining published posts
-    tier3_ids: Set[int] = set()
-    if len(tier1_ids) + len(tier2_ids) < FEED_MIN:
-        tier12_ids = tier1_ids | tier2_ids
-        tier3_ids = {row[0] for row in id_base.filter(Post.id.notin_(tier12_ids)).all()}
-        tier_map.update({i: 3 for i in tier3_ids})
+    related_slugs = {
+        i.slug
+        for p in tier1_posts
+        for i in p.interests
+        if i.slug not in selected
+    }
+    for p in posts:
+        if p.id in tier_map:
+            continue
+        tier_map[p.id] = 2 if any(i.slug in related_slugs for i in p.interests) else 3
 
-    # Fetch full post objects in one query (avoid re-fetching tier1 if already loaded)
-    missing_ids = (tier2_ids | tier3_ids) - {p.id for p in tier1_posts}
-    extra_posts = _fetch_posts(missing_ids, db)
-    posts_by_id = {p.id: p for p in tier1_posts + extra_posts}
-
-    tier1 = [posts_by_id[i] for i in tier1_ids if i in posts_by_id]
-    tier2 = [posts_by_id[i] for i in tier2_ids if i in posts_by_id]
-    tier3 = [posts_by_id[i] for i in tier3_ids if i in posts_by_id]
-
-    ranked = score_posts(tier1 + tier2 + tier3, slugs, db, tier_map)
-    return attach_counts(ranked, db)
+    return attach_counts(score_posts(posts, slugs, db, tier_map), db)
 
 
 @router.get("/feed/following", response_model=List[PostListOut])
