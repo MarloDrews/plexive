@@ -4,7 +4,7 @@ import { use, useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { formatStyle } from "@/lib/formats"
-import { fcNum, fcStr, type CardVisual, type Post, type RelatedPostItem, type KeyFigure } from "@/types/post"
+import { fcNum, fcStr, type CardVisual, type Post } from "@/types/post"
 import SectionRenderer from "@/components/SectionRenderer"
 import SectionLabel from "@/components/SectionLabel"
 import HeadlineSection from "@/components/sections/HeadlineSection"
@@ -23,30 +23,6 @@ import { apiFetch } from "@/app/lib/api"
 import { queueEvent, hasPendingLike, cancelPendingLike } from "@/app/lib/eventQueue"
 import { likePost, unlikePost, isPostLiked, getCachedLikeCount, setCachedLikeCount, isLikeSent, markLikeSent, unmarkLikeSent } from "@/app/lib/likedPosts"
 import { updatePostInFeedCaches } from "@/app/lib/swr"
-
-// "Read next" is built from the post's featured graph edges: featured key_figures
-// (in the story section) plus featured top-level connections, capped at 3. The old
-// related_posts section is gone. An entry is shown only if its target post actually
-// exists (a resolved, non-empty post_id); latent edges whose target does not exist
-// yet are omitted rather than shown as dead links, and when none remain the caller
-// drops the whole block (see ROADMAP "Latent-edge display"). Display only: the
-// stored connection/key_figure data is never changed.
-function buildReadNext(post: Post): RelatedPostItem[] {
-  const figures: RelatedPostItem[] = []
-  const story = post.sections.find((s) => s.type === "story")
-  const keyFigures = (story?.content as { key_figures?: KeyFigure[] } | undefined)?.key_figures ?? []
-  for (const f of keyFigures) {
-    if (f.featured) {
-      figures.push({ post_id: "", title: f.name, format: "people", mini_teaser: f.one_line ?? f.role })
-    }
-  }
-  const connections: RelatedPostItem[] = (post.connections ?? [])
-    .filter((c) => c.featured)
-    .map((c) => ({ post_id: "", title: c.ref, format: c.format, mini_teaser: "" }))
-  return [...figures, ...connections]
-    .filter((item) => item.post_id.trim() !== "")
-    .slice(0, 3)
-}
 
 // Small field glyph at the right end of the facts field line, mirroring the
 // feed card (~28px tall, aspect preserved). The glyph belongs to the field, not
@@ -512,10 +488,12 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                   </div>
                 )}
 
-                {/* Read Next — featured graph edges (key figures + connections).
+                {/* Read Next — server-resolved featured edges (graph_edges.
+                    resolved_read_next). Rendered directly; never re-derived here.
+                    Defensively capped at 3 even though the server already caps it.
                     Outside the readable region so read-aloud never speaks it. */}
                 {(() => {
-                  const readNext = buildReadNext(post)
+                  const readNext = (post.read_next ?? []).slice(0, 3)
                   if (readNext.length === 0) return null
                   return (
                     <div data-no-read className="border-t border-edge">

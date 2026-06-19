@@ -1,7 +1,7 @@
-import type { RelatedPostItem } from "../../types/post"
+import type { ReadNextItem } from "../../types/post"
 
 interface Props {
-  content: RelatedPostItem[]
+  content: ReadNextItem[]
 }
 
 const FORMAT_LABELS: Record<string, string> = {
@@ -14,20 +14,21 @@ const FORMAT_LABELS: Record<string, string> = {
   academy: "Academy",
 }
 
-function RelatedCard({ item }: { item: RelatedPostItem }) {
-  const hasLink = item.post_id && item.post_id.trim() !== ""
+function RelatedCard({ item }: { item: ReadNextItem }) {
+  // Resolved (live target) entries are clickable; latent ones (target_post_id
+  // null) stay non-clickable with the "Coming soon" treatment.
+  const hasLink = item.target_post_id != null
   const label = FORMAT_LABELS[item.format] ?? item.format
 
   const inner = (
     <div className="flex flex-col gap-1.5 p-4 border border-edge-strong rounded-card min-w-[160px] flex-1">
       <span className="text-xs text-ink-muted uppercase tracking-wide">{label}</span>
       <p className="text-sm font-medium text-ink leading-snug line-clamp-2">{item.title}</p>
-      <p className="text-xs text-ink-muted line-clamp-2 mt-auto">{item.mini_teaser}</p>
     </div>
   )
 
   if (hasLink) {
-    return <a href={`/post/${item.post_id}`}>{inner}</a>
+    return <a href={`/post/${item.target_post_id}`}>{inner}</a>
   }
 
   return (
