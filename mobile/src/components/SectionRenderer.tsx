@@ -10,7 +10,6 @@ import StructureSection from "./sections/StructureSection"
 import CoreIdeasSection from "./sections/CoreIdeasSection"
 import TakeawaySection from "./sections/TakeawaySection"
 import QuizSection from "./sections/QuizSection"
-import RelatedPostsSection from "./sections/RelatedPostsSection"
 import WorldContextSection from "./sections/WorldContextSection"
 import AuthorContextSection from "./sections/AuthorContextSection"
 import CritiqueSection from "./sections/CritiqueSection"
@@ -113,8 +112,6 @@ function renderSection(section: Section, isUserContent: boolean, postId: number)
       return <TakeawaySection content={c as any} isUserContent={isUserContent} />
     case "quiz":
       return <QuizSection content={c as any} postId={postId} />
-    case "related_posts":
-      return <RelatedPostsSection content={c as any} />
     case "world_context":
       return <WorldContextSection content={c as string} />
     case "author_context":
