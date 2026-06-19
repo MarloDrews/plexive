@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 
 from app.auth import hash_password
 from app.database import Base, SessionLocal, engine
+from app.graph_identity import post_identity_key
 from app.models import Interest, Post, User
 
 Base.metadata.create_all(bind=engine)
@@ -135,6 +136,7 @@ def upsert_post(db, marlo, post_format, data, slug, allow_legacy_adopt):
     tags = data.get("tags", [])
     connections = data.get("connections", [])
     title = _post_title(feed_card)
+    identity_key = post_identity_key(post_format, feed_card)
     interests = _resolve_interests(db, tags, post_format)
 
     existing = db.query(Post).filter_by(slug=slug).first()
@@ -148,6 +150,7 @@ def upsert_post(db, marlo, post_format, data, slug, allow_legacy_adopt):
     if existing:
         existing.slug = slug
         existing.title = title
+        existing.identity_key = identity_key
         existing.feed_card = feed_card
         existing.sections = sections
         existing.tags = tags
@@ -162,6 +165,7 @@ def upsert_post(db, marlo, post_format, data, slug, allow_legacy_adopt):
         slug=slug,
         format=post_format,
         title=title,
+        identity_key=identity_key,
         feed_card=feed_card,
         sections=sections,
         tags=tags,

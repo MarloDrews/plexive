@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session, selectinload
 
 from ..auth import get_current_user, get_optional_user
 from ..database import get_db
+from ..graph_identity import post_identity_key
 from ..models import Interest, Post
 from ..post_counts import attach_counts, attach_counts_one
 from ..rate_limit import check_rate_limit
@@ -86,6 +87,7 @@ def create_post(
     post = Post(
         format=data.format,
         title=data.title,
+        identity_key=post_identity_key(data.format, data.feed_card),
         feed_card=data.feed_card,
         sections=sections_list,
         author_id=current_user.id,
