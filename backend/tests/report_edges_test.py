@@ -59,40 +59,46 @@ def add_post(fmt, feed_card, *, status="published", connections=None, sections=N
     return post
 
 
-def conn(fmt, ref, featured=False):
-    return {"format": fmt, "ref": ref, "featured": featured}
+def person_section(name, birth_year):
+    """A person-list section carrying one person entry (the only latent edge kind)."""
+    return [{"type": "story", "order": 1, "content": {
+        "key_figures": [{"name": name, "birth_year": birth_year}]
+    }}]
 
 
 # --- seed ------------------------------------------------------------------
 
-# (b) decay: the books post exists as "Tao Te Ching by Laozi", but two sources
-# reference it as "... by Lao Tzu". The edge key drifts and matches no post.
-add_post("books", {"title": "Tao Te Ching", "author": "Laozi"})
+# Only person edges may be latent now, so the report's substrate is person edges --
+# which is also the canonical drift case (a name with alternate spellings).
+#
+# (b) decay: the person post exists as "Laozi (-604)", but two sources reference the
+# same person as "Lao Tzu (-604)". The edge key drifts and matches no post.
+add_post("people", {"name": "Laozi", "birth_year": -604})
 src1 = add_post(
     "facts",
     {"headline": "The Tao that can be told is not the eternal Tao"},
-    connections=[conn("books", {"title": "Tao Te Ching", "author": "Lao Tzu"})],
+    sections=person_section("Lao Tzu", -604),
 )
 src2 = add_post(
     "facts",
     {"headline": "Water is the softest thing yet wears down rock"},
-    connections=[conn("books", {"title": "Tao Te Ching", "author": "Lao Tzu"})],
+    sections=person_section("Lao Tzu", -604),
 )
 
-# (a) correct: the target genuinely does not exist yet (a real future post).
+# (a) correct: the person genuinely does not exist yet (a real future post).
 src3 = add_post(
     "concepts",
     {"concept_name": "Wu Wei"},
-    connections=[conn("books", {"title": "A Theory Not Yet Written", "author": "Future Author"})],
+    sections=person_section("Future Sage", 100),
 )
 
-# Excluded: the target exists but is pending (not a live node), so the edge is
-# correctly latent -- the key is fine, the post just is not published.
-add_post("concepts", {"concept_name": "Pending Concept"}, status="pending")
+# Excluded: the person target exists but is pending (not a live node), so the edge
+# is correctly latent -- the key is fine, the post just is not published.
+add_post("people", {"name": "Pending Sage", "birth_year": 1500}, status="pending")
 add_post(
     "facts",
-    {"headline": "Points at a pending concept"},
-    connections=[conn("concepts", {"title": "Pending Concept"})],
+    {"headline": "Points at a pending sage"},
+    sections=person_section("Pending Sage", 1500),
 )
 
 # --- run the report (and prove it writes nothing) --------------------------
@@ -125,12 +131,12 @@ check("sorted by count descending", len(top_sources) >= len(second_sources))
 
 check(
     "mis-keyed pair surfaces with count 2",
-    (top_fmt, top_key) == ("books", "tao te ching by lao tzu") and len(top_sources) == 2,
+    (top_fmt, top_key) == ("people", "lao tzu (-604)") and len(top_sources) == 2,
     str(report[0]),
 )
 check(
     "genuinely-absent pair surfaces with count 1",
-    (second_fmt, second_key) == ("books", "a theory not yet written by future author")
+    (second_fmt, second_key) == ("people", "future sage (100)")
     and len(second_sources) == 1,
     str(report[1]),
 )
@@ -145,8 +151,8 @@ check(
     str(top_sources),
 )
 check(
-    "each mis-keyed source carries the raw ref that drifted (author 'Lao Tzu')",
-    all(isinstance(ref, dict) and ref.get("author") == "Lao Tzu" for _, _, ref in top_sources),
+    "each mis-keyed source carries the raw ref that drifted (name 'Lao Tzu')",
+    all(isinstance(ref, dict) and ref.get("name") == "Lao Tzu" for _, _, ref in top_sources),
     str(top_sources),
 )
 absent_source = second_sources[0]
@@ -162,7 +168,7 @@ check(
 reported_pairs = {(fmt, key) for fmt, key, _ in report}
 check(
     "a latent edge whose target exists (pending) is excluded",
-    ("concepts", "pending concept") not in reported_pairs,
+    ("people", "pending sage (1500)") not in reported_pairs,
     str(reported_pairs),
 )
 

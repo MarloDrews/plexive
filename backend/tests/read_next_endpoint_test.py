@@ -7,8 +7,10 @@ Block 2 added PostOut.read_next (schemas.py) and attached it in routers/posts.py
 via `post.read_next = resolved_read_next(db, post)` (same attach-as-attribute pattern as
 attach_counts_one for like_count). This check inserts a PUBLISHED post with two featured
 connections + one featured person (mirroring the live post 4: "Allometric scaling",
-"Naked mole rats and aging", Geoffrey West), hits the endpoint in-process against the
-COMMITTED code, and asserts read_next is present and carries the three latent entries.
+"Naked mole rats and aging", Geoffrey West). The two connection targets are inserted live
+so they RESOLVE; the featured person has no post, so it stays latent (only person edges may
+be latent now). The endpoint is hit in-process against the COMMITTED code, and read_next is
+asserted present carrying three entries: one latent person + two resolved connections.
 
 This is the control: it PASSES on committed code, proving the code path is correct and the
 "key absent" symptom cannot originate from the source. Throwaway SQLite DB via _throwaway_db.
@@ -51,6 +53,28 @@ CONNECTIONS = [
 ]
 
 db = SessionLocal()
+# Live targets so the two featured connections resolve; Geoffrey West has no post,
+# so that featured person edge stays latent. read_next therefore carries one latent
+# person entry + two resolved connection entries.
+for tfmt, tcard in (
+    ("concepts", {"concept_name": "Allometric scaling"}),
+    ("facts", {"headline": "Naked mole rats and aging"}),
+):
+    db.add(
+        Post(
+            format=tfmt,
+            title=tcard.get("concept_name") or tcard.get("headline"),
+            identity_key=post_identity_key(tfmt, tcard),
+            feed_card=tcard,
+            sections=[],
+            tags=[],
+            connections=[],
+            status="published",
+            is_user_content=False,
+        )
+    )
+db.commit()
+
 post = Post(
     format="facts",
     title="Why elephants outlive mice",
@@ -80,8 +104,14 @@ else:
     rn = body["read_next"]
     if not isinstance(rn, list) or len(rn) != 3:
         failures.append(f"read_next should have 3 entries, got {rn!r}")
-    elif not all(i.get("latent") is True and i.get("target_post_id") is None for i in rn):
-        failures.append(f"all 3 entries should be latent (no live targets), got {rn!r}")
+    else:
+        latent = [i for i in rn if i.get("latent") is True]
+        resolved = [i for i in rn if i.get("latent") is False]
+        if not (len(latent) == 1 and latent[0].get("format") == "people"
+                and latent[0].get("target_post_id") is None):
+            failures.append(f"expected exactly one latent person entry, got {rn!r}")
+        if not (len(resolved) == 2 and all(i.get("target_post_id") for i in resolved)):
+            failures.append(f"expected two resolved connection entries, got {rn!r}")
 
 # The symptom states these fields ARE present; assert they remain so.
 for key in ("feed_card", "sections", "tags", "connections", "like_count", "interests"):
@@ -95,5 +125,5 @@ if failures:
     print("keys present:", sorted(body.keys()))
     sys.exit(1)
 
-print("PASS: read_next present with 3 latent entries; other fields present too.")
+print("PASS: read_next present with 3 entries (1 latent person + 2 resolved); other fields present too.")
 print("read_next:", body["read_next"])
