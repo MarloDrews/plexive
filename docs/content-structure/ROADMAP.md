@@ -57,8 +57,8 @@ the lookup later.
   contrast.
 - Per-format key section: each format designates the one section marked with the
   accent left-border (see `LAYOUT_STANDARD.md` section 7). Decide it in each
-  format's own chat. Facts: the surprises section. Concepts: the
-  how_to_apply section. The others: open.
+  format's own chat. Facts (the surprises section) and Concepts (the how_to_apply
+  section) are decided and now rendered in the web frontend. The others: open.
 - Latent-edge display: only a person edge can point at a post that does not exist
   yet, activating when that person's post is created. Non-person connections to a
   missing target are not stored at all. Anywhere edges surface, "Read next" now
@@ -70,13 +70,13 @@ the lookup later.
 - Taxonomy (resolved): paleontology, botany, microbiology, and the optional
   `creativity` field have all been added; the taxonomy now holds 149 slugs in
   `backend/seed.py`, with no remaining flagged gaps.
-- Skeleton spec pointers (post-slim): the header line in the concepts, people,
+- Skeleton spec pointers (post-slim): the header line in the people,
   books, questions, stories, and academy skeletons still sends the reader to
   DEEPSCROLL_CONTENT_STRUCTURE.md for the full per-format spec, but the slim moved
   that spec into the skeleton itself; the doc now holds only the schema, the
   shared shapes, and the rationale. Reword each pointer to the facts skeleton's
   form ("Schema and rationale: DEEPSCROLL_CONTENT_STRUCTURE.md") when that format
-  gets its pass. The facts skeleton is already correct.
+  gets its pass. The facts and concepts skeletons are already correct.
 - Detail-header dek: LAYOUT_STANDARD section 3 now carries an optional
   detail-header dek (added for concepts, which repeats the card dek because its
   body opens on a scene, not a definition). Still open: decide
