@@ -105,12 +105,15 @@ if a word shows up more in model output than in good human writing, cut it.
 - "Whether you are X or Y" reader-bucketing.
 - The summarizing sign-off: "Ultimately," "In the end, it's clear that."
 - The per-unit mic-drop: ending every section or paragraph on a short, weighty,
-  quotable line. One earned landing line in a whole post is fine. A punch at the
-  close of every unit is a machine habit and the reader feels the metronome. The
-  habit creeps in most at the two natural exits, the opening hook and the closing
-  takeaway, which tempt a lyrical sign-off every time. Let most sections end
-  plainly, on a fact or mid-thought, and if the closing section lands a line, let
-  the others stay flat.
+  quotable line. A punch at the close of every unit is a machine habit and the
+  reader feels the metronome. The habit creeps in most at the two natural exits,
+  the opening hook and the closing takeaway, which tempt a lyrical sign-off every
+  time. Let most sections end plainly, on a fact or mid-thought. In a short post,
+  one landing is the rule: give it to the closing takeaway and keep the hook flat.
+  In a long, many-sectioned post the hook and the takeaway sit far enough apart
+  that a pointe at each does not compete, so both may land, as long as every
+  section between them ends plainly. A quotable line at the close of every unit is
+  never fine.
 - The reflex antithesis: "X, not Y," "X rather than Y," "less a clock than a
   budget," "beats, not years." It is the quiet cousin of the contrast frame. A
   fact that is itself a symmetry may justify one; reaching for the balance in
