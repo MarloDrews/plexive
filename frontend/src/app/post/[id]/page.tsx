@@ -263,13 +263,16 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
   // Typographic formats (LAYOUT_STANDARD s1) use the banner header: field line +
   // glyph + serif headline + dek, no slab. Facts and concepts share it.
   const typographic = !!post && (post.format === "facts" || post.format === "concepts")
-  // Cover formats that still use the flat (no-slab) header: people opens straight
-  // into the page like facts/concepts, with a portrait + context fields instead of
-  // a glyph field line (LAYOUT_STANDARD s1/s3). Books keeps the slab header.
+  // Cover formats use the flat (no-slab) header: people opens straight into the
+  // page like facts/concepts, with a portrait + context fields instead of a glyph
+  // field line (LAYOUT_STANDARD s1/s3). People places the portrait to the left of
+  // the name; books centers the two-tier cover above the title. The two cover
+  // formats place their image differently on purpose (LAYOUT_STANDARD s3).
   const coverFlat = !!post && post.format === "people"
-  // Every flat header (typographic + cover-flat) shares the top-bar format label,
-  // the end-of-post tags, and the headline-section filter.
-  const flatHeader = typographic || coverFlat
+  const coverBooks = !!post && post.format === "books"
+  // Every flat header (typographic + cover formats) shares the top-bar format
+  // label, the end-of-post tags, and the headline-section filter.
+  const flatHeader = typographic || coverFlat || coverBooks
 
   return (
     <div className="h-[100dvh] bg-surface-0 flex justify-center">
@@ -463,6 +466,44 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                     )}
                     <HeaderMeta post={post} />
                   </div>
+                ) : coverBooks ? (
+                  /* Books cover header (LAYOUT_STANDARD s1/s3): the same flat
+                     structure as facts/concepts/people, opening straight into the
+                     page with no slab. Unlike people's left portrait, the two-tier
+                     cover is centered above the title and presented face-on (the
+                     book as an object); a real cover shows its rights-record credit
+                     beneath it (BookCover showCredit), a generated cover shows none.
+                     The genre is the accent kicker, the title is the single
+                     headline, the author is the context line, and one_line is the
+                     dek repeated from the card. */
+                  <div className="relative">
+                    <div className="px-6 pt-3 flex justify-center">
+                      <BookCover
+                        feedCard={post.feed_card}
+                        className="rounded-xl overflow-hidden w-32 h-48 bg-white/[0.06]"
+                        showCredit
+                      />
+                    </div>
+                    {fcStr(post.feed_card, "genre") && (
+                      <div className="px-6 pt-5">
+                        <p className="label-caps text-(--accent)">
+                          {fcStr(post.feed_card, "genre")}
+                        </p>
+                      </div>
+                    )}
+                    <HeadlineSection content={post.title} />
+                    {fcStr(post.feed_card, "author") && (
+                      <p className="px-6 -mt-1 text-ink-dim text-sm font-medium">
+                        {fcStr(post.feed_card, "author")}
+                      </p>
+                    )}
+                    {fcStr(post.feed_card, "one_line") && (
+                      <p className="px-6 mt-3 mb-5 font-serif italic text-base text-ink-body leading-relaxed">
+                        {fcStr(post.feed_card, "one_line")}
+                      </p>
+                    )}
+                    <HeaderMeta post={post} />
+                  </div>
                 ) : (
                   /* Other formats keep the inset slab header. The glow box stays
                      at container width (a wider box would make the vertical
@@ -481,30 +522,10 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                         </span>
                       </div>
 
-                      {/* Books cover — two-tier (real or generated), resolved the
-                          same way as the feed card. At this readable size a real
-                          cover shows its credit beneath (IMAGE_STANDARD.md s3). */}
-                      {post.format === "books" && (
-                        <div className="flex justify-center mb-5">
-                          <BookCover
-                            feedCard={post.feed_card}
-                            className="rounded-xl overflow-hidden w-32 h-48 bg-white/[0.06]"
-                            showCredit
-                          />
-                        </div>
-                      )}
-
                       {/* Title */}
                       <h1 className="font-serif text-3xl font-medium text-ink leading-snug mb-1">
                         {post.title}
                       </h1>
-
-                      {/* Author (Books) */}
-                      {post.format === "books" && fcStr(post.feed_card, "author") && (
-                        <p className="text-ink-dim text-sm font-medium mb-3">
-                          {fcStr(post.feed_card, "author")}
-                        </p>
-                      )}
 
                       {/* Creator — round avatar + handle, read from the same
                           author fields as the feed card so the two always match.
