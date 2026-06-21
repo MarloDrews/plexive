@@ -70,8 +70,11 @@ earn their place by showing something the text cannot.
   image past its native resolution; an obviously pixelated image is worse than
   none.
 - Caption then credit sit below the image, small and muted, the credit smallest.
-- **Card anchor:** books and people always put an image on the feed card (a
-  hochkant book cover or a portrait beside the headline). Stories may put a real
+- **Card anchor:** books and people always put a cover-shaped image on the feed card beside the
+  headline, never a field glyph. People uses a real portrait. Books uses a real
+  cover only when a genuinely free one exists with a verified rights record, and
+  otherwise a programmatically generated cover in the Stage system; a copyrighted
+  cover is never used. Stories may put a real
   licensed image on the card when one fits the narrative, falling back to the
   field glyph when none does. The remaining typographic formats (facts, concepts,
   questions, academy) carry no card image; their card uses a small field glyph
@@ -87,8 +90,10 @@ earn their place by showing something the text cannot.
 
 ## 6. The three image roles
 
-1. **Card anchor** (feed card): books (a cover) and people (a portrait) always;
-   stories when a fitting licensed image exists, else the field glyph. The
+1. **Card anchor** (feed card): people (a real portrait) always; books a cover
+   always, real when a genuinely free one exists with a rights record and otherwise
+   a programmatically generated Stage cover, never copyrighted; stories when a
+   fitting licensed image exists, else the field glyph. The
    remaining typographic formats (facts, concepts, questions, academy) use a small
    field glyph, no card image (see `SVG_STANDARD.md` card rules).
 2. **Illustrative image** (in a post body): a photo or artwork that shows the
@@ -118,7 +123,52 @@ far.
   licensing in section 2 and the all-drawn fallback below outrank the count, so
   fewer is correct when no fitting freely licensed image exists, and you never
   add a stock or weakly sourced image to reach the number.
-- Books and stories: concrete enough to carry real body images too, but their
-  counts are settled in their own format passes, not assumed here.
+- Books: one or two sourced body images in a rich post, often zero. A book is
+  carried by its ideas more than by a face or a place, so it sits near the
+  typographic default rather than the People exception; the likeliest image is an
+  author portrait, and any other (a place, an artifact, a documentary photo) earns
+  its place only where an idea genuinely needs it. The cover is separate and does
+  not count toward this body budget.
+- Stories: concrete enough to carry real body images too, but its count is settled
+  in its own format pass, not assumed here.
 - If no licensed image fits the subject, the post is all drawn visuals. That is
   a normal, good outcome, not a gap to fill with stock.
+
+---
+
+## 8. Generated book cover: borrowing color and typeface
+
+When a book has no free real cover (the normal case), Stage draws an original
+cover from its title and author (the `GeneratedBookCover` component, deterministic
+per book, a single flat SVG, no external request). The drawn pattern is always
+original and is never traced from or modeled on any real cover.
+
+Two things, and only two, may be borrowed from the book's real cover, because
+neither is protected by copyright: a single background color and the title
+typeface. The typeface is a font *similar to* the real lettering, never a
+reproduction of a specific face. Nothing else is taken: not the artwork, not the
+layout, not any graphic, illustration, or arrangement. This keeps the generated
+cover legally clear while letting it evoke the book a reader may recognize.
+
+This is the one place a card may be light rather than dark. The app is otherwise
+dark only, but a cover stands in for a real, physical book, so a light cover
+background is allowed; the title and author ink are derived from that background
+so they always read.
+
+Carry the hint per book in `feed_card.cover.generated_style` (tier-2 only; omit
+it to keep the default dark Stage cover):
+
+- `background`: the dominant background color sampled by hand from the real
+  cover, as a hex value (for example `#fcfbf7` for Thinking, Fast and Slow).
+  Sample it once and store it; nothing is fetched at runtime.
+- `title_font`: a key naming a similar typeface the app loads, `cover-serif`
+  (the high-contrast display serif) or `stage-serif` (the default). Pick the one
+  that resembles the real title; do not try to match the exact face.
+- `ink` (optional): override the title color. By default it is derived from the
+  background (dark on a light cover, light on a dark one), so it is rarely needed.
+
+How to add one: open the real cover once, read off its dominant background color
+and the broad style of its title type, set `background` to that hex, and set
+`title_font` to whichever loaded font is closest. Add a new loaded font only when
+no existing one is close enough, and keep it a general-purpose family, never a
+font tied to a single cover.

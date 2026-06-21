@@ -12,7 +12,7 @@
         "name": "Daniel Kahneman",
         "birth_year": 1934
       },
-      "featured": false
+      "featured": true
     },
     {
       "format": "concepts",
@@ -26,18 +26,26 @@
       "ref": {
         "title": "The Replication Crisis in Psychology"
       },
-      "featured": false
+      "featured": true
     }
   ],
   "feed_card": {
-    "cover_url": "https://covers.openlibrary.org/b/isbn/9780374533557-L.jpg",
+    "cover": {
+      "image_url": null,
+      "generated": true,
+      "verified_by_human": false,
+      "generated_style": {
+        "background": "#fcfbf7",
+        "title_font": "cover-serif"
+      }
+    },
     "title": "Thinking, Fast and Slow",
     "author": "Daniel Kahneman",
-    "essence": "A Nobel-winning psychologist's account of why your most confident judgments so often go wrong.",
+    "one_line": "A Nobel-winning psychologist maps the two systems behind your judgments, and shows where the fast one fails.",
     "teasers": [
-      "Why your confident gut feeling is often wrong",
-      "A spinning wheel can change what salary feels fair",
-      "Losing $100 hurts twice as much as gaining $100"
+      "The first number named usually wins the negotiation",
+      "Losing $100 hurts twice as much as gaining $100",
+      "Why do experts fall for the very traps they study?"
     ],
     "post_reading_time_min": 16,
     "post_difficulty": 2,
@@ -46,13 +54,13 @@
   },
   "sections": [
     {
-      "type": "essence",
+      "type": "why_read_it",
       "order": 1,
-      "content": "A Nobel-winning psychologist's account of why your most confident judgments so often go wrong."
+      "content": "Most books about cognitive bias borrow their findings from other people's laboratories. This one comes from the psychologist who, with Amos Tversky, ran the experiments that built the field, and it gathers forty years of that work into a single vocabulary. By the end you can put a name to the exact way a judgment went wrong."
     },
     {
       "type": "voices",
-      "order": 3,
+      "order": 2,
       "content": [
         {
           "quote": "The intuitive System 1 is more influential than your experience tells you, and it is the secret author of many of the choices and judgments you make.",
@@ -70,102 +78,96 @@
     },
     {
       "type": "at_a_glance",
-      "order": 4,
+      "order": 3,
       "content": {
         "genre": "Psychology",
         "year": 2011,
         "country": "United States",
         "pages": 499,
         "reading_ease": 2,
+        "best_for": "Readers who want a vocabulary for the exact ways their own judgment goes wrong",
         "post_reading_time_min": 16,
-        "post_difficulty": 2,
-        "best_for": "Readers who want to understand why their own confident judgments so often go wrong"
+        "post_difficulty": 2
       }
     },
     {
-      "type": "why_endures",
-      "order": 5,
-      "content": "Most books about cognitive bias borrow their findings from other people's laboratories. This one is written by the psychologist who, with Amos Tversky, ran the experiments that built the field, and it gathers forty years of that work into a single vocabulary. You finish it able to name the exact way a judgment went wrong, instead of only sensing that it did."
-    },
-    {
       "type": "heart",
-      "order": 6,
-      "content": "System 1 is always on. It reads faces, finishes familiar sentences, and hands you an answer before you have noticed there was a question, all without any feeling of effort. System 2 is the part you think of as yourself: it does arithmetic, weighs options, and can override the snap answer, but it is slow, quickly tired, and inclined to endorse whatever System 1 proposes. Kahneman's argument is that System 1 does most of the work most of the time, and that its shortcuts, superb for survival, produce a catalogue of errors once they meet probability, statistics, and money. These mistakes are systematic rather than random, recurring in the same shapes across people and situations, which is what lets them be studied and named. The book maps where intuition can be trusted, where it cannot, and why even experts who know the research keep walking into the same traps."
+      "order": 4,
+      "content": "System 1 is always on. It reads a face, finishes a familiar sentence, and hands you an answer before you have noticed there was a question, all without any feeling of effort. System 2 is the part you think of as yourself, the deliberate reasoner that does arithmetic and weighs options and can override the snap answer. It is also slow and easily tired, and it tends to wave through whatever System 1 has already proposed. Kahneman's claim is that System 1 carries most of the load most of the time, and that the shortcuts making it superb for survival also breed a long catalogue of errors once they run into probability, statistics, and money. Those errors are systematic. They recur in the same shapes across different people and situations, which is what makes them possible to study and to name. The book maps the result: where intuition can be trusted, where it cannot, and why even the experts who know the research are not protected from it."
     },
     {
       "type": "structure",
-      "order": 7,
+      "order": 5,
       "content": [
-        "The book opens by introducing System 1's automatic impressions and System 2's effortful control, and shows how attention and mental effort actually work.",
-        "From there, Kahneman explains why intuition has no feel for statistics, working through anchoring, availability, representativeness, and regression to the mean.",
-        "A long middle section turns on expertise itself, arguing that confident forecasts and expert intuition are often illusions assembled from coherent stories.",
-        "Prospect theory then takes over: reference points, loss aversion, the endowment effect, and how the framing of an option quietly settles it.",
-        "The closing chapters separate the self that lives through an experience from the self that remembers it, and ask which one our choices should serve."
+        "Part one introduces the two systems, System 1's automatic impressions and System 2's effortful control, and lays out how attention and mental effort behave.",
+        "From there Kahneman shows why intuition has no feel for statistics, working through anchoring, availability, representativeness, and regression to the mean.",
+        "Expertise gets its own long stretch, where he argues that confident forecasts and expert intuition are often illusions assembled from coherent stories.",
+        "Prospect theory then takes over, with reference points, loss aversion, the endowment effect, and the way an option's framing settles the choice before you notice.",
+        "At the close, Kahneman splits the self that lives through an experience from the self that remembers it, and asks which one our choices should serve."
       ]
     },
     {
       "type": "core_ideas",
-      "order": 8,
+      "order": 6,
       "content": [
         {
           "title": "Two systems share the work, and the fast one runs the show",
-          "body": "Look at a photograph of a furious face and you grasp her mood at once, with no sense of having done anything. Now multiply 17 by 24: the answer does not arrive on its own, your pulse climbs, and you feel the work. Kahneman calls the first mode System 1 and the second System 2. System 1 is automatic, fast, and always running, the source of impressions and intuitions; System 2 is the slow, deliberate reasoner we identify with as ourselves. The surprise of the book is that System 1, not the reasoning self, originates most of what we end up thinking and choosing, while System 2 mostly signs off on its suggestions.",
-          "in_practice": "When a judgment feels effortless and certain, treat that ease as a reason to slow down, not as proof you are right.",
-          "visual_svg": "<svg viewBox=\"0 0 400 300\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\">\n  <line x1=\"200\" y1=\"50\" x2=\"200\" y2=\"250\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" opacity=\"0.3\" stroke-dasharray=\"6 6\"/>\n  <rect x=\"44\" y=\"66\" width=\"116\" height=\"168\" rx=\"12\" stroke=\"#fbbf24\" stroke-width=\"2.5\" stroke-linejoin=\"round\"/>\n  <rect x=\"240\" y=\"66\" width=\"116\" height=\"168\" rx=\"12\" stroke=\"currentColor\" stroke-width=\"2.5\" stroke-linejoin=\"round\" opacity=\"0.7\"/>\n  <g font-family=\"system-ui, sans-serif\" text-anchor=\"middle\">\n    <text x=\"102\" y=\"104\" font-size=\"15\" font-weight=\"700\" fill=\"#fbbf24\">System 1</text>\n    <text x=\"298\" y=\"104\" font-size=\"15\" font-weight=\"700\" fill=\"currentColor\">System 2</text>\n    <g fill=\"currentColor\" font-size=\"12\" font-weight=\"600\" opacity=\"0.85\">\n      <text x=\"102\" y=\"146\">Fast</text>\n      <text x=\"102\" y=\"172\">Automatic</text>\n      <text x=\"102\" y=\"198\">Always on</text>\n      <text x=\"298\" y=\"146\">Slow</text>\n      <text x=\"298\" y=\"172\">Effortful</text>\n      <text x=\"298\" y=\"198\">Easily tired</text>\n    </g>\n  </g>\n</svg>"
+          "body": "Look at a photograph of a furious face and you grasp her mood at once, with no sense of having done anything. Now multiply 17 by 24. The answer does not arrive on its own, your pulse climbs, and you feel the work. Those are the two modes. The first, System 1, is automatic and fast and never switched off, the source of impressions and intuitions. The second, System 2, is the slow, deliberate reasoner we tend to identify with as ourselves. What the book keeps showing is that System 1 originates most of what we end up thinking and choosing, while the reasoning self we are so proud of mostly signs off on whatever System 1 hands it.",
+          "in_practice": "Treat any judgment that arrives effortless and certain as a reason to slow down and check it.",
+          "visual_svg": "<svg viewBox=\"0 0 400 300\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\">\n  <line x1=\"200\" y1=\"50\" x2=\"200\" y2=\"250\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" opacity=\"0.3\" stroke-dasharray=\"6 6\"/>\n  <rect x=\"44\" y=\"66\" width=\"116\" height=\"168\" rx=\"12\" stroke=\"var(--accent, #cfa857)\" stroke-width=\"2.5\" stroke-linejoin=\"round\"/>\n  <rect x=\"240\" y=\"66\" width=\"116\" height=\"168\" rx=\"12\" stroke=\"currentColor\" stroke-width=\"2.5\" stroke-linejoin=\"round\" opacity=\"0.7\"/>\n  <g font-family=\"var(--font-sans), system-ui, sans-serif\" text-anchor=\"middle\" fill=\"currentColor\">\n    <text x=\"102\" y=\"104\" font-size=\"15\" font-weight=\"700\">System 1</text>\n    <text x=\"298\" y=\"104\" font-size=\"15\" font-weight=\"700\" opacity=\"0.7\">System 2</text>\n    <g font-size=\"13\" font-weight=\"600\" opacity=\"0.85\">\n      <text x=\"102\" y=\"146\">Fast</text>\n      <text x=\"102\" y=\"172\">Automatic</text>\n      <text x=\"102\" y=\"198\">Always on</text>\n      <text x=\"298\" y=\"146\">Slow</text>\n      <text x=\"298\" y=\"172\">Effortful</text>\n      <text x=\"298\" y=\"198\">Easily tired</text>\n    </g>\n  </g>\n</svg>"
         },
         {
           "title": "When a question is hard, the mind quietly answers an easier one",
-          "body": "A fund manager asks himself whether to buy Ford stock, and without noticing it he answers a different question: do I like Ford cars? The hard question, about a company's future, is swapped for an easy one, about a feeling, and the answer to the easy question is handed over as if it settled the hard one. Kahneman calls this substitution, and he treats it as the engine behind most intuitive judgment. Asked how satisfied you are with your life, you may report how cheerful you feel this minute; asked to judge a stranger's competence, you may register how strong his jaw looks. The swap is invisible from the inside, which is exactly why it works.",
-          "in_practice": "When an answer comes fast, check whether you answered the question that was asked or an easier cousin of it.",
+          "body": "A fund manager asks himself whether to buy Ford stock, and without noticing it he answers a different question: do I like Ford cars? The hard question, about a company's future, gets swapped for an easy one, about a feeling, and the answer to the easy question stands in as if it had settled the hard one. This is substitution, the engine behind most intuitive judgment. Asked how satisfied you are with your life, you may report how cheerful you feel this minute. Asked to judge a stranger's competence, you may register how strong his jaw looks. The swap is invisible from the inside, which is why it usually goes uncorrected.",
+          "in_practice": "Catch a fast answer and ask whether it addresses the real question or a simpler cousin you swapped in.",
           "quote": "When faced with a difficult question, we often answer an easier one instead, usually without noticing the substitution."
         },
         {
           "title": "Confidence measures the story's neatness, not its truth",
-          "body": "Give people only one side of a legal case and they reach firmer conclusions than people who hear both sides, even when everyone knows half the evidence is missing. Kahneman's name for this is WYSIATI, what you see is all there is: System 1 builds the most coherent story it can from whatever is present and stays untroubled by the gaps. Because the story holds together, it feels true, and confidence rises with the neatness of the story rather than the weight of the evidence behind it. This is why a witness who knows little can sound more certain than one who knows a great deal, and why our own firmest convictions are often the ones resting on the least information.",
-          "in_practice": "Before trusting a confident conclusion, yours or anyone else's, ask what evidence is missing rather than how good the available story sounds.",
+          "body": "Give people only one side of a legal case and they reach firmer conclusions than people who hear both sides, even when everyone knows half the evidence is missing. Kahneman's name for it is WYSIATI, what you see is all there is: System 1 builds the most coherent story it can from whatever is in front of it and stays untroubled by the gaps. Because the story holds together it feels true, and the confidence it produces measures the neatness of the story far more than the evidence behind it. A witness who knows little can sound more certain than one who knows a great deal, and the same effect runs on our own beliefs from the inside.",
+          "in_practice": "Before trusting any confident conclusion, hunt for the evidence that is missing, since a tidy story is what produces the confidence in the first place.",
           "quote": "Declarations of high confidence mainly tell you that an individual has constructed a coherent story in his mind, not necessarily that the story is true."
         },
         {
           "title": "The first number you meet drags every estimate toward it",
-          "body": "Tversky and Kahneman rigged a wheel of fortune to land only on 10 or 65, spun it in front of students, then asked what share of UN members are African nations. Those who saw 65 guessed 45 percent on average; those who saw 10 guessed 25. A spin of a wheel tells you nothing about Africa, yet it moved the answers by twenty points. Kahneman calls this anchoring: any number you consider before estimating becomes a starting point you adjust away from, and the adjustment almost always stops too soon. It is why a high asking price makes a house feel more valuable, why the first salary figure named in a negotiation tends to win, and why anchoring works just as well on experts who know it is happening.",
-          "in_practice": "In any negotiation, fix your own number before you hear theirs, and treat their opening figure as noise rather than information."
+          "body": "Tversky and Kahneman rigged a wheel of fortune to land only on 10 or 65, spun it in front of students, then asked what share of UN members are African nations. Those who saw 65 guessed 45 percent on average. Those who saw 10 guessed 25 percent. A spin of a wheel tells you nothing about Africa, yet it moved the answers by 20 points. Anchoring is the name for it: any number you weigh before estimating becomes a starting point, and the adjustment away from it almost always stops too soon. A high asking price makes a house feel more valuable, the first salary figure named in a negotiation tends to win, and the effect holds even on experts who can see it being done to them.",
+          "in_practice": "In any negotiation, fix your own number before you hear theirs, and treat their opening figure as noise that is trying to anchor you."
         },
         {
-          "title": "A detail that fits the story makes it feel likelier and is actually rarer",
-          "body": "Linda is thirty-one, single, outspoken, a former philosophy student who once marched against nuclear weapons. Which is more probable: that she is a bank teller, or that she is a bank teller who is active in the feminist movement? Most people choose the second, though every feminist bank teller is also a bank teller, so the narrower description cannot be the more likely one. Kahneman calls this the conjunction fallacy, and behind it sits representativeness: we judge probability by how well a description matches a stereotype rather than by the arithmetic of sets. Each added detail that fits the picture, the feminism, the marching, makes the story richer and more believable while quietly making it less probable.",
-          "in_practice": "When a detailed, specific scenario feels more likely than a vague one, remember that every extra condition can only lower the odds."
+          "title": "A detail that fits the story makes it feel likelier and less probable at once",
+          "body": "Linda is 31, single, outspoken, a former philosophy student who once marched against nuclear weapons. Which is more probable: that she is a bank teller, or that she is a bank teller who is active in the feminist movement? Most people choose the second, though every feminist bank teller is also a bank teller, so the narrower description cannot be the more likely one. The mistake has a name, the conjunction fallacy, and behind it sits representativeness, the habit of judging probability by how well a description fits a stereotype while ignoring the plain arithmetic of sets. Each detail that suits the picture, the feminism, the marching, makes the story richer and more convincing, and every one of them can only lower the odds.",
+          "in_practice": "Distrust the detailed, specific scenario that feels more likely than the vague one, because each added condition narrows the odds further."
         },
         {
           "title": "A loss hurts about twice as much as the same gain feels good",
-          "body": "Offered a coin flip that wins 150 dollars or loses 100, most people refuse, though the math favors taking it. The sting of the possible loss outweighs the pull of the larger possible gain. Across many such experiments the ratio holds steady: a loss feels roughly one and a half to two and a half times as strong as an equivalent gain. Kahneman and Tversky built this into prospect theory, which holds that we judge outcomes as changes from a reference point rather than as final states of wealth, with losses looming larger than gains. The asymmetry has an evolutionary logic, since a creature that treats threats as more urgent than opportunities is the one that survives to reproduce, and it quietly governs how we price our homes, cling to losing stocks, and resist any change that is framed as giving something up.",
-          "in_practice": "When a choice is framed as a loss, ask whether you would make the same call if the identical outcome were described as a smaller gain.",
-          "visual_svg": "<svg viewBox=\"0 0 400 300\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\">\n  <g stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" opacity=\"0.45\">\n    <line x1=\"44\" y1=\"150\" x2=\"356\" y2=\"150\"/>\n    <line x1=\"200\" y1=\"44\" x2=\"200\" y2=\"256\"/>\n  </g>\n  <path d=\"M48 244 Q150 206 200 150 Q254 96 352 84\" stroke=\"#fbbf24\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\n  <circle cx=\"200\" cy=\"150\" r=\"4\" fill=\"currentColor\"/>\n  <g fill=\"currentColor\" font-family=\"system-ui, sans-serif\" font-size=\"12\" font-weight=\"600\" text-anchor=\"middle\" opacity=\"0.85\">\n    <text x=\"324\" y=\"172\">Gains</text>\n    <text x=\"82\" y=\"172\">Losses</text>\n    <text x=\"200\" y=\"36\" font-size=\"11\" opacity=\"0.7\">Value</text>\n  </g>\n</svg>"
+          "body": "Offered a coin flip that wins $150 or loses $100, most people refuse, even though the math favors taking it. The sting of the possible loss outweighs the pull of the larger possible gain. Across many such experiments the ratio holds steady: a loss feels roughly 1.5 to 2.5 times as strong as an equivalent gain. Kahneman and Tversky built this into prospect theory, which says we register outcomes as gains and losses measured from where we currently stand, with losses always looming larger. There is an evolutionary logic to it, since a creature that treats threats as more urgent than opportunities is the one that survives to reproduce, and the same asymmetry governs how we price our homes, cling to losing stocks, and resist any change framed as giving something up.",
+          "in_practice": "Reframe any choice that comes to you as a loss, and ask whether you would still decide the same way if the identical outcome were dressed as a gain.",
+          "visual_svg": "<svg viewBox=\"0 0 400 300\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\">\n  <g stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" opacity=\"0.45\">\n    <line x1=\"44\" y1=\"150\" x2=\"356\" y2=\"150\"/>\n    <line x1=\"200\" y1=\"44\" x2=\"200\" y2=\"256\"/>\n  </g>\n  <path d=\"M48 244 Q150 206 200 150 Q254 96 352 84\" stroke=\"var(--accent, #cfa857)\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\n  <circle cx=\"200\" cy=\"150\" r=\"4\" fill=\"currentColor\"/>\n  <g fill=\"currentColor\" font-family=\"var(--font-sans), system-ui, sans-serif\" font-size=\"13\" font-weight=\"600\" text-anchor=\"middle\" opacity=\"0.85\">\n    <text x=\"324\" y=\"172\">Gains</text>\n    <text x=\"82\" y=\"172\">Losses</text>\n    <text x=\"200\" y=\"36\" font-size=\"13\" opacity=\"0.7\">Value</text>\n  </g>\n</svg>"
         },
         {
           "title": "Reword the very same facts and the choice reverses",
-          "body": "A surgeon can describe one operation two ways. 'The one-month survival rate is ninety percent' reassures patients; 'there is ten percent mortality in the first month' alarms them, though the two sentences carry identical information. In a famous version, a disease is expected to kill six hundred people, and a program that saves two hundred for certain is preferred over a gamble, while the same program described as letting four hundred die for certain is rejected in favor of the gamble. Kahneman calls this a framing effect: logically equivalent descriptions produce different feelings and different decisions, because each of us normally sees only one version and takes it for the whole truth. When he gave the disease problem to public health officials who actually set policy, they fell for the wording exactly as students did.",
+          "body": "A surgeon can describe one operation two ways. 'The one-month survival rate is 90 percent' reassures patients. 'There is 10 percent mortality in the first month' alarms them, even though the two sentences carry identical information. In the most famous version, a disease is expected to kill 600 people. A program that saves 200 for certain is preferred to a gamble, while the same program described as letting 400 die for certain gets rejected in favor of the gamble. That is a framing effect: logically equivalent descriptions produce different feelings and different choices, because each of us usually sees only one version and takes it for the whole truth. When Kahneman handed the disease problem to public health officials whose decisions set real policy, they fell for the wording the same way the students had.",
           "in_practice": "Restate any important option in its opposite frame, gain into loss or survival into mortality, and see whether your preference survives."
         },
         {
           "title": "The self that remembers overrules the self that lived",
-          "body": "Two patients undergo a colonoscopy and rate their pain every sixty seconds. One has a short procedure that ends on a sharp spike; the other has one lasting three times as long but tapering to a mild finish. The second patient, who objectively suffered more, remembers it as the easier ordeal. Kahneman separates the experiencing self, which lives through each moment, from the remembering self, which scores the whole episode afterward by its peak and its ending and ignores how long it lasted. Since we choose by the remembered story rather than the lived total, we return to whatever left the better memory, even when it cost us more actual discomfort, which is a strange and unsettling thing to learn about your own preferences.",
-          "in_practice": "When judging a past experience or planning a future one, hold apart how good it is to live through from how good it is to remember.",
-          "quote": "Nothing in life is as important as you think it is when you are thinking about it."
+          "body": "Two patients undergo a colonoscopy and rate their pain every 60 seconds. One has a short procedure that ends on a sharp spike. The other has one lasting three times as long but tapering to a mild finish, and that second patient, who objectively suffered more, remembers it as the easier ordeal. Kahneman splits the experiencing self, which lives through each moment, from the remembering self, which scores the whole episode afterward by its peak and its ending and pays no attention to how long it lasted. We choose by the remembered version, and so we return to whatever left the better memory, even when it cost more in the living than the alternative would have.",
+          "in_practice": "Hold apart how good an experience is to live through from how good it will be to remember, in judging the past and in planning the future."
         }
       ]
     },
     {
       "type": "takeaway",
-      "order": 9,
+      "order": 7,
       "content": {
         "framing": "framework",
-        "body": "Kahneman's own team once predicted their textbook would be finished in two years; it took eight, and one member already knew that about forty percent of similar teams never finished at all. They had built the forecast from the inside, by imagining their particular path to success, while ignoring the dismal record of projects like theirs. The fix is the outside view. Before committing to any estimate of time, cost, or success, stop describing your specific case, find a reference class of similar past efforts, look up how those actually turned out, and start your estimate from that base rate, adjusting only for what is genuinely unusual about yours. A team renovating a kitchen should start from the average overrun of real renovations, which in one survey more than doubled the expected cost, rather than from a hopeful sketch of their own job. The same move has a group version called Gary Klein's premortem. Before a plan is locked in, gather everyone and say 'imagine it is a year from now and this has failed', then have each person write the story of that failure, which lets people voice the doubts that optimism and politeness would otherwise bury. The habit underneath both is to judge a decision by how it was made rather than only by how it happened to turn out.",
-        "visual_svg": "<svg viewBox=\"0 0 400 300\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\">\n  <g font-family=\"system-ui, sans-serif\" text-anchor=\"middle\" fill=\"currentColor\">\n    <text x=\"72\" y=\"52\" font-size=\"11\" font-weight=\"700\" opacity=\"0.6\">Inside view</text>\n    <text x=\"72\" y=\"164\" font-size=\"11\" font-weight=\"700\" opacity=\"0.6\">Outside view</text>\n  </g>\n  <g stroke=\"currentColor\" stroke-width=\"2\" stroke-linejoin=\"round\" opacity=\"0.6\">\n    <rect x=\"24\" y=\"66\" width=\"96\" height=\"46\" rx=\"9\"/>\n    <rect x=\"152\" y=\"66\" width=\"96\" height=\"46\" rx=\"9\"/>\n    <rect x=\"280\" y=\"66\" width=\"96\" height=\"46\" rx=\"9\"/>\n    <rect x=\"24\" y=\"178\" width=\"96\" height=\"46\" rx=\"9\"/>\n    <rect x=\"152\" y=\"178\" width=\"96\" height=\"46\" rx=\"9\"/>\n  </g>\n  <rect x=\"280\" y=\"178\" width=\"96\" height=\"46\" rx=\"9\" stroke=\"#fbbf24\" stroke-width=\"2.5\" stroke-linejoin=\"round\"/>\n  <g stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" opacity=\"0.55\">\n    <path d=\"M120 89 h32\"/>\n    <path d=\"M152 89 l-11 -5 m11 5 l-11 5\"/>\n    <path d=\"M248 89 h32\"/>\n    <path d=\"M280 89 l-11 -5 m11 5 l-11 5\"/>\n    <path d=\"M120 201 h32\"/>\n    <path d=\"M152 201 l-11 -5 m11 5 l-11 5\"/>\n    <path d=\"M248 201 h32\"/>\n    <path d=\"M280 201 l-11 -5 m11 5 l-11 5\"/>\n  </g>\n  <g font-family=\"system-ui, sans-serif\" font-size=\"12\" font-weight=\"600\" text-anchor=\"middle\">\n    <text x=\"72\" y=\"93\" fill=\"currentColor\" opacity=\"0.85\">Your case</text>\n    <text x=\"200\" y=\"93\" fill=\"currentColor\" opacity=\"0.85\">Best case</text>\n    <text x=\"328\" y=\"93\" fill=\"currentColor\" opacity=\"0.85\">Hopeful guess</text>\n    <text x=\"72\" y=\"205\" fill=\"currentColor\" opacity=\"0.85\">Past cases</text>\n    <text x=\"200\" y=\"205\" fill=\"currentColor\" opacity=\"0.85\">Their record</text>\n    <text x=\"328\" y=\"205\" fill=\"#fbbf24\" font-weight=\"700\">Calibrated</text>\n  </g>\n</svg>"
+        "body": "Kahneman's own team once predicted their textbook would take two years to finish. It took eight, and one member already knew that around 40 percent of teams like theirs never finished at all. They had built the forecast from the inside, imagining their own particular path to success while ignoring the dismal record of projects like theirs. Kahneman's prescription is the outside view. Before you commit to an estimate of time or cost or odds of success, stop describing your specific case, find a reference class of similar past efforts, look up how those turned out, and start your estimate from that base rate, adjusting only for what is genuinely unusual about yours. A team planning a kitchen renovation should begin from the average overrun of real renovations, which in one survey came in at more than double the expected cost, and treat its own hopeful sketch with suspicion. The group version of the same move is Gary Klein's premortem. Before a plan is locked in, you gather everyone, say 'imagine it is a year from now and this has failed', and have each person write the story of that failure, which surfaces the doubts that optimism and politeness would otherwise bury. What both habits share is the move to judge a decision by how well it was made, looking past how it happened to come out.",
+        "visual_svg": "<svg viewBox=\"0 0 400 300\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\">\n  <g font-family=\"var(--font-sans), system-ui, sans-serif\" text-anchor=\"middle\" fill=\"currentColor\">\n    <text x=\"72\" y=\"52\" font-size=\"13\" font-weight=\"700\" opacity=\"0.6\">Inside view</text>\n    <text x=\"72\" y=\"164\" font-size=\"13\" font-weight=\"700\" opacity=\"0.6\">Outside view</text>\n  </g>\n  <g stroke=\"currentColor\" stroke-width=\"2\" stroke-linejoin=\"round\" opacity=\"0.6\">\n    <rect x=\"24\" y=\"66\" width=\"96\" height=\"46\" rx=\"12\"/>\n    <rect x=\"152\" y=\"66\" width=\"96\" height=\"46\" rx=\"12\"/>\n    <rect x=\"280\" y=\"66\" width=\"96\" height=\"46\" rx=\"12\"/>\n    <rect x=\"24\" y=\"178\" width=\"96\" height=\"46\" rx=\"12\"/>\n    <rect x=\"152\" y=\"178\" width=\"96\" height=\"46\" rx=\"12\"/>\n  </g>\n  <rect x=\"280\" y=\"178\" width=\"96\" height=\"46\" rx=\"12\" stroke=\"var(--accent, #cfa857)\" stroke-width=\"2.5\" stroke-linejoin=\"round\"/>\n  <g stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" opacity=\"0.55\">\n    <path d=\"M120 89 h32\"/>\n    <path d=\"M152 89 l-11 -5 m11 5 l-11 5\"/>\n    <path d=\"M248 89 h32\"/>\n    <path d=\"M280 89 l-11 -5 m11 5 l-11 5\"/>\n    <path d=\"M120 201 h32\"/>\n    <path d=\"M152 201 l-11 -5 m11 5 l-11 5\"/>\n    <path d=\"M248 201 h32\"/>\n    <path d=\"M280 201 l-11 -5 m11 5 l-11 5\"/>\n  </g>\n  <g font-family=\"var(--font-sans), system-ui, sans-serif\" font-size=\"13\" font-weight=\"600\" text-anchor=\"middle\">\n    <text x=\"72\" y=\"93\" fill=\"currentColor\" opacity=\"0.85\">Your case</text>\n    <text x=\"200\" y=\"93\" fill=\"currentColor\" opacity=\"0.85\">Best case</text>\n    <text x=\"328\" y=\"93\" fill=\"currentColor\" opacity=\"0.85\">Hopeful guess</text>\n    <text x=\"72\" y=\"205\" fill=\"currentColor\" opacity=\"0.85\">Past cases</text>\n    <text x=\"200\" y=\"205\" fill=\"currentColor\" opacity=\"0.85\">Their record</text>\n    <text x=\"328\" y=\"205\" fill=\"currentColor\" font-weight=\"700\">Calibrated</text>\n  </g>\n</svg>"
       }
     },
     {
       "type": "quiz",
-      "order": 10,
+      "order": 8,
       "content": [
         {
           "question": "What distinguishes System 1 from System 2 in Kahneman's account?",
@@ -198,14 +200,14 @@
             "System 2 takes over a task that System 1 cannot handle"
           ],
           "answer_index": 1,
-          "explanation": "When a question is hard, System 1 answers an easier substitute, such as how something feels rather than what is true, and reports it as the original answer."
+          "explanation": "When a question is hard, System 1 swaps in an easier substitute, often answering how something feels in place of what is true, and reports that as the original answer."
         },
         {
           "question": "Which situation best illustrates the anchoring effect?",
           "options": [
             "You remember a vivid plane crash and overestimate the risk of flying",
             "You assume a quiet stranger is shy because the description fits",
-            "You feel a 100-dollar loss more sharply than a 100-dollar gain",
+            "You feel a $100 loss more sharply than a $100 gain",
             "A high sticker price makes a lower offer on the same car feel like a deal"
           ],
           "answer_index": 3,
@@ -227,7 +229,7 @@
           "options": [
             "About ten times as heavy",
             "Exactly the same, once wealth is accounted for",
-            "Roughly one and a half to two and a half times as heavy",
+            "Roughly 1.5 to 2.5 times as heavy",
             "It varies so much that no consistent ratio exists"
           ],
           "answer_index": 2,
@@ -258,28 +260,28 @@
       ]
     },
     {
-      "type": "world_context",
-      "order": 12,
-      "content": "When the book appeared in 2011, mainstream economics still rested on a model of the rational actor, a person who weighs costs and benefits and reliably chooses what serves their interests. Kahneman and Tversky had spent the 1970s and 1980s assembling experimental evidence that real people break those assumptions in regular, predictable ways, work that helped open the field now called behavioral economics and earned Kahneman the 2002 Nobel in economics. By 2011 these ideas were already reaching general readers through books such as Richard Thaler and Cass Sunstein's Nudge and Dan Ariely's Predictably Irrational. Kahneman's contribution was to gather four decades of his own research into one structure built around System 1 and System 2, and to add his later studies of memory and wellbeing that the earlier work had never touched."
+      "type": "influence",
+      "order": 10,
+      "content": "The book became the standard popular gateway to the heuristics-and-biases and prospect-theory program, the route by which a wide general and professional audience first met that work. Its System 1 and System 2 split turned into common shorthand, used well beyond psychology to name the difference between a fast, automatic reaction and a slow, deliberate one. Applied fields took up its framing, most directly in nudge-style policy design, and more broadly in how medicine and finance talk about judgment under uncertainty. A reader today who hears a colleague mention anchoring, loss aversion, or thinking fast and slow is leaning on a vocabulary this book did much to make ordinary."
     },
     {
       "type": "author_context",
-      "order": 13,
+      "order": 12,
       "content": {
-        "body": "As a young officer in the Israeli army in the 1950s, Kahneman designed a structured interview to screen recruits and watched his confident predictions miss, his first brush with what he later called the illusion of validity. The research the book rests on came out of his decades-long partnership with Amos Tversky, begun at the Hebrew University in the late 1960s, in which the two wrote every sentence together and produced the studies of heuristics, biases, and prospect theory that the book gathers up. Tversky died in 1996, and the Nobel Prize in economics their work earned went to Kahneman alone in 2002, the first ever awarded to a psychologist.",
+        "body": "As a young officer in the Israeli army in the 1950s, Kahneman designed a structured interview to screen recruits and watched his confident predictions miss, his first brush with what he later called the illusion of validity. The research the book rests on came out of his decades-long partnership with Amos Tversky, begun at the Hebrew University in the late 1960s. The two wrote every sentence together and produced the studies of heuristics, biases, and prospect theory that the book gathers up. Tversky died in 1996, so when the 2002 Nobel in economics arrived for that work, shared with the experimental economist Vernon Smith, Kahneman received it without him, since the prize is not awarded posthumously. He is regularly described as the first psychologist to win the economics prize.",
         "image_url": "/seed-images/Daniel_Kahneman__283283955327_29__28cropped_29.jpg",
-        "image_attribution": "Photo: nrkbeta / Flickr (2009), via Wikimedia Commons. License: CC BY 2.0.",
+        "image_attribution": "nrkbeta, \"Daniel Kahneman\", CC BY-SA 3.0 (Wikimedia Commons), cropped",
         "wikipedia_url": "https://en.wikipedia.org/wiki/Daniel_Kahneman"
       }
     },
     {
       "type": "critique",
-      "order": 14,
-      "content": "The book's broad framework, the two systems and the central findings on judgment and choice, has held up well, but one strand has not. In a chapter on priming, Kahneman presented social-priming studies suggesting that subtle cues steer behavior outside awareness, and wrote that 'disbelief is not an option.' The headline example held that people exposed to words about old age then walked more slowly down a corridor, an effect sometimes called the Florida effect. After 2011, independent teams repeatedly failed to reproduce that result and many like it, part of the wider replication crisis that ran through psychology. In 2012 Kahneman wrote an open letter warning priming researchers that he saw 'a train wreck looming', and in 2017, after a detailed analysis concluded the cited studies carried almost no replicable signal, he conceded the point: 'What the blog gets absolutely right is that I placed too much faith in underpowered studies.' He even noted the irony that his own first paper with Tversky, back in 1971, had warned against precisely this trust in small samples. The episode now reads two ways at once, as a real dent in part of the book and as a model of how a scientist should respond when the evidence turns against him."
+      "order": 13,
+      "content": "The book's broad framework, the two systems and the central findings on judgment and choice, has held up well. One strand has not. In a chapter on priming, Kahneman presented social-priming studies suggesting that subtle cues steer behavior outside awareness, and wrote that 'disbelief is not an option.' The headline example held that people exposed to words about old age then walked more slowly down a corridor, an effect sometimes called the Florida effect. After 2011, independent teams repeatedly failed to reproduce that result and many like it, part of the wider replication crisis that ran through psychology. In 2012 Kahneman wrote an open letter warning priming researchers that he saw 'a train wreck looming', and in 2017, after a detailed analysis concluded the cited studies carried almost no replicable signal, he conceded the point: 'What the blog gets absolutely right is that I placed too much faith in underpowered studies.' He even noted the irony that his own first paper with Tversky, back in 1971, had warned against this very trust in small samples. The concession is to his credit, but it does not repair the chapter: a stretch of a hugely influential book leans on results that have not held up, and that part of it should be read with real caution."
     },
     {
       "type": "sources",
-      "order": 15,
+      "order": 14,
       "content": [
         {
           "label": "Thinking, Fast and Slow (Wikipedia)",

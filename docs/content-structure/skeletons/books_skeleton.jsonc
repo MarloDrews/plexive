@@ -1,221 +1,503 @@
 // books_skeleton.jsonc
-// Deepscroll — Books format skeleton.
-// Every REQUIRED section must be present. OPTIONAL sections: include only if
-// they add real value for this book. Sections render in `order` field order.
-// See DEEPSCROLL_CONTENT_STRUCTURE.md for full spec, STYLE_GUIDE_LONGFORM.md
-// for prose rules. Do not repeat opening formulas across items in a list —
-// vary sentence structure.
+// Deepscroll: Books format skeleton.
+// Thesis: a book is covered for the reader's use, the central argument and what
+// reading it changes, told by someone who has read it and gives an honest
+// verdict, not a back-cover blurb. There is no constitutive body visual: the
+// cover anchors identity on the card, and explanatory visuals are optional and
+// distributed where individual ideas earn them. One section set serves both
+// fiction and non-fiction; named sections carry a fiction switch. Accent: the
+// books format color (var(--accent) at runtime; hex fallback #cfa857 for
+// previews outside a post, per SVG_STANDARD.md).
+//
+// ─── OUTPUT CONTRACT ─────────────────────────────────────────────────
+// Output valid JSON only. Strip every // comment and use no trailing commas.
+// Fill or omit each placeholder; never emit an empty string. Drop every unused
+// OPTIONAL section object entirely, do not leave it in with blank fields.
+// Optional content fields are omitted entirely (the key is removed when unused).
+//
+// ─── ORDER CONTRACT ──────────────────────────────────────────────────
+// Keep each section's `type` and `order` exactly as given. The renderer sorts by
+// `order`, so the gaps left by dropped OPTIONAL sections, and the reserved gap at
+// order 9 for the read-next strip, are expected. Do not renumber to close them.
+//
+// ─── POST SHAPE ──────────────────────────────────────────────────────
+// Always present (the spine): why_read_it, voices, at_a_glance, heart,
+// core_ideas, takeaway, quiz, sources. Beyond the spine, include an OPTIONAL
+// section (structure, influence, world_context, author_context, critique) only
+// where this specific book passes that section's own Include test. Do not include
+// every optional every time; that is the main way these posts bloat. Part 6 alone
+// carries four optional context sections, more than any other format, so a
+// typical book includes only the one or two it earns, never all four. Guideline:
+// 9 to 13 sections. A major book that earns it can run long, up to about 15
+// reading minutes; a slim book that fills only the spine is a valid shorter post,
+// never padded to hit a number.
+//
+// ─── VISUAL PLAN ─────────────────────────────────────────────────────
+// Books has NO constitutive body visual, unlike Facts (see_it), Concepts
+// (visual_explanation), and People (life_arc). Nothing in the body is a required
+// diagram. The card cover is the identity anchor (two-tier, see feed_card.cover);
+// there is no in-body cover section. Beyond the cover, every visual is optional
+// and earned: place one only where an individual idea shows what prose cannot,
+// primarily in core_ideas, optionally in takeaway or structure. Never invent a
+// visual to fill a slot; never two visuals back-to-back with no prose between;
+// every visual shows something new. Three kinds of anchor: a drawn SVG (per
+// SVG_STANDARD.md, accent is var(--accent)), a sourced image (per
+// IMAGE_STANDARD.md, for example an author portrait, licensed and attributed),
+// and the card cover. A sourced image depends on a fitting licensed image
+// existing; when none does, use none and lean on the drawn visuals. Never invent
+// an image URL.
+//
+// ─── LENGTH RULE ─────────────────────────────────────────────────────
+// All sentence, word, and item counts below are GUIDELINES, not hard limits.
+// Exceed or undershoot them when the book demands it; Books can run longer than
+// the leaner formats. Prefer depth and an honest read over hitting a number. The
+// only HARD constraints are structural, fixed by the UI and scoring: quiz length
+// 5 to 10, exactly 4 options per question, exactly 3 teasers.
+//
+// ─── KEY SECTION ─────────────────────────────────────────────────────
+// heart is the format's key section: the "if you read only one section" section,
+// rendered with the single accent left-border (LAYOUT_STANDARD section 7, the way
+// facts marks surprises and concepts marks how_to_apply). The landing-line rule
+// leans on it. Exactly one section carries that emphasis; no other section does.
+//
+// ─── PROSE ───────────────────────────────────────────────────────────
+// Zero em-dashes in user-facing text. Books voice: someone who has actually read
+// it and tells you why it is worth your time, slightly more evaluative about the
+// ideas than other formats, an honest verdict welcome. Avoid back-cover-blurb
+// tone. Full prose rules: STYLE_GUIDE_LONGFORM.md. Schema and rationale:
+// DEEPSCROLL_CONTENT_STRUCTURE.md. Diagrams: SVG_STANDARD.md. Sourced images
+// (covers, author portraits): IMAGE_STANDARD.md.
 
 {
   // ─── GRAPH FIELDS ───────────────────────────────────────────────────
   // Cross-format. Full rules: SKELETON_COMMENT_STANDARD.md, section 10.
   // The system assigns the integer id and slug; the generator writes only these.
-  "tags": [],         // HARD: 1-4 slugs from the fixed taxonomy ONLY, never
-                      // invent one. First is primary and matches feed_card.genre.
+  "tags": [],         // HARD: 1-4 slugs from the fixed taxonomy ONLY, never invent
+                      // one. The first is the primary subject of the book; it is
+                      // the taxonomy expression of what feed_card.genre names in
+                      // human terms ("psychology" for genre "Psychology"). genre
+                      // is a display label, not a slug; they correspond, they need
+                      // not be the identical string. For fiction the first tag is
+                      // still a subject or theme slug from the taxonomy, even when
+                      // genre names a literary category ("Literary Fiction").
   "connections": [    // REQUIRED, may be empty. Every real link to another post.
-                      // Books has no person-list section, so a link to another
-                      // person is a normal connection here: format "people", ref
-                      // { "name", "birth_year" }. Never invent a target.
+                      // Books has NO person-list section, so a link to a person,
+                      // the author first of all, is a normal connection here:
+                      // format "people", ref { "name", "birth_year" }. Never
+                      // invent a target.
     {
       "format": "",       // books|facts|people|concepts|questions|stories|academy
       "ref": {            // target natural identity as a structured object, shaped
                           // by the target format: people { "name", "birth_year" },
                           // books { "title", "author" }, any other { "title" }.
-                          // Person refs may be latent (written before their
-                          // post). A non-person ref forms an edge only if
-                          // the target post already exists, else it is
-                          // dropped.
+                          // Person refs may be latent (written before their post).
+                          // A non-person ref forms an edge only if the target post
+                          // already exists, else it is dropped.
         "title": ""       // example shown for a non-person, non-book target.
       },
-      "featured": false   // true = show in "read next" (cap 3).
+      "featured": false   // true = show in "read next" (cap 3 total).
     }
   ],
 
   // ─── FEED CARD ──────────────────────────────────────────────────────
-  // What the user sees before tapping. Cover + title + author + essence
-  // + 3 teasers + meta. Designed to make tapping irresistible without
-  // promising what the post does not deliver.
+  // JOB: make the book itself do the pulling before any tap. The cover, title,
+  //      and author place it; the one_line dek promises the substance. Books is a
+  //      cover format: the card shows the cover beside the headline, never a field
+  //      glyph. No back-cover-blurb tone, no rhetorical questions.
   "feed_card": {
-    "cover_url": "",          // string | null — Open Library or similar
-    "title": "",              // string
-    "author": "",             // string
-    "essence": "",            // string — ONE sentence, max ~18 words. States
-                              // what the book IS, not what it argues. Must
-                              // contain a "you" hook or a surprising claim.
-    "teasers": ["", "", ""],  // array[3], ca. 5–15 words each. Claims, questions,
-                              // or striking facts — never category labels.
-                              // Vary structure across the three (e.g. one
-                              // question, one fact...).
-    "post_reading_time_min": 0, // integer
-    "post_difficulty": 1,       // 1=accessible, 2=moderate, 3=demanding
-    "year": 0,                  // integer — original publication year
-    "genre": ""                 // string
+    "cover": {                  // REQUIRED. Two-tier. Tier 1: a real free cover
+                                // with a complete rights record. Tier 2: no free
+                                // cover exists, so the Stage system generates one
+                                // from title and author. Never a copyrighted cover
+                                // (no retailer or Open Library scans), never a
+                                // field glyph.
+      "image_url": "",          // string | null. The cover URL ONLY when the image
+                                // is free (CC0, CC BY, or public domain) and
+                                // verified on the file's own page. null when no
+                                // free cover exists; Stage then generates one.
+                                // Never invent a URL. Per IMAGE_STANDARD.md.
+      "generated": false,       // boolean. HARD. true when image_url is null and
+                                // Stage generates the cover. Mutually exclusive
+                                // with a present image_url.
+      "source": "",             // string | omit. HARD if image_url present. Where
+                                // the file lives, for example "Wikimedia Commons".
+      "license": "",            // string | omit. HARD if image_url present. One of
+                                // CC0, CC BY x.x, CC BY-SA x.x, or Public Domain.
+                                // No other license qualifies.
+      "license_url": "",        // string | omit. HARD if image_url present. Link to
+                                // the license text.
+      "attribution": "",        // string | omit. HARD if image_url present. Format
+                                // per IMAGE_STANDARD.md: Creator, "Title", License
+                                // (Source).
+      "verified_by_human": false, // boolean. HARD. true only after a human confirmed
+                                // the license on the file page. A generator leaves
+                                // it false; a tier-1 cover is not seeded until it
+                                // is true.
+      "generated_style": {      // object | omit. Tier-2 only. Per-book hints that
+                                // make the GENERATED cover evoke the real one by
+                                // borrowing ONLY its background color and title
+                                // typeface (neither is protected); never its
+                                // artwork, layout, or any graphic. Omit to keep the
+                                // default dark Stage cover. See IMAGE_STANDARD.md.
+        "background": "",       // string | omit. The dominant background color
+                                // sampled by hand from the real cover, as a hex
+                                // value (e.g. "#fcfbf7"). Nothing is fetched at
+                                // runtime.
+        "title_font": "",       // string | omit. A key naming a similar typeface
+                                // the app loads: "cover-serif" (high-contrast
+                                // display serif) or "stage-serif" (the default).
+                                // A font similar to the real title, not a copy.
+        "ink": ""               // string | omit. Override the title color; by
+                                // default it is derived from the background so the
+                                // title always reads (dark on a light cover).
+      }
+    },
+    "title": "",                // string. The book's title as commonly known.
+    "author": "",               // string. Author as commonly credited. Rendered as
+                                // the card context line under the headline.
+    "one_line": "",             // string. The card dek: one plain sentence on what
+                                // the book IS, dense and factual, a light honest
+                                // verdict allowed. Not a blurb, no "you won't
+                                // believe". The renderer does not transform
+                                // feed-card text, so no em-dashes here.
+    "teasers": ["", "", ""],    // HARD: exactly 3. Guideline: about 6 words each.
+                                // Claims, questions, or striking specifics from the
+                                // book, not category labels. Vary structure across
+                                // the three.
+    "post_reading_time_min": 0, // integer. Guideline: honest estimate of reading
+                                // the post, no undersell.
+    "post_difficulty": 1,       // HARD: 1, 2, or 3 (1=accessible, 2=moderate,
+                                // 3=demanding).
+    "year": 0,                  // integer. Original publication year.
+    "genre": ""                 // string. Human-readable genre or subject
+                                // ("Psychology", "Literary Fiction"). Corresponds
+                                // to tags[0], need not be the identical string.
   },
 
   // ─── SECTIONS ───────────────────────────────────────────────────────
   "sections": [
 
-    // ── PART 1 — OPENING (~90s read) ─────────────────────────────────
+    // ── PART 1: THE OPENING (~90 sec read) ────────────────────────────
+    // Hook and orientation. The cover and dek placed the book; the body opens by
+    // making the honest case for it, then lets the book speak, then lays out the
+    // facts. Each section here works as a standalone micro-experience.
 
     {
-      "type": "essence",  // REQUIRED
+      "type": "why_read_it",  // Why Read It (REQUIRED)
       "order": 1,
-      "content": ""       // string — same as feed_card.essence
+      // JOB: orient the reader by saying what the book is and the substance that
+      //      makes it worth their time, so a reader who stops here knows what the
+      //      book is and why it earns attention. An honest verdict, not a pitch.
+      // Owns: the orientation and the case for reading it. Not here: the central
+      //   argument itself (belongs to heart), and the book's reception and lasting
+      //   mark (belongs to influence).
+      "content": ""  // string. Guideline: 3-5 sentences, about 60-120 words. What
+                     // the book is, what it sets out to do, what it delivers that
+                     // others on its subject do not. Avoid: back-cover-blurb tone
+                     // and hype; let the substance carry the case.
     },
 
     {
-      "type": "voices",  // REQUIRED — "Voices from the Book"
-      "order": 3,
-      "content": [       // array[3–4]. Three roles, not three of the same:
-                         // one thesis quote, one vivid/concrete quote,
-                         // one short punch quote. All verbatim from book.
+      "type": "voices",  // Voices from the Book (REQUIRED)
+      "order": 2,
+      // JOB: let the reader hear the book in its own words before any analysis, so
+      //      a reader who stops here has met the writing directly. Large
+      //      typography, minimal attribution.
+      // A quote earns its place only where the exact words carry what a paraphrase
+      // cannot, a turn of phrase, a voice, a stake (A12). All quotes verbatim from
+      // the book, never paraphrased or invented (A2).
+      "content": [
+        // Guideline: 3-4 quotes in three roles, not three of the same: one thesis
+        // quote, one vivid or concrete quote, one short punch quote. A 5th only
+        // when it reveals a qualitatively different facet.
         {
-          "quote": "",         // string — 1–3 sentences, must stand alone
-          "attribution": ""    // string — max ~5 words ("— on belief")
-        },
-        { "quote": "", "attribution": "" },
-        { "quote": "", "attribution": "" }
-      ]
-    },
-
-    {
-      "type": "at_a_glance",  // REQUIRED — visual info card
-      "order": 4,
-      "content": {
-        "genre": "",                  // string
-        "year": 0,                    // integer
-        "country": "",                // string
-        "pages": 0,                   // integer
-        "reading_ease": 1,            // 1–3 — difficulty of the BOOK
-        "post_reading_time_min": 0,   // integer — same as feed_card
-        "post_difficulty": 1,         // 1–3 — same as feed_card
-        "best_for": ""                // string — one specific reader profile
-      }
-    },
-
-    // ── PART 2 — OVERVIEW (~2 min read) ──────────────────────────────
-
-    {
-      "type": "why_endures",  // OPTIONAL — only with sharp, specific answer
-      "order": 5,
-      "content": ""           // string — 2–3 sentences on what makes THIS
-                              // book special among books on its topic.
-    },
-
-    {
-      "type": "heart",  // REQUIRED — "The Heart of It"
-      "order": 6,
-      "content": ""     // string — 4–6 sentences. Central argument (non-
-                        // fiction) or central question (fiction). Reader
-                        // who stops here still gets the essence.
-    },
-
-    {
-      "type": "structure",  // OPTIONAL — book's architecture
-      "order": 7,
-      "content": [          // array of strings, one per major section/part.
-                            // Vary sentence structure across items — do not
-                            // start every item with "Part X" or the same
-                            // verb. Each item describes what that part
-                            // covers in one sentence.
-        ""
-      ]
-    },
-
-    // ── PART 3 — CORE ─────────────────────────────────────────────────
-
-    {
-      "type": "core_ideas",  // REQUIRED — "The Core Ideas"
-      "order": 8,
-      "content": [           // array[6–12]. Each item: title is a claim
-                             // (not a label), body is 3–6 sentences of
-                             // prose starting with a concrete example
-                             // before the abstraction.
-        {
-          "title": "",         // string — pointed claim with a verb, 4–10 words
-          "body": "",          // string — 3–6 sentences, concrete first
-          "in_practice": "",   // string | omit — OPTIONAL, non-fiction only.
-                               // ONE direct imperative sentence: what to do
-                               // now. Begin with the action verb or the
-                               // situation. No "Tomorrow:" or other formula.
-          "visual_svg": "",    // string | omit — per SVG_STANDARD.md
-          "image_url": "",     // string | omit — Wikimedia or similar
-          "quote": ""          // string | omit — supporting quote from book
+          "quote": "",         // string. Exact words from the book, 1-3 sentences,
+                               // must stand alone.
+          "attribution": ""    // string. Guideline: max about 5 words, minimal
+                               // context, "on belief", "on the remembering self".
+                               // Avoid: editorializing in the attribution.
         }
       ]
     },
 
-    // ── PART 4 — WHAT STAYS WITH YOU ──────────────────────────────────
-
     {
-      "type": "takeaway",  // REQUIRED — "What Stays With You"
-      "order": 9,
+      "type": "at_a_glance",  // At a Glance (REQUIRED)
+      "order": 3,
+      // JOB: give the reader the book's key facts as a scannable card, so a reader
+      //      who stops here has the essentials at a glance. Rendered as a key-value
+      //      card.
+      // Books-specific fields below; do not add fields from other formats (no
+      // birth/death, no study type). Omit a field rather than leaving it an empty
+      // string.
       "content": {
-        "framing": "framework",  // "framework" (non-fiction) | "question" (fiction)
-        "body": "",              // string
-                                 // framework: one rule/tool/model usable now
-                                 // question: one central question + how the
-                                 // book treats it (2–3 sentences)
-        "visual_svg": ""         // string | omit — recommended for framework
+        "genre": "",                 // string. REQUIRED. Same display label as
+                                     // feed_card.genre.
+        "year": 0,                   // integer. REQUIRED. Original publication year.
+        "country": "",               // string | omit. Country of first publication
+                                     // when meaningful.
+        "pages": 0,                  // integer | omit. Page count of a standard
+                                     // edition; omit if it varies too widely to
+                                     // state honestly.
+        "reading_ease": 1,           // HARD: 1, 2, or 3. The difficulty of reading
+                                     // the BOOK itself (1=accessible, 3=demanding),
+                                     // distinct from post_difficulty.
+        "best_for": "",              // string | omit. One specific reader profile
+                                     // the book rewards. One line, concrete.
+        "post_reading_time_min": 0,  // integer. REQUIRED. Mirrors feed_card value.
+        "post_difficulty": 1         // HARD: 1, 2, or 3. Mirrors feed_card value.
       }
     },
 
-    // ── PART 5 — TEST YOURSELF ────────────────────────────────────────
+    // ── PART 2: THE OVERVIEW (~2 min read) ────────────────────────────
+    // Orientation before the deep dive. heart is the "if you read only one
+    // section" section and the post's key section (the one accent-bordered block).
+    // structure maps how the book is built.
 
     {
-      "type": "quiz",  // REQUIRED
-      "order": 10,
-      "content": [     // array[5–10]. Tests understanding, not trivia.
-                       // Distractors must be plausible misconceptions.
+      "type": "heart",  // The Heart of It (REQUIRED)
+      "order": 4,
+      // JOB: state the book's central argument (non-fiction) or central question
+      //      and story (fiction), so a reader who stops here has the one thing the
+      //      book is really about. This is the format's heart and key section.
+      // Owns: the single central thesis or question, stated whole. Not here: the
+      //   case for reading it (belongs to why_read_it), the several component ideas
+      //   in depth (belongs to core_ideas), and the one usable tool or question to
+      //   carry away (belongs to takeaway).
+      "content": ""  // string. Guideline: 4-6 sentences. For non-fiction, the
+                     // central argument in plain terms; for fiction, the central
+                     // question or tension the book turns on, no plot spoilers.
+                     // Avoid: listing themes instead of naming the one core.
+    },
+
+    {
+      "type": "structure",  // How It Is Built (OPTIONAL)
+      "order": 5,
+      // JOB: map the book's architecture part by part, so a reader who stops here
+      //      sees how the book is organized before meeting the ideas.
+      // Include when: the book has a deliberate architecture that carries its
+      //   argument, parts or movements that build on each other and reward a map.
+      // Skip when: the structure is conventional or linear with nothing to map, or
+      //   (fiction) a part-by-part map would spoil the plot. Map acts or movements,
+      //   never plot beats.
+      // Owns: the architecture, the map of how the book is organized. Not here: the
+      //   ideas themselves in depth (belongs to core_ideas).
+      "content": [
+        // Guideline: one item per major part or movement, about 3-7 items. Vary
+        // sentence structure across items; do not open every item with "Part X" or
+        // the same verb.
+        ""   // string per item. One sentence on what that part covers.
+      ]
+    },
+
+    // ── PART 3: THE CORE (~3 to 6 min read) ───────────────────────────
+    // The substantive deep dive. core_ideas is the spine and the primary home for
+    // the post's optional explanatory visuals.
+
+    {
+      "type": "core_ideas",  // The Core Ideas (REQUIRED)
+      "order": 6,
+      // JOB: carry the book's key ideas in depth, so a reader who stops here has
+      //      the substance of what the book offers. For non-fiction, each item is a
+      //      key idea stated as a claim with a verb; for fiction, each item is a
+      //      central theme or thread, titled as the theme and explored in the body.
+      // Owns: the several component ideas in depth. Not here: the single central
+      //   thesis or question (belongs to heart), and the architecture map (belongs
+      //   to structure).
+      "content": [
+        // Guideline: 6-12 ideas. Not a floor; quality decides, never pad to reach
+        // the number, and a book with fewer rich ideas may carry fewer.
+        {
+          "title": "",         // string. Guideline: 4-10 words. Non-fiction: a
+                               // pointed claim with a verb, not a label. Fiction:
+                               // the theme or thread named.
+          "body": "",          // string. Guideline: 3-6 sentences. Open on a
+                               // concrete example or scene before the abstraction.
+          "in_practice": "",   // string | omit. Non-fiction only. ONE direct
+                               // imperative sentence: what to do with this idea.
+                               // Begin with the action or the situation. Avoid:
+                               // "Tomorrow:" or other formula. Omit for fiction.
+          "visual_svg": "",    // string | omit. A drawn diagram for THIS idea only,
+                               // where it shows what prose cannot. Per
+                               // SVG_STANDARD.md, accent is var(--accent). The
+                               // primary home for the post's optional visuals;
+                               // still earned, never two back-to-back.
+          "image_url": "",     // string | omit. A sourced, licensed image about
+                               // this idea, per IMAGE_STANDARD.md. Never invent a
+                               // URL.
+          "image_caption": "", // string | omit. With image_url only, one sentence
+                               // on what is shown.
+          "image_attribution": "", // string | omit. HARD if image_url present.
+                               // Format per IMAGE_STANDARD.md.
+          "quote": ""          // string | omit. A short supporting quote from the
+                               // book, verbatim (A2).
+        }
+      ]
+    },
+
+    // ── PART 4: WHAT STAYS WITH YOU ───────────────────────────────────
+    // The kernel. After the ideas fade, the one thing the reader keeps. A reader
+    // who got this far has the full experience; this seals it.
+
+    {
+      "type": "takeaway",  // What Stays With You (REQUIRED)
+      "order": 7,
+      // JOB: give the reader one thing to carry away, so a reader who stops here
+      //      leaves with something usable or one question worth holding. For
+      //      non-fiction, a single framework, rule, or tool usable now; for
+      //      fiction, the central question the book leaves open and how it treats
+      //      it.
+      // Owns: the one portable kernel. Not here: what the book argues (belongs to
+      //   heart), and the per-idea micro-actions (belongs to
+      //   core_ideas.in_practice).
+      "content": {
+        "framing": "framework",  // HARD: "framework" (non-fiction) or "question"
+                                 // (fiction).
+        "body": "",              // string. Guideline: framework, one rule, tool, or
+                                 // model the reader can use, stated concretely;
+                                 // question, the one central question plus how the
+                                 // book treats it in 2-3 sentences.
+        "visual_svg": ""         // string | omit. A small framework diagram only
+                                 // when it shows the shape better than prose. Per
+                                 // SVG_STANDARD.md, accent is var(--accent). Not a
+                                 // default; earned like every visual.
+      }
+    },
+
+    // ── PART 5: TEST YOURSELF ─────────────────────────────────────────
+
+    {
+      "type": "quiz",  // Quiz (REQUIRED)
+      "order": 8,
+      // JOB: test understanding of the book's ideas, not trivia, so the reader
+      //      confirms what they grasped. Elo-relevant, so quality is a fairness
+      //      question.
+      // Full quiz style (distractor design, explanation style): A13 in
+      // STYLE_GUIDE_LONGFORM.md.
+      // HARD: 5-10 questions. HARD: exactly 4 options each. HARD: answer_index 0-3
+      //   and varied across questions, never always 0.
+      "content": [
         {
           "question": "",
-          "options": ["", "", "", ""],  // exactly 4
-          "answer_index": 0,            // 0–3
-          "explanation": ""             // explains the LOGIC of the correct
-                                        // answer, not why others are wrong
+          "options": ["", "", "", ""],
+          "answer_index": 0,
+          "explanation": ""  // string. One or two sentences teaching the logic of
+                             // the correct answer, not why each other is wrong.
+                             // Avoid: trivia (exact years, names) and "the correct
+                             // answer is" openings.
         }
       ]
     },
 
     // NOTE: "Read next" is driven by featured connections (the top-level
-    // connections field, featured: true). See SKELETON_COMMENT_STANDARD.md s.10.
+    // connections field, featured: true). Books has no person-list, so featured
+    // people are featured connections. Order 9 is reserved for this strip. See
+    // SKELETON_COMMENT_STANDARD.md s.10.
 
-    // ── PART 6 — CONTEXT (smaller typography, secondary) ─────────────
+    // ── PART 6: CONTEXT (smaller typography, secondary) ───────────────
+    // These sit below the natural end-point. A reader who stopped at the quiz got
+    // the full experience; these reward those who want the book's mark
+    // (influence), the era that produced it (world_context), the author
+    // (author_context), or the honest case against it (critique). A typical book
+    // earns only one or two of these, not all four.
 
     {
-      "type": "world_context",  // OPTIONAL — "The World It Came From"
-      "order": 12,
-      "content": ""             // string — era, intellectual movement, what
-                                // was new when published. Longer for
-                                // classics, shorter or skip for modern.
+      "type": "influence",  // Reception and Influence (OPTIONAL)
+      "order": 10,
+      // JOB: account for how the book was received and the mark it left on its
+      //      field or the culture, so a reader who stops here knows how it landed
+      //      and what it changed.
+      // Include when: the book has a documented reception or a traceable influence,
+      //   it shaped a field, a debate, later work, or the wider culture.
+      // Skip when: a recent or minor book with no documented reception or influence
+      //   yet. Never manufacture impact (A2).
+      // Owns: the reception and the lasting mark. Not here: the case for reading it
+      //   (belongs to why_read_it), the era that produced the book (belongs to
+      //   world_context), and the substantive limitations and live debate (belongs
+      //   to critique).
+      "content": ""  // string. Guideline: 80-160 words. Name what it changed
+                     // concretely. Avoid: vague "widely influential" without
+                     // specifics (A7).
     },
 
     {
-      "type": "author_context",  // OPTIONAL — "About the Author"
-      "order": 13,
+      "type": "world_context",  // The World It Came From (OPTIONAL)
+      "order": 11,
+      // JOB: supply the era and intellectual moment that produced the book, so a
+      //      reader who stops here understands what the book was responding to.
+      // Include when: the era or intellectual moment materially shaped the book or
+      //   is needed to read it well, a classic, or a book answering its moment.
+      // Skip when: a contemporary book whose context is the reader's own present,
+      //   or the context adds nothing the reader does not already have.
+      // Owns: the era and intellectual moment before the book. Not here: the
+      //   author's own position (belongs to author_context), and the book's later
+      //   reception (belongs to influence).
+      "content": ""  // string. Guideline: 80-160 words, longer for a classic. The
+                     // movement, the debate, what was new when it appeared. Avoid:
+                     // generic period scene-setting unattached to this book.
+    },
+
+    {
+      "type": "author_context",  // About the Author (OPTIONAL)
+      "order": 12,
+      // JOB: give a brief, book-relevant note on the author, why this author and
+      //      what in their position shaped this book, so a reader who stops here
+      //      sees who wrote it and why that matters. A note, never a full life.
+      // This is PROSE, not a person-list; do not confuse it with Academy's
+      // authors_context (a person-list). The author's graph edge lives in
+      // connections (format "people"), not here.
+      // Include when: the author's position or experience materially illuminates
+      //   the book, a practitioner writing from inside the field, a witness writing
+      //   what they lived.
+      // Skip when: the author's life adds nothing the book itself does not, or the
+      //   note would become a mini-biography.
+      // Owns: the book-relevant note on the author. Not here: the full life story
+      //   (belongs to a linked People post via connections), and the era's
+      //   conditions (belongs to world_context).
       "content": {
-        "body": "",              // string — 2–3 sentences, book-relevant only
-        "image_url": "",         // string | omit
-        "image_attribution": "", // string | omit — required if image_url present
-        "wikipedia_url": ""      // string | omit
+        "body": "",              // string. Guideline: 2-3 sentences, book-relevant
+                                 // only. Avoid: a full biography.
+        "image_url": "",         // string | omit. A licensed author portrait, per
+                                 // IMAGE_STANDARD.md. Never invent a URL.
+        "image_attribution": "", // string | omit. HARD if image_url present. Format
+                                 // per IMAGE_STANDARD.md.
+        "wikipedia_url": ""      // string | omit. The author's Wikipedia page, when
+                                 // one exists.
       }
     },
 
     {
-      "type": "critique",  // OPTIONAL — "Critique & Limitations"
-      "order": 14,
-      "content": ""        // string — name the camps, not vague "some have
-                           // argued". Specific people, specific findings.
+      "type": "critique",  // Critique and Limitations (OPTIONAL)
+      "order": 13,
+      // JOB: tell the honest limitations and the live debate about the book's
+      //      weaknesses, so a reader who stops here holds a fair verdict, not a
+      //      blurb. An honesty section, not a gotcha.
+      // Include when: the book has substantive limitations, a serious rebuttal, or
+      //   a live debate about its claims. Name the camps, specific people, specific
+      //   findings.
+      // Skip when: there is genuinely nothing substantive to critique. Do not
+      //   manufacture balance (A7), and do not skip merely because the book is
+      //   admired.
+      // Owns: the limitations and the honest debate. Not here: the overall
+      //   reception and lasting mark (belongs to influence).
+      "content": ""  // string. Guideline: 60-150 words. Specific and
+                     // evidence-grounded, not vague "some have argued". Tone yields
+                     // to the subject (A14).
     },
 
     {
-      "type": "sources",  // REQUIRED — "Sources & Further Reading"
-      "order": 15,
-      "content": [        // array[1–10]
+      "type": "sources",  // Sources and Further Reading (REQUIRED)
+      "order": 14,
+      // JOB: let the reader verify and go deeper, so every claim is checkable.
+      //      Prefer the book itself and authoritative reviews or analyses over
+      //      Wikipedia as the sole reference. Every URL must resolve.
+      // Guideline: 1-10 sources. At least 2 recommended; 1 only when a single
+      //   definitive reference genuinely dominates.
+      "content": [
         {
-          "label": "",    // string — human-readable reference
-          "url": "",      // string — full URL
-          "type": ""      // "wikipedia"|"paper"|"book"|"article"|"database"
+          "label": "",   // string. Human-readable reference, full citation or site
+                         // name.
+          "url": "",     // string. Full, reachable URL. Never invent one (A2).
+          "type": ""     // HARD: one of wikipedia|paper|book|article|database.
         }
       ]
     }

@@ -4,13 +4,20 @@
 // books at near-zero cost. Same book -> identical cover every time (see
 // coverParams in @/lib/bookCover); different books look clearly different.
 //
-// Stage look: a dark base, a flat generative abstract pattern in the Books amber
-// accent (var(--accent), fallback #cfa857) with neutral strokes, and the title
-// and author in the Stage serif. Flat only, no gradients, shadows, or filters,
-// so it reads as one set with the rest of Stage (IMAGE_STANDARD.md s6,
-// SVG_STANDARD.md). This is app-authored markup, not content-provided SVG, so it
-// renders as plain JSX (the dangerouslySetInnerHTML split in CLAUDE.md is only
-// for content SVG strings).
+// Stage look by default: a dark base, a flat generative abstract pattern in the
+// Books amber accent (var(--accent), fallback #cfa857) with neutral strokes, and
+// the title and author in the Stage serif. Flat only, no gradients, shadows, or
+// filters (IMAGE_STANDARD.md s6, SVG_STANDARD.md).
+//
+// Per-book borrowing: a book may pass a background color and a title font sampled
+// from its real cover (the only two things borrowed, since neither is protected;
+// see the generated-cover convention in IMAGE_STANDARD.md). The drawn pattern is
+// always original. When the borrowed background is light, the title/author ink and
+// the neutral strokes are derived for contrast so the cover still reads, even
+// though the rest of the app is dark only (a cover stands in for a real book).
+//
+// This is app-authored markup, not content-provided SVG, so it renders as plain
+// JSX (the dangerouslySetInnerHTML split in CLAUDE.md is only for content SVG).
 
 import { coverParams, type CoverParams } from "@/lib/bookCover"
 
@@ -19,23 +26,69 @@ import { coverParams, type CoverParams } from "@/lib/bookCover"
 const W = 300
 const H = 450
 
-// Stage tones used inside the SVG. The accent reads the host's --accent (set to
-// the Books amber on the card and detail), falling back to the Books hex so the
-// cover is correct even where --accent is not set (e.g. the my-posts list).
+// The accent reads the host's --accent (set to the Books amber on the card and
+// detail), falling back to the Books hex so the cover is correct even where
+// --accent is not set (e.g. the my-posts list).
 const ACCENT = "var(--accent, #cfa857)"
-const BASE = "#141414" // matches --color-surface-1, so the cover reads as an object on the slab
-const NEUTRAL = "#3a3a3a" // --color-ink-faint
-const NEUTRAL_SOFT = "#2a2a2a"
+
+// Title fonts the app loads. The hint names one; an unknown value is passed
+// through verbatim so an advanced caller can supply a raw font-family.
+const FONT_MAP: Record<string, string> = {
+  "cover-serif": "var(--font-cover-serif)",
+  "stage-serif": "var(--font-serif)",
+}
 
 // The pattern occupies the upper band; the title block sits below an amber rule.
 const BAND_TOP = 30
 const BAND_BOTTOM = 250
 const PAD = 30
 
-// Map a 0..1 stream value into a range / integer / pick, for readable geometry.
+// Map a 0..1 stream value into a range / integer, for readable geometry.
 const lerp = (v: number, min: number, max: number) => min + v * (max - min)
 const pickInt = (v: number, min: number, max: number) =>
   Math.floor(min + v * (max - min + 1 - 1e-9))
+
+// Drawing palette derived from the (optional) borrowed background. On a light
+// cover the strokes and ink go dark so everything reads; on the default dark
+// base they keep the Stage look. The amber accent is constant in both.
+interface Palette {
+  base: string
+  ink: string
+  subInk: string
+  neutral: string
+  neutralSoft: string
+}
+
+// Relative luminance (0..1) of a #rgb/#rrggbb color; used only to decide whether
+// a borrowed background is light or dark.
+function luminance(hex: string): number {
+  let h = hex.replace("#", "")
+  if (h.length === 3) h = h.split("").map((c) => c + c).join("")
+  if (h.length !== 6) return 0
+  const r = parseInt(h.slice(0, 2), 16)
+  const g = parseInt(h.slice(2, 4), 16)
+  const b = parseInt(h.slice(4, 6), 16)
+  return (0.299 * r + 0.587 * g + 0.114 * b) / 255
+}
+
+function buildPalette(background?: string, ink?: string): Palette {
+  if (background && luminance(background) > 0.6) {
+    return {
+      base: background,
+      ink: ink ?? "#1a1a1a",
+      subInk: "#6b675f",
+      neutral: "#cbc7bd",
+      neutralSoft: "#dcd8ce",
+    }
+  }
+  return {
+    base: background ?? "#141414", // default Stage base (matches --color-surface-1)
+    ink: ink ?? "#eeeeee",
+    subInk: "#8a8a8a",
+    neutral: "#3a3a3a",
+    neutralSoft: "#2a2a2a",
+  }
+}
 
 // Greedy word-wrap into at most maxLines lines of about maxChars each, with an
 // ellipsis if the text overruns. Deterministic; serif metrics are approximated
@@ -64,7 +117,7 @@ function wrapText(text: string, maxChars: number, maxLines: number): string[] {
 
 // Each flat pattern family. All return SVG elements drawn within the upper band,
 // using the amber accent plus neutral strokes only.
-function Pattern({ params }: { params: CoverParams }) {
+function Pattern({ params, pal }: { params: CoverParams; pal: Palette }) {
   const v = params.values
   const cx0 = lerp(v[0], PAD + 20, W - PAD - 20)
   const cy0 = lerp(v[1], BAND_TOP + 20, BAND_BOTTOM - 20)
@@ -84,7 +137,7 @@ function Pattern({ params }: { params: CoverParams }) {
               cx={cx0}
               cy={cy0}
               r={20 + i * step}
-              stroke={i === amberRing || i === amberRing2 ? ACCENT : NEUTRAL}
+              stroke={i === amberRing || i === amberRing2 ? ACCENT : pal.neutral}
             />
           ))}
         </g>
@@ -108,7 +161,7 @@ function Pattern({ params }: { params: CoverParams }) {
                 y1={BAND_TOP}
                 x2={x + skew}
                 y2={BAND_BOTTOM}
-                stroke={i === amberA || i === amberB ? ACCENT : NEUTRAL}
+                stroke={i === amberA || i === amberB ? ACCENT : pal.neutral}
               />
             )
           })}
@@ -132,7 +185,7 @@ function Pattern({ params }: { params: CoverParams }) {
               cx={PAD + c * gx}
               cy={BAND_TOP + r * gy}
               r={amber ? 6 : 4}
-              fill={amber ? ACCENT : NEUTRAL}
+              fill={amber ? ACCENT : pal.neutral}
             />
           )
         }
@@ -157,7 +210,7 @@ function Pattern({ params }: { params: CoverParams }) {
                 y1={y}
                 x2={w}
                 y2={y}
-                stroke={isAmber ? ACCENT : NEUTRAL}
+                stroke={isAmber ? ACCENT : pal.neutral}
                 strokeWidth={isAmber ? 6 : 2.5}
               />
             )
@@ -180,7 +233,7 @@ function Pattern({ params }: { params: CoverParams }) {
             width={size}
             height={size}
             transform={`rotate(${rot} ${cx0} ${cy0})`}
-            stroke={NEUTRAL}
+            stroke={pal.neutral}
           />
           <circle cx={cx1} cy={cy1} r={size * 0.42} stroke={ACCENT} />
           <line
@@ -188,7 +241,7 @@ function Pattern({ params }: { params: CoverParams }) {
             y1={BAND_BOTTOM - 20}
             x2={W - PAD}
             y2={BAND_TOP + 20}
-            stroke={NEUTRAL_SOFT}
+            stroke={pal.neutralSoft}
             strokeWidth={2}
           />
         </g>
@@ -201,12 +254,26 @@ interface Props {
   title: string
   author: string
   className?: string
+  // Optional per-book borrowing from the real cover (color + typeface only).
+  background?: string
+  ink?: string
+  titleFont?: string
 }
 
-export default function GeneratedBookCover({ title, author, className }: Props) {
+export default function GeneratedBookCover({
+  title,
+  author,
+  className,
+  background,
+  ink,
+  titleFont,
+}: Props) {
   const params = coverParams(title, author)
+  const pal = buildPalette(background, ink)
   const titleLines = wrapText(title, 16, 4)
   const authorLines = wrapText(author, 22, 2)
+  const titleFontFamily =
+    (titleFont && (FONT_MAP[titleFont] ?? titleFont)) || "var(--font-serif)"
 
   // Title block grows upward from a fixed baseline so longer titles stay anchored
   // above the author line rather than colliding with the pattern.
@@ -223,9 +290,9 @@ export default function GeneratedBookCover({ title, author, className }: Props) 
       aria-label={`${title} by ${author}`}
       preserveAspectRatio="xMidYMid slice"
     >
-      <rect x={0} y={0} width={W} height={H} fill={BASE} />
+      <rect x={0} y={0} width={W} height={H} fill={pal.base} />
 
-      <Pattern params={params} />
+      <Pattern params={params} pal={pal} />
 
       {/* Amber rule dividing the pattern band from the title block. */}
       <line x1={PAD} y1={272} x2={W - PAD} y2={272} stroke={ACCENT} strokeWidth={2} />
@@ -233,10 +300,10 @@ export default function GeneratedBookCover({ title, author, className }: Props) 
       <text
         x={PAD}
         y={titleTop}
-        fontFamily="var(--font-serif), Georgia, serif"
+        fontFamily={`${titleFontFamily}, Georgia, serif`}
         fontSize={titleSize}
         fontWeight={500}
-        fill="#eeeeee"
+        fill={pal.ink}
       >
         {titleLines.map((line, i) => (
           <tspan key={i} x={PAD} dy={i === 0 ? 0 : titleLead}>
@@ -251,7 +318,7 @@ export default function GeneratedBookCover({ title, author, className }: Props) 
         fontFamily="var(--font-serif), Georgia, serif"
         fontSize={15}
         fontStyle="italic"
-        fill="#8a8a8a"
+        fill={pal.subInk}
       >
         {authorLines.map((line, i) => (
           <tspan key={i} x={PAD} dy={i === 0 ? 0 : 20}>

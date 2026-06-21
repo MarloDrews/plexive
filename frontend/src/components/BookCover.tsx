@@ -8,7 +8,7 @@
 // LAYOUT_STANDARD.md.
 
 import { useState } from "react"
-import { resolveBookCover } from "@/lib/bookCover"
+import { resolveBookCover, generatedCoverStyle } from "@/lib/bookCover"
 import { fcStr } from "@/types/post"
 import GeneratedBookCover from "./GeneratedBookCover"
 
@@ -30,6 +30,7 @@ export default function BookCover({ feedCard, className, showCredit = false }: P
   const decision = resolveBookCover(feedCard)
   const title = fcStr(feedCard, "title")
   const author = fcStr(feedCard, "author")
+  const style = generatedCoverStyle(feedCard)
   const showReal = decision.kind === "real" && !imgFailed
 
   const box = (
@@ -44,7 +45,14 @@ export default function BookCover({ feedCard, className, showCredit = false }: P
           onError={() => setImgFailed(true)}
         />
       ) : (
-        <GeneratedBookCover title={title} author={author} className="w-full h-full" />
+        <GeneratedBookCover
+          title={title}
+          author={author}
+          className="w-full h-full"
+          background={style.background}
+          ink={style.ink}
+          titleFont={style.titleFont}
+        />
       )}
     </div>
   )
