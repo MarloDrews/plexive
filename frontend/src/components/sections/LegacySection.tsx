@@ -11,7 +11,7 @@ interface Props {
 export default function LegacySection({ content }: Props) {
   return (
     <div className="px-6 py-8 flex flex-col gap-4">
-      <SectionLabel>Legacy</SectionLabel>
+      <SectionLabel>What They Left Behind</SectionLabel>
       <p className="prose-post">{content.body}</p>
       {content.present_day_impact && (
         <div className="bg-(--accent)/10 border border-(--accent)/25 rounded-lg px-4 py-3">

@@ -19,7 +19,7 @@ interface Props {
 export default function LifeArcSection({ content, isUserContent }: Props) {
   return (
     <div className="px-6 py-8">
-      <SectionLabel className="mb-4">Life Arc</SectionLabel>
+      <SectionLabel className="mb-4">The Shape of a Life</SectionLabel>
       {content.visual_svg && (
         <SvgBlock svg={content.visual_svg} isUserContent={isUserContent} className="w-full max-w-[400px] mx-auto my-2" />
       )}
