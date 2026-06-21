@@ -99,9 +99,26 @@ earn their place by showing something the text cannot.
 
 ---
 
-## 7. Pacing
+## 7. Pacing and per-format count
 
-- One or two sourced images in a rich post, used as a rest, not a gallery.
-  Portraits of key figures count toward that.
-- If no licensed image fits the subject, the post is all drawn visuals. That is a
-  normal, good outcome, not a gap to fill with stock.
+How many sourced images a post carries is decided per format, in each format's
+own pass, by how image-bearing the subject is. It is not one number across the
+app. A concrete, person- or place-centered subject earns more images; an
+abstract one earns fewer or none. The counts below are the standing decisions so
+far.
+
+- Typographic formats (facts, concepts, questions, academy): one or two sourced
+  images in a rich post, used as a rest, not a gallery, and often zero, since
+  the subject is abstract and the drawn visuals carry the post. Portraits of key
+  figures count toward that.
+- People (a deliberate exception to the "one or two" above): besides the cover
+  portrait, aim for two to three verified, freely licensed sourced body images,
+  where the portrait-section image counts as one of them. Three is a ceiling for
+  a rich biography, not a target to fill. The two is a target, not a hard floor:
+  licensing in section 2 and the all-drawn fallback below outrank the count, so
+  fewer is correct when no fitting freely licensed image exists, and you never
+  add a stock or weakly sourced image to reach the number.
+- Books and stories: concrete enough to carry real body images too, but their
+  counts are settled in their own format passes, not assumed here.
+- If no licensed image fits the subject, the post is all drawn visuals. That is
+  a normal, good outcome, not a gap to fill with stock.

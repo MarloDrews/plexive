@@ -103,7 +103,10 @@ bar.
    field label already orients the reader, and tags are the network and filter
    system, which belongs at the foot of the post.
 
-Cover formats (books, people) may show their cover or portrait in the header; that
+Cover formats (books, people) place their cover or portrait into this same flat
+header. The header still opens flat for them: the headline appears exactly once,
+and the whole feed card is never reproduced as a bordered slab at the top of the
+detail page. The exact position of the cover or portrait within the flat header
 is settled when those formats get their own pass.
 
 ---
