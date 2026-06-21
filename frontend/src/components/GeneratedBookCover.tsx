@@ -260,11 +260,40 @@ function fitSize(lines: string[], cap: number, perChar: number): number {
   return Math.max(13, Math.min(cap, (W - 2 * PAD) / (longest * perChar)))
 }
 
-// The "real cover" layout: text only, nothing else. Used when a book borrows a
-// background from its real cover, so the generated cover evokes it the way the
-// real one is set, centered title in the upper third and author below, with no
-// pattern and no rules. Title and author are in the borrowed (similar) typeface;
-// font-family goes through style so the CSS var resolves in the browser.
+// Short words a cover sets smaller (small caps), the way "FAST and SLOW" puts a
+// small "and" between the big words.
+const CONNECTORS = new Set([
+  "and", "&", "or", "of", "the", "a", "an", "to", "in", "on", "for", "with", "vs", "vs.",
+])
+const isConnector = (w: string) => CONNECTORS.has(w.replace(/[.,;:]/g, "").toLowerCase())
+
+// Title display lines: break at commas first (a natural title phrase break the way
+// real covers do, e.g. "Thinking," / "Fast and Slow"), then wrap any long phrase.
+function splitTitleLines(title: string, maxChars: number, maxLines: number): string[] {
+  const phrases = title.split(",").map((s) => s.trim()).filter(Boolean)
+  const out: string[] = []
+  phrases.forEach((p, i) => {
+    const phrase = i < phrases.length - 1 ? `${p},` : p
+    if (phrase.length <= maxChars) out.push(phrase)
+    else for (const l of wrapText(phrase, maxChars, maxLines)) out.push(l)
+  })
+  return out.slice(0, maxLines)
+}
+
+// Effective width of a line in character units, counting connector words narrower
+// (they render smaller), so the title is not shrunk more than necessary.
+function lineWidth(line: string, connectorScale: number): number {
+  return line
+    .split(/\s+/)
+    .reduce((n, w, i) => n + (i > 0 ? 1 : 0) + w.length * (isConnector(w) ? connectorScale : 1), 0)
+}
+
+// The "real cover" layout: text only, nothing else. The title is centered in the
+// upper third, broken at commas and with connector words ("and", "of", ...) set
+// smaller the way covers do; the author is centered below. Both in the borrowed
+// (similar) typeface. Used when a book borrows a real cover's background, so the
+// generated cover evokes it. font-family goes through style so the CSS var resolves
+// in the browser.
 function CoverText({
   title,
   author,
@@ -276,32 +305,43 @@ function CoverText({
   pal: Palette
   fontFamily: string
 }) {
-  const titleLines = wrapText(title, 13, 3)
-  const titleSize = fitSize(titleLines, 30, CAP_W)
-  const titleLead = titleSize * 1.18
-  // Vertically center the title block on ~32% of the height.
-  const titleBase = H * 0.32 - ((titleLines.length - 1) * titleLead) / 2 + titleSize * 0.34
+  const connectorScale = 0.62
+  const lines = splitTitleLines(title, 16, 4)
+  const widest = Math.max(1, ...lines.map((l) => lineWidth(l, connectorScale)))
+  const titleSize = Math.max(14, Math.min(32, (W - 2 * PAD) / (widest * CAP_W)))
+  const connectorSize = Math.round(titleSize * connectorScale)
+  const titleLead = titleSize * 1.22
+  // Vertically center the title block on ~33% of the height.
+  const titleBase = H * 0.33 - ((lines.length - 1) * titleLead) / 2 + titleSize * 0.34
 
   const authorLines = wrapText(author, 18, 2)
   const authorSize = fitSize(authorLines, 16, CAP_W * 0.92)
   const authorLead = authorSize * 1.2
-  const authorBase = H * 0.72
+  const authorBase = H * 0.7
 
   const fam = `${fontFamily}, Georgia, serif`
   return (
     <>
       <text
-        x={W / 2}
-        y={titleBase}
         textAnchor="middle"
+        xmlSpace="preserve"
         style={{ fontFamily: fam, letterSpacing: "0.06em" }}
         fontSize={titleSize}
         fontWeight={500}
         fill={pal.ink}
       >
-        {titleLines.map((line, i) => (
-          <tspan key={i} x={W / 2} dy={i === 0 ? 0 : titleLead}>
-            {line}
+        {lines.map((line, li) => (
+          <tspan
+            key={li}
+            x={W / 2}
+            y={li === 0 ? titleBase : undefined}
+            dy={li === 0 ? 0 : titleLead}
+          >
+            {line.split(/\s+/).map((w, wi) => (
+              <tspan key={wi} fontSize={isConnector(w) ? connectorSize : titleSize}>
+                {wi > 0 ? ` ${w}` : w}
+              </tspan>
+            ))}
           </tspan>
         ))}
       </text>

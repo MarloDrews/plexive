@@ -157,9 +157,10 @@ so they always read.
 
 When a `background` is borrowed, the generated cover switches to a text-only
 layout that echoes how a real cover is set: the title centered in the upper third
-and the author centered below, in the borrowed typeface, with no pattern and no
-rules. Books without a borrowed background keep the default dark Stage cover with
-its abstract pattern.
+(broken at commas, with connector words like "and" and "of" set smaller, the way
+covers do) and the author centered below, in the borrowed typeface, with no
+pattern and no rules. Books without a borrowed background keep the default dark
+Stage cover with its abstract pattern.
 
 Carry the hint per book in `feed_card.cover.generated_style` (tier-2 only; omit
 it to keep the default dark Stage cover):
