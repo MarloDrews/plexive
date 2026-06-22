@@ -1,32 +1,23 @@
 import type { TakeawayContent } from "../../types/post"
 import SvgBlock from "../SvgBlock"
+import SectionLabel from "../SectionLabel"
 
 interface Props {
   content: TakeawayContent
   isUserContent: boolean
 }
 
+// The Books closing kernel (REQUIRED). Plain shared section treatment, like every
+// other prose section: the accent caps heading then prose body. No filled block, no
+// bold, no border (heart is the one accent-bordered key section, LAYOUT_STANDARD s7).
+// The framing field (framework | question) no longer changes the rendering.
 export default function TakeawaySection({ content, isUserContent }: Props) {
-  if (content.framing === "framework") {
-    return (
-      <div className="px-6 py-8">
-        <div className="bg-(--accent)/10 border border-(--accent)/40 rounded-card px-5 py-5">
-          <p className="prose-post text-ink font-medium">{content.body}</p>
-          {content.visual_svg && (
-            <SvgBlock svg={content.visual_svg} isUserContent={isUserContent} className="max-w-[360px] mx-auto mt-4" color="inherit" />
-          )}
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className="px-6 py-8">
-      <p className="text-xl font-semibold text-(--accent) leading-snug text-center">
-        {content.body}
-      </p>
+      <SectionLabel className="mb-3">What Stays With You</SectionLabel>
+      <p className="prose-post">{content.body}</p>
       {content.visual_svg && (
-        <SvgBlock svg={content.visual_svg} isUserContent={isUserContent} className="max-w-[360px] mx-auto mt-4" color="inherit" />
+        <SvgBlock svg={content.visual_svg} isUserContent={isUserContent} className="w-full max-w-[360px] mx-auto mt-4" />
       )}
     </div>
   )
