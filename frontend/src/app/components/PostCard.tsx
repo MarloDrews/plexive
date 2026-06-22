@@ -492,14 +492,21 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
           ) : post.format === "questions" && fc ? (
             <div className="card relative overflow-hidden px-6 py-7 flex flex-col gap-4">
               <SlabAccent />
-              {fcStr(fc, "field") && (
-                <p className="label-caps text-(--accent)">{fcStr(fc, "field")}</p>
-              )}
+              {/* Field line: field label left, small glyph at its right end, the
+                  same as the facts/concepts cards (LAYOUT_STANDARD s2.1). */}
+              <div className="flex items-start justify-between gap-3">
+                {fcStr(fc, "field") && (
+                  <p className="label-caps text-(--accent)">{fcStr(fc, "field")}</p>
+                )}
+                <FieldGlyph cv={fc.card_visual as CardVisual | undefined} isUserContent={post.is_user_content} />
+              </div>
               <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
                 {fcStr(fc, "the_question")}
               </h2>
-              {fcStr(fc, "framing_line") && (
-                <p className="font-serif italic text-base text-ink-body leading-relaxed">{fcStr(fc, "framing_line")}</p>
+              {/* Dek: the one-line italic gloss (LAYOUT_STANDARD s2), the same
+                  treatment concepts/people/books use. */}
+              {fcStr(fc, "one_line") && (
+                <p className="font-serif italic text-base text-ink-body leading-relaxed">{fcStr(fc, "one_line")}</p>
               )}
 
               {Array.isArray(fc.teasers) && (fc.teasers as string[]).length > 0 && (
