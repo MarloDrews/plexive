@@ -274,9 +274,13 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
   // formats place their image differently on purpose (LAYOUT_STANDARD s3).
   const coverFlat = !!post && post.format === "people"
   const coverBooks = !!post && post.format === "books"
+  // Stories is the third card look (LAYOUT_STANDARD s1): a real lead image as a
+  // full-width top band when one fits, else the field glyph; the era as the
+  // context line; the headline once; no dek (the headline is a narrative opening).
+  const coverStories = !!post && post.format === "stories"
   // Every flat header (typographic + cover formats) shares the top-bar format
   // label, the end-of-post tags, and the headline-section filter.
-  const flatHeader = typographic || coverFlat || coverBooks
+  const flatHeader = typographic || coverFlat || coverBooks || coverStories
 
   return (
     <div className="h-[100dvh] bg-surface-0 flex justify-center">
@@ -507,6 +511,40 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                         {fcStr(post.feed_card, "one_line")}
                       </p>
                     )}
+                    <HeaderMeta post={post} />
+                  </div>
+                ) : coverStories ? (
+                  /* Stories header (LAYOUT_STANDARD s1/s3): the third card look
+                     mirrored at the top of the detail page. A real lead image as
+                     a full-width top band when one fits (not a side cover, because
+                     headlines are long), else the field glyph keyed on the field
+                     (tags[0]) at the right of the field line. The era is the
+                     context line above the headline; the serif headline appears
+                     once (post.title == feed_card.headline via the seed title
+                     derivation); then the meta row. No dek, because the headline
+                     is a narrative opening. */
+                  <div className="relative">
+                    {fcStr(post.feed_card, "lead_image_url") ? (
+                      <img
+                        src={fcStr(post.feed_card, "lead_image_url")}
+                        alt=""
+                        className="w-full h-52 object-cover"
+                        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none" }}
+                      />
+                    ) : (
+                      <div className="px-6 pt-4 flex justify-end">
+                        <FieldGlyph
+                          cv={(post.feed_card as { card_visual?: CardVisual }).card_visual}
+                          isUserContent={post.is_user_content}
+                        />
+                      </div>
+                    )}
+                    {fcStr(post.feed_card, "era_label") && (
+                      <p className="px-6 pt-4 label-caps text-(--accent)">
+                        {fcStr(post.feed_card, "era_label")}
+                      </p>
+                    )}
+                    <HeadlineSection content={post.title} />
                     <HeaderMeta post={post} />
                   </div>
                 ) : (
