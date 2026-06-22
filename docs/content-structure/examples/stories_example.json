@@ -6,6 +6,14 @@
   ],
   "connections": [
     {
+      "format": "people",
+      "ref": {
+        "name": "Johannes Vermeer",
+        "birth_year": 1632
+      },
+      "featured": false
+    },
+    {
       "format": "concepts",
       "ref": {
         "title": "Motivated Reasoning"
@@ -18,23 +26,20 @@
         "title": "The Forger's Spell",
         "author": "Edward Dolnick"
       },
-      "featured": true
+      "featured": false
     }
   ],
   "feed_card": {
     "era_label": "1945",
     "headline": "In the summer of 1945, a Dutch painter sat in an Amsterdam cell, charged with selling a Vermeer to Hermann Göring. A conviction could carry the death penalty.",
     "lead_image_url": "https://commons.wikimedia.org/wiki/Special:FilePath/EmmausgangersVanMeegeren1937.jpg",
-    "card_visual": {
-      "svg": "<svg viewBox='0 0 56 32' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='var(--accent)' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><!-- Temporary field glyph for tags[0]=art-history; stand-in until the field-to-glyph set exists (SVG_STANDARD s6, ROADMAP). Field-owned, not a per-post glyph. --><rect x='6' y='5' width='44' height='22' rx='4'/><circle cx='17' cy='13' r='2.5'/><path d='M9 26 L21 15 L29 21 L38 12 L47 22'/></svg>"
-    },
     "teasers": [
       "A masterpiece the experts adored",
       "Old masters changing hands in wartime",
       "A nation hungry for a lost Vermeer"
     ],
     "category": "true crime",
-    "post_reading_time_min": 12,
+    "post_reading_time_min": 9,
     "post_difficulty": 2
   },
   "sections": [
@@ -51,7 +56,7 @@
         "location": "Amsterdam and Rotterdam, Netherlands",
         "category": "true crime",
         "sources_reliability": 2,
-        "post_reading_time_min": 12,
+        "post_reading_time_min": 9,
         "post_difficulty": 2
       }
     },
@@ -79,7 +84,10 @@
         },
         {
           "title": "Into Göring's Hands",
-          "body": "Hermann Göring amassed art on an enormous scale, and his agents bought and looted across occupied Europe for his collection. In 1942 one of the newly found Vermeers, Christ with the Adulteress, reached him through a dealer named Alois Miedl. The price was around 1.65 million guilders. Göring hung it among his greatest prizes at Carinhall, his estate outside Berlin, a Vermeer almost no one else had ever seen. The painting had passed from a Dutch studio to the second most powerful man in the Reich."
+          "body": "Hermann Göring amassed art on an enormous scale, and his agents bought and looted across occupied Europe for his collection. In 1942 one of the newly found Vermeers, Christ with the Adulteress, reached him through a dealer named Alois Miedl. The price was around 1.65 million guilders. Göring hung it among his greatest prizes at Carinhall, his estate outside Berlin, a Vermeer almost no one else had ever seen. The painting had passed from a Dutch studio to the second most powerful man in the Reich.",
+          "image_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Bundesarchiv_Bild_102-13805,_Hermann_Göring.jpg",
+          "image_caption": "Hermann Göring in 1932. His agents bought, pressured, and looted art across occupied Europe for his collection.",
+          "image_attribution": "Unknown photographer, \"Hermann Göring\" (1932), CC BY-SA 3.0 DE (Bundesarchiv, Bild 102-13805, via Wikimedia Commons)"
         },
         {
           "title": "The Reckoning",
@@ -206,8 +214,7 @@
           "role": "The forger on trial",
           "one_line": "A scorned Dutch painter who fooled the experts who had dismissed him, then confessed to save his own life.",
           "lifespan": "1889-1947",
-          "birth_year": 1889,
-          "featured": true
+          "birth_year": 1889
         },
         {
           "name": "Abraham Bredius",
