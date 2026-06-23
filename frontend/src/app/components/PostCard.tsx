@@ -574,17 +574,31 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
           ) : post.format === "academy" && fc ? (
             <div className="card relative overflow-hidden px-6 py-7 flex flex-col gap-4">
               <SlabAccent />
-              {fcStr(fc, "field") && (
-                <p className="label-caps text-(--accent)">{fcStr(fc, "field")}</p>
-              )}
-              <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
-                {fcStr(fc, "title") || post.title}
-              </h2>
-              {(fcStr(fc, "authors_compact") || fcStr(fc, "venue")) && (
+              {/* Typographic card like facts/concepts: a field line (field label
+                  left, small field glyph at its right end), then the serif paper
+                  title. */}
+              <div className="flex flex-col gap-1">
+                <div className="flex items-start justify-between gap-3">
+                  {fcStr(fc, "field") && (
+                    <p className="label-caps text-(--accent)">{fcStr(fc, "field")}</p>
+                  )}
+                  <FieldGlyph cv={fc.card_visual as CardVisual | undefined} isUserContent={post.is_user_content} />
+                </div>
+                <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
+                  {fcStr(fc, "title") || post.title}
+                </h2>
+              </div>
+              {/* Context line: short citation, the publication year, and venue. */}
+              {(fcStr(fc, "authors_compact") || fcNum(fc, "published_year") > 0 || fcStr(fc, "venue")) && (
                 <p className="text-xs text-ink-muted font-mono">
-                  {[fcStr(fc, "authors_compact"), fcStr(fc, "venue")].filter(Boolean).join(" · ")}
+                  {[
+                    fcStr(fc, "authors_compact"),
+                    fcNum(fc, "published_year") > 0 ? String(fcNum(fc, "published_year")) : "",
+                    fcStr(fc, "venue"),
+                  ].filter(Boolean).join(" · ")}
                 </p>
               )}
+              {/* Dek: the core finding in one technical sentence (key_finding_one_line). */}
               {fcStr(fc, "key_finding_one_line") && (
                 <p className="font-serif italic text-base text-ink-body leading-relaxed">
                   {fcStr(fc, "key_finding_one_line")}

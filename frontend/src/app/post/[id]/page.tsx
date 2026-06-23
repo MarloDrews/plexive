@@ -266,6 +266,12 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
   const typographic =
     !!post &&
     (post.format === "facts" || post.format === "concepts" || post.format === "questions")
+  // Academy is the second typographic variant (LAYOUT_STANDARD s1): the same flat,
+  // no-slab, no-cover header as facts/concepts (field line + glyph + headline),
+  // with a citation context line and the key_finding_one_line dek. Kept separate
+  // from `typographic` only because it reads different feed-card fields; it is NOT
+  // a cover format and shares no centered-cover/portrait behavior.
+  const typographicAcademy = !!post && post.format === "academy"
   // Cover formats use the flat (no-slab) header: people opens straight into the
   // page like facts/concepts, with a portrait + context fields instead of a glyph
   // field line (LAYOUT_STANDARD s1/s3). People places the portrait to the left of
@@ -279,7 +285,7 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
   const coverStories = !!post && post.format === "stories"
   // Every flat header (typographic + cover formats) shares the top-bar format
   // label, the end-of-post tags, and the headline-section filter.
-  const flatHeader = typographic || coverFlat || coverBooks || coverStories
+  const flatHeader = typographic || typographicAcademy || coverFlat || coverBooks || coverStories
 
   return (
     <div className="h-[100dvh] bg-surface-0 flex justify-center">
@@ -418,6 +424,48 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                     {/* Meta row — round avatar + creator, reading time,
                         difficulty. Reads the same author fields as the feed
                         card footer, so the two always match. */}
+                    <HeaderMeta post={post} />
+                  </div>
+                ) : typographicAcademy ? (
+                  /* Academy typographic header (LAYOUT_STANDARD s1): the same flat
+                     structure as facts/concepts — a field line (field label left,
+                     small field glyph at its right end), the paper title as the
+                     single serif headline, then a citation context line
+                     (authors_compact / published_year / venue), the
+                     key_finding_one_line dek, and the shared meta row. No slab, no
+                     cover. The full bibliographic record follows in the paper_card
+                     section below. */
+                  <div className="relative">
+                    <div className="px-6 pt-4 flex items-start justify-between gap-3">
+                      {fcStr(post.feed_card, "field") && (
+                        <p className="label-caps text-(--accent)">
+                          {fcStr(post.feed_card, "field")}
+                        </p>
+                      )}
+                      <FieldGlyph
+                        cv={(post.feed_card as { card_visual?: CardVisual }).card_visual}
+                        isUserContent={post.is_user_content}
+                      />
+                    </div>
+                    <HeadlineSection content={post.title} />
+                    {(fcStr(post.feed_card, "authors_compact") ||
+                      fcNum(post.feed_card, "published_year") > 0 ||
+                      fcStr(post.feed_card, "venue")) && (
+                      <p className="px-6 -mt-1 text-xs text-ink-muted font-mono">
+                        {[
+                          fcStr(post.feed_card, "authors_compact"),
+                          fcNum(post.feed_card, "published_year") > 0
+                            ? String(fcNum(post.feed_card, "published_year"))
+                            : "",
+                          fcStr(post.feed_card, "venue"),
+                        ].filter(Boolean).join(" · ")}
+                      </p>
+                    )}
+                    {fcStr(post.feed_card, "key_finding_one_line") && (
+                      <p className="px-6 mt-3 mb-5 font-serif italic text-base text-ink-body leading-relaxed">
+                        {fcStr(post.feed_card, "key_finding_one_line")}
+                      </p>
+                    )}
                     <HeaderMeta post={post} />
                   </div>
                 ) : coverFlat ? (
@@ -613,12 +661,17 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                 {/* Sections — for typographic formats the headline now lives in
                     the header above, so drop any headline section to avoid doubling
                     it (concepts has none, so this is a no-op there). Questions'
-                    the_question is likewise the header headline, so drop it too. */}
+                    the_question is likewise the header headline, so drop it too —
+                    but ONLY for questions: Academy also carries a the_question
+                    section, where it is a real body section (The Open Problem), not
+                    the page title, so it must render. */}
                 <SectionRenderer
                   sections={
                     flatHeader
                       ? post.sections.filter(
-                          (s) => s.type !== "headline" && s.type !== "the_question"
+                          (s) =>
+                            s.type !== "headline" &&
+                            !(s.type === "the_question" && post.format === "questions")
                         )
                       : post.sections
                   }
