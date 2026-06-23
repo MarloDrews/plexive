@@ -87,10 +87,11 @@ These section types are used across multiple formats with **identical** content 
 
 ### Universal Post Metadata
 
-Two fields appear in **every** format's feed card and `at_a_glance` section, with identical meaning:
+`post_difficulty` appears in **every** format's feed card and `at_a_glance` section, with identical meaning:
 
-- `post_reading_time_min` — integer, minutes of reading the post itself (not the underlying material)
 - `post_difficulty` — 1, 2, or 3, where 1 = accessible, 2 = moderate, 3 = demanding. Note: for Academy, the scale shifts to expert-level (1 = adjacent fields, 3 = subfield specialist)
+
+Reading time is computed, not authored. The card footer and the at-a-glance reading time are derived at render time from the post's reader-facing text: the total word count divided by 230 words per minute, rounded to the nearest minute, with a floor of 1. All reader-facing text counts: section bodies, chapter titles and bodies, the_turn / setting / aftermath bodies, what_it_means, unanswered, historical_context, quiz questions, options, and explanations, image captions, cast roles and one-line descriptions, source labels, and the at-a-glance string values. Non-text interaction time is deliberately not modeled, so one rule holds across all formats. Posts do not carry a post_reading_time_min field; a stored estimate drifts from the content and is not used.
 
 ### `at_a_glance` — Same Type, Format-Specific Fields
 
@@ -155,6 +156,6 @@ The flexible section model only works if the frontend renderer is **robust**. Th
 
 ### What requires migration (rare cases)
 
-- Changing a field's *data type* (e.g. `post_reading_time_min` from integer to string) — would need to update all existing posts
+- Changing a field's *data type* (e.g. `post_difficulty` from integer to string) — would need to update all existing posts
 - Renaming a section type string (e.g. `core_ideas` → `key_ideas`) — would need a one-time SQL `UPDATE` to rewrite the type names in existing JSON
 - These cases should be avoided; if they occur, a simple migration script can update all rows in one pass
