@@ -2,7 +2,7 @@
 
 A free, ad-free, open-source app that replaces doomscrolling with long-form knowledge.
 
-Plexive keeps the familiar feed format of a social app, but fills it with content worth your time: book summaries, facts, profiles of people, explained concepts, open questions, and narrative stories. It is community-driven and meant to stay permanently free, in the spirit of [Lichess](https://lichess.org). Plexive is licensed under AGPL-3.0.
+Plexive keeps the familiar feed format of a social app, but fills it with content worth your time: book summaries, facts, profiles of people, explained concepts, open questions, and narrative stories. It is community-driven and meant to stay permanently free. Plexive is licensed under AGPL-3.0.
 
 <!-- TODO: add screenshots or a short demo clip here. -->
 
