@@ -37,7 +37,7 @@
   ],
   "feed_card": {
     "field": "Biology",
-    "headline": "Most mammals get about 1 billion heartbeats in a lifetime, whether they live two years or seventy.",
+    "headline": "Most mammals get about 1 billion heartbeats in a lifetime, whether they live 2 years or 70.",
     "card_visual": {
       "svg": "<svg viewBox='0 0 56 32' xmlns='http://www.w3.org/2000/svg' fill='none'><path d='M2 16 H18 L22 16 L26 6 L32 26 L37 16 H54' stroke='var(--accent)' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/></svg>"
     },
@@ -52,7 +52,7 @@
     {
       "type": "headline",
       "order": 1,
-      "content": "Most mammals get about 1 billion heartbeats in a lifetime, whether they live two years or seventy."
+      "content": "Most mammals get about 1 billion heartbeats in a lifetime, whether they live 2 years or 70."
     },
     {
       "type": "see_it",
@@ -64,7 +64,7 @@
     {
       "type": "surprises",
       "order": 3,
-      "content": "Measured in years, lifespans look random. A shrew gets two, a cat fifteen, an elephant sixty-five. Now count the heartbeats those years contain. They come out almost the same, near a billion in every case. So the year, the unit we trust, hides what is going on underneath. A small animal is not short on time so much as quick to spend it. The shrew packs a week of our heart-work into a single day."
+      "content": "Measured in years, lifespans look random. A shrew gets 2, a cat 15, an elephant 65. Now count the heartbeats those years contain. They come out almost the same, near a billion in every case. So the year, the unit we trust, hides what is going on underneath. A small animal is not short on time so much as quick to spend it. The shrew packs a week of our heart-work into a single day."
     },
     {
       "type": "tangible",
@@ -73,7 +73,7 @@
         "items": [
           "At one beat every second without stopping, a billion beats would take 31 years and 8 months.",
           "A typical adult passes their billionth heartbeat at around age 27.",
-          "An elephant spends its whole billion over about 63 years, while a mouse burns through it in three."
+          "An elephant spends its whole billion over about 63 years, while a mouse burns through it in 3."
         ],
         "visual_svg": "<svg viewBox='0 33 400 184' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='52' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>One human life</text><rect x='40' y='140' width='320' height='22' rx='11' stroke='currentColor' stroke-width='2' opacity='0.4'/><rect x='40' y='140' width='102' height='22' rx='11' fill='var(--accent)' opacity='0.22'/><line x1='142' y1='116' x2='142' y2='186' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><text x='142' y='108' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='700' text-anchor='middle'>1 billionth beat</text><text x='142' y='204' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>age 27</text><text x='251' y='132' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='middle'>beyond the budget</text><text x='42' y='204' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='start'>birth</text><text x='358' y='204' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='end'>~80 yrs</text></svg>"
       }
@@ -87,12 +87,12 @@
       "type": "story",
       "order": 7,
       "content": {
-        "body": "In 1883 the German physiologist Max Rubner offered a tidy reason big animals burn energy slowly: they shed heat through their skin. Metabolism should then track surface area and scale as mass to the two-thirds power. The logic was clean and it held the field for fifty years. Then in 1932 Max Kleiber, a Swiss chemist measuring oxygen use in animals from rats to oxen at a California agricultural station, found his data would not sit on Rubner's line. Metabolism scaled as mass to the three-quarter power. Heart rate ran as its mirror image, falling as mass to the negative one-quarter power. Doubling an animal's weight drops its pulse by about sixteen percent. Why three-quarters and not two-thirds, nobody could say, and the exponent went unexplained for sixty-five years. In 1997 the physicist Geoffrey West, working with biologists James Brown and Brian Enquist, pulled the number out of the body's plumbing. Blood vessels branch like a fractal tree that fills the body and ends in capillaries of one fixed size. That single constraint forces the three-quarter law. The same year the cardiologist Herbert Levine multiplied heart rate by lifespan across fifteen species, watched the products gather near a billion, and gave the pattern its name.",
+        "body": "In 1883 the German physiologist Max Rubner offered a tidy reason big animals burn energy slowly: they shed heat through their skin. Metabolism should then track surface area and scale as mass to the 2/3 power. The logic was clean and it held the field for 50 years. Then in 1932 Max Kleiber, a Swiss chemist measuring oxygen use in animals from rats to oxen at a California agricultural station, found his data would not sit on Rubner's line. Metabolism scaled as mass to the 3/4 power. Heart rate ran as its mirror image, falling as mass to the negative 1/4 power. Doubling an animal's weight drops its pulse by about 16%. Why 3/4 and not 2/3, nobody could say, and the exponent went unexplained for 65 years. In 1997 the physicist Geoffrey West, working with biologists James Brown and Brian Enquist, pulled the number out of the body's plumbing. Blood vessels branch like a fractal tree that fills the body and ends in capillaries of one fixed size. That single constraint forces the 3/4 law. The same year the cardiologist Herbert Levine multiplied heart rate by lifespan across 15 species, watched the products gather near a billion, and gave the pattern its name.",
         "key_figures": [
           {
             "name": "Max Kleiber",
             "role": "Found the scaling law",
-            "one_line": "In 1932 his measurements showed animal metabolism scaling at three-quarters of body mass.",
+            "one_line": "In 1932 his measurements showed animal metabolism scaling at 3/4 of body mass.",
             "lifespan": "1893-1976",
             "birth_year": 1893,
             "featured": false
@@ -100,7 +100,7 @@
           {
             "name": "Geoffrey West",
             "role": "Derived it from network geometry",
-            "one_line": "Trained as a physicist, he showed in 1997 that the three-quarter exponent falls straight out of the fractal way blood vessels branch.",
+            "one_line": "Trained as a physicist, he showed in 1997 that the 3/4 exponent falls straight out of the fractal way blood vessels branch.",
             "lifespan": "born 1940",
             "birth_year": 1940,
             "featured": true
@@ -109,7 +109,7 @@
             "name": "Herbert J. Levine",
             "birth_year": 1928,
             "role": "Named the heartbeat budget",
-            "one_line": "The cardiologist who brought the billion-beat budget into medicine, plotting heart rate against lifespan across fifteen species in 1997.",
+            "one_line": "The cardiologist who brought the billion-beat budget into medicine, plotting heart rate against lifespan across 15 species in 1997.",
             "featured": false
           }
         ],
@@ -122,19 +122,19 @@
       "content": [
         {
           "title": "Modern humans live past the biological budget",
-          "body": "A human heart at seventy beats a minute over eighty years runs up about three billion beats, three times what most mammals get. The hearts themselves are nothing special. At 70 bpm we sit right where the formula puts an animal our size. What moved was lifespan. Before antibiotics, clean water, and safe childbirth, people typically died somewhere near thirty or forty, squarely on the universal billion. Those extra beats came from the decades modern survival added past the old budget.",
+          "body": "A human heart at 70 beats a minute over 80 years runs up about three billion beats, three times what most mammals get. The hearts themselves are nothing special. At 70 bpm we sit right where the formula puts an animal our size. What moved was lifespan. Before antibiotics, clean water, and safe childbirth, people typically died somewhere near 30 or 40, squarely on the universal billion. Those extra beats came from the decades modern survival added past the old budget.",
           "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><g stroke='currentColor' stroke-width='2' stroke-linecap='round' opacity='0.5'><line x1='60' y1='250' x2='370' y2='250'/><line x1='60' y1='250' x2='60' y2='40'/></g><line x1='70' y1='185' x2='360' y2='185' stroke='currentColor' stroke-width='1.5' opacity='0.4' stroke-dasharray='6 6'/><text x='70' y='178' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.65' text-anchor='start'>~1B budget</text><g fill='currentColor' opacity='0.85'><circle cx='110' cy='188' r='3.5'/><circle cx='175' cy='183' r='3.5'/><circle cx='245' cy='186' r='3.5'/><circle cx='320' cy='182' r='3.5'/></g><circle cx='210' cy='95' r='5.5' fill='var(--accent)'/><text x='210' y='82' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='700' text-anchor='middle'>Humans ~3B</text><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7'><text x='215' y='278' text-anchor='middle'>Mammals by size</text><text x='22' y='150' text-anchor='middle' transform='rotate(-90 22 150)'>Lifetime beats</text></g></svg>"
         },
         {
           "title": "Other primates beat the budget too, with no medicine to help",
-          "body": "Humans are not the only primates over the line. A 2023 study in Montpellier put the gray mouse lemur at about three billion lifetime beats. This sixty-gram primate lives a dozen years, three times what a rodent its size would spend. That high count, the study found, is what sets primates apart from other mammals their size, whatever the body weight. The advantage looks built into primate biology, not borrowed from medicine, though why has not been pinned down.",
+          "body": "Humans are not the only primates over the line. A 2023 study in Montpellier put the gray mouse lemur at about three billion lifetime beats. This 60-gram primate lives a dozen years, three times what a rodent its size would spend. That high count, the study found, is what sets primates apart from other mammals their size, whatever the body weight. The advantage looks built into primate biology, not borrowed from medicine, though why has not been pinned down.",
           "image_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Gray_Mouse_Lemur_1.JPG",
-          "image_caption": "The gray mouse lemur, a sixty-gram primate that runs up roughly three billion lifetime beats.",
-          "image_attribution": "Charles J. Sharp, \"Gray Mouse Lemur 1\", CC BY-SA 3.0 (Wikimedia Commons)"
+          "image_caption": "The gray mouse lemur, a 60-gram primate that runs up roughly three billion lifetime beats.",
+          "image_attribution": "Charles J. Sharp, “Gray Mouse Lemur 1”, CC BY-SA 3.0 (Wikimedia Commons)"
         },
         {
           "title": "Inside a single species, the rule turns over",
-          "body": "Across species, bigger means longer-lived. Within a species it reverses. A Great Dane is old at seven or eight. A Chihuahua often passes fifteen while weighing thirty times less. The same shows up in lab mice, where the larger strains die younger and extra growth hormone shortens life. The billion-beat rule describes the differences evolution built between species.",
+          "body": "Across species, bigger means longer-lived. Within a species it reverses. A Great Dane is old at 7 or 8. A Chihuahua often passes 15 while weighing 30 times less. The same shows up in lab mice, where the larger strains die younger and extra growth hormone shortens life. The billion-beat rule describes the differences evolution built between species.",
           "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='44' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Within one species</text><line x1='60' y1='250' x2='340' y2='250' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><rect x='110' y='177' width='60' height='73' rx='12' stroke='currentColor' stroke-width='2' opacity='0.5'/><text x='140' y='168' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>Great Dane</text><text x='140' y='219' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.8' text-anchor='middle'>7-8 yr</text><text x='140' y='270' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='middle'>~30 kg</text><rect x='230' y='95' width='60' height='155' rx='12' stroke='var(--accent)' stroke-width='2.5'/><text x='260' y='86' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>Chihuahua</text><text x='260' y='178' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>15+ yr</text><text x='260' y='270' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='middle'>~2 kg</text></svg>"
         }
       ]
@@ -173,24 +173,24 @@
         {
           "question": "Kleiber's 1932 data showed metabolism scales with body mass raised to which power?",
           "options": [
-            "One, so it scales linearly with mass",
-            "Two-thirds",
-            "Three-quarters",
+            "1, so it scales linearly with mass",
+            "2/3",
+            "3/4",
             "It does not depend on mass"
           ],
           "answer_index": 2,
-          "explanation": "Surface-area reasoning had predicted two-thirds. Kleiber's measurements landed on three-quarters, and the same exponent later turned up in plants and microbes, hinting at a deeper cause."
+          "explanation": "Surface-area reasoning had predicted 2/3. Kleiber's measurements landed on 3/4, and the same exponent later turned up in plants and microbes, hinting at a deeper cause."
         },
         {
           "question": "When a mammal's body mass doubles, its resting heart rate roughly...",
           "options": [
             "doubles",
-            "drops by about 16 percent",
+            "drops by about 16%",
             "halves",
             "stays the same"
           ],
           "answer_index": 1,
-          "explanation": "Heart rate falls as mass to the negative one-quarter power. Two to the negative one-quarter is about 0.84, so doubling the mass shaves roughly sixteen percent off the rate."
+          "explanation": "Heart rate falls as mass to the negative 1/4 power. 2 to the negative 1/4 is about 0.84, so doubling the mass shaves roughly 16% off the rate."
         },
         {
           "question": "Modern humans run up about three billion beats, three times the mammal budget. Why?",
@@ -215,15 +215,15 @@
           "explanation": "Great Danes die years before Chihuahuas, and larger mouse strains die younger than small ones. Within a species, bigger bodies tend to die sooner, the reverse of the cross-species trend."
         },
         {
-          "question": "What did West, Brown, and Enquist propose in 1997 to explain the three-quarter exponent?",
+          "question": "What did West, Brown, and Enquist propose in 1997 to explain the 3/4 exponent?",
           "options": [
             "Heat loss through skin surface sets the rate",
             "The branching geometry of blood vessels constrains the scaling",
-            "Random variation across many species averages to three-quarters",
+            "Random variation across many species averages to 3/4",
             "Cellular metabolism is intrinsically fractal"
           ],
           "answer_index": 1,
-          "explanation": "They modeled the circulatory system as a space-filling fractal network of branching tubes ending in fixed-size capillaries. That geometric constraint forces the three-quarter exponent, and the model has since been applied to plants and even cities."
+          "explanation": "They modeled the circulatory system as a space-filling fractal network of branching tubes ending in fixed-size capillaries. That geometric constraint forces the 3/4 exponent, and the model has since been applied to plants and even cities."
         }
       ]
     },

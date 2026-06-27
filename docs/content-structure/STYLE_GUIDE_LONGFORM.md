@@ -147,15 +147,40 @@ if a word shows up more in model output than in good human writing, cut it.
 
 **Symbols and quotation marks:**
 - Use the symbol, not the spelled-out word, wherever a symbol exists and renders
-  cleanly: % not “percent”, € not “euro”, $ and £ for currency. A symbol
-  takes a digit, never a spelled number: write 16%, not sixteen percent, and $100,
-  not one hundred dollars. This keeps figures scannable and matches how the reader
-  meets these quantities in the wild.
+  cleanly: % not “percent” and € not “euro”. A symbol takes a digit, never a
+  spelled number: write 16%, not sixteen percent. This keeps figures scannable and
+  matches how the reader meets these quantities in the wild.
+- Currency uses a symbol with a digit too ($ and £), shown to the reader as $100. A
+  bare $ collides with the inline math that some formats use in prose, so a literal
+  currency dollar is escaped with a backslash: the content string is \$100, and in
+  the JSON source, where the backslash is itself escaped, the field is typed as
+  \\$100 and the reader sees $100. Never write a bare unescaped $ for currency; the
+  bare $ is reserved for inline math.
 - Quotation uses typographic double quotes, the curly pair, for any quoted word or
   phrase: the patient hears “a 90% survival rate” and relaxes. Curly doubles are
   cleaner here than straight quotes, which must be escaped inside JSON, and they
   render as real typography. Use them in place of single quotes for quotation, and
   keep the ordinary apostrophe for possessives and contractions.
+  This covers a represented question or thought in direct form, such as the
+  substituted question “do I like Ford cars?”, but not indirect speech, such as
+  asks whether to buy Ford stock.
+
+**Numbers and fractions:**
+- Spell out one through twelve in flowing prose; use digits from 13 up. Always use
+  digits with a unit or a symbol (16%, 63 years, age 27, a 60-gram primate), and in
+  a comparison use digits for every item so the spread is scannable (a shrew gets 2,
+  a cat 15, an elephant 65), even ones below 13.
+- Keep words for idiomatic or rounded quantities: the rounded motif (a billion beats,
+  half a billion), a dozen, a thousand-beat pulse, and small ratios woven into prose
+  (three times heavier, the two effects). A number that opens a sentence is spelled
+  out, or the sentence is recast.
+- Fractions and technical exponents use the slash form, not words: the 3/4 power, the
+  2/3 power, the negative 1/4 power, and 1/4, 2/3, 3/4 as standalone fractions. This
+  is plain text, since most prose paths do not render math, so no LaTeX here. Loose
+  proportions stay words (half the evidence).
+- The lean is format-dependent: data-forward formats such as Facts tilt toward
+  digits, narrative formats tilt toward words. The principle is shared; the tilt is
+  per format.
 
 **The positive directive:** write the way a sharp, well-read person writes when
 they care about being understood and have no template in front of them.
@@ -400,6 +425,9 @@ Run this check on every generated post. Any hit is a rewrite, not a maybe.
 - [ ] Semicolons sparse, none standing in for an em-dash.
 - [ ] Symbols for percent and currency, written with digits (16%, $100), not
       spelled out; quotation in curly double quotes, not single or straight quotes.
+- [ ] Numbers follow the rule: digits from 13 up and with units or symbols, words
+      for idiomatic or rounded amounts; fractions and exponents in slash form
+      (the 3/4 power), not words.
 - [ ] No banned vocabulary; no contrast frames ("not X, it's Y"); no sweeping
       openers; no summarizing sign-off.
 - [ ] Sentence length varies; no flat run of same-length sentences.
