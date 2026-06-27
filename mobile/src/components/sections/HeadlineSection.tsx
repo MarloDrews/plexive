@@ -1,6 +1,7 @@
 import { Text, View } from "react-native"
 import { colors, fonts } from "../../theme/tokens"
 import { useAccent } from "../../lib/accent"
+import { unescapeDollar } from "../../lib/prose"
 
 // Port of frontend/src/components/sections/HeadlineSection.tsx
 // Digit runs (with optional scale words) are highlighted in the accent ink.
@@ -46,7 +47,7 @@ export default function HeadlineSection({ content }: { content: string }) {
           maxWidth: 320,
         }}
       >
-        <AccentNumbers text={content} accent={accent} />
+        <AccentNumbers text={unescapeDollar(content)} accent={accent} />
       </Text>
     </View>
   )

@@ -2,6 +2,7 @@ import { Text } from "react-native"
 import { SectionBlock, SectionLabel, Prose, SvgFigure, CaptionedImage } from "./primitives"
 import { fonts } from "../../theme/tokens"
 import { useAccent } from "../../lib/accent"
+import { unescapeDollar } from "../../lib/prose"
 
 // Port of frontend/src/components/sections/GreatestWorkSection.tsx
 
@@ -26,7 +27,7 @@ export default function GreatestWorkSection({
     <SectionBlock gap={12}>
       <SectionLabel>Greatest Work</SectionLabel>
       <Text style={{ fontFamily: fonts.serifMedium, fontSize: 19, lineHeight: 25, color: accent }}>
-        {content.title}
+        {unescapeDollar(content.title)}
       </Text>
       <Prose>{content.body}</Prose>
 

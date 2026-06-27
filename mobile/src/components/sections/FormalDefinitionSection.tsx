@@ -2,6 +2,7 @@ import { Text, View } from "react-native"
 import { SectionBlock, SectionLabel, Prose, mono, sans } from "./primitives"
 import { colors, radius } from "../../theme/tokens"
 import { useAccent } from "../../lib/accent"
+import { unescapeDollar } from "../../lib/prose"
 
 // Port of frontend/src/components/sections/FormalDefinitionSection.tsx
 // Body + monospace formula card + notation legend.
@@ -43,7 +44,7 @@ export default function FormalDefinitionSection({ content }: { content: FormalDe
             <View key={i} style={{ flexDirection: "row", gap: 12, alignItems: "flex-start" }}>
               <Text style={[mono(12, accent), { minWidth: 48 }]}>{entry.symbol}</Text>
               <Text style={[sans(12, colors["ink-muted"], { lineHeight: 17 }), { flex: 1 }]}>
-                {entry.meaning}
+                {unescapeDollar(entry.meaning)}
               </Text>
             </View>
           ))}

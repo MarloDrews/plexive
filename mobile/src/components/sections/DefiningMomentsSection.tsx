@@ -2,6 +2,7 @@ import { Text, View } from "react-native"
 import { SectionBlock, SectionLabel, Prose, SvgFigure, CaptionedImage, mono, sans } from "./primitives"
 import { colors, fonts } from "../../theme/tokens"
 import { useAccent } from "../../lib/accent"
+import { unescapeDollar } from "../../lib/prose"
 
 // Port of frontend/src/components/sections/DefiningMomentsSection.tsx
 // Chronological episodes: accent mono year + location, title, prose, media.
@@ -31,11 +32,11 @@ export default function DefiningMomentsSection({
       {content.map((episode, i) => (
         <View key={i} style={{ gap: 12 }}>
           <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap", alignItems: "baseline" }}>
-            <Text style={mono(12, accent)}>{episode.year_or_period}</Text>
-            {episode.location ? <Text style={sans(12, colors["ink-faint"])}>{episode.location}</Text> : null}
+            <Text style={mono(12, accent)}>{unescapeDollar(episode.year_or_period)}</Text>
+            {episode.location ? <Text style={sans(12, colors["ink-faint"])}>{unescapeDollar(episode.location)}</Text> : null}
           </View>
           <Text style={{ fontFamily: fonts.serifMedium, fontSize: 19, lineHeight: 25, color: colors.ink }}>
-            {episode.title}
+            {unescapeDollar(episode.title)}
           </Text>
           <Prose>{episode.body}</Prose>
 

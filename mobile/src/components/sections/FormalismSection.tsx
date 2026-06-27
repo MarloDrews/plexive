@@ -4,6 +4,7 @@ import { SectionBlock, SectionLabel, proseStyle, mono, sans, sansSemiBold } from
 import MathText from "../MathText"
 import { colors, radius } from "../../theme/tokens"
 import { useAccent } from "../../lib/accent"
+import { unescapeDollar } from "../../lib/prose"
 
 // Port of frontend/src/components/sections/FormalismSection.tsx
 // The web renders equations with KaTeX (display mode); React Native has no
@@ -23,7 +24,7 @@ export default function FormalismSection({ content }: { content: FormalismConten
             <Text
               style={sansSemiBold(12, accent, { textTransform: "uppercase", letterSpacing: 0.5 })}
             >
-              {eq.label}
+              {unescapeDollar(eq.label)}
             </Text>
             <View
               style={{
@@ -64,7 +65,7 @@ export default function FormalismSection({ content }: { content: FormalismConten
               >
                 <Text style={[mono(13, colors["ink-body"]), { width: 112 }]}>{item.symbol}</Text>
                 <Text style={[sans(14, colors["ink-dim"], { lineHeight: 19 }), { flex: 1 }]}>
-                  {item.meaning}
+                  {unescapeDollar(item.meaning)}
                 </Text>
               </View>
             ))}

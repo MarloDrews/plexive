@@ -2,6 +2,7 @@ import { Text, View } from "react-native"
 import { SectionBlock, SectionLabel, Prose, sansSemiBold } from "./primitives"
 import { colors, fonts } from "../../theme/tokens"
 import { useAccent } from "../../lib/accent"
+import { unescapeDollar } from "../../lib/prose"
 
 // Port of frontend/src/components/sections/RealWorldExamplesSection.tsx
 // Title + accent uppercase domain tag + dim prose body per example.
@@ -20,7 +21,7 @@ export default function RealWorldExamplesSection({ content }: { content: Example
       {content.map((example, i) => (
         <View key={i} style={{ gap: 8 }}>
           <View>
-            <Text style={sansSemiBold(14, colors.ink, { lineHeight: 19 })}>{example.title}</Text>
+            <Text style={sansSemiBold(14, colors.ink, { lineHeight: 19 })}>{unescapeDollar(example.title)}</Text>
             <Text
               style={{
                 fontFamily: fonts.sansSemiBold,
@@ -31,7 +32,7 @@ export default function RealWorldExamplesSection({ content }: { content: Example
                 marginTop: 2,
               }}
             >
-              {example.domain}
+              {unescapeDollar(example.domain)}
             </Text>
           </View>
           <Prose dim>{example.body}</Prose>

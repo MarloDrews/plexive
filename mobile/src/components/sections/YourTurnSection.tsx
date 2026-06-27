@@ -2,6 +2,7 @@ import { Text, View } from "react-native"
 import type { YourTurnContent } from "../../types/post"
 import { SectionBlock, SectionLabel, Prose, NumberBubble } from "./primitives"
 import { colors, fonts } from "../../theme/tokens"
+import { unescapeDollar } from "../../lib/prose"
 
 // Port of frontend/src/components/sections/YourTurnSection.tsx
 // Intro + numbered reflection prompts + italic closing thought.
@@ -30,7 +31,7 @@ export default function YourTurnSection({ content }: { content: YourTurnContent 
             paddingTop: 12,
           }}
         >
-          {content.closing_thought}
+          {unescapeDollar(content.closing_thought)}
         </Text>
       ) : null}
     </SectionBlock>

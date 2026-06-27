@@ -2,6 +2,7 @@ import { Text, View } from "react-native"
 import type { FieldContextContent } from "../../types/post"
 import { SectionBlock, SectionLabel, Prose, sans, sansSemiBold } from "./primitives"
 import { colors } from "../../theme/tokens"
+import { unescapeDollar } from "../../lib/prose"
 
 // Port of frontend/src/components/sections/FieldContextSection.tsx
 // Body + "Key prior work" list with left-bordered citation entries.
@@ -27,8 +28,8 @@ export default function FieldContextSection({ content }: { content: FieldContext
                 gap: 2,
               }}
             >
-              <Text style={sansSemiBold(12, colors["ink-muted"])}>{prior.citation}</Text>
-              <Text style={sans(14, colors["ink-body"], { lineHeight: 19 })}>{prior.claim}</Text>
+              <Text style={sansSemiBold(12, colors["ink-muted"])}>{unescapeDollar(prior.citation)}</Text>
+              <Text style={sans(14, colors["ink-body"], { lineHeight: 19 })}>{unescapeDollar(prior.claim)}</Text>
             </View>
           ))}
         </View>

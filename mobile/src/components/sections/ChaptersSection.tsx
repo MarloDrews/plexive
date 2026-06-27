@@ -3,6 +3,7 @@ import type { StoryChapter } from "../../types/post"
 import { SectionBlock, SectionLabel, Prose, CaptionedImage } from "./primitives"
 import { fonts } from "../../theme/tokens"
 import { useAccent } from "../../lib/accent"
+import { unescapeDollar } from "../../lib/prose"
 
 // Port of frontend/src/components/sections/ChaptersSection.tsx
 export default function ChaptersSection({ content }: { content: StoryChapter[] }) {
@@ -13,7 +14,7 @@ export default function ChaptersSection({ content }: { content: StoryChapter[] }
       {content.map((chapter, i) => (
         <View key={i} style={{ gap: 12 }}>
           <Text style={{ fontFamily: fonts.serifMedium, fontSize: 17, lineHeight: 23, color: accent }}>
-            {chapter.title}
+            {unescapeDollar(chapter.title)}
           </Text>
           <Prose>{chapter.body}</Prose>
           {chapter.image_url ? (

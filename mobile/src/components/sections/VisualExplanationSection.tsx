@@ -1,6 +1,7 @@
 import { Text } from "react-native"
 import { SectionBlock, SectionLabel, SvgFigure, sans } from "./primitives"
 import { colors } from "../../theme/tokens"
+import { unescapeDollar } from "../../lib/prose"
 
 // Port of frontend/src/components/sections/VisualExplanationSection.tsx
 
@@ -22,7 +23,7 @@ export default function VisualExplanationSection({
       <SvgFigure svg={content.visual_svg} isUserContent={isUserContent} maxWidth={400} />
       {content.image_caption ? (
         <Text style={[sans(12, colors["ink-muted"], { lineHeight: 17 }), { textAlign: "center" }]}>
-          {content.image_caption}
+          {unescapeDollar(content.image_caption)}
         </Text>
       ) : null}
     </SectionBlock>

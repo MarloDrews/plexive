@@ -3,6 +3,7 @@ import type { CoreIdeaItem } from "../../types/post"
 import { SectionBlock, Prose, SvgFigure, CaptionedImage, SectionLabel } from "./primitives"
 import { colors, fonts } from "../../theme/tokens"
 import { useAccent } from "../../lib/accent"
+import { unescapeDollar } from "../../lib/prose"
 
 // Port of frontend/src/components/sections/CoreIdeasSection.tsx
 // Per idea: accent title, prose body, optional SVG/image/quote/in_practice
@@ -20,7 +21,7 @@ export default function CoreIdeasSection({
       {content.map((idea, i) => (
         <View key={i} style={{ gap: 12 }}>
           <Text style={{ fontFamily: fonts.serifMedium, fontSize: 19, lineHeight: 25, color: accent }}>
-            {idea.title}
+            {unescapeDollar(idea.title)}
           </Text>
           <Prose>{idea.body}</Prose>
 
@@ -42,7 +43,7 @@ export default function CoreIdeasSection({
               }}
             >
               <Text style={{ fontFamily: fonts.serifItalic, fontSize: 16, lineHeight: 26, color: colors["ink-dim"] }}>
-                {"“"}{idea.quote}{"”"}
+                {"“"}{unescapeDollar(idea.quote)}{"”"}
               </Text>
             </View>
           ) : null}
@@ -59,7 +60,7 @@ export default function CoreIdeasSection({
             >
               <SectionLabel color={accent}>In practice</SectionLabel>
               <Text style={{ fontFamily: fonts.sans, fontSize: 14, lineHeight: 22, color: colors.ink }}>
-                {idea.in_practice}
+                {unescapeDollar(idea.in_practice)}
               </Text>
             </View>
           ) : null}

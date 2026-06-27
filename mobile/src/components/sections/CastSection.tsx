@@ -3,6 +3,7 @@ import type { CastMember } from "../../types/post"
 import { SectionBlock, SectionLabel, sans, sansSemiBold } from "./primitives"
 import { colors, fonts, radius } from "../../theme/tokens"
 import { useAccent } from "../../lib/accent"
+import { unescapeDollar } from "../../lib/prose"
 
 // Port of frontend/src/components/sections/CastSection.tsx
 // Character cards: name + lifespan, accent uppercase role, one-liner.
@@ -25,8 +26,8 @@ export default function CastSection({ content }: { content: CastMember[] }) {
             }}
           >
             <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap", alignItems: "baseline" }}>
-              <Text style={sansSemiBold(14, colors.ink)}>{member.name}</Text>
-              <Text style={sans(12, colors["ink-muted"])}>{member.lifespan}</Text>
+              <Text style={sansSemiBold(14, colors.ink)}>{unescapeDollar(member.name)}</Text>
+              <Text style={sans(12, colors["ink-muted"])}>{unescapeDollar(member.lifespan)}</Text>
             </View>
             <Text
               style={{
@@ -37,10 +38,10 @@ export default function CastSection({ content }: { content: CastMember[] }) {
                 color: accent + "cc",
               }}
             >
-              {member.role}
+              {unescapeDollar(member.role)}
             </Text>
             <Text style={[sans(14, colors["ink-dim"], { lineHeight: 19 }), { marginTop: 4 }]}>
-              {member.one_line}
+              {unescapeDollar(member.one_line)}
             </Text>
           </View>
         ))}

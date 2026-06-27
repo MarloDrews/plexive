@@ -3,6 +3,7 @@ import type { KeyNumberItem } from "../../types/post"
 import { SectionBlock, sans } from "./primitives"
 import { colors, fonts, radius } from "../../theme/tokens"
 import { useAccent } from "../../lib/accent"
+import { unescapeDollar } from "../../lib/prose"
 
 // Port of frontend/src/components/sections/KeyNumbersSection.tsx
 // Two-column grid of stat tiles, value in the accent ink.
@@ -27,10 +28,10 @@ export default function KeyNumbersSection({ content }: { content: KeyNumberItem[
             }}
           >
             <Text style={{ fontFamily: fonts.sansSemiBold, fontSize: 20, lineHeight: 22, color: accent }}>
-              {item.value}
+              {unescapeDollar(item.value)}
             </Text>
-            {item.unit ? <Text style={sans(12, accent + "b3", { lineHeight: 13 })}>{item.unit}</Text> : null}
-            <Text style={[sans(12, colors["ink-dim"], { lineHeight: 17 }), { marginTop: 4 }]}>{item.label}</Text>
+            {item.unit ? <Text style={sans(12, accent + "b3", { lineHeight: 13 })}>{unescapeDollar(item.unit)}</Text> : null}
+            <Text style={[sans(12, colors["ink-dim"], { lineHeight: 17 }), { marginTop: 4 }]}>{unescapeDollar(item.label)}</Text>
           </View>
         ))}
       </View>
