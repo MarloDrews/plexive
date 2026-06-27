@@ -92,7 +92,7 @@
           {
             "name": "Max Kleiber",
             "role": "Found the scaling law",
-            "one_line": "In 1932 his measurements showed animal metabolism scaling at 3/4 of body mass.",
+            "one_line": "In 1932 his measurements showed animal metabolism scaling as the 3/4 power of body mass.",
             "lifespan": "1893-1976",
             "birth_year": 1893,
             "featured": false
