@@ -1,4 +1,4 @@
-# Human texture standard (v1.7, Books, Facts, People, Concepts and Stories calibrated)
+# Human texture standard (v1.8, Books, Facts, People, Concepts, Stories and Questions calibrated)
 
 Companion to `STYLE_GUIDE_LONGFORM.md`. The style guide is the generation
 contract: it tells the writer how the language should read. This document is the
@@ -9,7 +9,7 @@ end of the pipeline, the other for the back end.
 
 The app is dark only and all content is English, the same as its siblings.
 
-This is v1.7 (see the changelog at the end). The numeric thresholds below were
+This is v1.8 (see the changelog at the end). The numeric thresholds below were
 measured from the finished Books
 gold example (`books_example.json`), not guessed, in line with the plan that the
 example finalizes this layer. The Books, Facts, People and Concepts rows of the band table in section 3
@@ -353,8 +353,8 @@ apply to Academy exactly as hard as to Facts. What is allowed to be harder is th
 idea the reader must hold, not the prose that delivers it. The reader brings more;
 the writer never works against them.
 
-The band table. The Books, Facts, People and Concepts rows are measured from their gold
-examples; the rest are filled when each format's example reaches gold.
+The band table. The Books, Facts, People, Concepts, Stories and Questions rows are measured from
+their gold examples; Academy is filled when its example reaches gold.
 
 | Format    | Length center        | Ceiling                      | Subordination tolerance                    | Burstiness ratio   |
 |-----------|----------------------|------------------------------|--------------------------------------------|--------------------|
@@ -363,8 +363,7 @@ examples; the rest are filled when each format's example reaches gold.
 | People    | 16 to 20 words, with short punches of 4 to 9 | about 40 (a technical outlier to 44 in greatest_work), most sentences under 28 | moderate: one appositive per sentence, genuine lists allowed, never stacked | floor 2, typically 2.5 to 8, very high variance |
 | Concepts  | 15 to 18 words, with short punches of 4 to 10 | about 28, with a single 63-word outlier in origin, most sentences under 24 | moderate: one appositive per sentence, genuine lists allowed, never stacked | floor 2, typically 2 to 8, very high variance |
 | Stories   | 13 to 19 words (median 16), with short punches of 4 to 10 | about 33, most sentences under 28 | moderate: one appositive per sentence, genuine lists allowed, never stacked | floor 2, typically 2 to 8, very high variance |
-| Questions | TBD                  | TBD                          | TBD                                        | TBD                |
-| Stories   | TBD                  | TBD                          | TBD                                        | TBD                |
+| Questions | 16 to 22 words (median 20), with short punches of 4 to 10 | about 35, most sentences under 28, with deliberate outliers in the single-sentence strongest_argument distillations (to 44) and one history sentence (50) | moderate: one appositive per sentence, genuine lists allowed, never stacked | floor 2, typically 2.5 to 8, very high variance |
 | Academy   | TBD                  | TBD                          | TBD                                        | TBD                |
 
 ---
@@ -407,6 +406,7 @@ judgment looks; they do not replace it.
 
 ## Changelog
 
+- v1.8: Questions calibrated (locked gold, "Do we have moral obligations to future generations?", the Onkalo framing). Added the Questions section-3 band row, measured from the locked gold: a longer center (median 20) than the narrative formats, fitting an analytical debate format, with healthy burstiness and deliberate long outliers in the one-sentence strongest_argument distillations and one history sentence. The Questions cycle ran the full loop: mechanical pre-check (extract_questions added to the checker, BANDS["questions"] registered, the straight-quote check extended to feed_card.the_question and one_line, which closed a real gap), independent cold audit, a gate with web-verification of every philosophy and Onkalo attribution (all correct), a body+quiz worker fix (closing metronome broken in the non-perspective sections, three because/since clauses recast, the contractarian reopened concrete-first to match the other three and protect steelman parity, two your_turn prompts neutralised, setup de-restated, the_question set to curly quotes, quiz length-tell cut from 7/8 to 2/8 and two throwaway distractors replaced), a fresh verification pass (verdict: even, open payoff, teasers work, lock as is), and a final mechanical touch unifying the far-future date to 2300. Also removed a leftover duplicate Stories TBD row from the band table. Checker on the locked gold: 4 candidates, all accepted (three earned because-clauses, one genuine enumeration list), quiz-groundedness and straight-quote 0.
 - v1.7: Stories calibrated (locked gold, the van Meegeren forgery). Added the Stories section-3 band
   row (center 13 to 19 words, median 16, short punches of 4 to 10, ceiling about 33, very high
   burstiness). No rule change; the checker thresholds remain the universal section-2 floors, and a

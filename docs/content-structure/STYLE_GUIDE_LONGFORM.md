@@ -321,7 +321,8 @@ length band in its skeleton, Facts the tightest and Books a little longer, and n
 angles the hook can take. Those angles are examples, not a quota: vary the form across the three where
 it fits, but if a question or a second-person line does not suit one of them, use whatever angle does,
 even if that repeats a form. Never restate the finding or spend the payoff, and never lean on a term
-the post will only teach.
+the post will only teach. Reach for the concrete, a specific image, fact, or stake the reader can
+picture, not an abstract pointer to the theme, and open only a loop the post itself closes.
 
 ## A12. Quotes have to earn their place
 

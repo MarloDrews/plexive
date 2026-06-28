@@ -184,13 +184,18 @@
                                 // card rules. Accent is var(--accent); use #43c3c4
                                 // only as a preview fallback outside a post.
     },
-    "teasers": ["", "", ""],    // HARD: exactly 3. Guideline: about 6 words each.
-                                // The perspectives or stakes ahead, stated even-
-                                // handedly ("Utilitarian vs Kantian answers", "What
-                                // neuroscience adds", "Why most people freeze").
-                                // Name the tension, never tip which side wins. Vary
-                                // structure across the three.
-                                // Questions, no undersell.
+    "teasers": ["", "", ""],    // HARD: exactly 3. Guideline: short, about 8 to 12
+                                // words each, shorter is fine (never a cap). Each
+                                // opens a curiosity loop the post closes, in plain
+                                // words, none restating the_question or one_line.
+                                // EVENHANDEDNESS: name the tension, never tip which
+                                // side wins. Avoid the flat category label that
+                                // names a section without a hook ("the non-identity
+                                // problem"). Loops Questions tends to open: the live
+                                // tension, a counter-intuitive turn in the argument,
+                                // a concrete stake that makes the question bite
+                                // (examples, not a required one of each). Voice:
+                                // STYLE_GUIDE A11.
     "post_difficulty": 1        // HARD: 1, 2, or 3 (1=accessible, 2=moderate,
                                 // 3=demanding). A vivid everyday dilemma lands at 1;
                                 // a dense metaphysical question sits at 3.

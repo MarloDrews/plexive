@@ -115,6 +115,20 @@ BANDS = {
         parallel_monotone=0.75,
         drift_up_frac=0.75,
     ),
+    # Questions is registered with the universal section-2 floors so the checker runs
+    # on it; the DESCRIPTIVE band (section-3 row) is set at lock time after measuring the
+    # gold. Same floors as the other formats.
+    "questions": dict(
+        burst_floor=2.0,
+        short_word_max=10,
+        short_word_tight=15,
+        drone_shortest=25,
+        comma_candidate=4,
+        comma_rewrite=5,
+        list_post_soft=6,
+        parallel_monotone=0.75,
+        drift_up_frac=0.75,
+    ),
 }
 UNCALIBRATED_NOTE = "format not calibrated yet; using Books band as a placeholder"
 
@@ -629,6 +643,66 @@ def extract_stories(data):
                     light.append(("quiz.explanation", q["explanation"]))
     return prose, parallel, light, exempt
 
+def extract_questions(data):
+    """Questions extractor: contested-question / debate schema. Prose (band): setup,
+    why_its_hard, what_hangs_on_it, each perspective's body, strongest_argument and
+    concrete_example (the steelmanned cases), where_they_clash, what_science_says body,
+    your_turn intro and closing_thought (the KEY section, the question handed back to
+    the reader), history_of_the_question, where_the_debate_stands. Parallel: perspective
+    position names, your_turn prompts, what_science_says key_findings. Light: the_question
+    anchor, one_line dek, teasers, quiz question and explanation. Exempt: at_a_glance
+    metadata, sources, visual_svg, image urls, school_or_thinker attributions."""
+    by = {s["type"]: s for s in data.get("sections", [])}
+    prose, parallel, light, exempt = [], {}, [], []
+
+    def add_prose(label, txt):
+        if isinstance(txt, str) and txt.strip():
+            prose.append((label, txt))
+
+    for t in ("setup", "why_its_hard", "what_hangs_on_it", "where_they_clash",
+              "history_of_the_question", "where_the_debate_stands"):
+        if t in by and isinstance(by[t].get("content"), str):
+            add_prose(t, by[t]["content"])
+    if isinstance(by.get("perspectives", {}).get("content"), list):
+        names = []
+        for i, pos in enumerate(by["perspectives"]["content"]):
+            if isinstance(pos, dict):
+                add_prose("perspectives[%d].body" % i, pos.get("body", ""))
+                add_prose("perspectives[%d].strongest_argument" % i, pos.get("strongest_argument", ""))
+                add_prose("perspectives[%d].concrete_example" % i, pos.get("concrete_example", ""))
+                if pos.get("position_name"):
+                    names.append(pos["position_name"])
+        if names:
+            parallel["perspective names"] = names
+    wss = by.get("what_science_says", {}).get("content")
+    if isinstance(wss, dict):
+        add_prose("what_science_says", wss.get("body", ""))
+        kf = wss.get("key_findings")
+        if isinstance(kf, list) and all(isinstance(x, str) for x in kf):
+            parallel["what_science_says key_findings"] = kf
+    yt = by.get("your_turn", {}).get("content")
+    if isinstance(yt, dict):
+        add_prose("your_turn.intro", yt.get("intro", ""))
+        add_prose("your_turn.closing_thought", yt.get("closing_thought", ""))
+        pr = yt.get("prompts")
+        if isinstance(pr, list) and all(isinstance(x, str) for x in pr):
+            parallel["your_turn prompts"] = pr
+    fc = data.get("feed_card", {})
+    for k in ("the_question", "one_line"):
+        if isinstance(fc.get(k), str) and fc[k].strip():
+            light.append(("feed_card.%s" % k, fc[k]))
+    for t in fc.get("teasers", []):
+        if isinstance(t, str) and t.strip():
+            light.append(("feed_card.teaser", t))
+    if isinstance(by.get("quiz", {}).get("content"), list):
+        for q in by["quiz"]["content"]:
+            if isinstance(q, dict):
+                if isinstance(q.get("question"), str):
+                    light.append(("quiz.question", q["question"]))
+                if isinstance(q.get("explanation"), str):
+                    light.append(("quiz.explanation", q["explanation"]))
+    return prose, parallel, light, exempt
+
 def extract_generic(data):
     """Fallback for uncalibrated formats: walk for body/content strings, exempt
     quotes. Coarser than the Books extractor."""
@@ -887,6 +961,9 @@ def check_straight_quotes(data, cand):
     for t in fc.get("teasers", []):
         if isinstance(t, str):
             strings.append(("feed_card.teaser", t))
+    for k in ("the_question", "one_line"):
+        if isinstance(fc.get(k), str):
+            strings.append(("feed_card.%s" % k, fc[k]))
     seen_d, seen_s = set(), set()
     open_single = re.compile(r"(?:^|[^0-9A-Za-z\u00c0-\u024f])'[A-Za-z]")
     for owner, txt in strings:
@@ -918,6 +995,8 @@ def run(path, fmt=None):
         prose, parallel, light, exempt = extract_concepts(data)
     elif fmt == "stories":
         prose, parallel, light, exempt = extract_stories(data)
+    elif fmt == "questions":
+        prose, parallel, light, exempt = extract_questions(data)
     else:
         prose, parallel, light, exempt = extract_generic(data)
 
