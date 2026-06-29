@@ -3,6 +3,7 @@ import type { AngleItem } from "../../types/post"
 import SvgBlock from "../SvgBlock"
 import ContentImage from "./ContentImage"
 import Prose from "../Prose"
+import MathText from "../MathText"
 import { unescapeDollar } from "@/lib/prose"
 
 interface Props {
@@ -17,7 +18,7 @@ export default function AnglesSection({ content, isUserContent }: Props) {
       {content.map((angle, i) => (
         <div key={i} className="flex flex-col gap-2">
           <h3 className="text-base font-semibold text-(--accent) leading-snug">{unescapeDollar(angle.title)}</h3>
-          <Prose>{angle.body}</Prose>
+          <Prose><MathText text={angle.body} /></Prose>
           {angle.visual_svg && (
             <div className="w-full max-w-[360px] mx-auto bg-transparent mt-2">
               <SvgBlock svg={angle.visual_svg} isUserContent={isUserContent} />
