@@ -31,3 +31,19 @@ test("a lone unmatched asterisk stays literal", () => {
 test("a whole-string italic has no empty surrounding runs", () => {
   assert.deepEqual(splitItalics("*all italic*"), [{ text: "all italic", italic: true }])
 })
+
+test("a routed Academy prose field italicizes a theory name and leaves math tokens raw", () => {
+  // Freezes the text-segment contract the newly-routed Academy fields rely on
+  // (field_context body + key_priors.claim, limitations, objections,
+  // implications, cross_field_reach, robustness, authors_context one_line):
+  // MathText hands splitItalics only the text OUTSIDE $...$ (math segments go
+  // to KaTeX and never reach this helper), so a routed field renders *theory*
+  // as an <em> while a math/subscript token in the same text segment is left
+  // byte-for-byte intact.
+  const runs = splitItalics("the *Bayesian brain* inverts a model and a_{b} stays raw")
+  assert.deepEqual(runs, [
+    { text: "the ", italic: false },
+    { text: "Bayesian brain", italic: true },
+    { text: " inverts a model and a_{b} stays raw", italic: false },
+  ])
+})
