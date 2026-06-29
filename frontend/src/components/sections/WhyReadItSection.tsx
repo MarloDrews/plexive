@@ -1,4 +1,5 @@
 import Prose from "../Prose"
+import MathText from "../MathText"
 
 interface Props {
   content: string
@@ -10,7 +11,7 @@ interface Props {
 export default function WhyReadItSection({ content }: Props) {
   return (
     <div className="px-6 py-8">
-      <Prose className="text-ink">{content}</Prose>
+      <Prose className="text-ink"><MathText text={content} /></Prose>
     </div>
   )
 }

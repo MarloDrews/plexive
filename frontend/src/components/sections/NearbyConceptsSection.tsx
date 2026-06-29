@@ -1,5 +1,6 @@
 import SectionLabel from "../SectionLabel"
 import Prose from "../Prose"
+import MathText from "../MathText"
 import { unescapeDollar } from "@/lib/prose"
 
 interface NearbyConceptItem {
@@ -19,7 +20,7 @@ export default function NearbyConceptsSection({ content }: Props) {
         {content.map((item, i) => (
           <div key={i} className="flex flex-col gap-1.5">
             <span className="text-sm font-semibold text-(--accent)">{unescapeDollar(item.concept)}</span>
-            <Prose className="text-ink-dim">{item.distinction}</Prose>
+            <Prose className="text-ink-dim"><MathText text={item.distinction} /></Prose>
           </div>
         ))}
       </div>

@@ -1,6 +1,7 @@
 import SectionLabel from "../SectionLabel"
 import ContentImage from "./ContentImage"
 import Prose from "../Prose"
+import MathText from "../MathText"
 import { unescapeDollar } from "@/lib/prose"
 
 interface KeyThinker {
@@ -29,7 +30,7 @@ export default function OriginSection({ content }: Props) {
   return (
     <div className="px-6 py-8 flex flex-col gap-4">
       <SectionLabel>Origin</SectionLabel>
-      <Prose className="text-ink-dim">{content.body}</Prose>
+      <Prose className="text-ink-dim"><MathText text={content.body} /></Prose>
 
       {content.image_url && (
         <ContentImage

@@ -1,6 +1,7 @@
 import SectionLabel from "../SectionLabel"
 import SvgBlock from "../SvgBlock"
 import Prose from "../Prose"
+import MathText from "../MathText"
 import { unescapeDollar } from "@/lib/prose"
 import type { PerspectiveItem } from "../../types/post"
 
@@ -21,13 +22,13 @@ export default function PerspectivesSection({ content, isUserContent }: Props) {
               <p className="text-xs text-ink-muted mt-0.5">{unescapeDollar(p.school_or_thinker)}</p>
             )}
           </div>
-          <Prose>{p.body}</Prose>
+          <Prose><MathText text={p.body} /></Prose>
           <div className="border-l-2 border-(--accent)/40 pl-3 flex flex-col gap-2">
             {/* Running text matches the position body (prose-post: full body size
                 and ink-body contrast); only the bold labels set it apart. */}
             <Prose>
               <span className="font-semibold text-(--accent)">Strongest argument: </span>
-              {p.strongest_argument}
+              <MathText text={p.strongest_argument} />
             </Prose>
             {p.concrete_example && (
               <Prose>
