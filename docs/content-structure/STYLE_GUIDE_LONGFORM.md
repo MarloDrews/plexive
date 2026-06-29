@@ -185,6 +185,11 @@ if a word shows up more in model output than in good human writing, cut it.
   Bayes' theorem, Hebb's rule. A research program keeps its italics even when its name contains the
   word principle, as with the *free-energy principle*, because there the name points at a framework,
   not at one rule.
+  Named effects, biases, and models stay plain in the same way, since a phenomenon or a single
+  construct is not a body of explanatory work: the framing effect, loss aversion, regression to the
+  mean, the liquid-drop model. A broad ism used as a category stays plain too (utilitarianism,
+  empiricism). Italics mark a specific named theory or framework, like *prospect theory* or
+  *predictive coding*, not the effect, the model, or the category it sits among.
   This covers a represented question or thought in direct form, such as the
   substituted question “do I like Ford cars?”, but not indirect speech, such as
   asks whether to buy Ford stock.
