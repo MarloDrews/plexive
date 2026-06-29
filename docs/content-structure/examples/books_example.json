@@ -124,7 +124,7 @@
         },
         {
           "title": "A loss hurts about twice as much as the same gain feels good",
-          "body": "Offered a coin flip that wins \\$150 or loses \\$100, most people refuse, even though the math favors taking it. The sting of the possible loss outweighs the pull of the larger possible gain. Across many such experiments the ratio holds steady: a loss feels roughly 1.5 to 2.5 times as strong as an equivalent gain. Kahneman and Tversky built this into prospect theory, which says we register outcomes as gains and losses measured from where we currently stand, with losses always looming larger. There is an evolutionary logic to it. A creature that treats threats as more urgent than opportunities is the one that survives to reproduce. The same asymmetry governs how we price our homes, cling to losing stocks, and resist anything framed as giving something up.",
+          "body": "Offered a coin flip that wins \\$150 or loses \\$100, most people refuse, even though the math favors taking it. The sting of the possible loss outweighs the pull of the larger possible gain. Across many such experiments the ratio holds steady: a loss feels roughly 1.5 to 2.5 times as strong as an equivalent gain. Kahneman and Tversky built this into *prospect theory*, which says we register outcomes as gains and losses measured from where we currently stand, with losses always looming larger. There is an evolutionary logic to it. A creature that treats threats as more urgent than opportunities is the one that survives to reproduce. The same asymmetry governs how we price our homes, cling to losing stocks, and resist anything framed as giving something up.",
           "in_practice": "Faced with a choice framed as a loss, would you decide the same way if the same outcome were dressed as a gain?",
           "visual_svg": "<svg viewBox=\"0 0 400 300\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\">\n  <g stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" opacity=\"0.45\">\n    <line x1=\"44\" y1=\"150\" x2=\"356\" y2=\"150\"/>\n    <line x1=\"200\" y1=\"44\" x2=\"200\" y2=\"256\"/>\n  </g>\n  <path d=\"M48 244 Q150 206 200 150 Q254 96 352 84\" stroke=\"var(--accent, #cfa857)\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\n  <circle cx=\"200\" cy=\"150\" r=\"4\" fill=\"currentColor\"/>\n  <g fill=\"currentColor\" font-family=\"var(--font-sans), system-ui, sans-serif\" font-size=\"13\" font-weight=\"600\" text-anchor=\"middle\" opacity=\"0.85\">\n    <text x=\"324\" y=\"172\">Gains</text>\n    <text x=\"82\" y=\"172\">Losses</text>\n    <text x=\"200\" y=\"36\" font-size=\"13\" opacity=\"0.7\">Value</text>\n  </g>\n</svg>"
         },
@@ -217,7 +217,7 @@
             "It varies so much that no consistent ratio exists"
           ],
           "answer_index": 2,
-          "explanation": "Prospect theory finds a stable asymmetry: losing feels about 1.5 to 2.5 times as strong as an equivalent gain, which is why people refuse favorable-looking bets."
+          "explanation": "*Prospect theory* finds a stable asymmetry: losing feels about 1.5 to 2.5 times as strong as an equivalent gain, which is why people refuse favorable-looking bets."
         },
         {
           "question": "Why does Kahneman argue that framing effects undermine the standard economic picture of rational choice?",
@@ -252,7 +252,7 @@
       "type": "author_context",
       "order": 12,
       "content": {
-        "body": "As a young officer in the Israeli army in the 1950s, Kahneman built a structured interview to screen recruits and watched his confident predictions miss. He later called that the illusion of validity. The research the book rests on grew out of his long partnership with Amos Tversky, begun at the Hebrew University in the late 1960s. The two wrote every sentence together and produced the studies of heuristics, biases, and prospect theory that the book gathers up. Tversky died in 1996. When the 2002 Nobel in economics came for that work, shared with the experimental economist Vernon Smith, Kahneman accepted it without him. The prize is not given posthumously. He was the first psychologist to win the economics prize.",
+        "body": "As a young officer in the Israeli army in the 1950s, Kahneman built a structured interview to screen recruits and watched his confident predictions miss. He later called that the illusion of validity. The research the book rests on grew out of his long partnership with Amos Tversky, begun at the Hebrew University in the late 1960s. The two wrote every sentence together and produced the studies of heuristics, biases, and *prospect theory* that the book gathers up. Tversky died in 1996. When the 2002 Nobel in economics came for that work, shared with the experimental economist Vernon Smith, Kahneman accepted it without him. The prize is not given posthumously. He was the first psychologist to win the economics prize.",
         "image_url": "/seed-images/Daniel_Kahneman__283283955327_29__28cropped_29.jpg",
         "image_attribution": "nrkbeta, \"Daniel Kahneman\", CC BY-SA 3.0 (Wikimedia Commons), cropped",
         "wikipedia_url": "https://en.wikipedia.org/wiki/Daniel_Kahneman"
