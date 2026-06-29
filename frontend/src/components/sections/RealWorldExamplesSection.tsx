@@ -2,6 +2,7 @@ import SectionLabel from "../SectionLabel"
 import SvgBlock from "../SvgBlock"
 import ContentImage from "./ContentImage"
 import Prose from "../Prose"
+import MathText from "../MathText"
 import { unescapeDollar } from "@/lib/prose"
 
 interface Example {
@@ -29,7 +30,7 @@ export default function RealWorldExamplesSection({ content, isUserContent }: Pro
             <h3 className="text-sm font-semibold text-ink leading-snug">{unescapeDollar(example.title)}</h3>
             <p className="text-xs text-(--accent)/80 font-semibold tracking-widest uppercase mt-0.5">{unescapeDollar(example.domain)}</p>
           </div>
-          <Prose className="text-ink-dim">{example.body}</Prose>
+          <Prose className="text-ink-dim"><MathText text={example.body} /></Prose>
           {example.image_url && (
             <ContentImage
               url={example.image_url}

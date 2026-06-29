@@ -67,7 +67,7 @@ export default function OriginSection({ content }: Props) {
                   </div>
                   <p className="text-xs font-semibold tracking-widest uppercase text-(--accent)/80">{unescapeDollar(thinker.role)}</p>
                   {thinker.one_line && (
-                    <p className="text-sm text-ink-dim leading-snug mt-1">{unescapeDollar(thinker.one_line)}</p>
+                    <p className="text-sm text-ink-dim leading-snug mt-1"><MathText text={thinker.one_line} /></p>
                   )}
                 </div>
               </div>
