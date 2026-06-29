@@ -72,6 +72,13 @@
 // Pick the forms the fact actually needs.
 //
 // ─── PROSE ───────────────────────────────────────────────────────────
+// ─── ITALICS CONVENTION ──────────────────────
+// Titles of works (books, papers, paintings, films) and the names of theories, frameworks, and
+//   schools take *...* asterisk italics on mention. Asterisk is the only marker, read outside the
+//   $...$ math spans (an asterisk inside math is left untouched); avoid stray asterisk pairs.
+//   Named principles, laws, and theorems stay plain (Occam's razor, Bayes' theorem); a plain term
+//   pointed at as a term takes curly double quotes, not italics. Full borderline policy:
+//   STYLE_GUIDE_LONGFORM.md.
 // Zero em-dashes in user-facing text. Full prose rules: STYLE_GUIDE_LONGFORM.md.
 // Schema and rationale: DEEPSCROLL_CONTENT_STRUCTURE.md. Diagrams: SVG_STANDARD.md.
 // Sourced images (photos, portraits, card images): IMAGE_STANDARD.md.

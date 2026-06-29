@@ -1,4 +1,4 @@
-# Deepscroll — Long-Form Style Guide
+# Deepscroll: Long-Form Style Guide
 
 The binding standard for **how the language reads** across all seven formats:
 books, facts, people, concepts, questions, stories, academy.
@@ -33,7 +33,7 @@ and make the moving worthwhile.
 
 ---
 
-# Part A — The shared voice
+# Part A: The shared voice
 
 These rules hold for all seven formats. Part B adds the small, named per-format
 deviations.
@@ -156,6 +156,13 @@ if a word shows up more in model output than in good human writing, cut it.
   the JSON source, where the backslash is itself escaped, the field is typed as
   \\$100 and the reader sees $100. Never write a bare unescaped $ for currency; the
   bare $ is reserved for inline math.
+- Italics are written with an asterisk pair, *like this*. The asterisk is the only
+  italic marker. The underscore is never used, since inline math reserves it for
+  subscripts. Like the bare $, the marker is read only outside the $...$ math spans,
+  so an asterisk inside math is left untouched. A single unpaired asterisk renders
+  literally, but avoid a stray pair of asterisks in prose, since the pair opens an
+  unwanted italic run, and there is no backslash escape for it the way there is for
+  currency.
 - Quotation uses typographic double quotes, the curly pair, for any quoted word or
   phrase: the patient hears “a 90% survival rate” and relaxes. Curly doubles are
   cleaner here than straight quotes, which must be escaped inside JSON, and they
@@ -164,10 +171,20 @@ if a word shows up more in model output than in good human writing, cut it.
 - A word or short term named as a mention, not quoted from a speaker, takes the same curly doubles:
   the word "fission", the term "regression". This is the use-mention distinction, naming a term as a
   term, not attribution; reserve it for a term being introduced or pointed at, not for ordinary words.
-- Titles of works (books, paintings, papers, films) run plain in prose, carried by a cue rather than
-  by marks: the painting The Supper at Emmaus, the book Thinking, Fast and Slow, a paper on heredity.
-  The one exception is a long, sentence-like title that would blur into the prose around it, which may
-  take curly doubles to mark where it starts and ends (as the Galton paper title does in Concepts).
+- Titles of works (books, papers, paintings, films) and the names of theories,
+  frameworks, and schools of thought take italics on mention: the book *Thinking,
+  Fast and Slow*, the painting *The Supper at Emmaus*, the theory of *predictive
+  coding*, the *free-energy principle*. This is title italics, naming a work or a
+  named idea, not emphasis italics, so it does not compete with the rare bold. The
+  boundary against the use-mention rule above is what kind of thing is named: a work
+  or a named body of thought is italicized, while a plain term pointed at as a term
+  keeps the curly doubles (the term "regression", the word "fission"). For a name on
+  the line between the two, a coinage that is half term and half framework,
+  italicize it when it names a body of work and quote it when it is being defined as
+  a word. Let what the sentence is doing decide. A single law, theorem, or rule of thumb is not a body of work and stays plain: Occam's razor,
+  Bayes' theorem, Hebb's rule. A research program keeps its italics even when its name contains the
+  word principle, as with the *free-energy principle*, because there the name points at a framework,
+  not at one rule.
   This covers a represented question or thought in direct form, such as the
   substituted question “do I like Ford cars?”, but not indirect speech, such as
   asks whether to buy Ford stock.
@@ -386,7 +403,7 @@ they are drawn live in the skeletons and in `SVG_STANDARD.md`, not here.
 
 ---
 
-# Part B — Per-format voice
+# Part B: Per-format voice
 
 One base voice (Part A). Each format tilts it in one named, bounded way. Nothing
 else deviates. For the full worked example of each, read that format's benchmark
@@ -448,7 +465,7 @@ slowly and concretely.
 
 ---
 
-# Part C — Before output
+# Part C: Before output
 
 Run this check on every generated post. Any hit is a rewrite, not a maybe.
 
