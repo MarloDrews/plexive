@@ -33,7 +33,7 @@ export default function PerspectivesSection({ content, isUserContent }: Props) {
             {p.concrete_example && (
               <Prose>
                 <span className="font-semibold text-ink-body">Example: </span>
-                {p.concrete_example}
+                <MathText text={p.concrete_example} />
               </Prose>
             )}
           </div>
