@@ -12,6 +12,7 @@ interface Episode {
 
 import SvgBlock from "../SvgBlock"
 import Prose from "../Prose"
+import MathText from "../MathText"
 import { unescapeDollar } from "@/lib/prose"
 
 interface Props {
@@ -32,7 +33,7 @@ export default function DefiningMomentsSection({ content, isUserContent }: Props
             )}
           </div>
           <h4 className="text-lg font-semibold text-ink leading-snug">{unescapeDollar(episode.title)}</h4>
-          <Prose>{episode.body}</Prose>
+          <Prose><MathText text={episode.body} /></Prose>
 
           {episode.visual_svg && episode.visual_svg.length > 0 && (
             <SvgBlock svg={episode.visual_svg} isUserContent={isUserContent} className="w-full max-w-[400px] mx-auto my-3" />
@@ -48,7 +49,7 @@ export default function DefiningMomentsSection({ content, isUserContent }: Props
                 onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none" }}
               />
               {episode.image_caption && (
-                <p className="text-xs text-ink-muted mt-2 leading-snug">{unescapeDollar(episode.image_caption)}</p>
+                <p className="text-xs text-ink-muted mt-2 leading-snug"><MathText text={episode.image_caption} /></p>
               )}
               {episode.image_attribution && (
                 <p className="text-xs text-ink-faint mt-0.5">{unescapeDollar(episode.image_attribution)}</p>

@@ -39,7 +39,7 @@ export default function GreatestWorkSection({ content, isUserContent }: Props) {
             onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none" }}
           />
           {content.image_caption && (
-            <p className="text-xs text-ink-muted mt-2">{unescapeDollar(content.image_caption)}</p>
+            <p className="text-xs text-ink-muted mt-2"><MathText text={content.image_caption} /></p>
           )}
           {content.image_attribution && (
             <p className="text-xs text-ink-faint mt-0.5">{unescapeDollar(content.image_attribution)}</p>
