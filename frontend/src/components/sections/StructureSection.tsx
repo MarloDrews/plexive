@@ -1,5 +1,5 @@
 import SectionLabel from "../SectionLabel"
-import { unescapeDollar } from "@/lib/prose"
+import MathText from "../MathText"
 interface Props {
   content: string[]
 }
@@ -14,7 +14,7 @@ export default function StructureSection({ content }: Props) {
             <span className="text-(--accent) font-semibold text-sm min-w-[1.25rem] pt-0.5">
               {i + 1}.
             </span>
-            <span className="prose-post">{unescapeDollar(item)}</span>
+            <span className="prose-post"><MathText text={item} /></span>
           </li>
         ))}
       </ol>

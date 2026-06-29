@@ -2,6 +2,7 @@ import type { CoreIdeaItem } from "../../types/post"
 import SvgBlock from "../SvgBlock"
 import SectionLabel from "../SectionLabel"
 import Prose from "../Prose"
+import MathText from "../MathText"
 import { unescapeDollar } from "@/lib/prose"
 
 interface Props {
@@ -17,7 +18,7 @@ export default function CoreIdeasSection({ content, isUserContent }: Props) {
       {content.map((idea, i) => (
         <div key={i} className="flex flex-col gap-3">
           <h2 className="text-lg font-semibold text-(--accent) leading-snug">{unescapeDollar(idea.title)}</h2>
-          <Prose>{idea.body}</Prose>
+          <Prose><MathText text={idea.body} /></Prose>
 
           {idea.visual_svg && (
             <SvgBlock svg={idea.visual_svg} isUserContent={isUserContent} className="w-full max-w-[360px] mx-auto my-4" />
@@ -38,7 +39,7 @@ export default function CoreIdeasSection({ content, isUserContent }: Props) {
               {(idea.image_caption || idea.image_attribution) && (
                 <div className="pt-2">
                   {idea.image_caption && (
-                    <p className="text-sm text-ink-dim leading-snug">{unescapeDollar(idea.image_caption)}</p>
+                    <p className="text-sm text-ink-dim leading-snug"><MathText text={idea.image_caption} /></p>
                   )}
                   {idea.image_attribution && (
                     <p className="text-xs text-ink-faint mt-1">{unescapeDollar(idea.image_attribution)}</p>
@@ -57,7 +58,7 @@ export default function CoreIdeasSection({ content, isUserContent }: Props) {
           {idea.in_practice && (
             <div className="bg-(--accent)/10 rounded-lg px-4 py-3">
               <p data-no-read className="label-caps text-(--accent) mb-1.5">In practice</p>
-              <p className="text-sm text-ink leading-relaxed">{unescapeDollar(idea.in_practice)}</p>
+              <p className="text-sm text-ink leading-relaxed"><MathText text={idea.in_practice} /></p>
             </div>
           )}
         </div>

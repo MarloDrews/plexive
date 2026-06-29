@@ -1,6 +1,7 @@
 import type { AuthorContextContent } from "../../types/post"
 import SectionLabel from "../SectionLabel"
 import Prose from "../Prose"
+import MathText from "../MathText"
 import { unescapeDollar } from "@/lib/prose"
 
 interface Props {
@@ -37,7 +38,7 @@ export default function AuthorContextSection({ content }: Props) {
           </div>
         )}
         <div className="flex flex-col gap-2">
-          <Prose className="text-ink-dim">{content.body}</Prose>
+          <Prose className="text-ink-dim"><MathText text={content.body} /></Prose>
           {content.wikipedia_url && (
             <a
               href={content.wikipedia_url}
