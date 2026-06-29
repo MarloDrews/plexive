@@ -1,4 +1,5 @@
 import SectionLabel from "../SectionLabel"
+import MathText from "../MathText"
 import type { AuthorsContextItem } from "../../types/post"
 import { unescapeDollar } from "@/lib/prose"
 
@@ -33,7 +34,7 @@ export default function AuthorsContextSection({ content }: Props) {
                 <span className="text-sm font-semibold text-ink">{unescapeDollar(author.name)}</span>
                 <p className="text-xs font-semibold tracking-widest uppercase text-(--accent)/80">{unescapeDollar(author.role)}</p>
                 {author.one_line && (
-                  <p className="text-sm text-ink-dim leading-snug mt-1">{unescapeDollar(author.one_line)}</p>
+                  <p className="text-sm text-ink-dim leading-snug mt-1"><MathText text={author.one_line} /></p>
                 )}
                 {author.affiliation && (
                   <p className="text-xs text-ink-faint mt-0.5">{unescapeDollar(author.affiliation)}</p>
