@@ -1,5 +1,6 @@
 import SectionLabel from "../SectionLabel"
 import type { CastMember } from "../../types/post"
+import MathText from "../MathText"
 import { unescapeDollar } from "@/lib/prose"
 
 interface Props {
@@ -36,7 +37,7 @@ export default function CastSection({ content }: Props) {
                 </div>
                 <p className="text-xs font-semibold tracking-widest uppercase text-(--accent)/80">{unescapeDollar(member.role)}</p>
                 {member.one_line && (
-                  <p className="text-sm text-ink-dim leading-snug mt-1">{unescapeDollar(member.one_line)}</p>
+                  <p className="text-sm text-ink-dim leading-snug mt-1"><MathText text={member.one_line} /></p>
                 )}
               </div>
             </div>
