@@ -1,4 +1,5 @@
 import katex from "katex"
+import { splitItalics } from "@/lib/italics"
 
 type Segment = { type: "text"; content: string } | { type: "math"; content: string }
 
@@ -53,7 +54,14 @@ export default function MathText({ text, className }: Props) {
   return (
     <span className={className}>
       {segments.map((seg, i) => {
-        if (seg.type === "text") return <span key={i}>{seg.content}</span>
+        if (seg.type === "text")
+          return (
+            <span key={i}>
+              {splitItalics(seg.content).map((run, j) =>
+                run.italic ? <em key={j}>{run.text}</em> : <span key={j}>{run.text}</span>,
+              )}
+            </span>
+          )
         const html = (() => {
           try {
             return katex.renderToString(seg.content, { throwOnError: false, output: "html" })
