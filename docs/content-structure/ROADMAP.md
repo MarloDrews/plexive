@@ -58,9 +58,10 @@ the lookup later.
 - Per-format key section: each format designates the one section marked with the
   accent left-border (see `LAYOUT_STANDARD.md` section 7). Decide it in each
   format's own chat. Facts (the surprises section), Concepts (the how_to_apply
-  section), and Books (the heart section) are decided; facts and concepts are
-  rendered in the web frontend, and books is fixed in its skeleton and renders when
-  the books pass reaches the frontend. The others: open.
+  section), Books (the heart section), and Academy (the key_findings section) are
+  decided; facts and concepts are rendered in the web frontend, books is fixed in
+  its skeleton and renders when the books pass reaches the frontend, and Academy is
+  fixed in its skeleton as the accent-bordered KEY SECTION. The others: open.
 - Latent-edge display: only a person edge can point at a post that does not exist
   yet, activating when that person's post is created. Non-person connections to a
   missing target are not stored at all. Anywhere edges surface, "Read next" now

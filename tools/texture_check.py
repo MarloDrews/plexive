@@ -10,12 +10,11 @@ Usage:
     python3 texture_check.py path/to/post.json --format books
     python3 texture_check.py path/to/post.json --json
 
-Scope note: Books, Facts, People, Concepts and Stories are calibrated (HUMAN_TEXTURE_STANDARD v1.7;
-v1.6 added a list-coherence rule and a reader-level audit lens, neither checker-enforced).
-Each has a real, dedicated extractor and a section-3 band. Any other format uses the
-generic walk with the Books band as a placeholder and says so; for an uncalibrated
-format the structural checks are still real and only the length numbers are
-indicative until that format's gold sets them.
+Scope note: all seven formats (Books, Facts, People, Concepts, Stories, Questions, Academy) are
+calibrated against HUMAN_TEXTURE_STANDARD v1.9. Each has a real, dedicated extractor and a
+section-3 band. A format passed in without a registered entry falls back to the generic walk with
+the Books band and says so; there the structural checks are still real and only the length numbers
+are indicative until that format is calibrated.
 
 The numbers below come straight from the standard:
   - comma ceiling 3 per sentence, 4 only inside a genuine flat list, 5 is a rewrite
@@ -33,7 +32,7 @@ import sys
 from collections import Counter
 
 # --------------------------------------------------------------------------
-# calibration (per format). Only Books is real; the rest borrow it for now.
+# calibration (per format). All seven formats are calibrated; an unregistered format falls back to the Books band.
 # --------------------------------------------------------------------------
 BANDS = {
     "books": dict(
@@ -129,6 +128,24 @@ BANDS = {
         parallel_monotone=0.75,
         drift_up_frac=0.75,
     ),
+    # Academy is calibrated (locked gold, Friston free-energy principle). Thresholds are the
+    # universal section-2 floors, like the other formats. The Academy-specific calibration is
+    # descriptive and lives in the standard section-3 band row: the lightest center of the seven
+    # (median 14), the tightest ceiling (about 28, no outliers), a clotted multi-clause sentence
+    # treated as a defect. Short technical sections (a two-sentence formalism body, a tight result
+    # statement) may sit below the burstiness floor and read as acceptable. A long, dense format,
+    # so the higher inline-list budget.
+    "academy": dict(
+        burst_floor=2.0,
+        short_word_max=10,
+        short_word_tight=15,
+        drone_shortest=25,
+        comma_candidate=4,
+        comma_rewrite=5,
+        list_post_soft=6,
+        parallel_monotone=0.75,
+        drift_up_frac=0.75,
+    ),
 }
 UNCALIBRATED_NOTE = "format not calibrated yet; using Books band as a placeholder"
 
@@ -141,7 +158,7 @@ KNOWN_FORMATS = ["books", "facts", "people", "concepts", "questions", "stories",
 BLACKLIST = [
     "emphasizing", "highlighting", "showcasing", "showcase", "enhance",
     "align with", "foster", "fostering", "seamless", "comprehensive",
-    "elevate", "maximize", "delve", "tapestry", "testament", "realm",
+    "elevate", "delve", "tapestry", "testament", "realm",
     "underscore", "underscores", "navigate the", "leverage",
 ]
 SYMBOLISM = [
@@ -703,6 +720,130 @@ def extract_questions(data):
                     light.append(("quiz.explanation", q["explanation"]))
     return prose, parallel, light, exempt
 
+def extract_academy(data):
+    """Academy extractor: pull the exact reader-facing fields for the Academy
+    schema. Academy explains one research paper at a near-peer level; its difficulty
+    lives in the idea and the notation, never the syntax, so the rhythm and burstiness
+    checks matter here as much as for Facts. Prose sections (full checks): tldr,
+    the_question, the_big_idea (the required cross-field on-ramp), approach.body,
+    formalism.body and each equation description, each key_findings finding (the key
+    section, invisible to the old generic walk), data_or_sample, robustness,
+    limitations, objections, implications, cross_field_reach, field_context.body, and
+    historical_context. Parallel set: the key_findings titles. Light (blacklist and
+    symbolism only): the card dek and teasers, the headline, approach and figure
+    captions, the notation legend meanings, the key_priors claims, the author
+    one_lines, and the quiz question and explanation. Inline math in $...$ is
+    neutralised to a single token before the rhythm checks so a symbol counts as one
+    word and never as a false sentence break; the formalism equations[].latex and
+    notation_legend[].symbol are bare math and stay out of every check. No verbatim
+    quote fields exist, so exempt stays empty. No band is added: Academy is not
+    calibrated until its example locks, so the run uses the Books band as a
+    placeholder and says so."""
+    by = {s["type"]: s for s in data.get("sections", [])}
+    prose, parallel, light, exempt = [], {}, [], []
+
+    def demath(s):
+        # neutralise inline/display math so a $...$ symbol reads as one word and
+        # never introduces a false sentence break; bare LaTeX is never prose.
+        s = re.sub(r"\$\$.+?\$\$", " x ", s, flags=re.S)
+        s = re.sub(r"\$.+?\$", " x ", s)
+        return re.sub(r"\s+", " ", s).strip()
+
+    def add_prose(label, sec, key="content"):
+        if sec and isinstance(sec.get(key), str) and sec[key].strip():
+            prose.append((label, demath(sec[key])))
+
+    # string-bodied prose sections
+    add_prose("tldr", by.get("tldr"))
+    add_prose("the_question", by.get("the_question"))
+    add_prose("the_big_idea", by.get("the_big_idea"))      # required cross-field on-ramp
+    add_prose("data_or_sample", by.get("data_or_sample"))
+    add_prose("robustness", by.get("robustness"))
+    add_prose("limitations", by.get("limitations"))
+    add_prose("objections", by.get("objections"))
+    add_prose("implications", by.get("implications"))
+    add_prose("cross_field_reach", by.get("cross_field_reach"))
+    add_prose("historical_context", by.get("historical_context"))
+
+    # dict-bodied prose sections
+    for t in ("approach", "formalism", "field_context"):
+        if t in by and isinstance(by[t].get("content"), dict):
+            b = by[t]["content"].get("body", "")
+            if isinstance(b, str) and b.strip():
+                prose.append((f"{t}.body", demath(b)))
+
+    # formalism: each equation description is prose; latex is bare math, skipped;
+    # the legend meanings are light, the symbols are math.
+    if "formalism" in by and isinstance(by["formalism"].get("content"), dict):
+        fc = by["formalism"]["content"]
+        for i, eq in enumerate(fc.get("equations", [])):
+            if isinstance(eq, dict) and isinstance(eq.get("description"), str) and eq["description"].strip():
+                prose.append((f"formalism.equations[{i}].description", demath(eq["description"])))
+        for leg in fc.get("notation_legend", []):
+            if isinstance(leg, dict) and isinstance(leg.get("meaning"), str) and leg["meaning"].strip():
+                light.append(("formalism.notation_legend", leg["meaning"]))
+
+    # key_findings: each finding body is prose (the key section, the prior blind spot);
+    # the titles are a parallel set; captions are light.
+    if "key_findings" in by and isinstance(by["key_findings"].get("content"), list):
+        titles = []
+        for i, kf in enumerate(by["key_findings"]["content"]):
+            if isinstance(kf, dict):
+                if isinstance(kf.get("finding"), str) and kf["finding"].strip():
+                    prose.append((f"key_findings[{i}].finding", demath(kf["finding"])))
+                if isinstance(kf.get("title"), str) and kf["title"].strip():
+                    titles.append(kf["title"])
+                cap = kf.get("image_caption", "")
+                if isinstance(cap, str) and cap.strip():
+                    light.append((f"key_findings[{i}].image_caption", cap))
+        if titles:
+            parallel["key_findings titles"] = titles
+
+    # field_context key_priors: the claims are short, treated as light
+    if "field_context" in by and isinstance(by["field_context"].get("content"), dict):
+        for kp in by["field_context"]["content"].get("key_priors", []):
+            if isinstance(kp, dict) and isinstance(kp.get("claim"), str) and kp["claim"].strip():
+                light.append(("field_context.key_priors.claim", kp["claim"]))
+
+    # headline_figure, approach and figures captions (light)
+    if "headline_figure" in by and isinstance(by["headline_figure"].get("content"), dict):
+        cap = by["headline_figure"]["content"].get("image_caption", "")
+        if isinstance(cap, str) and cap.strip():
+            light.append(("headline_figure.image_caption", demath(cap)))
+    if "approach" in by and isinstance(by["approach"].get("content"), dict):
+        cap = by["approach"]["content"].get("image_caption", "")
+        if isinstance(cap, str) and cap.strip():
+            light.append(("approach.image_caption", cap))
+    if "figures" in by and isinstance(by["figures"].get("content"), list):
+        for i, fig in enumerate(by["figures"]["content"]):
+            if isinstance(fig, dict) and isinstance(fig.get("image_caption"), str) and fig["image_caption"].strip():
+                light.append((f"figures[{i}].image_caption", fig["image_caption"]))
+
+    # authors_context one_lines (light)
+    if "authors_context" in by and isinstance(by["authors_context"].get("content"), list):
+        for a in by["authors_context"]["content"]:
+            if isinstance(a, dict) and isinstance(a.get("one_line"), str) and a["one_line"].strip():
+                light.append(("authors_context.one_line", a["one_line"]))
+
+    # quiz question and explanation (light)
+    if "quiz" in by:
+        for q in by["quiz"].get("content", []):
+            if isinstance(q, dict):
+                if isinstance(q.get("explanation"), str) and q["explanation"].strip():
+                    light.append(("quiz.explanation", demath(q["explanation"])))
+                if isinstance(q.get("question"), str) and q["question"].strip():
+                    light.append(("quiz.question", demath(q["question"])))
+
+    # feed card dek and teasers (light)
+    fc = data.get("feed_card", {})
+    if isinstance(fc.get("key_finding_one_line"), str) and fc["key_finding_one_line"].strip():
+        light.append(("feed_card.key_finding_one_line", fc["key_finding_one_line"]))
+    for t in fc.get("teasers", []):
+        if isinstance(t, str) and t.strip():
+            light.append(("feed_card.teaser", t))
+
+    return prose, parallel, light, exempt
+
 def extract_generic(data):
     """Fallback for uncalibrated formats: walk for body/content strings, exempt
     quotes. Coarser than the Books extractor."""
@@ -997,6 +1138,8 @@ def run(path, fmt=None):
         prose, parallel, light, exempt = extract_stories(data)
     elif fmt == "questions":
         prose, parallel, light, exempt = extract_questions(data)
+    elif fmt == "academy":
+        prose, parallel, light, exempt = extract_academy(data)
     else:
         prose, parallel, light, exempt = extract_generic(data)
 

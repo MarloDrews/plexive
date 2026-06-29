@@ -6,10 +6,16 @@
 // academy format color (var(--accent) at runtime; values live in SVG_STANDARD.md).
 //
 // Three principles distinguish the Academy format:
-//   1. Accessibility comes through STRUCTURE, not simplification. Fachsprache,
-//      notation, p-values, effect sizes, and method names stay untranslated. The
-//      structure (paper-at-a-glance first, method in the middle, critique and
-//      implications last) carries a non-specialist through, not dumbed-down prose.
+//   1. Accessibility comes through STRUCTURE and SENTENCE LENGTH, not through
+//      dumbing the science down. The content stays hard: Fachsprache, notation,
+//      p-values, effect sizes, and method names stay untranslated, and the results
+//      keep their full rigor. What lightens is the prose. The sentences are the
+//      shortest and plainest of the seven formats, so a reader spends effort on the
+//      idea, not on parsing the syntax. A hard idea is carried by more short
+//      sentences, never by one long clotted one. And the structure leads with the
+//      plain-language on-ramp (the_big_idea), then the paper at a glance, the method
+//      in the middle, critique and implications last. Hard ideas, light sentences,
+//      the on-ramp first.
 //   2. The equations and figures are CONSTITUTIVE, not decorative. For a model or
 //      a derivation the formalism IS the explanation, load-bearing the way the
 //      mechanism diagram is in Concepts. The headline figure is the format's
@@ -34,8 +40,9 @@
 //
 // ─── POST SHAPE ──────────────────────────────────────────────────────
 // Always present (the spine): paper_card, tldr, headline_figure, at_a_glance,
-// the_question, approach, key_findings, limitations, implications, quiz, sources.
-// Beyond the spine, include an OPTIONAL section (the_big_idea, field_context,
+// the_question, the_big_idea, approach, key_findings, limitations, implications,
+// quiz, sources.
+// Beyond the spine, include an OPTIONAL section (field_context,
 // formalism, data_or_sample, figures, robustness, objections, cross_field_reach,
 // authors_context, historical_context) only where this paper passes that
 // section's own Include test. Do not include every optional every time; that is
@@ -97,6 +104,12 @@
 //
 // ─── PROSE ───────────────────────────────────────────────────────────
 // Zero em-dashes in user-facing text. Full prose rules: STYLE_GUIDE_LONGFORM.md.
+// ─── ITALICS CONVENTION ──────────────────────────────────────────────
+// Titles of works and the names of theories, frameworks, and schools take *...* asterisk
+//   italics on mention (the *free-energy principle*, *predictive coding*). Asterisk is the only
+//   marker, read only OUTSIDE the $...$ math spans, so an asterisk inside math is untouched;
+//   avoid stray asterisk pairs. Named principles and laws are not frameworks and stay plain
+//   (Occam's razor). Full borderline policy: STYLE_GUIDE_LONGFORM.md.
 // Schema and rationale: DEEPSCROLL_CONTENT_STRUCTURE.md. Diagrams: SVG_STANDARD.md.
 // Sourced images (photos, portraits, card images): IMAGE_STANDARD.md.
 
@@ -176,7 +189,11 @@
                                   // intriguing: a real tension or open question, a
                                   // surprising angle, or a striking method or number
                                   // (e.g. a large pre-registered sample). Vary
-                                  // structure across the three.
+                                  // structure across the three. See A11 in
+                                  // STYLE_GUIDE_LONGFORM.md: a teaser uses the plain
+                                  // words the reader already has, and makes a true
+                                  // promise the post keeps, never a claim that is
+                                  // false on its face.
     "post_difficulty": 3          // HARD: 1, 2, or 3 on the ACADEMY expert scale
                                   // (1 = readable from an adjacent field, 2 =
                                   // domain expertise needed, 3 = subfield
@@ -188,8 +205,9 @@
   "sections": [
 
     // ── PART 1: THE PAPER AT A GLANCE (~60 sec read) ──────────────────
-    // Citation, the expert summary, the carrying figure, the methodology card. A
-    // reader who stops after this part can cite the paper and state its result.
+    // The plain-language on-ramp, then the citation, the expert summary, the
+    // carrying figure, the methodology card. A reader who stops after this part has
+    // the idea, and can cite the paper and state its result.
 
     {
       "type": "paper_card",   // The Citation (REQUIRED)
@@ -233,11 +251,40 @@
     },
 
     {
-      "type": "tldr",   // The Hallway Summary (REQUIRED)
+      "type": "the_big_idea",   // The Idea, For a Neighbour (REQUIRED)
       "order": 2,
+      // JOB: carry the conceptual payoff layer for a reader from outside the field,
+      //      notation stripped, scientific level intact: what the core idea is, why
+      //      it matters, and a raised, high-level impression of the result. A
+      //      cross-field reader reads this section alone, skips the technical middle,
+      //      and still walks away with the point.
+      // Self-contained: this section is that reader's whole experience, understood on
+      //   its own without any other section. Every term a non-specialist would not
+      //   know is defined in passing or avoided. Do not dumb the science down and do
+      //   not manufacture a folksy gloss; the level stays intact, only the notation
+      //   and the assumed background go. As the cross-field on-ramp every Academy
+      //   post owes its readers it is always present; an honest plain-language
+      //   framing of the idea and why it matters exists for any real paper, so find
+      //   it rather than skip it.
+      // Owns: the standalone cross-field payoff layer, the idea plus why it matters
+      //   plus a raised impression of the result. Not here: the in-field peer summary
+      //   (tldr), the gap (the_question), and the full enumerated results with their
+      //   magnitudes and the derivation (key_findings); the upshot here is a
+      //   high-level impression, while the quantified findings and the worked core
+      //   stay in key_findings.
+      "content": ""  // string. Guideline: one paragraph, about 90 to 170 words, no
+                     // domain-specific notation, scientific level preserved.
+    },
+
+    {
+      "type": "tldr",   // The Hallway Summary (REQUIRED)
+      "order": 3,
       // JOB: state the result and why it matters in the few technical sentences a
       //      peer would give in the hallway. A reader who stops here can repeat the
       //      result accurately to a colleague.
+      // This is the in-field read for a peer. The plain-language on-ramp
+      //      (the_big_idea) now comes before it, so the tldr need not be the
+      //      accessible entry and stays technical.
       // Owns: the in-field peer summary, result first, notation allowed. Not here:
       //   the cross-field translation (the_big_idea), the enumerated results with
       //   magnitudes (key_findings), the one carrying figure (headline_figure).
@@ -248,7 +295,7 @@
 
     {
       "type": "headline_figure",   // The Carrying Figure (REQUIRED)
-      "order": 3,
+      "order": 4,
       // JOB: show the one figure that, on its own, conveys the result. The format's
       //      always-present constitutive visual. A reader who stops here has seen
       //      the result, not just read the figure number.
@@ -277,7 +324,7 @@
 
     {
       "type": "at_a_glance",   // The Methodology Card (REQUIRED)
-      "order": 4,
+      "order": 5,
       // JOB: surface the methodology signals a reader uses to judge a paper, so a
       //      reader who stops here knows how strong the evidence is. Fill every
       //      applicable key honestly. result_direction and replication_status are
@@ -318,11 +365,11 @@
 
     // ── PART 2: THE RESEARCH QUESTION ─────────────────────────────────
     // What the paper asks and the debate it joins. the_question is required;
-    // the_big_idea and field_context are optional layers.
+    // field_context is an optional layer.
 
     {
       "type": "the_question",   // The Open Problem (REQUIRED)
-      "order": 5,
+      "order": 6,
       // JOB: state the precise open problem the paper tests and the live debate it
       //      enters, so a reader who stops here knows what gap the paper addresses.
       //      Not "the authors study X" but the actual open question: what was
@@ -332,26 +379,6 @@
       "content": ""  // string. Guideline: 2-4 sentences. Assume domain knowledge;
                      // name the prior positions if the question is a referendum on
                      // them. Inline math in $...$.
-    },
-
-    {
-      "type": "the_big_idea",   // The Idea, For a Neighbour (OPTIONAL)
-      "order": 6,
-      // JOB: translate the paper's core idea for an intelligent reader from outside
-      //      the field, notation stripped, scientific level intact, so someone who
-      //      does not know the field grasps the core idea.
-      // Self-contained: a reader understands this section on its own, without any
-      //   other section. Every term a non-specialist would not know is either
-      //   defined in passing or avoided.
-      // Include when: an honest plain-language translation of the core idea exists,
-      //   which is most posts.
-      // Skip when: no honest non-specialist framing is possible. Do not manufacture
-      //   a folksy gloss.
-      // Owns: the standalone plain-language translation of the core idea. Not here:
-      //   the in-field peer summary (tldr), the gap (the_question), the full
-      //   enumerated results (key_findings).
-      "content": ""  // string. Guideline: one paragraph, 60-140 words, no
-                     // domain-specific notation, scientific level preserved.
     },
 
     {
@@ -504,8 +531,9 @@
       //   single study as settled, and report a null or negative result plainly,
       //   never as a disappointment.
       // Owns: the full enumerated results. Not here: the one carrying figure
-      //   (headline_figure), the in-field summary (tldr), the downstream
-      //   consequences (implications), the paper's own stress tests (robustness).
+      //   (headline_figure), the in-field summary (tldr), the cross-field on-ramp
+      //   and its high-level upshot (the_big_idea), the downstream consequences
+      //   (implications), the paper's own stress tests (robustness).
       // HARD: array length 3-7. Prefer 4 solid findings over 7 thin ones. Order by
       //   importance, not by the paper's section order; lead with the headline result.
       "content": [
