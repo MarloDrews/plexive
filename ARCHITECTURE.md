@@ -170,7 +170,7 @@ frontend/
       NearbyConceptsSection.tsx concepts: list of related concepts with distinctions
       TheQuestionSection.tsx    the_question as a labeled prose section ("The Question") with MathText; questions filters it out of the body (it is the typographic header headline there), so this form renders only for academy's the_question (The Open Problem, a real body section)
       PaperCardSection.tsx      academy: bordered citation record without the title (it is the page headline, rendered once, LAYOUT_STANDARD s3): authors+affiliations, venue/year/funding, doi.org + arXiv links
-      TldrSection.tsx           academy: "TL;DR" hallway summary prose with inline MathText
+      TldrSection.tsx           academy: "In Brief" hallway summary prose with inline MathText
       HeadlineFigureSection.tsx academy: the carrying figure (visual_svg or sourced image_url + caption via MathText + attribution)
       AtAGlanceSection.tsx      (also academy) methodology card: renders only the present keys (absent sample_size/pre_registered/open_data/open_code read as N/A, never "No")
       ApproachSection.tsx       academy: method prose (MathText) + optional method/architecture visual_svg

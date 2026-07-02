@@ -9,7 +9,7 @@ interface Props {
 export default function TldrSection({ content }: Props) {
   return (
     <div className="px-6 py-8">
-      <SectionLabel className="mb-3">TL;DR</SectionLabel>
+      <SectionLabel className="mb-3">In Brief</SectionLabel>
       <Prose>
         <MathText text={content} />
       </Prose>
