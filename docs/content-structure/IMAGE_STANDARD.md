@@ -71,13 +71,13 @@ earn their place by showing something the text cannot.
   none.
 - Caption then credit sit below the image, small and muted, the credit smallest.
 - **Card anchor:** books and people always put a cover-shaped image on the feed card beside the
-  headline, never a field glyph. People uses a real portrait. Books uses a real
+  headline, never a category glyph. People uses a real portrait. Books uses a real
   cover only when a genuinely free one exists with a verified rights record, and
   otherwise a programmatically generated cover in the Stage system; a copyrighted
   cover is never used. Stories may put a real
   licensed image on the card when one fits the narrative, falling back to the
-  field glyph when none does. The remaining typographic formats (facts, concepts,
-  questions, academy) carry no card image; their card uses a small field glyph
+  category glyph when none does. The remaining typographic formats (facts, concepts,
+  questions, academy) carry no card image; their card uses a small category glyph
   (see `SVG_STANDARD.md`), and any photos for them live in the post body.
 - **Body image:** a rest between blocks of text and drawn graphics. It counts
   toward the post's visual-anchor budget and obeys the no-two-visuals-back-to-back
@@ -93,9 +93,9 @@ earn their place by showing something the text cannot.
 1. **Card anchor** (feed card): people (a real portrait) always; books a cover
    always, real when a genuinely free one exists with a rights record and otherwise
    a programmatically generated Stage cover, never copyrighted; stories when a
-   fitting licensed image exists, else the field glyph. The
+   fitting licensed image exists, else the category glyph. The
    remaining typographic formats (facts, concepts, questions, academy) use a small
-   field glyph, no card image (see `SVG_STANDARD.md` card rules).
+   category glyph, no card image (see `SVG_STANDARD.md` card rules).
 2. **Illustrative image** (in a post body): a photo or artwork that shows the
    subject and gives the eye a rest. Optional, depends on a fitting licensed image
    existing.

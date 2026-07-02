@@ -40,12 +40,12 @@ the new render path, so no data migration is required.
 
 - Build the remaining six formats the way Facts was built: skeleton, then a fully
   worked benchmark example, propagating every Facts-contract decision (typographic
-  card, field glyph, graph fields, image roles, prose tells, font floor). Then the
+  card, category glyph, graph fields, image roles, prose tells, font floor). Then the
   per-format bulk generation prompts.
 - Quiz interaction: show one question at a time; answer, read the explanation,
   then advance (the next slides in); Elo at the end. Separate frontend run.
 - Mobile app parity: the React Native app still uses the older card and header;
-  bring it to the typographic card, field glyph, and redesigned detail header
+  bring it to the typographic card, category glyph, and redesigned detail header
   after the frontend look is settled.
 - Read-only unused-field report for Facts, then prune docs and JSON to match.
 - Key-figure person card text is too small (frontend CSS); enlarge and raise

@@ -276,7 +276,7 @@ at low opacity, numeric labels in `var(--font-mono)`.
 ## 6. The category glyph
 
 On the typographic formats (facts, concepts, questions, academy) the feed card is
-clean and typographic: an accent bar down the left, the category label at the left of a short field line, and a **large category glyph
+clean and typographic: an accent bar down the left, the category label at the left of a short category line, and a **large category glyph
 filling the top right** of the card down to the headline, then the large serif
 headline, teasers, footer. The glyph is the only drawn mark on the card, a bold
 category symbol.
@@ -290,7 +290,7 @@ the individual post. It is resolved from the per-slug glyph set in
 slug), keyed by tags[0]. A generator never invents a per-post glyph and carries no
 per-post `card_visual`; the mark is looked up from the slug.
 
-A field glyph is **not a shrunk diagram**. It renders large, filling the top right of
+A category glyph is **not a shrunk diagram**. It renders large, filling the top right of
 the card from the top edge down to the headline, so it must still be one clear symbol
 of a few strokes that reads in a glance, not a busy illustration.
 
