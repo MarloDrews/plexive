@@ -49,8 +49,11 @@ SLUGS = [
     "scarcity",
 ]
 
+_SMALL_WORDS = {"of", "and", "the", "in", "to", "a", "for", "on", "at", "by", "with", "or", "as", "vs"}
+
 NAME_EXCEPTIONS = {
     "money-everyday": "Personal Finance",
+    "trade-offs": "Trade-offs",
 }
 
 SEED_EMAIL = "marlo07drews@gmail.com"
@@ -111,7 +114,11 @@ def _post_title(feed_card: dict) -> str:
 def slug_to_name(slug):
     if slug in NAME_EXCEPTIONS:
         return NAME_EXCEPTIONS[slug]
-    return slug.replace("-", " ").title()
+    words = slug.split("-")
+    return " ".join(
+        w.capitalize() if i == 0 or w not in _SMALL_WORDS else w
+        for i, w in enumerate(words)
+    )
 
 
 def _slug_from_filename(filename: str) -> str:
