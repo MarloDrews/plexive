@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { formatStyle } from "@/lib/formats"
 import { unescapeDollar } from "@/lib/prose"
-import { fcNum, fcStr, type CardVisual, type Post } from "@/types/post"
+import { fcNum, fcStr, type Post } from "@/types/post"
+import { FIELD_GLYPHS } from "@/lib/glyphs"
 import SectionRenderer from "@/components/SectionRenderer"
 import SectionLabel from "@/components/SectionLabel"
 import HeadlineSection from "@/components/sections/HeadlineSection"
@@ -26,16 +27,18 @@ import { queueEvent, hasPendingLike, cancelPendingLike } from "@/app/lib/eventQu
 import { likePost, unlikePost, isPostLiked, getCachedLikeCount, setCachedLikeCount, isLikeSent, markLikeSent, unmarkLikeSent } from "@/app/lib/likedPosts"
 import { updatePostInFeedCaches } from "@/app/lib/swr"
 
-// Small field glyph at the right end of the facts field line, mirroring the
-// feed card (~28px tall, aspect preserved). The glyph belongs to the field, not
-// the post (a future field-to-glyph set, see ROADMAP.md); for now it renders the
-// inline card_visual.svg (compact viewBox). SVG security split handled by SvgBlock.
-function FieldGlyph({ cv, isUserContent }: { cv: CardVisual | undefined; isUserContent: boolean }) {
-  if (!cv?.svg) return null
+// Small category glyph at the right end of the category line, mirroring the feed
+// card (~28px tall, aspect preserved). The glyph belongs to the post's primary
+// category, its first tag (tags[0]), looked up from the app-owned FIELD_GLYPHS set
+// (ROADMAP.md), not a per-post card_visual. Trusted app content, so it always
+// renders via the official SVG path (isUserContent=false).
+function FieldGlyph({ slug }: { slug: string | undefined }) {
+  const svg = slug ? FIELD_GLYPHS[slug] : undefined
+  if (!svg) return null
   return (
     <SvgBlock
-      svg={cv.svg}
-      isUserContent={isUserContent}
+      svg={svg}
+      isUserContent={false}
       className="shrink-0 [&_svg]:h-7 [&_svg]:w-auto [&_img]:h-7 [&_img]:w-auto"
     />
   )
@@ -403,15 +406,12 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                      doubles. */
                   <div className="relative">
                     <div className="px-6 pt-4 flex items-start justify-between gap-3">
-                      {fcStr(post.feed_card, "field") && (
+                      {post.primary_category_name && (
                         <p className="label-caps text-(--accent)">
-                          {fcStr(post.feed_card, "field")}
+                          {post.primary_category_name}
                         </p>
                       )}
-                      <FieldGlyph
-                        cv={(post.feed_card as { card_visual?: CardVisual }).card_visual}
-                        isUserContent={post.is_user_content}
-                      />
+                      <FieldGlyph slug={post.tags?.[0]} />
                     </div>
                     <HeadlineSection content={post.title} />
                     {/* Dek — the one-line plain-language gloss from the feed card,
@@ -438,15 +438,12 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                      section below. */
                   <div className="relative">
                     <div className="px-6 pt-4 flex items-start justify-between gap-3">
-                      {fcStr(post.feed_card, "field") && (
+                      {post.primary_category_name && (
                         <p className="label-caps text-(--accent)">
-                          {fcStr(post.feed_card, "field")}
+                          {post.primary_category_name}
                         </p>
                       )}
-                      <FieldGlyph
-                        cv={(post.feed_card as { card_visual?: CardVisual }).card_visual}
-                        isUserContent={post.is_user_content}
-                      />
+                      <FieldGlyph slug={post.tags?.[0]} />
                     </div>
                     <HeadlineSection content={post.title} accentNumbers={false} />
                     {/* Context line: authors_compact already carries the year
@@ -586,10 +583,7 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                       />
                     ) : (
                       <div className="px-6 pt-4 flex justify-end">
-                        <FieldGlyph
-                          cv={(post.feed_card as { card_visual?: CardVisual }).card_visual}
-                          isUserContent={post.is_user_content}
-                        />
+                        <FieldGlyph slug={post.tags?.[0]} />
                       </div>
                     )}
                     {fcStr(post.feed_card, "era_label") && (

@@ -10,8 +10,9 @@ import { savePost, unsavePost, isPostSaved } from "@/app/lib/savedPosts"
 import { requestAutoRead } from "@/lib/readAloud/autostart"
 import { likePost, unlikePost, isPostLiked, getCachedLikeCount, setCachedLikeCount, isLikeSent, markLikeSent, unmarkLikeSent } from "@/app/lib/likedPosts"
 import { updatePostInFeedCaches } from "@/app/lib/swr"
-import { fcNum, fcStr, type CardVisual, type Post } from "@/types/post"
+import { fcNum, fcStr, type Post } from "@/types/post"
 import { formatStyle } from "@/lib/formats"
+import { FIELD_GLYPHS } from "@/lib/glyphs"
 import { unescapeDollar } from "@/lib/prose"
 import Avatar from "@/components/Avatar"
 import BookCover from "@/components/BookCover"
@@ -43,19 +44,20 @@ function Teasers({ items }: { items: string[] }) {
   )
 }
 
-// Small field glyph for the typographic formats: a quiet category mark (~28px
-// tall) that sits at the right end of the field line, not a card image. The
-// glyph belongs to the field, not the post (a future field-to-glyph set, see
-// ROADMAP.md); for now it renders the inline card_visual.svg (compact viewBox,
-// e.g. 0 0 56 32). var(--accent) resolves from the card's --accent; the SVG
-// security split (user vs official) is handled by SvgBlock. h-7/w-auto forces a
-// small fixed height regardless of the svg's own sizing, aspect preserved.
-function FieldGlyph({ cv, isUserContent }: { cv: CardVisual | undefined; isUserContent: boolean }) {
-  if (!cv?.svg) return null
+// Small category glyph for the typographic formats: a quiet mark (~28px tall)
+// that sits at the right end of the category line, not a card image. The glyph
+// belongs to the post's primary category, its first tag (tags[0]), and is looked
+// up from the app-owned FIELD_GLYPHS set (ROADMAP.md), not from a per-post
+// card_visual. Because the glyph is trusted app content, it always renders via
+// the official SVG path (isUserContent=false). var(--accent) resolves from the
+// card's --accent; h-7/w-auto forces a small fixed height, aspect preserved.
+function FieldGlyph({ slug }: { slug: string | undefined }) {
+  const svg = slug ? FIELD_GLYPHS[slug] : undefined
+  if (!svg) return null
   return (
     <SvgBlock
-      svg={cv.svg}
-      isUserContent={isUserContent}
+      svg={svg}
+      isUserContent={false}
       className="shrink-0 [&_svg]:h-7 [&_svg]:w-auto [&_img]:h-7 [&_img]:w-auto"
     />
   )
@@ -450,10 +452,10 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
                   its right end) then the full-width serif headline below. */}
               <div className="flex flex-col gap-1">
                 <div className="flex items-start justify-between gap-3">
-                  {fcStr(fc, "field") && (
-                    <p className="label-caps text-(--accent)">{fcStr(fc, "field")}</p>
+                  {post.primary_category_name && (
+                    <p className="label-caps text-(--accent)">{post.primary_category_name}</p>
                   )}
-                  <FieldGlyph cv={fc.card_visual as CardVisual | undefined} isUserContent={post.is_user_content} />
+                  <FieldGlyph slug={post.tags?.[0]} />
                 </div>
                 <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
                   {fc.headline as string}
@@ -472,10 +474,10 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
               {/* Field line: field label left, small glyph at its right end, the
                   same as the facts card (LAYOUT_STANDARD s2.1). */}
               <div className="flex items-start justify-between gap-3">
-                {fcStr(fc, "field") && (
-                  <p className="label-caps text-(--accent)">{fcStr(fc, "field")}</p>
+                {post.primary_category_name && (
+                  <p className="label-caps text-(--accent)">{post.primary_category_name}</p>
                 )}
-                <FieldGlyph cv={fc.card_visual as CardVisual | undefined} isUserContent={post.is_user_content} />
+                <FieldGlyph slug={post.tags?.[0]} />
               </div>
               <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
                 {fcStr(fc, "concept_name")}
@@ -496,10 +498,10 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
               {/* Field line: field label left, small glyph at its right end, the
                   same as the facts/concepts cards (LAYOUT_STANDARD s2.1). */}
               <div className="flex items-start justify-between gap-3">
-                {fcStr(fc, "field") && (
-                  <p className="label-caps text-(--accent)">{fcStr(fc, "field")}</p>
+                {post.primary_category_name && (
+                  <p className="label-caps text-(--accent)">{post.primary_category_name}</p>
                 )}
-                <FieldGlyph cv={fc.card_visual as CardVisual | undefined} isUserContent={post.is_user_content} />
+                <FieldGlyph slug={post.tags?.[0]} />
               </div>
               <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
                 {fcStr(fc, "the_question")}
@@ -554,12 +556,12 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
                   {fcStr(fc, "era_label") && (
                     <span className="label-caps text-(--accent)">{fcStr(fc, "era_label")}</span>
                   )}
-                  {fcStr(fc, "category") && (
-                    <span className="label-caps text-ink-faint">{fcStr(fc, "category")}</span>
+                  {post.primary_category_name && (
+                    <span className="label-caps text-ink-faint">{post.primary_category_name}</span>
                   )}
                 </div>
                 {!fcStr(fc, "lead_image_url") && (
-                  <FieldGlyph cv={fc.card_visual as CardVisual | undefined} isUserContent={post.is_user_content} />
+                  <FieldGlyph slug={post.tags?.[0]} />
                 )}
               </div>
               <h2 className="font-serif text-2xl font-medium tracking-tight text-ink leading-snug">
@@ -580,10 +582,10 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
                   title. */}
               <div className="flex flex-col gap-1">
                 <div className="flex items-start justify-between gap-3">
-                  {fcStr(fc, "field") && (
-                    <p className="label-caps text-(--accent)">{fcStr(fc, "field")}</p>
+                  {post.primary_category_name && (
+                    <p className="label-caps text-(--accent)">{post.primary_category_name}</p>
                   )}
-                  <FieldGlyph cv={fc.card_visual as CardVisual | undefined} isUserContent={post.is_user_content} />
+                  <FieldGlyph slug={post.tags?.[0]} />
                 </div>
                 <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
                   {fcStr(fc, "title") || post.title}

@@ -500,4 +500,8 @@ export interface Post {
   // reading_time.py); present on both list and detail responses.
   reading_minutes: number
   interests: string[]
+  // Display name of the primary category (tags[0]), resolved on the server from
+  // the post's own interests (Interest.name) so the card eyebrow and the interest
+  // chips label the same slug identically. Null when tags[0] is absent/unmapped.
+  primary_category_name?: string | null
 }
