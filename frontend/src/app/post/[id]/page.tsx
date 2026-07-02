@@ -27,22 +27,23 @@ import { queueEvent, hasPendingLike, cancelPendingLike } from "@/app/lib/eventQu
 import { likePost, unlikePost, isPostLiked, getCachedLikeCount, setCachedLikeCount, isLikeSent, markLikeSent, unmarkLikeSent } from "@/app/lib/likedPosts"
 import { updatePostInFeedCaches } from "@/app/lib/swr"
 
-// Small category glyph anchoring the START of the field line, before the category
-// label, with a clear gap between them, mirroring the feed card (~28px tall,
-// aspect preserved). The glyph belongs to the post's primary category, its first
-// tag (tags[0]), looked up from the app-owned FIELD_GLYPHS set (ROADMAP.md), not a
-// per-post card_visual. Trusted app content, so it always renders via the official
-// SVG path (isUserContent=false). order-first puts the glyph ahead of the label in
-// the flex row; the row (items-center gap-3) keeps them left-aligned and
-// vertically centered (LAYOUT_STANDARD s3, matching the card).
-function FieldGlyph({ slug }: { slug: string | undefined }) {
+// Large category glyph anchored to the TOP RIGHT of the detail header, filling the
+// field-line zone from the label's top down to the headline, mirroring the feed
+// card (LAYOUT_STANDARD s3, SVG_STANDARD s6). An absolute OVERLAY: out of the flow,
+// it occupies no layout space, so the label and headline do not move — the
+// field-line row keeps its height (min-h-7). `reach` is a negative bottom inset
+// bleeding the glyph down to the headline top (here the HeadlineSection pt-3), so it
+// never overlaps the headline. Width follows the viewBox aspect (landscape ~56x32),
+// capped (max-w) to clear the label. From FIELD_GLYPHS[tags[0]] (ROADMAP.md);
+// trusted content, official SVG path (isUserContent=false).
+function FieldGlyph({ slug, reach = "bottom-0" }: { slug: string | undefined; reach?: string }) {
   const svg = slug ? FIELD_GLYPHS[slug] : undefined
   if (!svg) return null
   return (
     <SvgBlock
       svg={svg}
       isUserContent={false}
-      className="order-first shrink-0 [&_svg]:h-7 [&_svg]:w-auto [&_img]:h-7 [&_img]:w-auto"
+      className={`pointer-events-none absolute top-0 right-0 ${reach} flex items-center justify-end max-w-[45%] [&_svg]:h-full [&_svg]:w-auto [&_img]:h-full [&_img]:w-auto`}
     />
   )
 }
@@ -402,19 +403,21 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                 <div ref={readableRef}>
                 {typographic ? (
                   /* Typographic header per LAYOUT_STANDARD (facts, concepts): a
-                     field line (glyph at the left, a clear gap, then the category
-                     label, same as the card), the serif headline once, an optional dek,
+                     field line (category label top left, large category glyph filling
+                     the top right as an overlay, same as the card), the serif headline once, an optional dek,
                      then the meta row. The format label lives in the top bar; the
                      headline section is filtered out of the body below so it never
                      doubles. */
                   <div className="relative">
-                    <div className="px-6 pt-4 flex items-center gap-3">
-                      {post.primary_category_name && (
-                        <p className="label-caps text-(--accent)">
-                          {post.primary_category_name}
-                        </p>
-                      )}
-                      <FieldGlyph slug={post.tags?.[0]} />
+                    <div className="px-6 pt-4">
+                      <div className="relative min-h-7 flex items-center">
+                        {post.primary_category_name && (
+                          <p className="label-caps text-(--accent)">
+                            {post.primary_category_name}
+                          </p>
+                        )}
+                        <FieldGlyph slug={post.tags?.[0]} reach="-bottom-3" />
+                      </div>
                     </div>
                     <HeadlineSection content={post.title} />
                     {/* Dek — the one-line plain-language gloss from the feed card,
@@ -432,21 +435,23 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                   </div>
                 ) : typographicAcademy ? (
                   /* Academy typographic header (LAYOUT_STANDARD s1): the same flat
-                     structure as facts/concepts — a field line (glyph at the left,
-                     a clear gap, then the category label), the paper title as the
+                     structure as facts/concepts — a field line (category label top left,
+                     large category glyph filling the top right as an overlay), the paper title as the
                      single serif headline, then a citation context line
                      (authors_compact / published_year / venue), the
                      key_finding_one_line dek, and the shared meta row. No slab, no
                      cover. The full bibliographic record follows in the paper_card
                      section below. */
                   <div className="relative">
-                    <div className="px-6 pt-4 flex items-center gap-3">
-                      {post.primary_category_name && (
-                        <p className="label-caps text-(--accent)">
-                          {post.primary_category_name}
-                        </p>
-                      )}
-                      <FieldGlyph slug={post.tags?.[0]} />
+                    <div className="px-6 pt-4">
+                      <div className="relative min-h-7 flex items-center">
+                        {post.primary_category_name && (
+                          <p className="label-caps text-(--accent)">
+                            {post.primary_category_name}
+                          </p>
+                        )}
+                        <FieldGlyph slug={post.tags?.[0]} reach="-bottom-3" />
+                      </div>
                     </div>
                     <HeadlineSection content={post.title} accentNumbers={false} />
                     {/* Context line: authors_compact already carries the year
@@ -585,20 +590,22 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                         onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none" }}
                       />
                     )}
-                    {/* Field line: when there is no lead image, the category glyph
-                        anchors the start of the line, before the era label with a
-                        clear gap (order-first); with a lead image the era label
-                        stands alone (LAYOUT_STANDARD s3, mirroring the card). */}
+                    {/* Field line: the era label (accent) at the left; when there
+                        is no lead image, the large category glyph fills the top
+                        right as an overlay (LAYOUT_STANDARD s3, mirroring the card).
+                        With a lead image the era label stands alone. */}
                     {(fcStr(post.feed_card, "era_label") || !fcStr(post.feed_card, "lead_image_url")) && (
-                      <div className="px-6 pt-4 flex items-center gap-3">
-                        {fcStr(post.feed_card, "era_label") && (
-                          <p className="label-caps text-(--accent)">
-                            {fcStr(post.feed_card, "era_label")}
-                          </p>
-                        )}
-                        {!fcStr(post.feed_card, "lead_image_url") && (
-                          <FieldGlyph slug={post.tags?.[0]} />
-                        )}
+                      <div className="px-6 pt-4">
+                        <div className={`relative flex items-center ${!fcStr(post.feed_card, "lead_image_url") ? "min-h-7" : ""}`}>
+                          {fcStr(post.feed_card, "era_label") && (
+                            <p className="label-caps text-(--accent)">
+                              {fcStr(post.feed_card, "era_label")}
+                            </p>
+                          )}
+                          {!fcStr(post.feed_card, "lead_image_url") && (
+                            <FieldGlyph slug={post.tags?.[0]} reach="-bottom-3" />
+                          )}
+                        </div>
                       </div>
                     )}
                     <HeadlineSection content={post.title} />

@@ -44,24 +44,28 @@ function Teasers({ items }: { items: string[] }) {
   )
 }
 
-// Small category glyph for the typographic formats: a quiet mark (~28px tall)
-// that anchors the START of the field line, before the category label, with a
-// clear gap between them so they read as one unit without crowding
-// (LAYOUT_STANDARD s2). The glyph belongs to the post's primary category, its
-// first tag (tags[0]), looked up from the app-owned FIELD_GLYPHS set (ROADMAP.md),
-// not from a per-post card_visual. Trusted app content, so it always renders via
-// the official SVG path (isUserContent=false). var(--accent) resolves from the
-// card's --accent; h-7/w-auto forces a small fixed height, aspect preserved.
-// order-first puts the glyph ahead of the label in the flex row; the row
-// (items-center gap-3) keeps them left-aligned and vertically centered.
-function FieldGlyph({ slug }: { slug: string | undefined }) {
+// Large category glyph for the typographic formats: a bold accent mark anchored
+// to the TOP RIGHT of the card, filling the field-line zone from the label's top
+// down to the headline (LAYOUT_STANDARD s2, SVG_STANDARD s6). It is an absolute
+// OVERLAY: taken out of the flow, it occupies no layout space and so never moves
+// the label or the headline — the field-line row keeps its height (min-h-7) and
+// the label stays put. The glyph height is the row height plus `reach` (a negative
+// bottom inset that bleeds down to the headline top; the amount is the format's
+// field-line-to-headline gap, passed by the caller so the glyph never overlaps the
+// headline). Width follows the glyph's own viewBox aspect (landscape ~56x32) and
+// is capped (max-w) so it keeps a clear gap from the label and never runs under it.
+// The glyph belongs to the post's primary category, its first tag (tags[0]), from
+// the app-owned FIELD_GLYPHS set (ROADMAP.md); trusted content, so the official SVG
+// path (isUserContent=false). The accent bar (SlabAccent) is a separate element and
+// stays continuous.
+function FieldGlyph({ slug, reach = "bottom-0" }: { slug: string | undefined; reach?: string }) {
   const svg = slug ? FIELD_GLYPHS[slug] : undefined
   if (!svg) return null
   return (
     <SvgBlock
       svg={svg}
       isUserContent={false}
-      className="order-first shrink-0 [&_svg]:h-7 [&_svg]:w-auto [&_img]:h-7 [&_img]:w-auto"
+      className={`pointer-events-none absolute top-0 right-0 ${reach} flex items-center justify-end max-w-[45%] [&_svg]:h-full [&_svg]:w-auto [&_img]:h-full [&_img]:w-auto`}
     />
   )
 }
@@ -451,14 +455,15 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
           ) : post.format === "facts" && fc ? (
             <div className="card relative overflow-hidden px-6 py-7 flex flex-col gap-4">
               <SlabAccent />
-              {/* Typographic card: a field line (glyph at the left, a clear gap,
-                  then the category label) then the full-width serif headline. */}
+              {/* Typographic card: a field line (category label at the top left, the
+                  large category glyph filling the top right as an overlay) then the
+                  full-width serif headline. */}
               <div className="flex flex-col gap-1">
-                <div className="flex items-center gap-3">
+                <div className="relative min-h-7 flex items-center">
                   {post.primary_category_name && (
                     <p className="label-caps text-(--accent)">{post.primary_category_name}</p>
                   )}
-                  <FieldGlyph slug={post.tags?.[0]} />
+                  <FieldGlyph slug={post.tags?.[0]} reach="-bottom-1" />
                 </div>
                 <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
                   {fc.headline as string}
@@ -474,13 +479,13 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
           ) : post.format === "concepts" && fc ? (
             <div className="card relative overflow-hidden px-6 py-7 flex flex-col gap-4">
               <SlabAccent />
-              {/* Field line: glyph at the left, a clear gap, then the category
-                  label, the same as the facts card (LAYOUT_STANDARD s2.1). */}
-              <div className="flex items-center gap-3">
+              {/* Field line: category label top left, large category glyph filling
+                  the top right as an overlay, same as the facts card (LAYOUT_STANDARD s2.1). */}
+              <div className="relative min-h-7 flex items-center">
                 {post.primary_category_name && (
                   <p className="label-caps text-(--accent)">{post.primary_category_name}</p>
                 )}
-                <FieldGlyph slug={post.tags?.[0]} />
+                <FieldGlyph slug={post.tags?.[0]} reach="-bottom-4" />
               </div>
               <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
                 {fcStr(fc, "concept_name")}
@@ -498,13 +503,13 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
           ) : post.format === "questions" && fc ? (
             <div className="card relative overflow-hidden px-6 py-7 flex flex-col gap-4">
               <SlabAccent />
-              {/* Field line: glyph at the left, a clear gap, then the category
-                  label, the same as facts/concepts (LAYOUT_STANDARD s2.1). */}
-              <div className="flex items-center gap-3">
+              {/* Field line: category label top left, large category glyph filling
+                  the top right as an overlay, same as facts/concepts (LAYOUT_STANDARD s2.1). */}
+              <div className="relative min-h-7 flex items-center">
                 {post.primary_category_name && (
                   <p className="label-caps text-(--accent)">{post.primary_category_name}</p>
                 )}
-                <FieldGlyph slug={post.tags?.[0]} />
+                <FieldGlyph slug={post.tags?.[0]} reach="-bottom-4" />
               </div>
               <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
                 {fcStr(fc, "the_question")}
@@ -551,11 +556,10 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
               {/* Context line: the era (accent) with the reader-facing story
                   category beside it. There is no dek on a stories card; the
                   headline carries the narrative opening alone. The field glyph
-                  (keyed on tags[0]) anchors the start of the line, before that
-                  label group with a clear gap (order-first), ONLY when there is no
-                  lead band, the same field-line shape as the typographic cards
-                  (LAYOUT_STANDARD s1/s2). */}
-              <div className="flex items-center gap-3">
+                  (keyed on tags[0]) fills the top right as a large overlay ONLY when
+                  there is no lead band, the same field-line shape as the typographic
+                  cards (LAYOUT_STANDARD s1/s2). */}
+              <div className={`relative flex items-center ${!fcStr(fc, "lead_image_url") ? "min-h-7" : ""}`}>
                 <div className="flex items-center gap-2 flex-wrap min-w-0">
                   {fcStr(fc, "era_label") && (
                     <span className="label-caps text-(--accent)">{fcStr(fc, "era_label")}</span>
@@ -565,7 +569,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
                   )}
                 </div>
                 {!fcStr(fc, "lead_image_url") && (
-                  <FieldGlyph slug={post.tags?.[0]} />
+                  <FieldGlyph slug={post.tags?.[0]} reach="-bottom-4" />
                 )}
               </div>
               <h2 className="font-serif text-2xl font-medium tracking-tight text-ink leading-snug">
@@ -581,15 +585,15 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
           ) : post.format === "academy" && fc ? (
             <div className="card relative overflow-hidden px-6 py-7 flex flex-col gap-4">
               <SlabAccent />
-              {/* Typographic card like facts/concepts: a field line (glyph at the
-                  left, a clear gap, then the category label), then the serif paper
-                  title. */}
+              {/* Typographic card like facts/concepts: a field line (category label
+                  top left, large category glyph filling the top right as an overlay),
+                  then the serif paper title. */}
               <div className="flex flex-col gap-1">
-                <div className="flex items-center gap-3">
+                <div className="relative min-h-7 flex items-center">
                   {post.primary_category_name && (
                     <p className="label-caps text-(--accent)">{post.primary_category_name}</p>
                   )}
-                  <FieldGlyph slug={post.tags?.[0]} />
+                  <FieldGlyph slug={post.tags?.[0]} reach="-bottom-1" />
                 </div>
                 <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
                   {fcStr(fc, "title") || post.title}

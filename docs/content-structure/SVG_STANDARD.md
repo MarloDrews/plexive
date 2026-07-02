@@ -273,12 +273,13 @@ at low opacity, numeric labels in `var(--font-mono)`.
 
 ---
 
-## 6. The category glyph (small field glyph)
+## 6. The category glyph
 
 On the typographic formats (facts, concepts, questions, academy) the feed card is
-clean and typographic: an accent bar down the left, a line with the field label
-and a **small glyph at its right end**, then the large serif headline, teasers,
-footer. The glyph is the only drawn mark on the card, a quiet category symbol.
+clean and typographic: an accent bar down the left, the category label at the left of a short field line, and a **large category glyph
+filling the top right** of the card down to the headline, then the large serif
+headline, teasers, footer. The glyph is the only drawn mark on the card, a bold
+category symbol.
 Books and people instead show a hochkant cover or portrait; stories shows a real
 image when one fits the narrative and falls back to this glyph when none does.
 Sourced card images are governed by `IMAGE_STANDARD.md`.
@@ -289,8 +290,9 @@ the individual post. It is resolved from the per-slug glyph set in
 slug), keyed by tags[0]. A generator never invents a per-post glyph and carries no
 per-post `card_visual`; the mark is looked up from the slug.
 
-A field glyph is **not a shrunk diagram**. At ~24 to 32 px beside the label, fine
-detail is invisible. It is one symbol, read in a glance.
+A field glyph is **not a shrunk diagram**. It renders large, filling the top right of
+the card from the top edge down to the headline, so it must still be one clear symbol
+of a few strokes that reads in a glance, not a busy illustration.
 
 - **Compact viewBox**, roughly 2:1 or square (e.g. `0 0 56 32`), not the body's
   `0 0 400 300`. No width or height, transparent, `fill="none"` by default.
@@ -302,8 +304,8 @@ detail is invisible. It is one symbol, read in a glance.
   gradients, shadows, filters).
 - Round caps and joins, matching the Stage softness.
 
-It should read as a small accent-colored category mark sitting quietly at the end
-of the field line, never competing with the headline below.
+It reads as a bold accent-colored category mark filling the top right of the card, a
+deliberate second anchor to the headline rather than a quiet mark at the end of a line.
 
 ---
 
