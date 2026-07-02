@@ -379,6 +379,10 @@ class PostOut(BaseModel):
     # Survives PostListOut.drop_sections so feed cards still get the real value.
     reading_minutes: int = 1
     interests: List[str] = []
+    # Display name of the primary category (tags[0]), attached by attach_counts
+    # from the post's own interests so the card eyebrow and the interest chips
+    # label the same slug identically. None when tags[0] is absent/unmapped.
+    primary_category_name: str | None = None
 
     @field_validator("interests", mode="before")
     @classmethod
