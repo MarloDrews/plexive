@@ -481,15 +481,17 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
               <SlabAccent />
               {/* Field line: category label top left, large category glyph filling
                   the top right as an overlay, same as the facts card (LAYOUT_STANDARD s2.1). */}
-              <div className="relative min-h-7 flex items-center">
-                {post.primary_category_name && (
-                  <p className="label-caps text-(--accent)">{post.primary_category_name}</p>
-                )}
-                <FieldGlyph slug={post.tags?.[0]} reach="-bottom-4" />
+              <div className="flex flex-col gap-1">
+                <div className="relative min-h-7 flex items-center">
+                  {post.primary_category_name && (
+                    <p className="label-caps text-(--accent)">{post.primary_category_name}</p>
+                  )}
+                  <FieldGlyph slug={post.tags?.[0]} reach="-bottom-1" />
+                </div>
+                <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
+                  {fcStr(fc, "concept_name")}
+                </h2>
               </div>
-              <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
-                {fcStr(fc, "concept_name")}
-              </h2>
               {fcStr(fc, "one_line") && (
                 <p className="font-serif italic text-base text-ink-body leading-relaxed">{unescapeDollar(fcStr(fc, "one_line"))}</p>
               )}
@@ -505,15 +507,17 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
               <SlabAccent />
               {/* Field line: category label top left, large category glyph filling
                   the top right as an overlay, same as facts/concepts (LAYOUT_STANDARD s2.1). */}
-              <div className="relative min-h-7 flex items-center">
-                {post.primary_category_name && (
-                  <p className="label-caps text-(--accent)">{post.primary_category_name}</p>
-                )}
-                <FieldGlyph slug={post.tags?.[0]} reach="-bottom-4" />
+              <div className="flex flex-col gap-1">
+                <div className="relative min-h-7 flex items-center">
+                  {post.primary_category_name && (
+                    <p className="label-caps text-(--accent)">{post.primary_category_name}</p>
+                  )}
+                  <FieldGlyph slug={post.tags?.[0]} reach="-bottom-1" />
+                </div>
+                <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
+                  {fcStr(fc, "the_question")}
+                </h2>
               </div>
-              <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
-                {fcStr(fc, "the_question")}
-              </h2>
               {/* Dek: the one-line italic gloss (LAYOUT_STANDARD s2), the same
                   treatment concepts/people/books use. */}
               {fcStr(fc, "one_line") && (
@@ -559,22 +563,24 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
                   (keyed on tags[0]) fills the top right as a large overlay ONLY when
                   there is no lead band, the same field-line shape as the typographic
                   cards (LAYOUT_STANDARD s1/s2). */}
-              <div className={`relative flex items-center ${!fcStr(fc, "lead_image_url") ? "min-h-7" : ""}`}>
-                <div className="flex items-center gap-2 flex-wrap min-w-0">
-                  {fcStr(fc, "era_label") && (
-                    <span className="label-caps text-(--accent)">{fcStr(fc, "era_label")}</span>
-                  )}
-                  {post.primary_category_name && (
-                    <span className="label-caps text-ink-faint">{post.primary_category_name}</span>
+              <div className="flex flex-col gap-1">
+                <div className={`relative flex items-center ${!fcStr(fc, "lead_image_url") ? "min-h-7" : ""}`}>
+                  <div className="flex items-center gap-2 flex-wrap min-w-0">
+                    {fcStr(fc, "era_label") && (
+                      <span className="label-caps text-(--accent)">{fcStr(fc, "era_label")}</span>
+                    )}
+                    {post.primary_category_name && (
+                      <span className="label-caps text-ink-faint">{post.primary_category_name}</span>
+                    )}
+                  </div>
+                  {!fcStr(fc, "lead_image_url") && (
+                    <FieldGlyph slug={post.tags?.[0]} reach="-bottom-1" />
                   )}
                 </div>
-                {!fcStr(fc, "lead_image_url") && (
-                  <FieldGlyph slug={post.tags?.[0]} reach="-bottom-4" />
-                )}
+                <h2 className="font-serif text-2xl font-medium tracking-tight text-ink leading-snug">
+                  {fcStr(fc, "headline")}
+                </h2>
               </div>
-              <h2 className="font-serif text-2xl font-medium tracking-tight text-ink leading-snug">
-                {fcStr(fc, "headline")}
-              </h2>
 
               {Array.isArray(fc.teasers) && (fc.teasers as string[]).length > 0 && (
                 <Teasers items={fc.teasers as string[]} />
