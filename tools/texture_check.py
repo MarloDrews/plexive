@@ -194,6 +194,17 @@ def split_sentences(text):
 def words(s):
     return len(s.split())
 
+def strip_italic_markers(text):
+    """Remove inline-italic asterisk markers so they do not skew the sentence and
+    word stats. Asterisks inside $...$ math spans are multiplication and are left
+    untouched, mirroring how the renderer parses italics."""
+    ph = "\x00ESCDOLLAR\x00"
+    tmp = text.replace("\\$", ph)  # protect escaped currency; it is not a delimiter
+    parts = re.split(r"(\$[^$]*\$)", tmp)
+    out = "".join(seg if (seg.startswith("$") and seg.endswith("$"))
+                  else seg.replace("*", "") for seg in parts)
+    return out.replace(ph, "\\$")
+
 def clause_commas(s):
     """Count commas. (The audit decides which are genuine list commas vs stacked
     clause commas; the script only counts.)"""
@@ -1117,6 +1128,23 @@ def check_straight_quotes(data, cand):
                          "a straight single quote opens a span; use curly quotation (or confirm it is a possessive)"))
             seen_s.add(owner)
 
+SLUG_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+
+def check_tags(data, cand):
+    """tags[0] is the post's primary category: it sets the card eyebrow and glyph,
+    so it must be present and slug-shaped (lowercase, hyphen-separated, no spaces).
+    A form check only; membership in the canonical taxonomy is enforced where the
+    slug list lives, not duplicated here."""
+    tags = data.get("tags")
+    if not isinstance(tags, list) or not tags:
+        cand.append(("tags", "tags",
+                     "no tags: tags[0] drives the card category, eyebrow, and glyph"))
+        return
+    first = tags[0]
+    if not isinstance(first, str) or not SLUG_RE.match(first):
+        cand.append(("tags", "tags",
+                     f"tags[0] is not a slug-shaped category: {first!r}"))
+
 def run(path, fmt=None):
     with open(path, encoding="utf-8") as f:
         data = json.load(f)
@@ -1143,6 +1171,10 @@ def run(path, fmt=None):
     else:
         prose, parallel, light, exempt = extract_generic(data)
 
+    # Strip inline-italic markers so they do not skew the rhythm stats; math is kept.
+    prose = [(label, strip_italic_markers(text)) for label, text in prose]
+    light = [(label, strip_italic_markers(text)) for label, text in light]
+
     cand = []
     recs, prose_sentences = [], []
     for label, text in prose:
@@ -1164,6 +1196,7 @@ def run(path, fmt=None):
 
     check_quiz_groundedness(data, cand)
     check_straight_quotes(data, cand)
+    check_tags(data, cand)
     return dict(format=fmt, calibrated=calibrated, band=band, recs=recs,
                 parallel=par, inline_lists=list_total, blacklist=bl_total,
                 exempt_quotes=len(exempt), candidates=cand)
