@@ -90,10 +90,21 @@ if ebody.get("primary_category_name") is not None:
         f"empty-tags post should have null primary_category_name, got {ebody.get('primary_category_name')!r}"
     )
 
+# The list/feed card must carry it too, not only the detail endpoint: the card
+# eyebrow reads it, so attach_counts must attach it on every serialization path.
+feed = client.get("/api/feed").json()
+card = next((p for p in feed if p["id"] == pid), None)
+if card is None:
+    failures.append("published post missing from /api/feed")
+elif card.get("primary_category_name") != "Neuroscience":
+    failures.append(
+        f"feed card should carry primary_category_name 'Neuroscience', got {card.get('primary_category_name')!r}"
+    )
+
 if failures:
     print("FAIL:")
     for f in failures:
         print("  -", f)
     sys.exit(1)
 
-print("PASS: primary_category_name = tags[0] display name, agrees with the chips; empty tags -> null.")
+print("PASS: primary_category_name = tags[0] display name on detail + feed, agrees with the chips; empty tags -> null.")

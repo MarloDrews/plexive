@@ -31,7 +31,9 @@ import { updatePostInFeedCaches } from "@/app/lib/swr"
 // card (~28px tall, aspect preserved). The glyph belongs to the post's primary
 // category, its first tag (tags[0]), looked up from the app-owned FIELD_GLYPHS set
 // (ROADMAP.md), not a per-post card_visual. Trusted app content, so it always
-// renders via the official SVG path (isUserContent=false).
+// renders via the official SVG path (isUserContent=false). ml-auto pins it to the
+// right end of the field line whether or not the category label renders
+// (LAYOUT_STANDARD s3, matching the card).
 function FieldGlyph({ slug }: { slug: string | undefined }) {
   const svg = slug ? FIELD_GLYPHS[slug] : undefined
   if (!svg) return null
@@ -39,7 +41,7 @@ function FieldGlyph({ slug }: { slug: string | undefined }) {
     <SvgBlock
       svg={svg}
       isUserContent={false}
-      className="shrink-0 [&_svg]:h-7 [&_svg]:w-auto [&_img]:h-7 [&_img]:w-auto"
+      className="ml-auto shrink-0 [&_svg]:h-7 [&_svg]:w-auto [&_img]:h-7 [&_img]:w-auto"
     />
   )
 }

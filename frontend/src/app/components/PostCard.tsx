@@ -51,6 +51,9 @@ function Teasers({ items }: { items: string[] }) {
 // card_visual. Because the glyph is trusted app content, it always renders via
 // the official SVG path (isUserContent=false). var(--accent) resolves from the
 // card's --accent; h-7/w-auto forces a small fixed height, aspect preserved.
+// ml-auto pins it to the right end of the field line whether or not the category
+// label renders (LAYOUT_STANDARD s2); without it, a missing label leaves the lone
+// glyph at flex-start.
 function FieldGlyph({ slug }: { slug: string | undefined }) {
   const svg = slug ? FIELD_GLYPHS[slug] : undefined
   if (!svg) return null
@@ -58,7 +61,7 @@ function FieldGlyph({ slug }: { slug: string | undefined }) {
     <SvgBlock
       svg={svg}
       isUserContent={false}
-      className="shrink-0 [&_svg]:h-7 [&_svg]:w-auto [&_img]:h-7 [&_img]:w-auto"
+      className="ml-auto shrink-0 [&_svg]:h-7 [&_svg]:w-auto [&_img]:h-7 [&_img]:w-auto"
     />
   )
 }
