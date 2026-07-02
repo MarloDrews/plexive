@@ -1,9 +1,5 @@
 {
-  "tags": [
-    "art-history",
-    "crime",
-    "world-wars"
-  ],
+  "tags": ["crime", "art-history", "world-wars"],
   "connections": [
     {
       "format": "concepts",

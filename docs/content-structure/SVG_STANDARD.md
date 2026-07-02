@@ -1,4 +1,4 @@
-# Deepscroll — SVG Design Standard
+# Deepscroll: SVG Design Standard
 
 The binding template for every inline SVG graphic in Deepscroll. Goal: hundreds
 of graphics that feel like one set across the whole feed, carry topic-specific
@@ -132,7 +132,7 @@ Six standard types cover most needs. The `visual_type` field names the type.
 sections 1 to 4. All examples use `var(--accent)` for the accent element; they
 render correctly inside any post regardless of format.
 
-### 5.1 `cycle` — repeating process
+### 5.1 `cycle`: repeating process
 For loops (e.g. Habit Loop: Cue, Routine, Reward).
 
 ```svg
@@ -158,7 +158,7 @@ For loops (e.g. Habit Loop: Cue, Routine, Reward).
 </svg>
 ```
 
-### 5.2 `flow` — sequence / arrow chain
+### 5.2 `flow`: sequence / arrow chain
 For linear steps or cause and effect (e.g. First Principles: Assume, Break
 down, Rebuild).
 
@@ -185,7 +185,7 @@ down, Rebuild).
 In use, tighten the viewBox vertically to the box band (a shorter height) so the
 chain fills its frame instead of sitting in an empty 300-tall canvas, per section 1.
 
-### 5.3 `comparison` — two sides
+### 5.3 `comparison`: two sides
 For contrast concepts (e.g. Fixed vs Growth Mindset).
 
 ```svg
@@ -208,7 +208,7 @@ For contrast concepts (e.g. Fixed vs Growth Mindset).
 </svg>
 ```
 
-### 5.4 `matrix` — 2x2 quadrants
+### 5.4 `matrix`: 2x2 quadrants
 For two-axis concepts (e.g. Eisenhower Matrix). Keep axis labels inside the box
 or they clip; place edge labels no further out than x≈350 and anchor them so
 they stay within the viewBox.
@@ -233,7 +233,7 @@ they stay within the viewBox.
 </svg>
 ```
 
-### 5.5 `scale` — spectrum / gradient of degree
+### 5.5 `scale`: spectrum / gradient of degree
 For graduated concepts (e.g. Overton window).
 
 ```svg
@@ -248,7 +248,7 @@ For graduated concepts (e.g. Overton window).
 </svg>
 ```
 
-### 5.6 `pyramid` — hierarchy / layers
+### 5.6 `pyramid`: hierarchy / layers
 For stacked levels (e.g. Maslow). Keep the apex label short, it must fit the
 narrow top.
 
@@ -273,7 +273,7 @@ at low opacity, numeric labels in `var(--font-mono)`.
 
 ---
 
-## 6. The card visual (small field glyph)
+## 6. The category glyph (small field glyph)
 
 On the typographic formats (facts, concepts, questions, academy) the feed card is
 clean and typographic: an accent bar down the left, a line with the field label
@@ -283,10 +283,11 @@ Books and people instead show a hochkant cover or portrait; stories shows a real
 image when one fits the narrative and falls back to this glyph when none does.
 Sourced card images are governed by `IMAGE_STANDARD.md`.
 
-The glyph belongs to the post's **field**, not the individual post. It is meant to
-come from a fixed field-to-glyph set (see `ROADMAP.md`); until that set exists, an
-example may carry one glyph inline in `card_visual.svg` so the layout can be seen.
-A generator never invents a per-post glyph.
+The glyph belongs to the post's primary category, its first tag (tags[0]), not to
+the individual post. It is resolved from the per-slug glyph set in
+`frontend/src/lib/glyphs.ts` (`FIELD_GLYPHS`, one compact glyph for each taxonomy
+slug), keyed by tags[0]. A generator never invents a per-post glyph and carries no
+per-post `card_visual`; the mark is looked up from the slug.
 
 A field glyph is **not a shrunk diagram**. At ~24 to 32 px beside the label, fine
 detail is invisible. It is one symbol, read in a glance.

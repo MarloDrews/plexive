@@ -73,10 +73,11 @@ rule is the same across the feed: a short-title headline earns a dek; a
 full-statement headline stands alone. Keeping that consistent is what makes the
 feed read as one product rather than seven.
 
-The glyph belongs to the **field**, not the post, and is meant to come from a
-fixed field-to-glyph set (see `ROADMAP.md`). Until that set exists, an example may
-carry one glyph inline in `card_visual.svg`. Cover formats use the same parts with
-the cover or portrait beside the headline instead of a glyph.
+The category label and the glyph both come from the post's first tag, tags[0], its
+primary category: the label is that slug's display name, the glyph is that slug's
+mark from `frontend/src/lib/glyphs.ts`. There is no per-post `card_visual` and no
+separate field. Cover formats use the same parts with the cover or portrait beside
+the headline instead of a glyph.
 
 ---
 

@@ -5,39 +5,34 @@ not a spec. The specs live in the standards docs.
 
 ---
 
-## Field glyph system (deferred, decided)
+## Category glyph and eyebrow, from tags[0] (decided, in build)
 
 **Decision.** Facts, concepts, questions, and academy show a small glyph at the
-right end of the field line on the card and in the detail header. Stories shows
-the same glyph as a fallback when no fitting licensed image exists (when one does,
-stories carries the image instead, see `LAYOUT_STANDARD.md`). The glyph belongs to
-the **field** (the subject, e.g. Biology, Astronomy, True Crime), not to the
-individual post, and not to the broad theme category. The glyph is the only drawn
-mark on these typographic cards.
+right end of the category line on the card and in the detail header, next to the
+category label. Stories shows the same glyph as a fallback when no fitting licensed
+image exists (when one does, stories carries the image instead, see
+`LAYOUT_STANDARD.md`). Books and people show a cover or portrait, not a glyph. Both
+the glyph and the category label come from the post's primary category, its first
+tag (tags[0]), not from a separate field and not from the broad theme category.
 
-**Why a fixed field list.** A free-text field would mean an unbounded, ever-growing
-set of glyphs and a glyph to draw for every new field, which forces per-post glyph
-generation. The theme category (the ten taxonomy groups) is too coarse to be a
-real anchor (Biology and Astronomy would share one mark). So the field becomes a
-**fixed, curated list**, a few fields per theme category, each with one drawn
-glyph. New fields are added deliberately, with a glyph, like the tag taxonomy.
+**The taxonomy is the category vocabulary.** Rather than a separate curated field
+list, the category is tags[0], a slug from the fixed 149-slug taxonomy in
+`backend/seed.py`. Every slug has one compact glyph and one display name, so the
+card's category identity (its eyebrow label and its glyph) is fully determined by
+tags[0]. This reuses the tag taxonomy instead of maintaining a second list.
 
-**To build, in order.**
-1. Define the fixed field list, derived from the ten theme categories (a handful
-   of fields each). This is the first concrete step, before any drawing.
-2. Draw one compact glyph per field (compact viewBox, one mark, accent color, per
-   `SVG_STANDARD.md` section 6).
-3. Decide where the field-to-glyph mapping lives (a lookup keyed by field, seeded
-   like the taxonomy) and have the card and detail header read the glyph from it.
-4. Constrain `feed_card.field` to the fixed list (validation), so a post cannot
-   invent a field with no glyph.
-5. Once the lookup exists, generators stop carrying a per-post `card_visual.svg`;
-   the glyph is resolved from the field. Until then, an example carries one glyph
-   inline so the layout can be seen.
+**How it resolves.**
+1. The glyph set lives in `frontend/src/lib/glyphs.ts` (`FIELD_GLYPHS`, one compact
+   SVG per slug, all 149 covered), read by tags[0].
+2. The eyebrow label is the slug's display name (`Interest.name`, from seed.py's
+   `slug_to_name`), read by tags[0].
+3. Generators carry no per-post `card_visual` and no `feed_card.field`; both are
+   retired, and the card resolves the glyph and label from tags[0] at render time.
 
-**Interim state.** The Facts benchmark carries a single inline pulse glyph in
-`card_visual.svg` to show the typographic card. This is scaffolding, replaced by
-the lookup later.
+**State.** The 149 glyphs are drawn (`glyphs.ts`). The renderer switch (glyph and
+eyebrow from tags[0], `card_visual` out of the render path) is the current build
+step. Leftover `feed_card.field` and `card_visual` in existing posts are ignored by
+the new render path, so no data migration is required.
 
 ---
 

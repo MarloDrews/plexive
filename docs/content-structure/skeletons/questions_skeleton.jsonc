@@ -132,7 +132,12 @@
   // Cross-format. Full rules: SKELETON_COMMENT_STANDARD.md, section 10.
   // The system assigns the integer id and slug; the generator writes only these.
   "tags": [],         // HARD: 1-4 slugs from the fixed taxonomy ONLY, never
-                      // invent one. First is primary and matches feed_card.field.
+                      // invent one. tags[0] is the post's PRIMARY CATEGORY and comes
+                      // first: the single slug that best names what the post is about.
+                      // The card takes its category from tags[0], the eyebrow heading
+                      // from the slug's display name and the glyph from the slug's icon.
+                      // The remaining slugs are additional on-topic subjects, most-
+                      // relevant first; include only genuine ones, do not pad.
   "connections": [    // REQUIRED, may be empty. Every real link to another post.
                       // Questions has no person-list section, so a link to a
                       // thinker is a normal connection here: format "people", ref

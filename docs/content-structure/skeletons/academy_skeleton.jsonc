@@ -118,8 +118,12 @@
   // Cross-format. Full rules: SKELETON_COMMENT_STANDARD.md, section 10.
   // The system assigns the integer id and slug; the generator writes only these.
   "tags": [],         // HARD: 1-4 slugs from the fixed taxonomy ONLY, never
-                      // invent one. First is the paper's primary subject field,
-                      // matches feed_card.field, and keys the card's field glyph.
+                      // invent one. tags[0] is the post's PRIMARY CATEGORY and comes
+                      // first: the single slug that best names what the post is about.
+                      // The card takes its category from tags[0], the eyebrow heading
+                      // from the slug's display name and the glyph from the slug's icon.
+                      // The remaining slugs are additional on-topic subjects, most-
+                      // relevant first; include only genuine ones, do not pad.
   "connections": [    // REQUIRED, may be empty. Every real link to another post
                       // that is NOT an authors_context entry. Authors central to
                       // the paper live in authors_context, never duplicated here.
@@ -277,7 +281,7 @@
     },
 
     {
-      "type": "tldr",   // The Hallway Summary (REQUIRED)
+      "type": "tldr",   // REQUIRED. Internal type stays "tldr"; the card renders the header "In Brief".
       "order": 3,
       // JOB: state the result and why it matters in the few technical sentences a
       //      peer would give in the hallway. A reader who stops here can repeat the

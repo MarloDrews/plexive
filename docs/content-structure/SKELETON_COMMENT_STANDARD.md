@@ -1,4 +1,4 @@
-# Deepscroll — Skeleton Comment Standard
+# Deepscroll: Skeleton Comment Standard
 
 How to write the `//` comments inside every `*_skeleton.jsonc` file so that a generation model can fill the skeleton correctly from the comments alone.
 
@@ -211,8 +211,9 @@ title), it never fabricates a handle. This mirrors integrity rule A2 in
 `STYLE_GUIDE_LONGFORM.md`: a made-up reference is as bad as a made-up number.
 
 **`tags` (top-level array, REQUIRED).** One to four slugs drawn ONLY from the
-fixed taxonomy (never invent a tag). The first is the primary topic and matches
-`feed_card.field`. Multiple tags are encouraged where genuinely on-topic; do not
+fixed taxonomy (never invent a tag). tags[0] is the post's primary category and
+comes first: it drives the card's eyebrow label and glyph (see `LAYOUT_STANDARD.md`
+and `SVG_STANDARD.md`). Multiple tags are encouraged where genuinely on-topic; do not
 pad. Tags drive thematic clustering in the graph.
 
 **`connections` (top-level array, REQUIRED, may be empty).** Every real link to
