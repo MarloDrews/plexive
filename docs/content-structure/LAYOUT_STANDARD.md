@@ -47,10 +47,12 @@ where real images give the eye a rest.
 
 ## 2. Feed card, top to bottom (typographic formats)
 
-1. **Field line**: the field label small in the accent color ("BIOLOGY") at the
-   left, and a **small glyph at the right end** of the same line. If the field is
-   long it wraps to two lines and the glyph stays at the right. Accent bar runs
-   down the left edge of the card.
+1. **Field line**: the category label small in the accent color ("BIOLOGY") at
+   the left, with its **small glyph directly after it** as one tight pair — label
+   first, a small gap, then the glyph, vertically centered to the label. They read
+   as one category unit; the glyph is not pushed to the opposite edge. If the label
+   wraps to two lines the glyph stays beside it (on the first line), not stranded
+   at the far edge. Accent bar runs down the left edge of the card.
 2. **Headline**, full width, large serif, the key number emphasized. The star.
 3. **Context line** (format-dependent), small and muted, directly under the
    headline: the author (books), the lifespan (people), the source citation
@@ -88,8 +90,8 @@ Continuity from the tapped card comes from the shared field line, glyph, and acc
 bar.
 
 1. **App top bar**: back, the format label with its accent dot, audio. (App frame.)
-2. **Field line**: field label (accent) with the small glyph at its right end,
-   same as the card.
+2. **Field line**: the category label (accent) with its small glyph directly
+   after it as one left-aligned pair, same as the card.
 3. **Headline**, once, large serif, accent number. The first impression; it owns
    the top of the page.
 4. **Dek** (optional), the one-line italic gloss from the feed card, directly

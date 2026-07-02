@@ -27,13 +27,13 @@ import { queueEvent, hasPendingLike, cancelPendingLike } from "@/app/lib/eventQu
 import { likePost, unlikePost, isPostLiked, getCachedLikeCount, setCachedLikeCount, isLikeSent, markLikeSent, unmarkLikeSent } from "@/app/lib/likedPosts"
 import { updatePostInFeedCaches } from "@/app/lib/swr"
 
-// Small category glyph at the right end of the category line, mirroring the feed
-// card (~28px tall, aspect preserved). The glyph belongs to the post's primary
-// category, its first tag (tags[0]), looked up from the app-owned FIELD_GLYPHS set
-// (ROADMAP.md), not a per-post card_visual. Trusted app content, so it always
-// renders via the official SVG path (isUserContent=false). ml-auto pins it to the
-// right end of the field line whether or not the category label renders
-// (LAYOUT_STANDARD s3, matching the card).
+// Small category glyph sitting directly after the category label as one tight
+// pair, mirroring the feed card (~28px tall, aspect preserved). The glyph belongs
+// to the post's primary category, its first tag (tags[0]), looked up from the
+// app-owned FIELD_GLYPHS set (ROADMAP.md), not a per-post card_visual. Trusted app
+// content, so it always renders via the official SVG path (isUserContent=false).
+// The field-line row (items-center gap-2) keeps the label and glyph as a
+// left-aligned pair (LAYOUT_STANDARD s3, matching the card), so no ml-auto here.
 function FieldGlyph({ slug }: { slug: string | undefined }) {
   const svg = slug ? FIELD_GLYPHS[slug] : undefined
   if (!svg) return null
@@ -41,7 +41,7 @@ function FieldGlyph({ slug }: { slug: string | undefined }) {
     <SvgBlock
       svg={svg}
       isUserContent={false}
-      className="ml-auto shrink-0 [&_svg]:h-7 [&_svg]:w-auto [&_img]:h-7 [&_img]:w-auto"
+      className="shrink-0 [&_svg]:h-7 [&_svg]:w-auto [&_img]:h-7 [&_img]:w-auto"
     />
   )
 }
@@ -401,13 +401,13 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                 <div ref={readableRef}>
                 {typographic ? (
                   /* Typographic header per LAYOUT_STANDARD (facts, concepts): a
-                     field line (field label left, small glyph at its right end,
-                     same as the card), the serif headline once, an optional dek,
+                     field line (the category label then its small glyph as a
+                     left-aligned pair, same as the card), the serif headline once, an optional dek,
                      then the meta row. The format label lives in the top bar; the
                      headline section is filtered out of the body below so it never
                      doubles. */
                   <div className="relative">
-                    <div className="px-6 pt-4 flex items-start justify-between gap-3">
+                    <div className="px-6 pt-4 flex items-center gap-2">
                       {post.primary_category_name && (
                         <p className="label-caps text-(--accent)">
                           {post.primary_category_name}
@@ -431,15 +431,15 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                   </div>
                 ) : typographicAcademy ? (
                   /* Academy typographic header (LAYOUT_STANDARD s1): the same flat
-                     structure as facts/concepts — a field line (field label left,
-                     small field glyph at its right end), the paper title as the
+                     structure as facts/concepts — a field line (the category label
+                     then its small glyph as a left-aligned pair), the paper title as the
                      single serif headline, then a citation context line
                      (authors_compact / published_year / venue), the
                      key_finding_one_line dek, and the shared meta row. No slab, no
                      cover. The full bibliographic record follows in the paper_card
                      section below. */
                   <div className="relative">
-                    <div className="px-6 pt-4 flex items-start justify-between gap-3">
+                    <div className="px-6 pt-4 flex items-center gap-2">
                       {post.primary_category_name && (
                         <p className="label-caps text-(--accent)">
                           {post.primary_category_name}
@@ -570,7 +570,7 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                      derivation); then the meta row. No dek, because the headline
                      is a narrative opening. */
                   <div className="relative">
-                    {fcStr(post.feed_card, "lead_image_url") ? (
+                    {fcStr(post.feed_card, "lead_image_url") && (
                       /* Slim full-width lead band, matching the card (a touch
                          taller). block so no inline gap; pointer-events-none +
                          draggable=false so the bare image never opens the platform
@@ -583,15 +583,21 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                         className="block w-full h-44 object-cover object-[center_38%] pointer-events-none select-none"
                         onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none" }}
                       />
-                    ) : (
-                      <div className="px-6 pt-4 flex justify-end">
-                        <FieldGlyph slug={post.tags?.[0]} />
-                      </div>
                     )}
-                    {fcStr(post.feed_card, "era_label") && (
-                      <p className="px-6 pt-4 label-caps text-(--accent)">
-                        {fcStr(post.feed_card, "era_label")}
-                      </p>
+                    {/* Field line: the era label (accent) and, when there is no
+                        lead image, the category glyph directly after it as one
+                        left-aligned pair (LAYOUT_STANDARD s3, mirroring the card). */}
+                    {(fcStr(post.feed_card, "era_label") || !fcStr(post.feed_card, "lead_image_url")) && (
+                      <div className="px-6 pt-4 flex items-center gap-2">
+                        {fcStr(post.feed_card, "era_label") && (
+                          <p className="label-caps text-(--accent)">
+                            {fcStr(post.feed_card, "era_label")}
+                          </p>
+                        )}
+                        {!fcStr(post.feed_card, "lead_image_url") && (
+                          <FieldGlyph slug={post.tags?.[0]} />
+                        )}
+                      </div>
                     )}
                     <HeadlineSection content={post.title} />
                     <HeaderMeta post={post} />

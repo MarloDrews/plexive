@@ -45,15 +45,14 @@ function Teasers({ items }: { items: string[] }) {
 }
 
 // Small category glyph for the typographic formats: a quiet mark (~28px tall)
-// that sits at the right end of the category line, not a card image. The glyph
-// belongs to the post's primary category, its first tag (tags[0]), and is looked
-// up from the app-owned FIELD_GLYPHS set (ROADMAP.md), not from a per-post
-// card_visual. Because the glyph is trusted app content, it always renders via
-// the official SVG path (isUserContent=false). var(--accent) resolves from the
-// card's --accent; h-7/w-auto forces a small fixed height, aspect preserved.
-// ml-auto pins it to the right end of the field line whether or not the category
-// label renders (LAYOUT_STANDARD s2); without it, a missing label leaves the lone
-// glyph at flex-start.
+// that sits directly after the category label as one tight pair, not a card
+// image. The glyph belongs to the post's primary category, its first tag
+// (tags[0]), and is looked up from the app-owned FIELD_GLYPHS set (ROADMAP.md),
+// not from a per-post card_visual. Because the glyph is trusted app content, it
+// always renders via the official SVG path (isUserContent=false). var(--accent)
+// resolves from the card's --accent; h-7/w-auto forces a small fixed height,
+// aspect preserved. The field-line row (items-center gap-2) keeps the label and
+// glyph as a left-aligned pair (LAYOUT_STANDARD s2), so no ml-auto here.
 function FieldGlyph({ slug }: { slug: string | undefined }) {
   const svg = slug ? FIELD_GLYPHS[slug] : undefined
   if (!svg) return null
@@ -61,7 +60,7 @@ function FieldGlyph({ slug }: { slug: string | undefined }) {
     <SvgBlock
       svg={svg}
       isUserContent={false}
-      className="ml-auto shrink-0 [&_svg]:h-7 [&_svg]:w-auto [&_img]:h-7 [&_img]:w-auto"
+      className="shrink-0 [&_svg]:h-7 [&_svg]:w-auto [&_img]:h-7 [&_img]:w-auto"
     />
   )
 }
@@ -451,10 +450,10 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
           ) : post.format === "facts" && fc ? (
             <div className="card relative overflow-hidden px-6 py-7 flex flex-col gap-4">
               <SlabAccent />
-              {/* Typographic card: a field line (field label left, small glyph at
-                  its right end) then the full-width serif headline below. */}
+              {/* Typographic card: a field line (the category label then its small
+                  glyph as a left-aligned pair) then the full-width serif headline. */}
               <div className="flex flex-col gap-1">
-                <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-2">
                   {post.primary_category_name && (
                     <p className="label-caps text-(--accent)">{post.primary_category_name}</p>
                   )}
@@ -474,9 +473,9 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
           ) : post.format === "concepts" && fc ? (
             <div className="card relative overflow-hidden px-6 py-7 flex flex-col gap-4">
               <SlabAccent />
-              {/* Field line: field label left, small glyph at its right end, the
-                  same as the facts card (LAYOUT_STANDARD s2.1). */}
-              <div className="flex items-start justify-between gap-3">
+              {/* Field line: the category label then its small glyph as a
+                  left-aligned pair, the same as the facts card (LAYOUT_STANDARD s2.1). */}
+              <div className="flex items-center gap-2">
                 {post.primary_category_name && (
                   <p className="label-caps text-(--accent)">{post.primary_category_name}</p>
                 )}
@@ -498,9 +497,9 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
           ) : post.format === "questions" && fc ? (
             <div className="card relative overflow-hidden px-6 py-7 flex flex-col gap-4">
               <SlabAccent />
-              {/* Field line: field label left, small glyph at its right end, the
-                  same as the facts/concepts cards (LAYOUT_STANDARD s2.1). */}
-              <div className="flex items-start justify-between gap-3">
+              {/* Field line: the category label then its small glyph as a
+                  left-aligned pair, the same as facts/concepts (LAYOUT_STANDARD s2.1). */}
+              <div className="flex items-center gap-2">
                 {post.primary_category_name && (
                   <p className="label-caps text-(--accent)">{post.primary_category_name}</p>
                 )}
@@ -551,10 +550,10 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
               {/* Context line: the era (accent) with the reader-facing story
                   category beside it. There is no dek on a stories card; the
                   headline carries the narrative opening alone. The field glyph
-                  (keyed on the field, tags[0]) sits at the right end ONLY when
-                  there is no lead band, the same field-line shape as the
-                  typographic cards (LAYOUT_STANDARD s1/s2). */}
-              <div className="flex items-start justify-between gap-3">
+                  (keyed on tags[0]) sits directly after that label group as a
+                  left-aligned pair ONLY when there is no lead band, the same
+                  field-line shape as the typographic cards (LAYOUT_STANDARD s1/s2). */}
+              <div className="flex items-center gap-2">
                 <div className="flex items-center gap-2 flex-wrap min-w-0">
                   {fcStr(fc, "era_label") && (
                     <span className="label-caps text-(--accent)">{fcStr(fc, "era_label")}</span>
@@ -580,11 +579,11 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
           ) : post.format === "academy" && fc ? (
             <div className="card relative overflow-hidden px-6 py-7 flex flex-col gap-4">
               <SlabAccent />
-              {/* Typographic card like facts/concepts: a field line (field label
-                  left, small field glyph at its right end), then the serif paper
-                  title. */}
+              {/* Typographic card like facts/concepts: a field line (the category
+                  label then its small glyph as a left-aligned pair), then the
+                  serif paper title. */}
               <div className="flex flex-col gap-1">
-                <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-2">
                   {post.primary_category_name && (
                     <p className="label-caps text-(--accent)">{post.primary_category_name}</p>
                   )}
