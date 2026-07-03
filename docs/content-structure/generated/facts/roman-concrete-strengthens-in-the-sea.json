@@ -46,13 +46,13 @@
     {
       "type": "surprises",
       "order": 3,
-      "content": "Everything we build is in a slow race with decay, and saltwater is one of the worst opponents. It rusts steel and spalls modern concrete off in sheets. Roman marine concrete does the reverse. Seawater seeps into it and dissolves bits of the volcanic ash, and from that leached material new crystals grow, knitting the whole mass tighter. The very thing that eats our concrete is what has been building theirs."
+      "content": "Everything we build is in a slow race with decay, and saltwater is one of the worst opponents. It rusts steel and spalls modern concrete off in sheets. Roman marine concrete does the reverse. Seawater seeps into it and dissolves bits of the volcanic ash, and from that leached material new crystals grow, knitting the whole mass tighter."
     },
     {
       "type": "story",
       "order": 7,
       "content": {
-        "body": "The Romans wrote the recipe down. The architect Vitruvius specified volcanic ash from the town of Pozzuoli, mixed with lime and seawater, and called for more ash in anything built underwater. Pliny the Elder, writing around 77 AD, described the result. Harbour concrete set in the sea, he wrote, to become a single stone, “impregnable to the waves and every day stronger.” Then Rome fell, and the technique faded from use for centuries. The explanation waited until 2017, when the geologist Marie Jackson drilled cores from Roman piers and put them under synchrotron X-rays. The beams showed crystals of aluminous tobermorite threaded through the cement, a mineral so hard to grow that no lab has made it at room temperature. For two millennia, the sea had been building them the slow way.",
+        "body": "The Romans wrote the recipe down. The architect Vitruvius specified volcanic ash from the town of Pozzuoli, mixed with lime and seawater, and called for more ash in anything built underwater. Pliny the Elder, writing around 77 AD, described the result. Harbour concrete set in the sea, he wrote, to become a single stone, “impregnable to the waves and every day stronger.” Then Rome fell, and the technique faded from use for centuries. The explanation waited until 2017, when the geologist Marie Jackson drilled cores from Roman piers and put them under synchrotron X-rays. The beams showed crystals of aluminous tobermorite threaded through the cement, a mineral so hard to grow that no lab has made it at room temperature.",
         "key_figures": [
           {
             "name": "Pliny the Elder",
