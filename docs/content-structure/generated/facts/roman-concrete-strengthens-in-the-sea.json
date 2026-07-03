@@ -24,7 +24,7 @@
   "feed_card": {
     "headline": "Seawater destroys modern concrete within decades, but for 2,000 years it has been growing the crystals that hold Roman sea walls together.",
     "teasers": [
-      "The crystal only the Romans could grow",
+      "The crystal no lab can grow",
       "How its cracks seal themselves shut",
       "A Roman naturalist noticed it 2,000 years ago"
     ],
@@ -46,13 +46,13 @@
     {
       "type": "surprises",
       "order": 3,
-      "content": "Everything we build is in a slow race with decay, and saltwater is one of the worst opponents. It rusts steel and spalls modern concrete off in sheets. Roman marine concrete does the reverse. Seawater seeps into it and dissolves bits of the volcanic ash, and from that leached material new crystals grow, knitting the whole mass tighter. The very thing that eats our concrete is what has been building theirs. Two thousand years in, it is still going."
+      "content": "Everything we build is in a slow race with decay, and saltwater is one of the worst opponents. It rusts steel and spalls modern concrete off in sheets. Roman marine concrete does the reverse. Seawater seeps into it and dissolves bits of the volcanic ash, and from that leached material new crystals grow, knitting the whole mass tighter. The very thing that eats our concrete is what has been building theirs."
     },
     {
       "type": "story",
       "order": 7,
       "content": {
-        "body": "The Romans wrote the recipe down. The architect Vitruvius specified volcanic ash from the town of Pozzuoli, mixed with lime and seawater, and called for more ash in anything built underwater. Pliny the Elder, writing around 77 AD, described the result. Harbour concrete set in the sea, he wrote, to become a single stone, “impregnable to the waves and every day stronger.” Then Rome fell, and the how of it faded from use for centuries. The why waited until 2017, when the geologist Marie Jackson drilled cores from Roman piers and put them under synchrotron X-rays. The beams showed crystals of aluminous tobermorite threaded through the cement, a mineral so hard to grow that no lab has made it at room temperature. The sea had been building them the slow way, for two millennia.",
+        "body": "The Romans wrote the recipe down. The architect Vitruvius specified volcanic ash from the town of Pozzuoli, mixed with lime and seawater, and called for more ash in anything built underwater. Pliny the Elder, writing around 77 AD, described the result. Harbour concrete set in the sea, he wrote, to become a single stone, “impregnable to the waves and every day stronger.” Then Rome fell, and the technique faded from use for centuries. The explanation waited until 2017, when the geologist Marie Jackson drilled cores from Roman piers and put them under synchrotron X-rays. The beams showed crystals of aluminous tobermorite threaded through the cement, a mineral so hard to grow that no lab has made it at room temperature. For two millennia, the sea had been building them the slow way.",
         "key_figures": [
           {
             "name": "Pliny the Elder",
@@ -77,7 +77,7 @@
       "order": 8,
       "content": [
         {
-          "title": "Modern concrete does the exact opposite",
+          "title": "Salt cracks modern seawalls within decades",
           "body": "Ordinary Portland cement is built to be inert. Its aggregate is chosen not to react, so there is no chemistry left to repair the damage the sea slowly does. Salt works into it, rusts the steel reinforcement inside, and the expanding rust cracks the concrete apart. A modern seawall can start failing within decades. The Roman piers held no steel, and nothing in them to rust.",
           "visual_svg": "<svg viewBox='0 46 400 120' xmlns='http://www.w3.org/2000/svg' fill='none'><line x1='60' y1='58' x2='60' y2='158' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><rect x='60' y='66' width='20' height='26' rx='6' stroke='currentColor' stroke-width='2' opacity='0.6'/><text x='88' y='84' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.8' text-anchor='start'>modern: decades</text><rect x='60' y='118' width='288' height='26' rx='6' fill='var(--accent)' opacity='0.15' stroke='var(--accent)' stroke-width='2.5'/><text x='72' y='136' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='start'>Roman: 2,000+ years</text></svg>"
         },
@@ -91,7 +91,7 @@
     {
       "type": "bigger_picture",
       "order": 9,
-      "content": "For most of a century we have built for strength up front and let time do its worst. The Romans built the other way, for a material that makes peace with its surroundings and mends itself. That patience is suddenly worth money. Cement alone throws off about 8% of the world's carbon dioxide, and every seawall that fails and gets rebuilt spends that carbon twice. A concrete the sea strengthens instead of eating away could teach us to build things that outlast us. The Romans got there first, by accident, and the sea has been proving them right for 2,000 years."
+      "content": "For most of a century we have built for strength up front and let time do its worst. The Romans built for a material that makes peace with its surroundings and mends itself. That patience is suddenly worth money. Cement alone throws off about 8% of the world's carbon dioxide, and every seawall that fails and gets rebuilt spends that carbon twice. A concrete the sea strengthens instead of eating away could teach us to build things that outlast us. The Romans got there first, by accident, and the sea has been proving them right for 2,000 years."
     },
     {
       "type": "quiz",
@@ -106,7 +106,7 @@
             "Sunlight bakes the surface into stone"
           ],
           "answer_index": 2,
-          "explanation": "Seawater percolates in, dissolves parts of the volcanic ash, and precipitates platy tobermorite crystals that knit the matrix together. Exposure builds the material up instead of wearing it down."
+          "explanation": "Seawater percolates in, dissolves parts of the volcanic ash, and precipitates tobermorite crystals that knit the matrix together. Exposure builds the material up instead of wearing it down."
         },
         {
           "question": "Why does that same seawater destroy modern Portland concrete?",
@@ -139,7 +139,7 @@
             "They are pockets of trapped air for insulation"
           ],
           "answer_index": 2,
-          "explanation": "The lime clasts act as a reserve. When a crack lets water in, they dissolve and recrystallise across the gap, sealing it, in experiments within about two weeks."
+          "explanation": "The lime lumps act as a reserve. When a crack lets water in, they dissolve and recrystallise across the gap, sealing it, in experiments within about two weeks."
         },
         {
           "question": "Ancient writers recorded the recipe, yet the effect went unexplained until 2017. Why?",
