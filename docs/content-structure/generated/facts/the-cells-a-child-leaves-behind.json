@@ -1,0 +1,242 @@
+{
+  "tags": [
+    "biology",
+    "genetics",
+    "medicine"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Chimerism"
+      },
+      "featured": true
+    },
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Immune tolerance"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "Decades after giving birth, a mother still carries her child's living cells, in her heart, brain, and other organs.",
+    "teasers": [
+      "The cells that may mend a broken heart",
+      "Why they reach even into the brain",
+      "Whether they heal you or harm you"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "Decades after giving birth, a mother still carries her child's living cells, in her heart, brain, and other organs."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><circle cx='200' cy='58' r='27' stroke='currentColor' stroke-width='2.5'/><path d='M158 96 Q200 84 242 96 L250 250 Q200 268 150 250 Z' stroke='currentColor' stroke-width='2.5' stroke-linejoin='round'/><path d='M200 238 C 180 200 220 160 196 120 C 184 100 200 92 200 86' stroke='currentColor' stroke-width='1.5' opacity='0.28' stroke-linecap='round'/><g fill='var(--accent)'><circle cx='200' cy='56' r='4.5'/><circle cx='188' cy='140' r='4.5'/><circle cx='216' cy='178' r='4.5'/><circle cx='193' cy='236' r='4'/><circle cx='207' cy='240' r='4'/><circle cx='200' cy='232' r='4'/></g><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.8'><text x='236' y='52' text-anchor='start'>brain</text><text x='150' y='144' text-anchor='end'>heart</text><text x='252' y='182' text-anchor='start'>liver</text><text x='200' y='286' text-anchor='middle'>from the womb</text></g></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "You think of your body as genetically yours, one person, one genome. Pregnancy breaks that. Some of the developing child's cells slip across the placenta into the mother, and a few settle in and stay for good. They carry the child's DNA, so the mother ends up quietly made of more than one person. When the child is a son, those cells hold a Y chromosome, a stretch of code a woman's body has no other way to contain. That is the fingerprint researchers hunt for."
+    },
+    {
+      "type": "tangible",
+      "order": 4,
+      "content": {
+        "items": [
+          "For every one of these cells there can be more than 10,000 of the mother's own, so they hide like a handful of strangers in a stadium.",
+          "They can appear by the fifth week of pregnancy, before many women even know they are pregnant.",
+          "And they stay: a son's cells have turned up in his mother's blood 27 years after his birth."
+        ],
+        "visual_svg": "<svg viewBox='0 146 400 92' xmlns='http://www.w3.org/2000/svg' fill='none'><line x1='50' y1='202' x2='360' y2='202' stroke='currentColor' stroke-width='2' opacity='0.5' stroke-linecap='round'/><g stroke='currentColor' stroke-width='1.5' opacity='0.45' stroke-linecap='round'><line x1='78' y1='196' x2='78' y2='208'/><line x1='120' y1='196' x2='120' y2='208'/><line x1='344' y1='196' x2='344' y2='208'/></g><rect x='78' y='166' width='266' height='18' rx='9' fill='var(--accent)' opacity='0.16' stroke='var(--accent)' stroke-width='2'/><text x='211' y='154' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>cells present</text><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.75' text-anchor='middle'><text x='78' y='226'>5 weeks</text><text x='120' y='226'>birth</text><text x='344' y='226'>27 years</text></g></svg>"
+      }
+    },
+    {
+      "type": "how_we_know",
+      "order": 5,
+      "content": "The trick is to look for a genome that cannot be the mother's. Carry a son, and some of your cells should hold a Y chromosome. Nothing else in a woman's body has one. So researchers sample a tissue, hunt for Y-chromosome DNA, and count anything they find as a trace of a male child once carried. The signal is faint, a few cells in tens of thousands. It took sensitive DNA tools to catch it. Once they could, the cells turned up in blood, then in organ after organ. One survey even found male DNA in 63% of the women's brains it tested. The cells had crossed a barrier built to keep such things out."
+    },
+    {
+      "type": "story",
+      "order": 7,
+      "content": {
+        "body": "In 1893, the pathologist Georg Schmorl was autopsying women who had died of eclampsia, a violent complication of pregnancy. In their lungs he found strange giant cells that did not belong there. They had come loose from the placenta and lodged in the mother, the first sign that a pregnancy leaves cellular traces in the body. For a century that stayed a curiosity of the dead. Then in 1996 the geneticist Diana Bianchi went looking in the living. Sampling blood from healthy women, she found male cells in one who had borne a son 27 years earlier. The cells were not passing through. They had settled in and lasted half a lifetime.",
+        "key_figures": [
+          {
+            "name": "Georg Schmorl",
+            "role": "First saw the cells, in 1893",
+            "one_line": "The pathologist who found placental cells lodged in the lungs of women who had died of eclampsia.",
+            "lifespan": "1861-1932",
+            "birth_year": 1861,
+            "featured": false
+          },
+          {
+            "name": "Diana W. Bianchi",
+            "role": "Showed the cells persist for decades",
+            "one_line": "Geneticist whose 1996 study found a son's cells still in his mother's blood 27 years after his birth.",
+            "featured": true
+          }
+        ],
+        "visual_svg": "<svg viewBox='0 0 400 200' xmlns='http://www.w3.org/2000/svg' fill='none'><line x1='200' y1='30' x2='200' y2='170' stroke='currentColor' stroke-width='1.5' opacity='0.3' stroke-dasharray='6 6' stroke-linecap='round'/><rect x='36' y='44' width='128' height='112' rx='16' stroke='currentColor' stroke-width='2' opacity='0.75'/><rect x='236' y='44' width='128' height='112' rx='16' stroke='var(--accent)' stroke-width='2.5'/><g font-family='var(--font-mono), ui-monospace, monospace' font-size='16' font-weight='700' text-anchor='middle'><text x='100' y='86' fill='currentColor'>1893</text><text x='300' y='86' fill='var(--accent)'>1996</text></g><circle cx='100' cy='110' r='5' fill='currentColor' opacity='0.7'/><circle cx='300' cy='110' r='5' fill='var(--accent)'/><g font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle'><text x='100' y='140' fill='currentColor' opacity='0.8'>at autopsy</text><text x='300' y='140' fill='var(--accent)'>in the living</text></g></svg>"
+      }
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "The traffic runs in both directions",
+          "body": "Cells do not only move from child to mother. The mother's cells cross the other way too, into the fetus, and some persist in her child for life. A later pregnancy can even carry cells left behind by an older sibling. One body can end up holding several people's cells at once.",
+          "visual_svg": "<svg viewBox='0 0 400 200' xmlns='http://www.w3.org/2000/svg' fill='none'><circle cx='96' cy='108' r='46' stroke='currentColor' stroke-width='2.5'/><circle cx='304' cy='108' r='46' stroke='currentColor' stroke-width='2.5'/><text x='96' y='113' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>mother</text><text x='304' y='113' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>child</text><g stroke='currentColor' stroke-width='2' opacity='0.55' stroke-linecap='round' stroke-linejoin='round'><path d='M150 76 Q200 42 250 76'/><path d='M250 76 l0 -13 m0 13 l-13 -2'/><path d='M250 140 Q200 174 150 140'/><path d='M150 140 l0 13 m0 -13 l13 -2'/></g><g fill='var(--accent)'><circle cx='200' cy='53' r='4.5'/><circle cx='200' cy='163' r='4.5'/></g></svg>"
+        },
+        {
+          "title": "In the heart, the cells may lend a hand",
+          "body": "Peripartum cardiomyopathy is heart failure that strikes late in pregnancy, and its patients recover far more often than other heart-failure patients. That oddity sent researchers looking. In mice, fetal cells home in on injured maternal heart tissue and turn into working muscle, blood vessel, and lining cells. Whether they do the same repair job in women is suggested but not proven."
+        },
+        {
+          "title": "The same cells are tied to autoimmune disease",
+          "body": "The exchange has a darker side. Microchimerism turns up more often in women with autoimmune diseases like systemic sclerosis, lupus, and Hashimoto's thyroiditis. Foreign cells that never leave may confuse the immune system, or they may just gather where the damage already is. Nobody has untangled cause from effect."
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "We picture a person as a single genome, sealed inside one body. Pregnancy ends that picture. For as long as she lives, a mother can carry cells from every child she has borne, and those children carry a little of her. Nobody yet knows the balance sheet, whether these stowaways mostly guard the body or slowly wear it down. What is certain is stranger than either answer. The line between one person and the next is not as firm as it feels, and motherhood leaves the body permanently shared."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "How do a child's cells end up inside the mother?",
+          "options": [
+            "They are injected during delivery",
+            "They cross the placenta during pregnancy, and some are never cleared",
+            "The mother inhales them from the newborn",
+            "They form spontaneously from the mother's own stem cells"
+          ],
+          "answer_index": 1,
+          "explanation": "During pregnancy, fetal cells pass through the placenta into the mother's blood. Most are cleared, but a few settle into her tissues and stay for years."
+        },
+        {
+          "question": "Why is a Y chromosome the giveaway that fetal cells are present?",
+          "options": [
+            "Only fetal cells carry any DNA at all",
+            "A Y chromosome glows under a microscope",
+            "A woman's own cells have no Y chromosome, so any male DNA must come from a son",
+            "The Y chromosome is larger and easier to spot"
+          ],
+          "answer_index": 2,
+          "explanation": "A woman who has carried a son can hold cells with a Y chromosome, which none of her own cells have. Finding that male DNA in her tissue flags cells that came from the child."
+        },
+        {
+          "question": "What makes these cells so hard to detect?",
+          "options": [
+            "They hide inside the mother's own cells",
+            "They vanish within days of the birth",
+            "They look identical to bacteria",
+            "They are extremely rare, fewer than 1 in 10,000 of the mother's cells"
+          ],
+          "answer_index": 3,
+          "explanation": "Microchimeric cells are outnumbered by the mother's own by more than 10,000 to 1, so only sensitive DNA methods can pick them out."
+        },
+        {
+          "question": "In mice, fetal cells gather at heart injuries and become heart cells. Why is that only suggestive for humans?",
+          "options": [
+            "Human hearts cannot be injured the same way",
+            "Mice do not have microchimerism",
+            "The repair is shown in mice, and whether it happens in women is not yet proven",
+            "Human fetal cells lack a Y chromosome"
+          ],
+          "answer_index": 2,
+          "explanation": "The homing-and-repair result comes from mouse studies. Fetal cells are found in human hearts too, but whether they repair the human heart remains unproven."
+        },
+        {
+          "question": "Microchimerism is tied to both wound healing and autoimmune disease. What does that tell us?",
+          "options": [
+            "The cells are always harmful",
+            "The cells are always beneficial",
+            "Whether the cells help or harm is genuinely unresolved",
+            "The link to disease has been disproven"
+          ],
+          "answer_index": 2,
+          "explanation": "The same persistent foreign cells appear in healing tissue and in autoimmune illness. Which effect wins out, and when, is still an open question."
+        },
+        {
+          "question": "What does microchimerism imply about being a single genetic individual?",
+          "options": [
+            "Each person is a sealed, single genome for life",
+            "The boundary between individuals is permeable, and one body can hold another's cells",
+            "Only identical twins ever share cells",
+            "Cells cannot survive inside another person's body"
+          ],
+          "answer_index": 1,
+          "explanation": "Cells pass between mother and child in both directions and persist. A body can carry living cells, and DNA, from more than one person, so genetic singularity is not absolute."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "The cells are just the mother's own, relocated.",
+          "reality": "They carry the child's DNA. That difference is what lets researchers spot them at all, through the Y chromosome a son leaves behind."
+        },
+        {
+          "myth": "These leftover cells are healing cells, doing repair.",
+          "reality": "That is a hopeful reading, drawn mostly from mice. In people the cells are present, but whether they mend anything is unproven, and they are also tied to autoimmune disease."
+        },
+        {
+          "myth": "Only mothers of sons carry another person's cells.",
+          "reality": "Daughters leave cells too, just without the easy Y-chromosome flag. Cells can also arrive from an older sibling, a lost twin, or an earlier pregnancy."
+        }
+      ]
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Bianchi DW, et al. Male fetal progenitor cells persist in maternal blood for as long as 27 years postpartum. PNAS 1996;93:705-708",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC40117/",
+          "type": "paper"
+        },
+        {
+          "label": "Chan WFN, et al. Male microchimerism in the human female brain. PLoS ONE 2012;7:e45592",
+          "url": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0045592",
+          "type": "paper"
+        },
+        {
+          "label": "Kara RJ, et al. Fetal cells traffic to injured maternal myocardium and undergo cardiac differentiation. Circulation Research 2012;110:82-93",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/22082491/",
+          "type": "paper"
+        },
+        {
+          "label": "Fetal microchimerism and implications for maternal health (review). Journal of Molecular Medicine 2020",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7543167/",
+          "type": "article"
+        },
+        {
+          "label": "Feto-maternal microchimerism: Memories from pregnancy (review, incl. Schmorl 1893). iScience 2022",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8762399/",
+          "type": "paper"
+        },
+        {
+          "label": "Microchimerism",
+          "url": "https://en.wikipedia.org/wiki/Microchimerism",
+          "type": "wikipedia"
+        }
+      ]
+    }
+  ]
+}
