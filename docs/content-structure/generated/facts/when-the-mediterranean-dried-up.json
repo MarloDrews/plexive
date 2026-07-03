@@ -46,7 +46,7 @@
     {
       "type": "surprises",
       "order": 3,
-      "content": "A sea looks permanent. Seal one off and the intuition says it just sits there. The Mediterranean did the opposite. Once a shift in the crust closed the strait at Gibraltar, the trapped water evaporated faster than the rivers feeding it could keep up. Over roughly 600,000 years it drew down kilometres, until the deep basins lay 3 to 5 km below the world ocean, their floors crusted white with salt. Then the barrier failed. The Atlantic poured back in and filled most of the basin within about two years."
+      "content": "A sea looks permanent. Seal one off and the intuition says it just sits there. The Mediterranean, once a shift in the crust closed the strait at Gibraltar, evaporated faster than the rivers feeding it could keep up. Over roughly 600,000 years it drew down kilometres, until the deep basins lay 3 to 5 km below the world ocean, their floors crusted white with salt. Then the barrier failed. The Atlantic poured back in and filled most of the basin within about two years."
     },
     {
       "type": "tangible",
@@ -63,7 +63,7 @@
     {
       "type": "how_we_know",
       "order": 5,
-      "content": "The proof of the speed is carved in rock. Drilling and seismic surveys under the strait found a channel gouged clean across the Gibraltar sill, about 200 km long and cut more than 250 m into bedrock. A slow, rising tide does not do that. Only a torrent does. In 2009 a team led by Daniel Garcia-Castellanos fed the channel's shape into an erosion model and worked backward from the damage. A little water spilling over the sill cut a groove, the groove funneled more water, and the faster flow cut deeper still. The water ended up running faster than 40 metres a second, on the order of 100 million cubic metres every second. That is where the two-year figure comes from."
+      "content": "The proof of the speed is carved in rock. Drilling and seismic surveys under the strait found a channel gouged clean across the Gibraltar sill, about 200 km long and cut more than 250 m into bedrock. A slow, rising tide does not do that. Only a torrent does. In 2009 a team led by Daniel Garcia-Castellanos fed the channel's shape into an erosion model and worked backward from the damage. A little water spilling over the sill cut a groove, the groove funnelled more water, and the faster flow cut deeper still. The water ended up running faster than 40 metres a second, on the order of 100 million cubic metres every second. That is where the two-year figure comes from."
     },
     {
       "type": "story",
@@ -94,7 +94,7 @@
       "content": [
         {
           "title": "Rivers gouged canyons deeper than the Grand Canyon",
-          "body": "As the sea fell, the rivers feeding it had to chase it down. The Nile carved a gorge into its own bed, reaching 2,500 m below today's sea level near Cairo. That is deeper than the Grand Canyon. It now lies buried deep beneath the delta. The Rhône, the Po, and the Ebro left the same drowned canyons under their deltas. Those hidden gorges are among the clearest fingerprints the drying left behind.",
+          "body": "As the sea fell, the rivers feeding it had to chase it down. The Nile carved a gorge into its own bed, reaching 2,500 m below today's sea level near Cairo. That is deeper than the Grand Canyon. It now lies buried deep beneath the delta. The Rhône, the Po, and the Ebro left the same drowned canyons under their deltas. Those hidden gorges are among the clearest traces the drying left behind.",
           "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><line x1='24' y1='70' x2='376' y2='70' stroke='currentColor' stroke-width='2.5' stroke-linecap='round'/><text x='24' y='60' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.75' text-anchor='start'>Nile delta plain</text><g stroke='currentColor' stroke-width='1.5' opacity='0.22' stroke-linecap='round'><line x1='24' y1='112' x2='150' y2='112'/><line x1='250' y1='112' x2='376' y2='112'/><line x1='24' y1='152' x2='128' y2='152'/><line x1='272' y1='152' x2='376' y2='152'/></g><path d='M150 70 L200 238 L250 70 Z' fill='var(--accent)' opacity='0.08'/><path d='M150 70 L200 238 L250 70' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/><text x='200' y='126' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>buried gorge</text><line x1='306' y1='76' x2='306' y2='232' stroke='currentColor' stroke-width='2' opacity='0.5' stroke-linecap='round'/><text x='314' y='158' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' font-weight='600' opacity='0.7' text-anchor='start'>2,500 m down</text></svg>"
         },
         {
@@ -106,7 +106,7 @@
     {
       "type": "bigger_picture",
       "order": 9,
-      "content": "We treat geography as the fixed stage that history plays out on. The Mediterranean says otherwise. In the length of one warm-and-cold swing of the climate, a sea the size of a continent emptied to a salt pan and then came roaring back. The coastline every later empire fought over is younger than the flood that filled it. Nothing on the map was inevitable. The rock beneath the water keeps its own deep time, and once in a great while it moves fast enough to watch."
+      "content": "In the length of one warm-and-cold swing of the climate, a sea the size of a continent emptied to a salt pan and then came roaring back. The coastline every later empire fought over is younger than the flood that filled it. Nothing on the map was inevitable. The rock beneath the water keeps its own deep time, and once in a great while it moves fast enough to watch."
     },
     {
       "type": "quiz",
@@ -132,7 +132,7 @@
             "The basin floor sank, pulling Atlantic water in"
           ],
           "answer_index": 1,
-          "explanation": "A trickle over the sill cut a groove, the groove carried more water, and the faster flow cut faster still. That runaway feedback turned a leak into a flood moving on the order of 100 million cubic metres a second."
+          "explanation": "Once a little water spilled over the sill, it opened a channel that let ever more flow through, deepening as it went. That runaway feedback turned a leak into a flood moving on the order of 100 million cubic metres a second."
         },
         {
           "question": "What first convinced scientists that the basin had dried out, rather than staying full?",
