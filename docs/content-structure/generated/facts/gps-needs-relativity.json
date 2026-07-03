@@ -18,7 +18,7 @@
     "teasers": [
       "Two clock effects work against each other, and one wins",
       "The 1977 satellite that carried a relativity off-switch",
-      "How a millionth of a second becomes kilometers"
+      "How millionths of a second become kilometers"
     ],
     "post_difficulty": 2
   },
@@ -38,7 +38,7 @@
     {
       "type": "surprises",
       "order": 3,
-      "content": "Relativity has a reputation as physics for black holes and near-light starships. The phone in your pocket seems safely out of its reach. GPS says otherwise. A satellite clock and your receiver have to agree to within about 30 billionths of a second. Yet relativity throws the satellite clock off by 38 millionths of a second a day, more than a thousand times that gap. Left uncorrected, the fixes drift past any usable accuracy within minutes."
+      "content": "Relativity has a reputation as physics for black holes and near-light starships. The phone in your pocket seems safely out of its reach. A satellite clock and your receiver have to agree to within about 30 billionths of a second. Yet relativity throws the satellite clock off by 38 millionths of a second a day, more than a thousand times that gap. Left uncorrected, the fixes drift past any usable accuracy within minutes."
     },
     {
       "type": "tangible",
@@ -188,7 +188,7 @@
         },
         {
           "myth": "The correction is a tiny tweak at the edge of GPS accuracy.",
-          "reality": "Each day without it adds kilometers of error, and GPS soon breaks down entirely."
+          "reality": "Each day without it adds kilometers of error, swamping the few meters of accuracy GPS is built to deliver."
         }
       ]
     },
