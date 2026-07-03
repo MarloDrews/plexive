@@ -83,7 +83,8 @@
         },
         {
           "title": "The cracks can heal themselves",
-          "body": "There is a second trick, found only in 2023. Roman concrete is studded with little white lumps of lime that were long dismissed as sloppy mixing. They are not a mistake. When a crack opens and water seeps in, those lime lumps dissolve and recrystallise, filling the gap like a scab. In the lab, cracks in Roman-style concrete sealed shut within two weeks, while plain modern concrete stayed open."
+          "body": "There is a second trick, found only in 2023. Roman concrete is studded with little white lumps of lime that were long dismissed as sloppy mixing. They are not a mistake. When a crack opens and water seeps in, those lime lumps dissolve and recrystallise, filling the gap like a scab. In the lab, cracks in Roman-style concrete sealed shut within two weeks, while plain modern concrete stayed open.",
+          "visual_svg": "<svg viewBox='0 46 400 116' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='60' y='84' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='start'>Roman: sealed in ~2 weeks</text><line x1='60' y1='96' x2='250' y2='96' stroke='var(--accent)' stroke-width='3' stroke-linecap='round'/><circle cx='250' cy='96' r='5' fill='var(--accent)'/><text x='60' y='128' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.8' text-anchor='start'>modern: stays open</text><line x1='60' y1='140' x2='352' y2='140' stroke='currentColor' stroke-width='2.5' opacity='0.55' stroke-dasharray='7 7' stroke-linecap='round'/><path d='M352 140 l-12 -6 m12 6 l-12 6' stroke='currentColor' stroke-width='2' opacity='0.55' stroke-linecap='round' stroke-linejoin='round'/></svg>"
         }
       ]
     },
