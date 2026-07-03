@@ -97,15 +97,15 @@
       "content": [
         {
           "title": "The deficit is one you cannot feel",
-          "body": "Alcohol announces itself. You slur, you sway, some part of you knows. Sleep loss is quiet. In studies where people are held to short nights, how sleepy they say they feel levels off after a few days while their scores on tasks keep sliding. The impairment climbs and the sense of it does not, so the tired driver is often the one most sure they are fine."
+          "body": "Alcohol announces itself. You slur, you sway, some part of you knows. Sleep loss is quiet. In studies where people are held to short nights, how sleepy they say they feel levels off after a few days while their scores on tasks keep sliding. The measured impairment keeps climbing while the felt sense of it stays flat."
         },
         {
           "title": "A microsleep erases a stretch of road",
-          "body": "Past a certain point the brain stops asking permission. It blinks out for anywhere from half a second to several seconds, often with the eyes still open. You do not notice the gap. The part that would notice is the part that switched off. On a motorway, a few seconds gone is a long blind run.",
+          "body": "Past a certain point the brain stops asking permission. It blinks out for anywhere from half a second to several seconds, often with the eyes still open. You do not notice the gap. The part that would notice is the part that switched off. On a motorway, the car covers a long stretch of road while no one is watching it.",
           "visual_svg": "<svg viewBox='0 66 400 148' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='90' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.78' text-anchor='middle'>A 4-second microsleep at 100 km/h</text><line x1='44' y1='170' x2='360' y2='170' stroke='currentColor' stroke-width='2' opacity='0.35' stroke-linecap='round' stroke-dasharray='2 10'/><rect x='44' y='160' width='26' height='16' rx='5' stroke='currentColor' stroke-width='2' opacity='0.7'/><line x1='80' y1='170' x2='352' y2='170' stroke='var(--accent)' stroke-width='4' stroke-linecap='round'/><line x1='352' y1='170' x2='340' y2='163' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><line x1='352' y1='170' x2='340' y2='177' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><text x='216' y='150' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>111 m with eyes shut</text><text x='216' y='196' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.65' text-anchor='middle'>longer than a football pitch</text></svg>"
         },
         {
-          "title": "Coffee hides the warning light, not the fault",
+          "title": "Caffeine quiets the alarm while the deficit grows",
           "body": "Stay awake and a molecule called adenosine builds up, pressing you toward sleep. Caffeine blocks that signal. The pressure is still there, only muffled, so you feel sharper without being sharper. When the caffeine fades, the reaction lapses return. It buys alertness on credit, and the debt stays owed."
         }
       ]
