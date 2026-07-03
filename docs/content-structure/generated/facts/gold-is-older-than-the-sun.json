@@ -38,7 +38,7 @@
     {
       "type": "surprises",
       "order": 3,
-      "content": "Hold a gold ring and you are holding the debris of a catastrophe. Its atoms did not form on Earth, or in the Sun, or in any steadily burning star. A star fuses light nuclei and gives off energy, but only as far as iron. Past iron, the books flip. Building anything heavier costs energy, so no ordinary star ever reaches gold. To make it, neutrons must pile onto a nucleus faster than it can decay. That happens only where matter is ripped apart and slammed together at once. The ring is a receipt from that."
+      "content": "Hold a gold ring and you are holding the debris of a catastrophe. Its atoms did not form on Earth, or in the Sun, or in any steadily burning star. A star fuses light nuclei and gives off energy, but only as far as iron. Past iron, the books flip. Building anything heavier costs energy, so no ordinary star ever reaches gold. To make it, neutrons must pile onto a nucleus faster than it can decay. That happens only where matter is ripped apart and slammed together at once, which is where the gold in the ring was made."
     },
     {
       "type": "tangible",
@@ -61,7 +61,7 @@
       "type": "story",
       "order": 7,
       "content": {
-        "body": "The idea that heavy elements are cooked outside ordinary stars is old. In 1957 four astronomers, Margaret Burbidge among them, mapped how the elements form and named a rapid neutron-capture process for the heaviest ones. What it could not name was the furnace. For 60 years the r-process was a mechanism in search of a place, with neutron star mergers and rare supernovae the leading suspects. The case broke open on 17 August 2017. Detectors caught the gravitational shudder of two neutron stars spiraling together. Telescopes swung onto the afterglow, a kilonova whose light carried the chemical fingerprint of freshly minted heavy elements. The prediction had waited six decades for the sky to show its work.",
+        "body": "The idea that heavy elements are cooked outside ordinary stars is old. In 1957 four astronomers, Margaret Burbidge among them, mapped how the elements form and named a rapid neutron-capture process for the heaviest ones. What it could not name was the furnace. For 60 years the r-process was a mechanism in search of a place, with neutron star mergers and rare supernovae the leading suspects. The case broke open on 17 August 2017. Detectors caught the gravitational shudder of two neutron stars spiraling together. Telescopes swung onto the afterglow, a kilonova whose light carried the chemical fingerprint of freshly minted heavy elements. The prediction had waited six decades for its confirmation.",
         "key_figures": [
           {
             "name": "Margaret Burbidge",
@@ -89,7 +89,7 @@
       "content": [
         {
           "title": "Most of Earth's gold is locked in the core",
-          "body": "When the young Earth was molten, iron sank to the center and formed the core. It dragged most of the planet's gold down with it. What sits in the crust and mantle, the gold we can reach, is a rounding error next to that. And even that was mostly delivered later, by metal-rich meteorites that pounded the surface for hundreds of millions of years after the core set. Your vaulted gold spent most of its life as space rock.",
+          "body": "When the young Earth was molten, iron sank to the center and formed the core. It dragged most of the planet's gold down with it. What sits in the crust and mantle, the gold we can reach, is a rounding error next to that. And even that was mostly delivered later, by metal-rich meteorites that pounded the surface for hundreds of millions of years after the core set. Most of the gold in a vault spent far longer as space rock than it has spent on Earth.",
           "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><circle cx='200' cy='158' r='116' stroke='currentColor' stroke-width='2' opacity='0.5'/><circle cx='200' cy='158' r='112' stroke='var(--accent)' stroke-width='3' stroke-dasharray='2 8' opacity='0.9'/><circle cx='200' cy='158' r='56' stroke='currentColor' stroke-width='2.5' fill='currentColor' fill-opacity='0.08'/><text x='200' y='154' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>core</text><text x='200' y='174' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.75' text-anchor='middle'>most gold</text><text x='200' y='36' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>gold we mine: a late veneer</text></svg>"
         },
         {
