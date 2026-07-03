@@ -16,7 +16,7 @@
   "feed_card": {
     "headline": "Turn off the relativity correction in GPS, and your location is 11 km wrong within a day.",
     "teasers": [
-      "Two clock effects pull opposite ways, one wins",
+      "Two clock effects work against each other, and one wins",
       "The 1977 satellite that carried a relativity off-switch",
       "How a millionth of a second becomes kilometers"
     ],
@@ -61,7 +61,7 @@
           {
             "name": "Albert Einstein",
             "role": "Wrote the two relativities the fix corrects for",
-            "one_line": "The correction sums his two theories: special relativity from 1905 for the speed effect, and general relativity from 1915 for the gravity effect.",
+            "one_line": "The correction sums his two theories: *special relativity* from 1905 for the speed effect, and *general relativity* from 1915 for the gravity effect.",
             "lifespan": "1879-1955",
             "birth_year": 1879,
             "featured": true
@@ -84,7 +84,7 @@
       "content": [
         {
           "title": "Which effect wins depends on how high you orbit",
-          "body": "Speed and altitude pull the clock opposite ways, and which wins depends on how high you orbit. Above roughly 3,200 km, altitude takes over. GPS flies near 20,000 km, so its clocks run fast. The Space Station, down at 400 km, sits on the other side, where speed wins and clocks run slow. Its crews come home a fraction of a second younger than the rest of us.",
+          "body": "Cross about 3,200 km and the two effects trade places: below that line altitude loses out, above it altitude takes over. GPS flies near 20,000 km, so its clocks run fast. The Space Station, down at 400 km, sits on the other side, where speed wins and clocks run slow. Its crews come home a fraction of a second younger.",
           "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='90' y='32' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='middle'>altitude</text><line x1='90' y1='42' x2='90' y2='262' stroke='currentColor' stroke-width='2' opacity='0.5' stroke-linecap='round'/><path d='M90 42 l-6 12 m6 -12 l6 12' stroke='currentColor' stroke-width='2' opacity='0.5' stroke-linecap='round' stroke-linejoin='round'/><line x1='60' y1='262' x2='360' y2='262' stroke='currentColor' stroke-width='2.5' opacity='0.6' stroke-linecap='round'/><text x='60' y='280' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='start'>Earth's surface</text><line x1='78' y1='228' x2='102' y2='228' stroke='currentColor' stroke-width='2.5' stroke-linecap='round'/><text x='114' y='224' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' text-anchor='start'>ISS, ~400 km</text><text x='114' y='242' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='start'>clock runs slow</text><line x1='60' y1='150' x2='360' y2='150' stroke='currentColor' stroke-width='1.5' opacity='0.4' stroke-dasharray='6 6'/><text x='114' y='144' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.75' text-anchor='start'>~3,200 km: effects cancel</text><line x1='78' y1='78' x2='102' y2='78' stroke='var(--accent)' stroke-width='3' stroke-linecap='round'/><text x='114' y='74' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='start'>GPS, ~20,000 km</text><text x='114' y='92' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.9' text-anchor='start'>clock runs fast</text><text x='356' y='280' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.5' text-anchor='end'>not to scale</text></svg>"
         },
         {
@@ -100,7 +100,7 @@
     {
       "type": "bigger_picture",
       "order": 9,
-      "content": "Special relativity arrived in 1905 as a claim about moving clocks that hardly anyone could test. Today it runs inside billions of phones, cars, and ships, every second of every day. The theory never stayed in the lecture hall. It turned into plumbing, the kind we notice only when it fails. The next time a map drops a pin on the right street, that is a hundred-year-old idea about space and time, doing quiet work."
+      "content": "*Special relativity* arrived in 1905 as a claim about moving clocks that hardly anyone could test. Today it runs inside billions of phones, cars, and ships, every second of every day. The theory never stayed in the lecture hall. It turned into plumbing, the kind we notice only when it fails. The next time a map drops a pin on the right street, that is a hundred-year-old idea about space and time, doing quiet work."
     },
     {
       "type": "quiz",
@@ -188,7 +188,7 @@
         },
         {
           "myth": "The correction is a tiny tweak at the edge of GPS accuracy.",
-          "reality": "Turn it off and the error grows by kilometers a day. GPS does not fade slowly. It breaks."
+          "reality": "Each day without it adds kilometers of error, and GPS soon breaks down entirely."
         }
       ]
     },
