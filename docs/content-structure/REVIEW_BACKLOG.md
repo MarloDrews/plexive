@@ -101,3 +101,15 @@ sources. Each entry stays `open` until a researcher confirms or resolves it.
 - finding: story dates the salt core to "23 August 1970". Leg 13 (August 1970) and the Hsu/Ryan attribution are confirmed, but the exact day was not independently verifiable (not contradicted either). If the generator has a source for the specific date, keep it; otherwise consider generalizing to "in August 1970".
 - needs: a source check for the specific coring date; if unverifiable, generalize the day out. Deferred because confirming or removing the precise date requires a source, not a mechanical edit; the post is unchanged.
 - added: 2026-07-03, 2026-07-03-d
+
+### roman-concrete-strengthens-in-the-sea
+- status: open
+- finding: story key_figure Marie Jackson is featured:true with no birth_year, so the featured person edge stays inert (person edges match on name+birth_year). Re-surfaced in the 2026-07-04-a correctness review, which searched and could not find the date.
+- needs: Marie D. Jackson's birth year is not on Wikipedia or her Utah faculty page (searched, not found). Supplying it is a new sourced fact; omitting is permitted by the skeleton, so this is a soft tension, not a rule violation. Either find the verified birth year to activate the edge or accept the featured flag as inert (low priority). Not changed in the post to avoid inventing a date.
+- added: 2026-07-04, 2026-07-04-a
+
+### the-cells-a-child-leaves-behind
+- status: open
+- finding: story key_figure Diana W. Bianchi is featured:true with no birth_year, so the featured person edge stays inert (same class as Marie Jackson). Re-surfaced in the 2026-07-04-a correctness review, which searched and could not find the date.
+- needs: Diana W. Bianchi's birth year is not on Wikipedia or her NICHD/genome.gov profiles (searched, not found). Supplying it is a new sourced fact; omitting is permitted by the skeleton. Either find the verified birth year to activate the edge or accept the featured flag as inert (low priority). Not changed in the post to avoid inventing a date.
+- added: 2026-07-04, 2026-07-04-a
