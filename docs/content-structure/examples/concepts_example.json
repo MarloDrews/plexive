@@ -22,12 +22,8 @@
     }
   ],
   "feed_card": {
-    "field": "Statistics",
     "concept_name": "Regression to the Mean",
     "one_line": "An unusually high or low result is usually followed by a more ordinary one, because luck rarely repeats.",
-    "card_visual": {
-      "svg": "<svg viewBox='0 0 56 32' xmlns='http://www.w3.org/2000/svg' fill='none'><path d='M3 26 C15 26 17 7 28 7 C39 7 41 26 53 26' stroke='var(--accent)' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/></svg>"
-    },
     "teasers": [
       "Your best month ever is a bad sign for the next one.",
       "The cure you swear by may just be good timing.",

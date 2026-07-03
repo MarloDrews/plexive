@@ -117,25 +117,10 @@
   // JOB: make the fact itself do the pulling before any tap. The number
   //      carries the visual weight. No marketing wrap.
   "feed_card": {
-    "field": "",              // string. Guideline: one or two words, the topic
-                              // field shown small above the headline
-                              // ("Astronomy", "Biology", "Deep Time").
-    "headline": "",           // string. Guideline: 8-16 words, the fact stated
-                              // cleanly, the key number positioned for emphasis.
-                              // Avoid: "Did you know", preamble, question marks.
-    "card_visual": {          // REQUIRED. Facts is a typographic card: a small
-                              // glyph sits at the right end of the field line.
-                              // Fill "svg" with the field glyph; omit image_url and
-                              // image_attribution for facts (books and people use them).
-                              // The glyph belongs to the field, not the post;
-                              // later it comes from a fixed field-to-glyph set
-                              // (ROADMAP.md), so a generator never invents one.
-      "image_url": "",        // string | omit. Not used on Facts cards. (Books and
-                              // people use this for a cover/portrait.)
-      "image_attribution": "",// string | omit. With image_url only.
-      "svg": ""               // string. The small field glyph, compact viewBox
-                              // (e.g. 0 0 56 32), per SVG_STANDARD.md card rules.
-    },
+    // The card's category label and glyph both resolve from tags[0], the primary
+    // category slug, at render time: the label from the slug's display name and the
+    // glyph from frontend/src/lib/glyphs.ts. Nothing to author here; there is no
+    // feed_card field and no per-post card_visual.
     "teasers": ["", "", ""],  // HARD: exactly 3. Guideline: about 6 to 8 words each
                               // (never a cap). Each opens a different curiosity loop the
                               // post closes, in plain words the reader already has, never

@@ -148,28 +148,10 @@
   //      scanning a conference programme. The anchor is the finding, not a teaser.
   //      State the result as a colleague would, no provocation framing.
   "feed_card": {
-    "field": "",                  // string. Guideline: one or two words, the
-                                  // canonical field name shown small above the
-                                  // title ("Cognitive Neuroscience", "Machine
-                                  // Learning"). The human-readable label; tags[0]
-                                  // is the matching taxonomy slug. The Academy tab
-                                  // filters on this, so use the canonical name.
-    "card_visual": {              // REQUIRED. Academy is a typographic card: a
-                                  // small glyph sits at the right end of the field
-                                  // line. Fill "svg" with the field glyph keyed on
-                                  // tags[0]; omit image_url and image_attribution
-                                  // (academy is typographic; books and people use
-                                  // those for a cover or portrait). The glyph
-                                  // belongs to the field, not the post; later it
-                                  // comes from a fixed field-to-glyph set
-                                  // (ROADMAP.md). This inline svg is interim
-                                  // scaffolding until that set exists; a generator
-                                  // never invents one.
-      "image_url": "",            // string | omit. Not used on Academy cards.
-      "image_attribution": "",    // string | omit. With image_url only.
-      "svg": ""                   // string. The small field glyph, compact viewBox
-                                  // (e.g. 0 0 56 32), per SVG_STANDARD.md card rules.
-    },
+    // The card's category label and glyph both resolve from tags[0], the primary
+    // category slug, at render time: the label from the slug's display name and the
+    // glyph from frontend/src/lib/glyphs.ts. Nothing to author here; there is no
+    // feed_card field and no per-post card_visual.
     "title": "",                  // string. The full paper title, primary
                                   // typography. The renderer may truncate for
                                   // display; store the full title here.

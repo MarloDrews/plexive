@@ -1,5 +1,9 @@
 {
-  "tags": ["crime", "art-history", "world-wars"],
+  "tags": [
+    "crime",
+    "art-history",
+    "world-wars"
+  ],
   "connections": [
     {
       "format": "concepts",
@@ -26,7 +30,6 @@
       "He grew rich selling Vermeers, until one sale made him a traitor.",
       "His only way off the gallows was stranger than the crime itself."
     ],
-    "category": "true crime",
     "post_difficulty": 2
   },
   "sections": [

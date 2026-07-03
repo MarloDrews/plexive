@@ -129,32 +129,10 @@
   //      UNDERSTANDING not information. No "the surprising idea that" framing, no
   //      rhetorical questions.
   "feed_card": {
-    "field": "",                // string. Guideline: one or two words, the
-                                // discipline the concept lives in ("Behavioral
-                                // Economics", "Statistics", "Philosophy",
-                                // "Biology"). Not an evaluative tag.
-    "concept_name": "",         // string. The concept itself, rendered large
-                                // ("Survivorship Bias", "Compound Interest", "Game
-                                // Theory"). The common name, not a reworded gloss.
-    "one_line": "",             // string. The card dek: a plain-language definition
-                                // in everyday words, what it IS, no jargon, no
-                                // hedge. This is the post's only definition; the
-                                // body opens on intuition, not a restatement of it.
-                                // No em-dashes; the renderer does not transform
-                                // feed-card text.
-    "card_visual": {            // REQUIRED. Concepts is a typographic card: a small
-                                // glyph sits at the right end of the field line.
-                                // Fill "svg" with the field glyph; omit image_url
-                                // and image_attribution for concepts (books and
-                                // people use them for a cover or portrait). The
-                                // glyph belongs to the field, not the post; later it
-                                // comes from a fixed field-to-glyph set (ROADMAP.md),
-                                // so a generator never invents one.
-      "image_url": "",          // string | omit. Not used on Concepts cards.
-      "image_attribution": "",  // string | omit. With image_url only.
-      "svg": ""                 // string. The small field glyph, compact viewBox
-                                // (e.g. 0 0 56 32), per SVG_STANDARD.md card rules.
-    },
+    // The card's category label and glyph both resolve from tags[0], the primary
+    // category slug, at render time: the label from the slug's display name and the
+    // glyph from frontend/src/lib/glyphs.ts. Nothing to author here; there is no
+    // feed_card field and no per-post card_visual.
     "teasers": ["", "", ""],    // HARD: exactly 3. Guideline: about 8 to 12 words
                                 // each, shorter is fine (never a cap). Each opens a
                                 // curiosity loop the post closes, in plain words, never

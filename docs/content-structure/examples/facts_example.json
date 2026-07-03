@@ -36,11 +36,7 @@
     }
   ],
   "feed_card": {
-    "field": "Biology",
     "headline": "Most mammals get about 1 billion heartbeats in a lifetime, whether they live 2 years or 70.",
-    "card_visual": {
-      "svg": "<svg viewBox='0 0 56 32' xmlns='http://www.w3.org/2000/svg' fill='none'><path d='M2 16 H18 L22 16 L26 6 L32 26 L37 16 H54' stroke='var(--accent)' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/></svg>"
-    },
     "teasers": [
       "Why shrews and whales share one number",
       "The math that predicts your heart rate",

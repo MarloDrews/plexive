@@ -29,12 +29,8 @@
     }
   ],
   "feed_card": {
-    "field": "Ethics",
     "the_question": "“Do we have moral obligations to future generations?”",
     "one_line": "A tunnel in Finland is being built to seal spent nuclear fuel away for a hundred thousand years, longer than any institution now standing.",
-    "card_visual": {
-      "svg": "<svg viewBox=\"0 0 56 32\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"var(--accent, #43c3c4)\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M8 11 H48\"/><path d=\"M28 9 V25\"/><path d=\"M21 25 H35\"/><path d=\"M8 11 V14\"/><path d=\"M3 14 Q8 21 13 14\"/><path d=\"M48 11 V14\"/><path d=\"M43 14 Q48 21 53 14\"/></svg>"
-    },
     "teasers": [
       "We are burying a danger and choosing to leave no warning.",
       "The future we harm may owe us its very existence.",

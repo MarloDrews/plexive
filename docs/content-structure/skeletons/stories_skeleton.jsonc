@@ -139,9 +139,9 @@
                                 // The single strongest pre-tap element after the
                                 // headline. Set to null (not "") when no honest
                                 // period image exists; the renderer then falls back
-                                // to the field glyph, which is field-owned and comes
-                                // from the field-glyph set keyed on tags[0] at render
-                                // time, not written here. The card schema has no
+                                // to the tags[0] slug glyph, which comes from the
+                                // per-slug set in glyphs.ts at render time, not written
+                                // here. The card schema has no
                                 // attribution slot, so use a public-domain or CC0
                                 // image; if a license needs visible credit, omit it
                                 // here and carry that image in a body section
@@ -217,8 +217,8 @@
         "location": "",             // string. REQUIRED. Where the story takes place:
                                     // "Vienna", "the North Atlantic", "a farm in
                                     // Kansas".
-        "category": "",             // string. REQUIRED. The same story type as the
-                                    // feed card.
+        "category": "",             // string. REQUIRED. The story type, for example
+                                    // true crime, mystery, espionage.
         "sources_reliability": 1,   // HARD: 1, 2, or 3, where 3 = primary documents
                                     // (court records, letters, contemporaneous
                                     // reporting), 2 = solid secondary accounts, 1 =

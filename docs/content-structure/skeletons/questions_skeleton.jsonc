@@ -165,37 +165,10 @@
   //      answer. The reader should think "I want to figure out where I stand",
   //      never "I will find out the solution".
   "feed_card": {
-    "field": "",                // string. Guideline: one or two words, the domain
-                                // the question lives in ("Ethics", "Consciousness",
-                                // "Free Will", "Identity", "Justice"). The domain,
-                                // not an evaluative tag.
-    "the_question": "",         // string. THE ANCHOR, rendered large, in quotation
-                                // marks. State it cleanly with no preamble and no
-                                // spin: "Is it ever right to sacrifice one to save
-                                // five?". The question is the hook; do not reword it
-                                // into a teaser.
-    "one_line": "",             // string. The card dek: one sentence that sets the
-                                // stakes or paints the scenario ("A trolley is
-                                // heading for five workers. You can divert it to a
-                                // track with one."). It frames; it does not hint at
-                                // a "right" reaction. This is the same dek slot the
-                                // other dek-bearing formats use. Avoid: restating
-                                // the question or tipping a side.
-    "card_visual": {            // REQUIRED. Questions is a typographic card: a small
-                                // glyph sits at the right end of the field line.
-                                // Fill "svg" with the field glyph; omit image_url
-                                // and image_attribution (those carry a cover or
-                                // portrait, which a typographic format never uses).
-                                // The glyph belongs to the field, not the post;
-                                // later it comes from a fixed field-to-glyph set
-                                // (ROADMAP.md), so a generator never invents one.
-      "image_url": "",          // string | omit. Not used on Questions cards.
-      "image_attribution": "",  // string | omit. With image_url only.
-      "svg": ""                 // string. The small field glyph, compact viewBox
-                                // (e.g. 0 0 56 32), per SVG_STANDARD.md section 6
-                                // card rules. Accent is var(--accent); use #43c3c4
-                                // only as a preview fallback outside a post.
-    },
+    // The card's category label and glyph both resolve from tags[0], the primary
+    // category slug, at render time: the label from the slug's display name and the
+    // glyph from frontend/src/lib/glyphs.ts. Nothing to author here; there is no
+    // feed_card field and no per-post card_visual.
     "teasers": ["", "", ""],    // HARD: exactly 3. Guideline: short, about 8 to 12
                                 // words each, shorter is fine (never a cap). Each
                                 // opens a curiosity loop the post closes, in plain
@@ -284,7 +257,7 @@
       // The frontend renders the key-value pairs as a card. Fields are Questions-
       // specific; do not invent new keys or rename these.
       "content": {
-        "field": "",               // string. Same domain label as the feed card.
+        "field": "",               // string. The domain the question sits in, for example Ethics.
         "type": "",                // string. One of "thought experiment" | "open
                                    // question" | "paradox". The kind of question.
         "first_posed_by": "",      // string. Who first framed it in this form
