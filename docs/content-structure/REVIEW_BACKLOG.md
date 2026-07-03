@@ -77,3 +77,27 @@ sources. Each entry stays `open` until a researcher confirms or resolves it.
 - finding: post has no sourced image (all visuals are inline SVG). A public-domain/archival photo of the Glomar Challenger drill ship would anchor the 1970 story section and give a rest per IMAGE_STANDARD.
 - needs: fresh research to locate, license-verify, and attribute the image. Optional under the standard; deferred because it requires a new sourced asset, not a mechanical edit.
 - added: 2026-07-03, 2026-07-03-c
+
+### gps-needs-relativity
+- status: open
+- finding: post has no sourced image (all visuals are inline SVG). An archival photo of the NTS-2 satellite (US Navy / NASA, likely public domain) could sit in the story section as a rest and anchor the discovery per IMAGE_STANDARD.
+- needs: fresh research to locate, license-verify, and attribute the image genuinely depicting NTS-2. Optional under the standard; deferred because it requires a new sourced asset, not a mechanical edit.
+- added: 2026-07-03, 2026-07-03-d
+
+### the-cells-a-child-leaves-behind
+- status: open
+- finding: post has no sourced image (all visuals are inline SVG). A verified freely-licensed portrait of Diana Bianchi or Georg Schmorl could anchor the story section per IMAGE_STANDARD. (Separate from the open Bianchi birth_year item above.)
+- needs: fresh research to locate, license-verify, and attribute a portrait genuinely of the person. Optional under the standard; deferred because it requires a new sourced asset, not a mechanical edit.
+- added: 2026-07-03, 2026-07-03-d
+
+### when-the-mediterranean-dried-up
+- status: open
+- finding: a recent (2026) minority "case against the Zanclean megaflood" has appeared re-examining the flood's speed. The post's mainstream framing (Garcia-Castellanos 2009) is sound and well-sourced and need not change, but a one-line acknowledgement that the flood's speed is being re-examined could be considered.
+- needs: fresh research to evaluate and cite the newer counter-literature before adding any hedge. Deferred because it requires reading and citing a new source, not a mechanical edit; the post is unchanged.
+- added: 2026-07-03, 2026-07-03-d
+
+### when-the-mediterranean-dried-up
+- status: open
+- finding: story dates the salt core to "23 August 1970". Leg 13 (August 1970) and the Hsu/Ryan attribution are confirmed, but the exact day was not independently verifiable (not contradicted either). If the generator has a source for the specific date, keep it; otherwise consider generalizing to "in August 1970".
+- needs: a source check for the specific coring date; if unverifiable, generalize the day out. Deferred because confirming or removing the precise date requires a source, not a mechanical edit; the post is unchanged.
+- added: 2026-07-03, 2026-07-03-d
