@@ -1,0 +1,241 @@
+{
+  "tags": [
+    "evolution",
+    "genetics",
+    "microbiology"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Exaptation"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "About 1.5% of your DNA codes for proteins, the working parts of you. Roughly 8% is the wreckage of ancient viruses that infected your ancestors and never left.",
+    "teasers": [
+      "The gene a virus left that builds a placenta",
+      "The heresy that cost one biologist six years",
+      "Why this viral DNA is not a sleeping infection"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "About 1.5% of your DNA codes for proteins, the working parts of you. Roughly 8% is the wreckage of ancient viruses that infected your ancestors and never left."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 44 400 190' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='64' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.78' text-anchor='middle'>Share of the human genome</text><text x='40' y='96' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.85' text-anchor='start'>codes for proteins</text><rect x='40' y='104' width='45' height='22' rx='7' stroke='currentColor' stroke-width='2' opacity='0.6'/><text x='93' y='120' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' opacity='0.8' text-anchor='start'>1.5%</text><text x='40' y='158' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='start'>left by ancient viruses</text><rect x='40' y='166' width='240' height='22' rx='8' fill='var(--accent)' fill-opacity='0.18' stroke='var(--accent)' stroke-width='2.5'/><text x='288' y='182' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='start'>8%</text></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "Start with the part of the genome that does the obvious job. The stretches that spell out proteins, the enzymes and structures that run a body, come to about 1.5% of the total. Now set beside them the DNA left behind by retroviruses that infected our ancestors and copied themselves into the germline. That fraction is around 8%, roughly five times larger. The instructions for building you are outweighed, several times over, by the fossilized remains of infections. Most of it is broken and silent. But it is there in every cell, carried down for millions of years."
+    },
+    {
+      "type": "how_we_know",
+      "order": 5,
+      "content": {
+        "body": "How do you tell that a stretch of DNA used to be a virus? By its shape. A retrovirus leaves a signature: the same long repeat at both ends, wrapped around the genes for its coat and its copying machinery. That pattern does not arise by chance, and the genome is littered with it, roughly 98,000 times. Most copies are wrecks, riddled with mutations that piled up over millions of years, which is itself a clock. The more a fossil virus has decayed, the longer ago it landed.",
+        "visual_svg": "<svg viewBox='0 66 400 150' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='92' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.78' text-anchor='middle'>A fossil virus in your DNA</text><line x1='30' y1='152' x2='88' y2='152' stroke='currentColor' stroke-width='2.5' opacity='0.5' stroke-linecap='round'/><line x1='312' y1='152' x2='370' y2='152' stroke='currentColor' stroke-width='2.5' opacity='0.5' stroke-linecap='round'/><rect x='88' y='138' width='30' height='28' rx='7' fill='var(--accent)' fill-opacity='0.2' stroke='var(--accent)' stroke-width='2.5'/><rect x='122' y='138' width='54' height='28' rx='7' stroke='currentColor' stroke-width='2' opacity='0.6'/><rect x='180' y='138' width='54' height='28' rx='7' stroke='currentColor' stroke-width='2' opacity='0.6'/><rect x='238' y='138' width='44' height='28' rx='7' stroke='currentColor' stroke-width='2' opacity='0.6'/><rect x='286' y='138' width='30' height='28' rx='7' fill='var(--accent)' fill-opacity='0.2' stroke='var(--accent)' stroke-width='2.5'/><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle' opacity='0.8'><text x='149' y='186'>gag</text><text x='207' y='186'>pol</text><text x='260' y='186'>env</text></g><g fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'><text x='103' y='186'>LTR</text><text x='301' y='186'>LTR</text></g><text x='200' y='128' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>matching ends: the giveaway</text></svg>"
+      }
+    },
+    {
+      "type": "key_numbers",
+      "order": 6,
+      "content": [
+        {
+          "label": "Protein-coding DNA",
+          "value": "~1.5%"
+        },
+        {
+          "label": "Fossil retroviruses (ERVs)",
+          "value": "~8%"
+        },
+        {
+          "label": "All mobile, virus-like DNA",
+          "value": "~45%",
+          "unit": "ERVs are a slice of this"
+        },
+        {
+          "label": "Separate ERV insertions",
+          "value": "~98,000"
+        }
+      ]
+    },
+    {
+      "type": "story",
+      "order": 7,
+      "content": {
+        "body": "In the 1960s the rule seemed settled. Genetic information flowed one way, from DNA to RNA to protein, and never back. So when Howard Temin argued that a virus could reverse the arrow and write its RNA into host DNA, the claim was called an error. He defended it for six years with little support. In 1970 he and David Baltimore, working apart, each found reverse transcriptase, the enzyme that copies RNA back into DNA. That settled it, and a Nobel Prize followed in 1975. The 8% is the same trick at evolutionary scale. Thousands of viruses wrote themselves in over tens of millions of years, and a handful were never edited out.",
+        "key_figures": [
+          {
+            "name": "Howard Temin",
+            "role": "Proposed that a virus can rewrite host DNA",
+            "one_line": "Argued from 1964 that a retrovirus copies its RNA into the host genome, an idea dismissed until he helped prove it in 1970.",
+            "lifespan": "1934-1994",
+            "birth_year": 1934,
+            "featured": true
+          },
+          {
+            "name": "David Baltimore",
+            "role": "Co-discovered reverse transcriptase",
+            "one_line": "Independently found the enzyme that copies RNA into DNA in 1970, sharing the 1975 Nobel Prize for the work.",
+            "lifespan": "1938-2025",
+            "birth_year": 1938,
+            "featured": false
+          }
+        ]
+      }
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "A virus gene builds the placenta",
+          "body": "The clearest case sits at the start of every mammal life. In the placenta, a layer of fetal cells fuses into one continuous sheet that feeds the growing fetus and screens it from the mother's immune system. The protein that does the fusing is syncytin, a retrovirus's envelope gene barely changed from the original. The virus used it to merge with cells it invaded. The placenta uses it to build a wall. Evolution kept the fusion and dropped the virus. It has done this more than once, in different mammal lines.",
+          "visual_svg": "<svg viewBox='0 40 400 200' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='66' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.78' text-anchor='middle'>One protein, two jobs</text><circle cx='70' cy='140' r='24' stroke='currentColor' stroke-width='2.5' opacity='0.7'/><circle cx='104' cy='140' r='24' stroke='currentColor' stroke-width='2.5' opacity='0.7'/><text x='87' y='186' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.8' text-anchor='middle'>virus fuses</text><text x='87' y='203' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.8' text-anchor='middle'>into a cell</text><path d='M150 150 h60' stroke='currentColor' stroke-width='2' opacity='0.55' stroke-linecap='round'/><path d='M210 150 l-12 -6 m12 6 l-12 6' stroke='currentColor' stroke-width='2' opacity='0.55' stroke-linecap='round' stroke-linejoin='round'/><text x='180' y='138' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>captured</text><circle cx='290' cy='140' r='24' stroke='var(--accent)' stroke-width='2.5'/><circle cx='324' cy='140' r='24' stroke='var(--accent)' stroke-width='2.5'/><text x='307' y='186' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>syncytin fuses</text><text x='307' y='203' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>placental cells</text></svg>"
+        },
+        {
+          "title": "Fossil viruses run parts of the machinery",
+          "body": "Beyond the placenta, the old viral parts have been wired into everyday control. The repeats at the ends of an ERV came with switches, sequences that turn genes on and off, and the genome has borrowed plenty of them. Some now help run early development. Others sit inside the immune system, where the cell's alarm for viral genes can be tripped by its own ancient tenants. The line between parasite and machinery has blurred over millions of years of use."
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "A genome is not a clean blueprint. It is a palimpsest, written over by every infection that ever reached the germline and stayed. Most of that writing is noise now, decayed past meaning. But evolution does not design from a blank page. It tinkers with whatever is lying around, and some of the best tools it found were left by its attackers. The layer that lets a placenta form was scavenged from a virus. The record of what attacked you is written into what you are."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "How does the amount of virus-derived DNA in the human genome compare with the protein-coding DNA?",
+          "options": [
+            "They come out about equal",
+            "Protein-coding DNA is far larger",
+            "Virus-derived DNA is several times larger",
+            "There is no virus-derived DNA at all"
+          ],
+          "answer_index": 2,
+          "explanation": "Protein-coding stretches make up about 1.5% of the genome, while the fossil retroviruses come to roughly 8%. The remnants of old infections outweigh the parts that build proteins."
+        },
+        {
+          "question": "How did retroviral DNA become a permanent, inherited part of the genome?",
+          "options": [
+            "A retrovirus copied its RNA into the DNA of a germline cell, which was then passed on",
+            "Viruses inject fresh copies into egg cells each generation",
+            "It was absorbed from food and built up over generations",
+            "Each embryo manufactures the sequences from scratch"
+          ],
+          "answer_index": 0,
+          "explanation": "Retroviruses turn their RNA into DNA and splice it into the host chromosome. When that happens in a sperm or egg cell, the insertion is inherited like any other gene, generation after generation."
+        },
+        {
+          "question": "What marks a stretch of DNA as an old retrovirus?",
+          "options": [
+            "A long run of a single repeated letter",
+            "An unusually high share of protein-coding exons",
+            "The same long repeat at both ends, wrapped around viral genes",
+            "A closed, ring-shaped loop of DNA"
+          ],
+          "answer_index": 2,
+          "explanation": "A retrovirus leaves matching long repeats flanking its coat and copying genes. That bracketed structure is a fingerprint that ordinary host DNA does not produce by chance."
+        },
+        {
+          "question": "What does the story of syncytin show?",
+          "options": [
+            "That all viral DNA is dangerous to keep",
+            "That viruses rebuild the placenta in each pregnancy",
+            "That the placenta is itself a living virus",
+            "That a gene from a virus can become essential, here for the placenta"
+          ],
+          "answer_index": 3,
+          "explanation": "Syncytin came from a retrovirus's fusion protein and now knits the placental barrier together. A parasite's tool was captured and turned into a part the host cannot do without."
+        },
+        {
+          "question": "Most of the 8% of viral DNA in the genome is best described as which of these?",
+          "options": [
+            "Active viruses that can still cause infection",
+            "Broken, mostly silent relics, a few of them co-opted for host use",
+            "Perfect copies waiting to reactivate",
+            "Sequences inserted fresh during a person's lifetime"
+          ],
+          "answer_index": 1,
+          "explanation": "Nearly all of these sequences are disabled by accumulated mutations and cannot make working virus. A small number are still used by the cell, but the bulk is inert wreckage, not a hidden infection."
+        },
+        {
+          "question": "Why was Howard Temin's idea rejected at first?",
+          "options": [
+            "It required an enzyme no one could picture",
+            "It reversed the accepted one-way flow of genetic information",
+            "It claimed that viruses did not exist",
+            "It contradicted the theory of evolution"
+          ],
+          "answer_index": 1,
+          "explanation": "The accepted view held that information moved only from DNA to RNA to protein. Temin proposed a step running backward, from RNA to DNA, which looked impossible until the enzyme that does it was found."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "So I am 8% virus, and it could reactivate and infect me.",
+          "reality": "These are fossils, not live viruses. Almost all carry crippling mutations and cannot assemble anything infectious. A few can still be switched on, and that misbehavior turns up in some diseases, but the 8% is not a sleeping infection."
+        },
+        {
+          "myth": "Non-coding DNA like this is useless junk.",
+          "reality": "Most of it is inert, but junk oversells the case. Stretches of this DNA have been recruited to switch genes on and off, and one of them gave us the placenta. Silent is not the same as worthless."
+        },
+        {
+          "myth": "Exactly 8% of the genome is retroviral.",
+          "reality": "Estimates run from about 5% to 8%, depending on what you count, and mobile virus-like DNA of every kind is closer to half the genome. The exact figure shifts. That it outweighs the protein-coding part does not."
+        }
+      ]
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Endogenous retrovirus (genome fraction, ~98,000 elements, syncytin)",
+          "url": "https://en.wikipedia.org/wiki/Endogenous_retrovirus",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Human genome (protein-coding share and transposable-element fraction)",
+          "url": "https://en.wikipedia.org/wiki/Human_genome",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Mi S et al. Syncytin is a captive retroviral envelope protein involved in human placental morphogenesis. Nature 2000;403:785-789",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/10693809/",
+          "type": "paper"
+        },
+        {
+          "label": "50th anniversary of the discovery of reverse transcriptase (Temin and Baltimore, 1970)",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8120695/",
+          "type": "article"
+        },
+        {
+          "label": "Khodosevich K, Lebedev Y, Sverdlov E. Endogenous retroviruses and human evolution (2002)",
+          "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2448423/",
+          "type": "article"
+        }
+      ]
+    }
+  ]
+}
