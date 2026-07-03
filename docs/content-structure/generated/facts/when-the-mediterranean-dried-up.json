@@ -46,7 +46,7 @@
     {
       "type": "surprises",
       "order": 3,
-      "content": "A sea looks permanent. Seal one off and the intuition says it just sits there. The Mediterranean, once a shift in the crust closed the strait at Gibraltar, evaporated faster than the rivers feeding it could keep up. Over roughly 600,000 years it drew down kilometres, until the deep basins may have lain 3 to 5 km below the world ocean, their floors crusted white with salt. Then the barrier failed. The Atlantic poured back in and filled most of the basin within about two years."
+      "content": "A sea looks permanent. Seal one off and the intuition says it just sits there. The Mediterranean, once a shift in the crust closed the strait at Gibraltar, evaporated faster than the rivers feeding it could keep up. Over roughly 600,000 years it drew down kilometers, until the deep basins may have lain 3 to 5 km below the world ocean, their floors crusted white with salt. Then the barrier failed. The Atlantic poured back in and filled most of the basin within about two years."
     },
     {
       "type": "tangible",
@@ -55,7 +55,7 @@
         "items": [
           "It took the sea roughly 600,000 years to dry out, and under two years for the Atlantic to put most of the water back.",
           "At the peak, the gap at Gibraltar carried about a thousand times the flow of the Amazon.",
-          "Inside the basin the water rose more than 10 metres a day, the height of a three-storey building."
+          "Inside the basin the water rose more than 10 meters a day, the height of a three-storey building."
         ],
         "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><line x1='56' y1='56' x2='56' y2='250' stroke='currentColor' stroke-width='2' opacity='0.5' stroke-linecap='round'/><line x1='56' y1='250' x2='362' y2='250' stroke='currentColor' stroke-width='2' opacity='0.5' stroke-linecap='round'/><line x1='56' y1='68' x2='350' y2='68' stroke='currentColor' stroke-width='1.5' opacity='0.3' stroke-dasharray='6 6' stroke-linecap='round'/><text x='62' y='62' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='start'>full</text><path d='M56 250 C 92 176 120 116 168 102 C 232 86 300 82 344 82' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/><circle cx='344' cy='82' r='4' fill='var(--accent)'/><text x='340' y='120' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='end'>90% refilled</text><text x='210' y='276' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>months to 2 years</text><text x='32' y='152' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle' transform='rotate(-90 32 152)'>basin filled</text></svg>"
       }
@@ -63,7 +63,7 @@
     {
       "type": "how_we_know",
       "order": 5,
-      "content": "The proof of the speed is carved in rock. Drilling and seismic surveys under the strait found a channel gouged clean across the Gibraltar sill, about 200 km long and cut more than 250 m into bedrock. A slow, rising tide does not do that. Only a torrent does. In 2009 a team led by Daniel Garcia-Castellanos fed the channel's shape into an erosion model and worked backward from the damage. A little water spilling over the sill cut a groove, the groove funnelled more water, and the faster flow cut deeper still. The water ended up running faster than 40 metres a second, on the order of 100 million cubic metres every second. That is where the two-year figure comes from."
+      "content": "The proof of the speed is carved in rock. Drilling and seismic surveys under the strait found a channel gouged clean across the Gibraltar sill, about 200 km long and cut more than 250 m into bedrock. A slow, rising tide does not do that. Only a torrent does. In 2009 a team led by Daniel Garcia-Castellanos fed the channel's shape into an erosion model and worked backward from the damage. A little water spilling over the sill cut a groove, the groove funnelled more water, and the faster flow cut deeper still. The water ended up running faster than 40 meters a second, on the order of 100 million cubic meters every second. That is where the two-year figure comes from."
     },
     {
       "type": "story",
@@ -132,7 +132,7 @@
             "The basin floor sank, pulling Atlantic water in"
           ],
           "answer_index": 1,
-          "explanation": "Once a little water spilled over the sill, it opened a channel that let ever more flow through, deepening as it went. That runaway feedback turned a leak into a flood moving on the order of 100 million cubic metres a second."
+          "explanation": "Once a little water spilled over the sill, it opened a channel that let ever more flow through, deepening as it went. That runaway feedback turned a leak into a flood moving on the order of 100 million cubic meters a second."
         },
         {
           "question": "What first convinced scientists that the basin had dried out, rather than staying full?",
@@ -143,7 +143,7 @@
             "Ancient maps showed the basin as dry land"
           ],
           "answer_index": 0,
-          "explanation": "Rock salt and gypsum precipitate when seawater dries. Finding thick layers of them on the deep floor meant that floor had once been an evaporating surface, not two kilometres underwater."
+          "explanation": "Rock salt and gypsum precipitate when seawater dries. Finding thick layers of them on the deep floor meant that floor had once been an evaporating surface, not two kilometers underwater."
         },
         {
           "question": "How did the peak flow of the Zanclean flood compare to rivers today?",
@@ -154,7 +154,7 @@
             "Around a thousand times the discharge of the Amazon"
           ],
           "answer_index": 3,
-          "explanation": "The peak discharge, on the order of 100 million cubic metres a second, was about three orders of magnitude beyond the Amazon, the largest river flowing today."
+          "explanation": "The peak discharge, on the order of 100 million cubic meters a second, was about three orders of magnitude beyond the Amazon, the largest river flowing today."
         },
         {
           "question": "What happened to Mediterranean sea life across the crisis?",
@@ -202,9 +202,9 @@
       "type": "open_questions",
       "order": 12,
       "content": {
-        "body": "The pattern holds. Its scale is what is still argued. Just how far the sea's surface fell, and how completely the basin dried, are read differently from the same sediments. Some recent work on the buried Nile canyon points to a smaller drop than the classic kilometres-deep picture.",
+        "body": "The pattern holds. Its scale is what is still argued. Just how far the sea's surface fell, and how completely the basin dried, are read differently from the same sediments. Some recent work on the buried Nile canyon points to a smaller drop than the classic kilometers-deep picture.",
         "items": [
-          "How far did the sea draw down, hundreds of metres or whole kilometres?",
+          "How far did the sea draw down, hundreds of meters or whole kilometers?",
           "Did it dry and refill in cycles, or fall once and stay low until the flood?",
           "How much water seeped in slowly before the barrier gave way for good?"
         ]
