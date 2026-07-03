@@ -46,7 +46,7 @@
     {
       "type": "surprises",
       "order": 3,
-      "content": "A sea looks permanent. Seal one off and the intuition says it just sits there. The Mediterranean, once a shift in the crust closed the strait at Gibraltar, evaporated faster than the rivers feeding it could keep up. Over roughly 600,000 years it drew down kilometres, until the deep basins lay 3 to 5 km below the world ocean, their floors crusted white with salt. Then the barrier failed. The Atlantic poured back in and filled most of the basin within about two years."
+      "content": "A sea looks permanent. Seal one off and the intuition says it just sits there. The Mediterranean, once a shift in the crust closed the strait at Gibraltar, evaporated faster than the rivers feeding it could keep up. Over roughly 600,000 years it drew down kilometres, until the deep basins may have lain 3 to 5 km below the world ocean, their floors crusted white with salt. Then the barrier failed. The Atlantic poured back in and filled most of the basin within about two years."
     },
     {
       "type": "tangible",
@@ -85,7 +85,7 @@
             "one_line": "Marine geologist who co-directed Leg 13 and helped read the deep-sea salt cores as the floor of a vanished sea."
           }
         ],
-        "visual_svg": "<svg viewBox='0 62 400 96' xmlns='http://www.w3.org/2000/svg' fill='none'><rect x='16' y='72' width='108' height='56' rx='14' stroke='var(--accent)' stroke-width='2.5'/><rect x='146' y='72' width='108' height='56' rx='14' stroke='currentColor' stroke-width='2' opacity='0.75'/><rect x='276' y='72' width='108' height='56' rx='14' stroke='currentColor' stroke-width='2' opacity='0.75'/><g stroke='currentColor' stroke-width='2' opacity='0.55' stroke-linecap='round' stroke-linejoin='round'><path d='M124 100 h22'/><path d='M146 100 l-11 -5 m11 5 l-11 5'/><path d='M254 100 h22'/><path d='M276 100 l-11 -5 m11 5 l-11 5'/></g><g font-family='var(--font-mono), ui-monospace, monospace' font-size='15' font-weight='700' text-anchor='middle'><text x='70' y='100' fill='var(--accent)'>1970</text><text x='200' y='100' fill='currentColor'>1973</text><text x='330' y='100' fill='currentColor'>2009</text></g><g font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle'><text x='70' y='118' fill='var(--accent)'>salt cored</text><text x='200' y='118' fill='currentColor' opacity='0.8'>a dried sea</text><text x='330' y='118' fill='currentColor' opacity='0.8'>flood clocked</text></g></svg>"
+        "visual_svg": "<svg viewBox='0 62 400 96' xmlns='http://www.w3.org/2000/svg' fill='none'><rect x='48' y='72' width='108' height='56' rx='14' stroke='var(--accent)' stroke-width='2.5'/><rect x='244' y='72' width='108' height='56' rx='14' stroke='currentColor' stroke-width='2' opacity='0.75'/><g stroke='currentColor' stroke-width='2' opacity='0.55' stroke-linecap='round' stroke-linejoin='round'><path d='M164 100 h72'/><path d='M236 100 l-11 -5 m11 5 l-11 5'/></g><g font-family='var(--font-mono), ui-monospace, monospace' font-size='15' font-weight='700' text-anchor='middle'><text x='102' y='100' fill='var(--accent)'>1970</text><text x='298' y='100' fill='currentColor'>2009</text></g><g font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle'><text x='102' y='118' fill='var(--accent)'>salt cored</text><text x='298' y='118' fill='currentColor' opacity='0.8'>flood clocked</text></g></svg>"
       }
     },
     {
