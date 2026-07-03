@@ -1,0 +1,232 @@
+{
+  "tags": [
+    "physics",
+    "space-tech",
+    "computing"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Time dilation"
+      },
+      "featured": true
+    }
+  ],
+  "feed_card": {
+    "headline": "Turn off the relativity correction in GPS, and your location is 11 km wrong within a day.",
+    "teasers": [
+      "Two clock effects pull opposite ways, one wins",
+      "The 1977 satellite that carried a relativity off-switch",
+      "How a millionth of a second becomes kilometers"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "Turn off the relativity correction in GPS, and your location is 11 km wrong within a day."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='28' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Drift per day, microseconds</text><line x1='34' y1='250' x2='366' y2='250' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><text x='34' y='244' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='start'>Earth clock</text><rect x='48' y='70' width='80' height='180' rx='6' stroke='currentColor' stroke-width='2' opacity='0.55'/><rect x='160' y='70' width='80' height='28' rx='6' stroke='currentColor' stroke-width='2' opacity='0.55'/><rect x='272' y='98' width='80' height='152' rx='6' stroke='var(--accent)' stroke-width='2.5' fill='var(--accent)' fill-opacity='0.10'/><line x1='128' y1='70' x2='160' y2='70' stroke='currentColor' stroke-width='1.5' opacity='0.4' stroke-dasharray='5 5'/><line x1='240' y1='98' x2='272' y2='98' stroke='currentColor' stroke-width='1.5' opacity='0.4' stroke-dasharray='5 5'/><g font-family='var(--font-mono), ui-monospace, monospace' font-weight='700' text-anchor='middle'><text x='88' y='60' fill='currentColor' font-size='15'>+45</text><text x='200' y='60' fill='currentColor' font-size='15'>-7</text><text x='312' y='88' fill='var(--accent)' font-size='16'>+38</text></g><g font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle'><text x='88' y='270' fill='currentColor' opacity='0.85'>gravity</text><text x='200' y='270' fill='currentColor' opacity='0.85'>speed</text><text x='312' y='270' fill='var(--accent)'>net</text></g></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "Relativity has a reputation as physics for black holes and near-light starships. The phone in your pocket seems safely out of its reach. GPS says otherwise. A satellite clock and your receiver have to agree to within about 30 billionths of a second. Yet relativity throws the satellite clock off by 38 millionths of a second a day, more than a thousand times that gap. Left uncorrected, the fixes drift past any usable accuracy within minutes."
+    },
+    {
+      "type": "tangible",
+      "order": 4,
+      "content": {
+        "items": [
+          "GPS pins you down by timing radio signals, and light moves about 30 cm per nanosecond, so a clock off by a nanosecond points to a spot a foot away.",
+          "The 38 microseconds a satellite gains each day is 38,000 nanoseconds, which at light speed sprawls into about 11 km of error.",
+          "Holding a fix to a few meters means keeping the clocks honest to about 20 to 30 nanoseconds, a stretch of time light crosses in a room's width."
+        ],
+        "visual_svg": "<svg viewBox='0 0 400 84' xmlns='http://www.w3.org/2000/svg' fill='none'><g stroke='currentColor' stroke-width='2.5'><rect x='16' y='12' width='104' height='60' rx='14' opacity='0.55'/><rect x='150' y='12' width='100' height='60' rx='14' opacity='0.55'/></g><rect x='280' y='12' width='104' height='60' rx='14' stroke='var(--accent)' stroke-width='2.5' fill='var(--accent)' fill-opacity='0.10'/><g stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' opacity='0.55'><path d='M120 42 h24'/><path d='M144 42 l-10 -6 m10 6 l-10 6'/><path d='M250 42 h24'/><path d='M274 42 l-10 -6 m10 6 l-10 6'/></g><g text-anchor='middle'><text x='68' y='39' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='16' font-weight='700'>1 ns</text><text x='68' y='58' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7'>clock error</text><text x='200' y='37' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600'>light speed</text><text x='200' y='56' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' opacity='0.7'>300,000 km/s</text><text x='332' y='39' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='16' font-weight='700'>30 cm</text><text x='332' y='58' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13'>off target</text></g></svg>"
+      }
+    },
+    {
+      "type": "story",
+      "order": 7,
+      "content": {
+        "body": "In June 1977 the US Navy put a cesium atomic clock into orbit for the first time, aboard a satellite named NTS-2. Some of the engineers were not convinced Einstein was needed up there. So the clock shipped with a small frequency synthesizer, a switch that could apply the relativistic correction or leave it off, and it launched with the switch off. For about 20 days they watched the orbiting clock race ahead of the ground. It gained time at a rate of 442.5 parts per trillion, within four parts per trillion of what relativity had predicted. Then they turned the correction on. It has run on every GPS satellite since.",
+        "key_figures": [
+          {
+            "name": "Albert Einstein",
+            "role": "Wrote the two relativities the fix corrects for",
+            "one_line": "The correction sums his two theories: special relativity from 1905 for the speed effect, and general relativity from 1915 for the gravity effect.",
+            "lifespan": "1879-1955",
+            "birth_year": 1879,
+            "featured": true
+          },
+          {
+            "name": "Neil Ashby",
+            "role": "Worked out the full GPS correction",
+            "one_line": "The physicist whose analysis of the relativistic shifts on a GPS clock became the reference the system relies on.",
+            "lifespan": "born 1934",
+            "birth_year": 1934,
+            "featured": false
+          }
+        ],
+        "visual_svg": "<svg viewBox='0 44 400 150' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='66' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Predicted vs measured drift</text><line x1='40' y1='120' x2='340' y2='120' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><line x1='123' y1='104' x2='123' y2='128' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><line x1='257' y1='104' x2='257' y2='128' stroke='currentColor' stroke-width='2' opacity='0.7' stroke-linecap='round'/><line x1='123' y1='92' x2='257' y2='92' stroke='currentColor' stroke-width='1.5' opacity='0.4' stroke-dasharray='5 5'/><text x='190' y='86' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>4 apart</text><text x='123' y='150' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='15' font-weight='700' text-anchor='middle'>442.5</text><text x='123' y='170' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle'>measured</text><text x='257' y='150' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='15' font-weight='700' text-anchor='middle'>446.5</text><text x='257' y='170' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.85' text-anchor='middle'>predicted</text><text x='200' y='188' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='middle'>parts per trillion, faster than ground</text></svg>"
+      }
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "Which effect wins depends on how high you orbit",
+          "body": "Speed and altitude pull the clock opposite ways, and which wins depends on how high you orbit. Above roughly 3,200 km, altitude takes over. GPS flies near 20,000 km, so its clocks run fast. The Space Station, down at 400 km, sits on the other side, where speed wins and clocks run slow. Its crews come home a fraction of a second younger than the rest of us.",
+          "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='90' y='32' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='middle'>altitude</text><line x1='90' y1='42' x2='90' y2='262' stroke='currentColor' stroke-width='2' opacity='0.5' stroke-linecap='round'/><path d='M90 42 l-6 12 m6 -12 l6 12' stroke='currentColor' stroke-width='2' opacity='0.5' stroke-linecap='round' stroke-linejoin='round'/><line x1='60' y1='262' x2='360' y2='262' stroke='currentColor' stroke-width='2.5' opacity='0.6' stroke-linecap='round'/><text x='60' y='280' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='start'>Earth's surface</text><line x1='78' y1='228' x2='102' y2='228' stroke='currentColor' stroke-width='2.5' stroke-linecap='round'/><text x='114' y='224' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' text-anchor='start'>ISS, ~400 km</text><text x='114' y='242' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='start'>clock runs slow</text><line x1='60' y1='150' x2='360' y2='150' stroke='currentColor' stroke-width='1.5' opacity='0.4' stroke-dasharray='6 6'/><text x='114' y='144' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.75' text-anchor='start'>~3,200 km: effects cancel</text><line x1='78' y1='78' x2='102' y2='78' stroke='var(--accent)' stroke-width='3' stroke-linecap='round'/><text x='114' y='74' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='start'>GPS, ~20,000 km</text><text x='114' y='92' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.9' text-anchor='start'>clock runs fast</text><text x='356' y='280' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.5' text-anchor='end'>not to scale</text></svg>"
+        },
+        {
+          "title": "Your receiver does part of the relativity itself",
+          "body": "The fix is not one fixed number. GPS orbits are slightly off-round, so each satellite speeds up and dips lower on one side of its loop, then slows and rises on the other. The wobble this adds is small, so the satellites leave it alone, and the math that removes it lives in your receiver instead. Ignore it, and a fix can wander by 10 meters or more."
+        },
+        {
+          "title": "The clocks are built to keep the wrong time on the ground",
+          "body": "The everyday fix is almost crude. A GPS clock is designed to tick at 10.23 MHz, but before launch its rate is set a shade lower, to 10.22999999543 MHz. On the ground it runs deliberately slow. Lift it to orbit, and relativity speeds it up by that exact shade, so it finally ticks at the frequency the system was counting on."
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "Special relativity arrived in 1905 as a claim about moving clocks that hardly anyone could test. Today it runs inside billions of phones, cars, and ships, every second of every day. The theory never stayed in the lecture hall. It turned into plumbing, the kind we notice only when it fails. The next time a map drops a pin on the right street, that is a hundred-year-old idea about space and time, doing quiet work."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "GPS satellite clocks end up running fast, not slow. Why doesn't the speed effect cancel the gravity effect?",
+          "options": [
+            "At that altitude the gravity effect is the larger of the two, so a net gain is left over",
+            "Special relativity does not apply to satellites in circular orbits",
+            "The two effects act on different parts of the clock",
+            "Ground clocks are also moving, which removes the speed effect"
+          ],
+          "answer_index": 0,
+          "explanation": "At GPS altitude weaker gravity speeds the clock by about 45 microseconds a day, while the orbital speed slows it by about 7. The bigger gain wins, leaving roughly 38 microseconds a day."
+        },
+        {
+          "question": "A GPS receiver works out your position mainly by measuring what?",
+          "options": [
+            "The angle from you to each satellite",
+            "The strength of each satellite's signal",
+            "The Doppler shift of each satellite's radio frequency",
+            "How long each signal takes to arrive, turned into distance at the speed of light"
+          ],
+          "answer_index": 3,
+          "explanation": "GPS is really a timing system. It multiplies each signal's travel time by the speed of light to get a distance, which is why a clock error of a few nanoseconds becomes a position error of about a meter."
+        },
+        {
+          "question": "The International Space Station orbits much lower than GPS, at about 400 km. Compared with clocks on the ground, its clocks...",
+          "options": [
+            "run fast, just as GPS clocks do",
+            "keep perfect time, since the two effects always cancel",
+            "run slow, because at that low altitude the speed effect wins",
+            "run slow, because gravity is stronger up in orbit"
+          ],
+          "answer_index": 2,
+          "explanation": "Below about 3,200 km the orbital speed matters more than the slightly weaker gravity, so the balance flips. Station clocks lose time, and its crews return a fraction of a second younger."
+        },
+        {
+          "question": "Why did the 1977 NTS-2 satellite carry a switch that could turn its relativity correction on or off?",
+          "options": [
+            "To save power on the days the correction was not needed",
+            "Because some doubted the effect was real, so they measured the clock first and switched the correction on only after",
+            "To let ground controllers adjust the satellite's orbit from the ground",
+            "Because the size of the correction had to be recalculated every day"
+          ],
+          "answer_index": 1,
+          "explanation": "There was genuine doubt that relativistic shifts would matter in orbit. Running the clock uncorrected for about 20 days showed it gaining time almost exactly as predicted, and only then was the correction switched on."
+        },
+        {
+          "question": "Roughly how far off would GPS positions drift in a single day if the relativistic correction were switched off?",
+          "options": [
+            "About a meter",
+            "About 100 meters",
+            "About 11 kilometers",
+            "About 1,000 kilometers"
+          ],
+          "answer_index": 2,
+          "explanation": "The clocks would gain about 38 microseconds a day. At the speed of light that timing error works out to roughly 11 kilometers, far past anything usable for navigation."
+        },
+        {
+          "question": "GPS clocks are designed to tick at 10.23 MHz but are set slightly slow before launch. Why?",
+          "options": [
+            "To cut down interference with other radio systems",
+            "To make the satellites cheaper to build",
+            "So the clocks can be corrected remotely once in orbit",
+            "So that relativity speeds them up to the correct rate once they reach orbit"
+          ],
+          "answer_index": 3,
+          "explanation": "On the ground the preset clock keeps deliberately bad time. In orbit, relativity speeds it up by just the offset amount, so it lands on the right frequency with no further adjustment."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "Relativity is abstract physics with no bearing on everyday life.",
+          "reality": "It is running in every phone that can find itself on a map. Take the correction out and satellite navigation fails within a day."
+        },
+        {
+          "myth": "The speed effect and the gravity effect just cancel each other out.",
+          "reality": "They pull opposite ways but do not match, and at GPS altitude gravity wins by about 38 microseconds a day."
+        },
+        {
+          "myth": "The correction is a tiny tweak at the edge of GPS accuracy.",
+          "reality": "Turn it off and the error grows by kilometers a day. GPS does not fade slowly. It breaks."
+        }
+      ]
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Pogge RW. Real-World Relativity: The GPS Navigation System. Ohio State University",
+          "url": "https://www.astronomy.ohio-state.edu/pogge.1/Ast162/Unit5/gps.html",
+          "type": "article"
+        },
+        {
+          "label": "Error analysis for the Global Positioning System (relativity section)",
+          "url": "https://en.wikipedia.org/wiki/Error_analysis_for_the_Global_Positioning_System",
+          "type": "wikipedia"
+        },
+        {
+          "label": "TIMATION and NTS-2: first cesium clock in orbit and the relativity measurement. eoPortal",
+          "url": "https://www.eoportal.org/other-space-activities/timation",
+          "type": "article"
+        },
+        {
+          "label": "Relativistic Clock Correction (constant offset and eccentricity term). ESA Navipedia",
+          "url": "https://gssc.esa.int/navipedia/index.php/Relativistic_Clock_Correction",
+          "type": "article"
+        },
+        {
+          "label": "Time dilation (orbital clocks, ISS and the cancellation altitude)",
+          "url": "https://en.wikipedia.org/wiki/Time_dilation",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Neil Ashby",
+          "url": "https://en.wikipedia.org/wiki/Neil_Ashby",
+          "type": "wikipedia"
+        }
+      ]
+    }
+  ]
+}
