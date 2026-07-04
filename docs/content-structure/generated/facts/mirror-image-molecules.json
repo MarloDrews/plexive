@@ -59,7 +59,7 @@
       "type": "story",
       "order": 7,
       "content": {
-        "body": "In 1848 a 26-year-old chemist named Louis Pasteur sat over a microscope in Paris, sorting the crusty tartrate crystals that settle in wine casks. Two forms of the salt shared the same formula, yet one twisted polarized light while the other did nothing. Nobody could say why. Looking closer, Pasteur found the inert form was not one crystal but two, mirror images with facets angled left on some and right on the rest. He sorted them by hand with a fine pair of tweezers, a heap of left and a heap of right, and dissolved each on its own. The two piles bent light in opposite directions by the same amount: one molecule, existing as two shapes built from the same atoms mirrored. He carried it to the aging physicist Jean-Baptiste Biot, who took him by the arm: “My dear child, I have loved science so much in my life that this makes my heart pound.”",
+        "body": "In 1848 a 26-year-old chemist named Louis Pasteur sat over a microscope in Paris, sorting the crusty tartrate crystals that settle in wine casks. Two forms of the salt shared the same formula, yet one twisted polarised light while the other did nothing. Nobody could say why. Looking closer, Pasteur found the inert form was not one crystal but two, mirror images with facets angled left on some and right on the rest. He sorted them by hand with a fine pair of tweezers, a heap of left and a heap of right, and dissolved each on its own. The two piles bent light in opposite directions by the same amount: one molecule, existing as two shapes built from the same atoms mirrored. He carried it to the aging physicist Jean-Baptiste Biot, who took him by the arm: “My dear child, I have loved science so much in my life that this makes my heart pound.”",
         "key_figures": [
           {
             "name": "Louis Pasteur",
@@ -85,7 +85,7 @@
         },
         {
           "title": "Your nose already knows the difference",
-          "body": "You have smelled this without knowing it. One molecule, carvone, comes in two mirror-forms: one is the scent of spearmint, the other of caraway and rye bread. Same atoms, opposite hand, and the nose files them as two unrelated smells. It can do that only because the receptors inside your nose are single-handed too, each a pocket that closes on one shape and refuses its reflection. The handedness that is harmless in a spice rack is the same property that made thalidomide two different drugs.",
+          "body": "You have smelled this without knowing it. One molecule, carvone, comes in two mirror-forms: one is the scent of spearmint, the other of caraway and rye bread. Same atoms, opposite hand, and the nose files them as two unrelated smells. It can do that only because the receptors inside your nose are single-handed too, each a pocket that closes on one shape and refuses its reflection. The handedness that is harmless in a spice rack is what made thalidomide two different drugs.",
           "visual_svg": "<svg viewBox='0 0 400 240' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='30' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='600' opacity='0.8' text-anchor='middle'>A handed lock</text><path d='M56 188 H344' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' opacity='0.55'/><text x='200' y='212' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.65' text-anchor='middle'>receptor surface</text><g fill='currentColor'><circle cx='108' cy='188' r='4'/><circle cx='200' cy='188' r='4'/></g><circle cx='292' cy='188' r='5' fill='var(--accent)'/><circle cx='200' cy='92' r='5' fill='currentColor'/><g stroke='currentColor' stroke-width='2.5' stroke-linecap='round'><line x1='200' y1='92' x2='110' y2='184'/><line x1='200' y1='92' x2='200' y2='184'/></g><line x1='200' y1='92' x2='290' y2='184' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><text x='200' y='72' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.85' text-anchor='middle'>one molecule</text><text x='200' y='232' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>its mirror cannot reach all three</text></svg>"
         },
         {
@@ -123,25 +123,25 @@
             "The S form is the harmless one of the two"
           ],
           "answer_index": 2,
-          "explanation": "Thalidomide racemizes in the bloodstream within hours, turning a pure R dose into a mix of R and S. Because the body keeps regenerating the harmful hand, there was no stable safe form to isolate."
+          "explanation": "Thalidomide racemises in the bloodstream within hours, turning a pure R dose into a mix of R and S. Because the body keeps regenerating the harmful hand, there was no stable safe form to isolate."
         },
         {
-          "question": "Sitting in a plain beaker with no other handed molecules around, how do two enantiomers differ?",
+          "question": "Sitting in a plain beaker with no other handed molecules around, how do two mirror-image molecules differ?",
           "options": [
             "They have different weights and melting points",
             "They react with ordinary acids at different speeds",
             "One is a solid and the other a liquid",
-            "They are identical except that they rotate polarized light in opposite directions"
+            "They are identical except that they rotate polarised light in opposite directions"
           ],
           "answer_index": 3,
-          "explanation": "In an even-handed environment the two share every measurable property, from density to boiling point. The one thing that separates them is the direction they twist polarized light, which is what Pasteur measured."
+          "explanation": "In an even-handed environment the two share every measurable property, from density to boiling point. The one thing that separates them is the direction they twist polarised light, which is what Pasteur measured."
         },
         {
           "question": "The two mirror-forms of carvone smell of spearmint and caraway. What does that reveal about the sense of smell?",
           "options": [
             "The two forms must have different molecular weights",
             "Smell depends mostly on temperature",
-            "The odor receptors are themselves handed, so each mirror-form fits differently",
+            "The odour receptors are themselves handed, so each mirror-form fits differently",
             "Caraway molecules are larger than spearmint ones"
           ],
           "answer_index": 2,
@@ -181,7 +181,7 @@
         },
         {
           "myth": "Two mirror-image molecules are basically the same substance.",
-          "reality": "In an even-handed setting they are, identical down to melting point and density. Living tissue is not even-handed, so the two can behave as differently as a drug and a poison."
+          "reality": "In an even-handed setting they are identical, down to melting point and density, but living tissue is not, so the two can behave as differently as a drug and a poison."
         },
         {
           "myth": "Thalidomide was banned and is no longer used.",
@@ -195,7 +195,7 @@
       "content": {
         "body": "The chemistry of handedness is settled. Why life runs on a single hand is not. Nobody knows what tipped the earliest biology onto left-handed amino acids, or whether that tilt was chance or somehow inevitable. Closer to the clinic, predicting which mirror-form of a new molecule will help and which will harm is still a question only testing can answer.",
         "items": [
-          "Why did the first life commit to one molecular hand, and was that inevitable or frozen chance?",
+          "Was life's single hand fixed by chance, or by some physical tilt we have not yet found?",
           "Can the helpful and harmful mirror-forms of a drug be told apart before a person takes it?",
           "How exactly the S form of thalidomide derails a growing limb is still being worked out."
         ]
