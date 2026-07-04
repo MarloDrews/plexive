@@ -1,0 +1,221 @@
+{
+  "tags": [
+    "nutrition",
+    "medicine",
+    "history-of-science"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Collagen"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "Run out of vitamin C and scars that healed years ago tear open again.",
+    "teasers": [
+      "A cure found, then lost for decades",
+      "Your collagen would come apart at body heat",
+      "Why humans can't make their own vitamin C"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "Run out of vitamin C and scars that healed years ago tear open again."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><g stroke='currentColor' stroke-width='2' stroke-linecap='round' opacity='0.5'><line x1='58' y1='50' x2='58' y2='230'/><line x1='58' y1='230' x2='366' y2='230'/></g><line x1='58' y1='176' x2='366' y2='176' stroke='currentColor' stroke-width='1.5' opacity='0.35' stroke-dasharray='6 6'/><text x='62' y='170' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='start'>scar holds</text><line x1='200' y1='60' x2='200' y2='230' stroke='currentColor' stroke-width='1.5' opacity='0.4' stroke-dasharray='4 5'/><text x='200' y='52' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.75' text-anchor='middle'>vitamin C stops</text><path d='M74 86 L200 86' stroke='currentColor' stroke-width='2.5' stroke-linecap='round'/><path d='M200 86 L330 218' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><circle cx='287' cy='176' r='6' fill='var(--accent)'/><text x='300' y='166' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='start'>scar reopens</text><text x='212' y='252' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>time</text><text x='34' y='140' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle' transform='rotate(-90 34 140)'>scar strength</text></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "Everyone knows scurvy comes from too little vitamin C. Bleeding gums, loose teeth, the standard picture. Then something stranger shows up. Old scars open. A wound stitched shut and forgotten a decade ago splits along its old line. The reason is collagen, the protein that holds skin, vessels, and scars together. Vitamin C is the cofactor its assembly enzymes cannot work without, and the body rebuilds collagen every day of your life. Cut the supply and the rebuilding stops while the breakdown does not."
+    },
+    {
+      "type": "story",
+      "order": 7,
+      "content": {
+        "body": "In 1747, aboard HMS Salisbury, the naval surgeon James Lind ran what reads like a modern trial. He took twelve scurvy-ridden sailors, split them into pairs, and gave each pair a different remedy. The two who ate oranges and lemons recovered within days. It still took the Navy until 1795 to order citrus for every ship, and then the knowledge slipped. Lind never knew what in the fruit did the work, the Navy later switched to less potent limes, and scurvy crept back into polar expeditions a century on. The missing piece arrived in the 1930s, when Albert Szent-Györgyi isolated the molecule itself, ascorbic acid, and won a Nobel Prize for it. Only then did the cure finally have a name.",
+        "key_figures": [
+          {
+            "name": "James Lind",
+            "role": "Ran the citrus trial",
+            "one_line": "In 1747 he showed oranges and lemons cured scurvy, in one of the first controlled dietary trials.",
+            "lifespan": "1716-1794",
+            "birth_year": 1716,
+            "featured": true,
+            "image_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Portrait_of_James_Lind,_1716-1794,_Physician_at_Haslar_Wellcome_M0003113.jpg",
+            "image_attribution": "Wellcome Collection, “Portrait of James Lind, 1716-1794”, CC BY 4.0 (Wikimedia Commons)"
+          },
+          {
+            "name": "Albert Szent-Györgyi",
+            "role": "Isolated vitamin C",
+            "one_line": "In the 1930s he isolated ascorbic acid, the molecule behind the cure, and won a Nobel Prize for the work.",
+            "lifespan": "1893-1986",
+            "birth_year": 1893,
+            "featured": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "The oldest repairs unravel first",
+          "body": "Not all collagen turns over at the same speed. Old scar tissue is replaced faster than the skin around it. When vitamin C runs out, synthesis falls across the whole body while breakdown carries on. The busiest repairs lose the most. A scar sealed decades ago can be the first thing to give way."
+        },
+        {
+          "title": "Your collagen would come apart at body heat",
+          "body": "Collagen is a rope of three chains wound into a triple helix. That helix has a melting point. Vitamin C lets enzymes tack hydroxyl groups onto the proline in each chain, turning it into hydroxyproline, the hooks that lock the coil shut. With them, the helix holds to about 39°C. Without them, it unwinds near 24°C. Your body runs at 37°C. Collagen made without vitamin C cannot survive the heat of the body that made it.",
+          "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='46' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.75' text-anchor='middle'>Collagen melting point</text><line x1='55' y1='168' x2='362' y2='168' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><text x='55' y='190' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='start'>20°C</text><text x='362' y='190' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='end'>42°C</text><line x1='292' y1='104' x2='292' y2='184' stroke='currentColor' stroke-width='1.5' opacity='0.4' stroke-dasharray='5 5'/><text x='292' y='96' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.75' text-anchor='middle'>body 37°C</text><circle cx='319' cy='168' r='6' stroke='currentColor' stroke-width='2' opacity='0.6'/><text x='319' y='150' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.85' text-anchor='middle'>holds 39°C</text><line x1='115' y1='161' x2='115' y2='122' stroke='var(--accent)' stroke-width='2'/><circle cx='115' cy='168' r='7' fill='var(--accent)'/><text x='115' y='114' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>melts at 24°C</text><text x='115' y='98' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' text-anchor='middle'>no vitamin C</text></svg>"
+        },
+        {
+          "title": "We are one broken gene from the disease",
+          "body": "Most animals make their own vitamin C. A dog or a rat builds it in the liver from glucose and never needs a bite of fruit. Humans cannot. Somewhere in our primate past, the gene for the final enzyme broke, and all of us still carry the dead copy. That gene is called GULO. Guinea pigs, some bats, and certain birds lost it too, on their own. It stays harmless as long as we eat enough to cover for it. Scurvy is what happens when we stop."
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "Collagen never sits still. It is torn down and relaid constantly, so every scar, every vessel wall, every tendon is a structure being rebuilt about as fast as it decays. Vitamin C is a required part of that rebuilding. The body keeps almost none in reserve. Miss it for a couple of months and the repairs everywhere begin to lose ground at once. Under the surface, your body is rebuilding its oldest wounds every day."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "Why do wounds that healed years ago reopen in scurvy, rather than only new wounds failing to close?",
+          "options": [
+            "The old scars were never fully healed in the first place",
+            "Scar tissue is weaker than normal skin and tears under any strain",
+            "Vitamin C is stored in scars and released when it runs low elsewhere",
+            "Collagen is rebuilt constantly, and without vitamin C the body cannot maintain old repairs"
+          ],
+          "answer_index": 3,
+          "explanation": "A healed scar is torn down and rebuilt all the time. Vitamin C is needed for the rebuild, so when it fails, existing repairs erode instead of holding."
+        },
+        {
+          "question": "What is vitamin C's actual job in making collagen?",
+          "options": [
+            "It is a building block that becomes part of the collagen fiber",
+            "It signals cells to start producing more collagen",
+            "It is a cofactor that lets enzymes add hydroxyl groups to proline, stabilizing the triple helix",
+            "It dissolves damaged collagen so fresh collagen can take its place"
+          ],
+          "answer_index": 2,
+          "explanation": "Vitamin C keeps the hydroxylase enzymes working. The hydroxyproline they create is what lets the collagen triple helix stay folded at body temperature."
+        },
+        {
+          "question": "Without hydroxyproline, collagen's triple helix comes apart near 24°C. Why does that matter inside the body?",
+          "options": [
+            "Body temperature, near 37°C, is above 24°C, so the unstable collagen cannot hold together",
+            "24°C is colder than most rooms, so collagen is always near failing",
+            "The body would have to cool to 24°C for collagen to work",
+            "It does not matter, since the body keeps its collagen chilled"
+          ],
+          "answer_index": 0,
+          "explanation": "Hydroxyproline lifts the melting point above body heat. Without it, collagen built in a 37°C body is already past its stability point and is broken down before it can be used."
+        },
+        {
+          "question": "Why must humans get vitamin C from food when many animals do not?",
+          "options": [
+            "Human diets simply happen to be richer in fruit",
+            "The gene for the final vitamin-C-making enzyme is broken in our lineage",
+            "Humans burn vitamin C too fast to ever make enough",
+            "The human liver is too small to produce vitamins"
+          ],
+          "answer_index": 1,
+          "explanation": "The GULO gene that finishes vitamin C synthesis is a dead copy in humans, so we depend entirely on diet, as do guinea pigs and some bats and birds."
+        },
+        {
+          "question": "Why do old scars tend to break down before other tissue when vitamin C runs out?",
+          "options": [
+            "Scars contain no blood vessels to deliver nutrients",
+            "Old scar tissue turns over collagen faster than nearby skin, so it loses the most when rebuilding stops",
+            "Scars always sit where the skin bends the most",
+            "Scar collagen is a different, weaker type than normal collagen"
+          ],
+          "answer_index": 1,
+          "explanation": "Old scars are among the most actively remodeled tissue. When synthesis halts but breakdown continues, the fastest-turnover tissue fails first."
+        },
+        {
+          "question": "Someone eats no fresh food for two months, and then an old wound opens. What is the best explanation?",
+          "options": [
+            "Their small vitamin C reserve ran out, so collagen maintenance stalled",
+            "Two months is far too short for any deficiency, so something else is wrong",
+            "The wound must have been reinjured by coincidence",
+            "Their liver stopped producing vitamin C"
+          ],
+          "answer_index": 0,
+          "explanation": "The body holds only a small pool of vitamin C, enough for weeks to a couple of months. Once it is gone, collagen upkeep stops and old repairs give way."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "Scurvy died out with the age of sail.",
+          "reality": "It still appears today, in people whose diets hold almost no fresh food: some infants, isolated older adults, people with alcohol dependence. Uncommon now, not extinct."
+        },
+        {
+          "myth": "Once a wound heals, that tissue is finished and needs nothing more.",
+          "reality": "A scar is some of the most actively rebuilt tissue you own. It only looks done. Its collagen is being replaced the whole time."
+        },
+        {
+          "myth": "You can stock up on vitamin C and coast for months.",
+          "reality": "The body holds a small pool and spends it in weeks. There is no deep reserve to live off."
+        }
+      ]
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Cohen IK, Keiser HR. Disruption of healed scars in scurvy: the result of a disequilibrium in collagen metabolism. Plast Reconstr Surg 1976;57(2):213-215",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/175389/",
+          "type": "paper"
+        },
+        {
+          "label": "Berg RA, Prockop DJ. The thermal transition of a non-hydroxylated form of collagen: evidence for a role for hydroxyproline in stabilizing the triple-helix. Biochem Biophys Res Commun 1973;52(1):115-120",
+          "url": "https://www.sciencedirect.com/science/article/abs/pii/0006291X73909613",
+          "type": "paper"
+        },
+        {
+          "label": "Drouin G, Godin JR, Page B. The genetics of vitamin C loss in vertebrates (GULO pseudogene). Curr Genomics 2011;12(5):371-378",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3145266/",
+          "type": "paper"
+        },
+        {
+          "label": "Maxfield L, Daley SF, Crane JS. Vitamin C deficiency (scurvy). StatPearls",
+          "url": "https://www.ncbi.nlm.nih.gov/books/NBK493187/",
+          "type": "article"
+        },
+        {
+          "label": "James Lind and scurvy: 1747 to 1795 (The James Lind Library)",
+          "url": "https://www.jameslindlibrary.org/articles/james-lind-and-scurvy-1747-to-1795/",
+          "type": "article"
+        },
+        {
+          "label": "Scurvy",
+          "url": "https://en.wikipedia.org/wiki/Scurvy",
+          "type": "wikipedia"
+        }
+      ]
+    }
+  ]
+}
