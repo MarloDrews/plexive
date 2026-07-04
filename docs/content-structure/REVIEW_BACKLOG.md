@@ -113,3 +113,21 @@ sources. Each entry stays `open` until a researcher confirms or resolves it.
 - finding: story key_figure Diana W. Bianchi is featured:true with no birth_year, so the featured person edge stays inert (same class as Marie Jackson). Re-surfaced in the 2026-07-04-a correctness review, which searched and could not find the date.
 - needs: Diana W. Bianchi's birth year is not on Wikipedia or her NICHD/genome.gov profiles (searched, not found). Supplying it is a new sourced fact; omitting is permitted by the skeleton. Either find the verified birth year to activate the edge or accept the featured flag as inert (low priority). Not changed in the post to avoid inventing a date.
 - added: 2026-07-04, 2026-07-04-a
+
+### mirror-image-molecules
+- status: open
+- finding: bigger_picture states "Europe's regulator has not cleared a mixed-handed one since 2016." This specific regulatory fact is load-bearing but supported by none of the seven listed sources (Pasteur, thalidomide teratogenesis/chirality, FDA 1992, three Wikipedia pages).
+- needs: a source for the EMA "no new racemate cleared since 2016" claim, or soften/remove the specific date. Deferred because verifying or replacing it requires a new source, not a mechanical edit; the post is unchanged.
+- added: 2026-07-04, 2026-07-04-b
+
+### mycorrhizal-networks
+- status: open
+- finding: post has no sourced photograph of the concrete subject (mycelium, colonized root tips). It carries four custom SVGs plus a historical portrait (A. B. Frank) but no macro photo of fungal threads or ectomycorrhizal root tips. Enrichment per IMAGE_STANDARD, not a comprehension gap.
+- needs: fresh research to locate, license-verify, and attribute a Wikimedia/PD macro image of mycelium or mycorrhizal root tips (do not invent a URL). Deferred because it requires a new sourced asset, not a mechanical edit.
+- added: 2026-07-04, 2026-07-04-b
+
+### roman-concrete-strengthens-in-the-sea
+- status: open
+- finding: 2026-07-04-b correctness review re-confirmed the post has no sourced/licensed photograph (all four visuals are hand-drawn SVG). Same gap as the 2026-07-03-c entry above; a licensed photo of a Roman marine structure (e.g. Portus Cosanus pier) or an Al-tobermorite micrograph would give the eye a rest per IMAGE_STANDARD.
+- needs: same as the 2026-07-03-c item; fresh research to locate, license-verify, and attribute a real image (do not invent a URL). Deferred because it requires a new sourced asset, not a mechanical edit.
+- added: 2026-07-04, 2026-07-04-b
