@@ -1,0 +1,228 @@
+{
+  "tags": [
+    "music",
+    "music-theory",
+    "mathematics"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "The circle of fifths"
+      },
+      "featured": true
+    },
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "The harmonic series"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "Every piano is permanently, deliberately out of tune, and only the octave is spared.",
+    "teasers": [
+      "Play a fifth and hear the wobble yourself",
+      "Why twelve pure fifths never quite close",
+      "What a violin can do that pianos can't"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "Every piano is permanently, deliberately out of tune, and only the octave is spared."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><path d='M215 57 A95 95 0 1 1 185 57' stroke='currentColor' stroke-width='2.5' opacity='0.55' fill='none' stroke-linecap='round'/><circle cx='185' cy='57' r='5' fill='currentColor'/><text x='148' y='44' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.75' text-anchor='middle'>start note</text><circle cx='215' cy='57' r='5' fill='var(--accent)'/><text x='264' y='44' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>12 fifths later</text><text x='200' y='138' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' text-anchor='middle'>stack 12 pure fifths</text><text x='200' y='160' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' text-anchor='middle'>and you overshoot the start</text><text x='200' y='189' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='700' text-anchor='middle'>by ~23 cents</text></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "Play a perfect fifth on a violin, tuned pure, then play the same fifth on a piano. Listen closely to the piano and you can hear it: a slow wobble under the note, a soft beating that was not there before. That wobble is the fifth sitting slightly flat of where the physics says it should be. It is not a fault in that piano. Every fifth on every piano is flattened the same way, on purpose, and every third is nudged sharp. The only interval left honest is the octave."
+    },
+    {
+      "type": "how_we_know",
+      "order": 5,
+      "content": "Why can it never be perfect? Start on a note and climb in pure fifths, twelve of them. You pass through all twelve tones and should land on your start again, seven octaves up. That is the promise. The arithmetic breaks it. Twelve pure fifths multiply out to a ratio of about 129.7, while seven pure octaves come to exactly 128. The two paths miss by a hair, a gap of about 23 cents, a quarter of a semitone. Pure fifths and pure octaves cannot both hold at once, so a piano keeps the octaves and shaves every fifth."
+    },
+    {
+      "type": "key_numbers",
+      "order": 6,
+      "content": [
+        {
+          "label": "Octave",
+          "value": "0",
+          "unit": "cents off (pure)"
+        },
+        {
+          "label": "Perfect fifth",
+          "value": "2",
+          "unit": "cents flat"
+        },
+        {
+          "label": "Perfect fourth",
+          "value": "2",
+          "unit": "cents sharp"
+        },
+        {
+          "label": "Major third",
+          "value": "14",
+          "unit": "cents sharp"
+        },
+        {
+          "label": "Minor third",
+          "value": "16",
+          "unit": "cents flat"
+        }
+      ]
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "A violin can do what a piano can't",
+          "body": "A piano is a grid of fixed pitches. Once it is tuned, the player cannot bend a note. A violinist, a trombonist, or a singer has no frets and no fixed keys, so they slide each note to wherever it sounds sweetest. A good string quartet or a barbershop chorus drifts toward pure intervals as they play, thirds and fifths locking in with no beating. A keyboard is stuck with the compromise. A violin is free of it."
+        },
+        {
+          "title": "The error has to go somewhere",
+          "body": "Equal temperament is not the only fix. It is the fairest. The gap of 23 cents cannot be erased, only hidden, and every tuning system hides it somewhere. Old keyboards kept some intervals pure and shoved the whole error into one, a howling fifth that players named the wolf. Equal temperament smears it across all twelve fifths instead, two cents each, so nothing is pure and nothing is unbearable. That even spread is what lets a piano play in every key and sound the same in each.",
+          "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='106' y='46' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.8' text-anchor='middle'>Older tuning</text><text x='299' y='46' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.8' text-anchor='middle'>Equal temperament</text><line x1='28' y1='210' x2='185' y2='210' stroke='currentColor' stroke-width='1.5' opacity='0.4' stroke-linecap='round'/><line x1='221' y1='210' x2='378' y2='210' stroke='currentColor' stroke-width='1.5' opacity='0.4' stroke-linecap='round'/><g fill='currentColor' opacity='0.5'><rect x='34' y='198' width='8' height='12' rx='3'/><rect x='47' y='198' width='8' height='12' rx='3'/><rect x='59' y='198' width='8' height='12' rx='3'/><rect x='72' y='198' width='8' height='12' rx='3'/><rect x='85' y='198' width='8' height='12' rx='3'/><rect x='110' y='198' width='8' height='12' rx='3'/><rect x='122' y='198' width='8' height='12' rx='3'/><rect x='135' y='198' width='8' height='12' rx='3'/><rect x='148' y='198' width='8' height='12' rx='3'/><rect x='160' y='198' width='8' height='12' rx='3'/><rect x='173' y='198' width='8' height='12' rx='3'/></g><rect x='97' y='104' width='9' height='106' rx='3' fill='var(--accent)'/><text x='101' y='96' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>wolf</text><g fill='currentColor' opacity='0.5'><rect x='224' y='186' width='8' height='24' rx='3'/><rect x='237' y='186' width='8' height='24' rx='3'/><rect x='249' y='186' width='8' height='24' rx='3'/><rect x='262' y='186' width='8' height='24' rx='3'/><rect x='275' y='186' width='8' height='24' rx='3'/><rect x='287' y='186' width='8' height='24' rx='3'/><rect x='300' y='186' width='8' height='24' rx='3'/><rect x='313' y='186' width='8' height='24' rx='3'/><rect x='325' y='186' width='8' height='24' rx='3'/><rect x='338' y='186' width='8' height='24' rx='3'/><rect x='351' y='186' width='8' height='24' rx='3'/><rect x='363' y='186' width='8' height='24' rx='3'/></g><text x='106' y='232' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>error piled in one</text><text x='299' y='232' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>error shared by all</text></svg>"
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "The piano did not lose a battle with physics. It made a bargain. You cannot tune a fixed keyboard so that octaves, fifths, and thirds stay pure all at once. The numbers forbid it. Music took the small, even wrongness and made it the standard, and every one of the twelve keys became equally playable. Perfect tuning would have locked you into a single key. What sounds slightly off is what set music free to go anywhere."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "Why can't a piano be tuned so that every interval is pure?",
+          "options": [
+            "Its strings are too thick to hold a pure pitch",
+            "It has too many notes to tune each one perfectly",
+            "Stacking pure fifths never lands exactly on a pure octave, so one or the other must give",
+            "The felt hammers distort every note slightly"
+          ],
+          "answer_index": 2,
+          "explanation": "Twelve pure fifths overshoot seven octaves by about 23 cents, the Pythagorean comma. Pure fifths and pure octaves cannot both be true, so a choice is forced."
+        },
+        {
+          "question": "In equal temperament, which interval is left pure?",
+          "options": [
+            "The perfect fifth",
+            "The major third",
+            "The octave",
+            "None of them"
+          ],
+          "answer_index": 2,
+          "explanation": "The octave is kept at a pure 2:1, and the unavoidable error is spread across every other interval instead."
+        },
+        {
+          "question": "You hear a slow beating on a fifth from a well-tuned piano. What does it mean?",
+          "options": [
+            "The piano needs repair",
+            "The tuning is working as intended; the fifth is deliberately a touch flat",
+            "Two strings for that note are broken",
+            "Humidity in the room is bending the pitch"
+          ],
+          "answer_index": 1,
+          "explanation": "Equal-tempered fifths are set slightly narrow of pure, which makes a gentle beat. Tuners even count those beats to set the temperament by ear."
+        },
+        {
+          "question": "Why does equal temperament let a piano play in every key equally well?",
+          "options": [
+            "It tunes each key to its own pure scale",
+            "It uses extra strings for the harder keys",
+            "It retunes itself as the music changes key",
+            "It spreads the tuning error evenly, so no key is worse than another"
+          ],
+          "answer_index": 3,
+          "explanation": "Flattening every fifth by the same tiny amount makes all keys equivalent. Older systems that kept some intervals pure left certain keys badly out of tune."
+        },
+        {
+          "question": "A singer can land a purer major third than a piano can. Why?",
+          "options": [
+            "Singers are simply tuned more carefully",
+            "A voice has no fixed pitches and can adjust each note by ear",
+            "A voice produces fewer overtones",
+            "Singers move more slowly between notes"
+          ],
+          "answer_index": 1,
+          "explanation": "With no frets or fixed keys, a singer slides each note to where it rings pure. A piano's pitches are locked in the moment it is tuned."
+        },
+        {
+          "question": "Older keyboard tunings kept several intervals pure. What did that cost?",
+          "options": [
+            "The error piled into one interval, a badly sour fifth called the wolf",
+            "Every key ended up sounding identical",
+            "The octaves themselves went out of tune",
+            "The instrument could sound only one note at a time"
+          ],
+          "answer_index": 0,
+          "explanation": "Concentrating the comma into one interval left a wolf fifth too sour to use. Equal temperament instead shares the error among all twelve fifths."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "Bach wrote The Well-Tempered Clavier to show off equal temperament.",
+          "reality": "He called it well-tempered, not equal-tempered. Those tunings let every key be played, but each key kept its own color, the very thing equal temperament later flattened away."
+        },
+        {
+          "myth": "A piano that beats a little on a fifth is just badly tuned.",
+          "reality": "That gentle beat is equal temperament doing exactly its job. A tuner sets it deliberately, often counting the beats to land the right rate."
+        },
+        {
+          "myth": "At least the octaves are left perfectly pure.",
+          "reality": "In the tuning scheme they are, and that is the point. On a real piano even the octaves get stretched a touch wider, because thick strings vibrate slightly sharp, but the deliberate compromise is still every other interval."
+        }
+      ]
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Pythagorean comma",
+          "url": "https://en.wikipedia.org/wiki/Pythagorean_comma",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Equal temperament",
+          "url": "https://en.wikipedia.org/wiki/Equal_temperament",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Kyle Gann, An Introduction to Historical Tunings",
+          "url": "https://www.kylegann.com/tuning.html",
+          "type": "article"
+        },
+        {
+          "label": "Indiana University Jacobs School of Music, Piano Technology: Equal Temperament and beat rates",
+          "url": "https://intranet.music.indiana.edu/departments/offices/piano-technology/temperaments/equal-temperament.html",
+          "type": "article"
+        },
+        {
+          "label": "Well temperament (and Bach's Well-Tempered Clavier)",
+          "url": "https://en.wikipedia.org/wiki/Well_temperament",
+          "type": "wikipedia"
+        }
+      ]
+    }
+  ]
+}
