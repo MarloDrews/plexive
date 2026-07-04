@@ -1,0 +1,215 @@
+{
+  "tags": [
+    "medicine",
+    "psychology",
+    "critical-thinking"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "The placebo effect"
+      },
+      "featured": true
+    },
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Regression to the mean"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "Fake knee surgery, just skin incisions, relieved arthritis as well as the real operation for two years.",
+    "teasers": [
+      "How do you fake a knee operation?",
+      "Why a fake operation beats a sugar pill",
+      "A 1950s heart surgery fell the same way"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "Fake knee surgery, just skin incisions, relieved arthritis as well as the real operation for two years."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='34' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.75' text-anchor='middle'>Improvement at 2 years</text><line x1='50' y1='240' x2='362' y2='240' stroke='currentColor' stroke-width='2' opacity='0.45' stroke-linecap='round'/><line x1='60' y1='104' x2='352' y2='104' stroke='currentColor' stroke-width='1.5' opacity='0.35' stroke-dasharray='6 6'/><text x='352' y='96' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='end'>same level</text><rect x='78' y='110' width='56' height='130' rx='6' stroke='currentColor' stroke-width='2' opacity='0.55'/><rect x='172' y='106' width='56' height='134' rx='6' stroke='currentColor' stroke-width='2' opacity='0.55'/><rect x='266' y='112' width='56' height='128' rx='6' stroke='var(--accent)' stroke-width='2.5'/><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'><text x='106' y='262'>Scrape</text><text x='200' y='262'>Rinse</text></g><text x='294' y='262' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>Sham</text><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='middle'><text x='106' y='281'>real surgery</text><text x='200' y='281'>real surgery</text></g><text x='294' y='281' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.85' text-anchor='middle'>skin cuts only</text></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "Start with the design. It is the whole point. In 2002, 180 people with arthritic knees were split into three groups. One group had the joint scraped clean, one had it rinsed out, and the third got only three small cuts in the skin and nothing else. Everyone went into a real operating room, was sedated, and went home with the same dressings and instructions. Nobody knew who had gotten what, not the patients, not the doctors checking on them. Two years later the three groups were indistinguishable. All of them had improved, by the same amount. The knife had added nothing."
+    },
+    {
+      "type": "story",
+      "order": 7,
+      "content": {
+        "body": "Bruce Moseley was an orthopedic surgeon who scraped and rinsed arthritic knees for a living, and who believed it helped. At the time, hundreds of thousands of these operations were done every year in the United States alone. Moseley wanted to know which part of the procedure did the work, the scraping or the rinsing, so he added a placebo arm almost as a control. The control swallowed the study. When it appeared in the New England Journal of Medicine in 2002, it did not end the surgery. Doctors kept scraping knees for years, and some still do. A procedure that pays well and feels decisive is hard to abandon on one result.",
+        "key_figures": [
+          {
+            "name": "J. Bruce Moseley",
+            "role": "Ran the sham-controlled knee trial",
+            "one_line": "The orthopedic surgeon who added a placebo arm to test his own procedure and found it changed nothing.",
+            "featured": false
+          }
+        ]
+      }
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "Cutting is a powerful placebo",
+          "body": "A placebo does not have to be a pill. The more elaborate the ritual around a treatment, the stronger the response it tends to bring, and nothing in medicine is more elaborate than surgery. The anesthetic, the scalpel, the long recovery: all of it speaks to the body. It says, in a language older than medicine, that something serious is under way. A convincing fake sends that message as loudly as the real thing. The body cannot tell them apart.",
+          "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='34' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.75' text-anchor='middle'>The bigger the ritual, the bigger the placebo</text><line x1='52' y1='250' x2='360' y2='250' stroke='currentColor' stroke-width='2' opacity='0.45' stroke-linecap='round'/><path d='M52 250 V72' stroke='currentColor' stroke-width='2' opacity='0.45' stroke-linecap='round'/><path d='M52 72 l-6 12 m6 -12 l6 12' stroke='currentColor' stroke-width='2' opacity='0.45' stroke-linecap='round' stroke-linejoin='round'/><text x='38' y='150' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='middle' transform='rotate(-90 38 150)'>placebo effect</text><rect x='92' y='192' width='64' height='58' rx='8' stroke='currentColor' stroke-width='2' opacity='0.55'/><rect x='178' y='150' width='64' height='100' rx='8' stroke='currentColor' stroke-width='2' opacity='0.55'/><rect x='264' y='96' width='64' height='154' rx='8' stroke='var(--accent)' stroke-width='2.5'/><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' text-anchor='middle'><text x='124' y='270'>sugar pill</text><text x='210' y='270'>injection</text></g><text x='296' y='270' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>fake surgery</text></svg>"
+        },
+        {
+          "title": "This was not the first, and not the last",
+          "body": "In the 1950s, a popular operation for chest pain tied off an artery in the chest wall, and patients felt better. Then two small trials in 1959 and 1960 gave half the patients only skin incisions and no ligation. Both halves improved the same, and the operation was dropped. The knee trial was a rerun of that lesson. In 2013 a sham trial did the same to a common keyhole surgery for torn knee cartilage.",
+          "visual_svg": "<svg viewBox='0 0 400 200' xmlns='http://www.w3.org/2000/svg' fill='none'><line x1='45' y1='95' x2='355' y2='95' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><circle cx='72' cy='95' r='7' stroke='currentColor' stroke-width='2' opacity='0.6'/><text x='72' y='72' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>1959</text><text x='72' y='122' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.75' text-anchor='middle'>heart (angina)</text><circle cx='200' cy='95' r='8' fill='var(--accent)'/><text x='200' y='71' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>2002</text><text x='200' y='122' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle'>knee</text><circle cx='328' cy='95' r='7' stroke='currentColor' stroke-width='2' opacity='0.6'/><text x='328' y='72' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>2013</text><text x='328' y='122' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.75' text-anchor='middle'>meniscus</text></svg>"
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "The improvement was real. Patients hurt less and moved better, and they were not imagining it. What was not real was the cause. Three things can lift a patient after any treatment: the body heals on its own, the trouble was fading anyway, and the sheer theater of care does its quiet work. Without a sham to compare against, you cannot tell the treatment from the ritual around it. Recovery after a procedure is not proof that the procedure caused it."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "How did the fake-surgery group compare to the two real-surgery groups after two years?",
+          "options": [
+            "They did worse, showing the surgery had helped",
+            "They did about the same, with no meaningful gap in pain or function",
+            "They did much better, showing the surgery caused harm",
+            "They dropped out before results were measured"
+          ],
+          "answer_index": 1,
+          "explanation": "All three groups improved by a similar amount. The real operations gave no advantage over skin incisions alone."
+        },
+        {
+          "question": "Every group genuinely felt better. What does the trial say produced that improvement?",
+          "options": [
+            "Something other than the surgery, since the fake group improved just as much",
+            "The scraping and rinsing, which somehow worked in every group",
+            "Nothing real; the patients faked feeling better",
+            "The anesthesia, which numbed the joint for good"
+          ],
+          "answer_index": 0,
+          "explanation": "Because the placebo group improved as much as the surgical ones, the gain had to come from something other than the procedure itself."
+        },
+        {
+          "question": "Why is a sham control necessary to judge a surgery like this?",
+          "options": [
+            "It makes the trial cheaper to run",
+            "It gives more patients access to surgery",
+            "Surgeons simply prefer larger studies",
+            "Without it you cannot separate the surgery from natural healing and the placebo of the ritual"
+          ],
+          "answer_index": 3,
+          "explanation": "People improve after any procedure for many reasons. Only a matched fake operation reveals whether the surgery itself adds anything."
+        },
+        {
+          "question": "Why might a fake surgery be a stronger placebo than a sugar pill?",
+          "options": [
+            "Surgery is cheaper, so patients trust it more",
+            "The elaborate ritual of an operation amplifies the placebo response",
+            "A pill is inert while surgery contains an active ingredient",
+            "Patients are told the surgery is fake"
+          ],
+          "answer_index": 1,
+          "explanation": "Placebo responses tend to grow with the drama and invasiveness of a treatment, and few rituals are more elaborate than surgery."
+        },
+        {
+          "question": "A popular 1950s heart operation for chest pain met the same fate. What did its sham trials find?",
+          "options": [
+            "The operation was dangerous and was banned",
+            "It was simply replaced by a pill",
+            "Tying off the artery relieved pain no better than fake incisions",
+            "The trials confirmed it worked and it spread"
+          ],
+          "answer_index": 2,
+          "explanation": "In 1959 and 1960, patients given only skin incisions improved as much as those who had the artery tied off, an early sign that surgery can act as a placebo."
+        },
+        {
+          "question": "A patient improves after a new procedure. Why is that alone not proof the procedure worked?",
+          "options": [
+            "Improvement after a procedure is never genuine",
+            "A procedure always works if the patient improves",
+            "The body may have healed on its own, or the trouble eased naturally, or the ritual acted as a placebo",
+            "The benefit only counts if it can be measured in money"
+          ],
+          "answer_index": 2,
+          "explanation": "Recovery can follow a procedure for reasons unrelated to it. Only a controlled comparison shows whether the procedure caused the change."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "The patients just imagined they felt better.",
+          "reality": "Their improvement showed up in real measures of pain and walking. It was genuine. The surgery was simply not its source."
+        },
+        {
+          "myth": "So no surgery works, and it is all placebo.",
+          "reality": "This was one procedure for one problem, worn knees scraped smooth. Plenty of operations pass sham trials with room to spare. The lesson is to test, not to assume."
+        },
+        {
+          "myth": "Operating on someone as a fake is obviously unethical.",
+          "reality": "These trials run under close ethical review, with full consent. They exist because there is no honest way to tell a real effect from the placebo of surgery. Skip them, and useless operations carry on."
+        }
+      ]
+    },
+    {
+      "type": "open_questions",
+      "order": 12,
+      "content": {
+        "body": "The trial settled that scraping an arthritic knee adds nothing. It left bigger questions open. How much of any recovery is the placebo, how much is the body mending on its own, and how much is the natural ebb and flow of a bad joint? Nobody can fully separate them yet. And how many other common operations would fall the same way? Almost none have faced the test. A sham surgery is hard to justify and harder to fund."
+      }
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Moseley JB et al. A controlled trial of arthroscopic surgery for osteoarthritis of the knee. N Engl J Med 2002;347:81-88",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/12110735/",
+          "type": "paper"
+        },
+        {
+          "label": "To what extent are surgery and invasive procedures effective beyond a placebo response? A systematic review with meta-analysis of randomised, sham-controlled trials. BMJ Open 2015",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/26656986/",
+          "type": "paper"
+        },
+        {
+          "label": "Sihvonen R et al. Arthroscopic partial meniscectomy versus sham surgery for a degenerative meniscal tear. N Engl J Med 2013;369:2515-2524",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/24369076/",
+          "type": "paper"
+        },
+        {
+          "label": "Randomized surgical trials and sham surgery (reviews the 1959-60 internal mammary artery ligation trials)",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC1888585/",
+          "type": "paper"
+        },
+        {
+          "label": "Placebo effect",
+          "url": "https://en.wikipedia.org/wiki/Placebo",
+          "type": "wikipedia"
+        }
+      ]
+    }
+  ]
+}
