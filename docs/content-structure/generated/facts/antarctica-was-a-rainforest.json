@@ -55,7 +55,7 @@
     {
       "type": "how_we_know",
       "order": 5,
-      "content": "A single core says a lot if you read it in layers. The roots came first. A dense mesh like that grows only in place, so this was a forest floor, not debris washed in from somewhere warmer. The pollen and spores named the plants: ferns, conifers, and the forerunners of today's southern trees. For temperature the team read molecules left by soil microbes, whose shape shifts with the climate they formed in. Those put the yearly average near 12°C, warm and wet. The ancient air held three to four times today's carbon dioxide."
+      "content": "A single core says a lot if you read it in layers. The roots came first. A dense mesh like that grows only in place, so this was a forest floor, not debris washed in from somewhere warmer. The pollen and spores named the plants: ferns, conifers, and the forerunners of today's southern trees. For temperature the team read molecules left by soil microbes, whose shape shifts with the climate they formed in. Those put the yearly average near 12°C, warm and wet. The ancient air held roughly three to four times today's carbon dioxide."
     },
     {
       "type": "story",
@@ -82,7 +82,7 @@
         },
         {
           "title": "It took a hothouse to grow trees at the pole",
-          "body": "To land a pole at 12°C, the ancient air needs a lot of carbon dioxide. When the team ran the numbers, the models only fit the forest with CO2 between about 1,120 and 1,680 parts per million. It runs three to four times today's level, higher than some earlier estimates. That is the lever. Pour enough carbon into the air and even the poles can lose their ice and grow trees. The Cretaceous did it slowly, over millions of years, with volcanoes doing the pouring.",
+          "body": "To land a pole at 12°C, the ancient air needs a lot of carbon dioxide. When the team ran the numbers, the models only fit the forest with CO2 between about 1,120 and 1,680 parts per million. It runs roughly three to four times today's level, higher than some earlier estimates. That is the lever. Pour enough carbon into the air and even the poles can lose their ice and grow trees. The Cretaceous did it slowly, over millions of years, with volcanoes doing the pouring.",
           "visual_svg": "<svg viewBox='0 44 400 178' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='64' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.78' text-anchor='middle'>Carbon dioxide in the air</text><text x='40' y='104' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.8' text-anchor='start'>today</text><rect x='120' y='92' width='60' height='20' rx='8' stroke='currentColor' stroke-width='2' opacity='0.6'/><text x='188' y='107' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='start'>~420 ppm</text><text x='40' y='170' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='start'>90 Ma</text><rect x='120' y='158' width='200' height='20' rx='8' fill='var(--accent)' fill-opacity='0.18' stroke='var(--accent)' stroke-width='2.5'/><text x='220' y='150' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>~1,120 to 1,680 ppm</text></svg>"
         }
       ]
@@ -188,7 +188,7 @@
       "content": [
         {
           "label": "Klages JP et al. Temperate rainforests near the South Pole during peak Cretaceous warmth. Nature 2020;580:81-86",
-          "url": "https://www.nature.com/articles/s41586-020-2148-9",
+          "url": "https://www.nature.com/articles/s41586-020-2148-5",
           "type": "paper"
         },
         {
