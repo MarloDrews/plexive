@@ -1,0 +1,241 @@
+{
+  "tags": [
+    "evolution",
+    "microbiology",
+    "geology"
+  ],
+  "connections": [
+    {
+      "format": "books",
+      "ref": {
+        "title": "Oxygen: The Molecule that Made the World",
+        "author": "Nick Lane"
+      },
+      "featured": true
+    },
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Endosymbiosis"
+      },
+      "featured": true
+    },
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Photosynthesis"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "The oxygen you breathe first entered the air as a poison, released as waste by microbes 2.4 billion years ago.",
+    "teasers": [
+      "The air turned lethal to almost everything alive",
+      "Why the first pollution may have frozen Earth",
+      "The poisoners still hide inside every leaf"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "The oxygen you breathe first entered the air as a poison, released as waste by microbes 2.4 billion years ago."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><g stroke='currentColor' stroke-width='2' stroke-linecap='round' opacity='0.5'><line x1='55' y1='245' x2='372' y2='245'/><line x1='55' y1='245' x2='55' y2='55'/></g><path d='M66 228 H205' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' opacity='0.7'/><path d='M205 188 H320' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' opacity='0.7'/><path d='M320 188 Q345 180 360 78' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' opacity='0.7'/><path d='M205 228 V188' stroke='var(--accent)' stroke-width='3' stroke-linecap='round'/><line x1='205' y1='245' x2='205' y2='188' stroke='var(--accent)' stroke-width='1.5' opacity='0.4' stroke-dasharray='4 5'/><text x='205' y='150' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>Great</text><text x='205' y='167' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>Oxidation</text><text x='96' y='220' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.75' text-anchor='middle'>no oxygen</text><text x='352' y='66' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='end'>21% today</text><g fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' opacity='0.7' text-anchor='middle'><text x='66' y='262'>4.5</text><text x='205' y='262'>2.4</text><text x='320' y='262'>0.5</text><text x='360' y='262'>now</text></g><text x='213' y='285' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='middle'>billions of years ago</text></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "Picture the Earth before the change. The sky is a methane haze, the oceans are heavy with dissolved iron, and every living thing is a microbe that treats oxygen as a poison. Then one kind of microbe learns to split water for its energy and breathes out oxygen as waste. To the crowd already there, that waste was lethal. Oxygen was the planet's first great pollutant, and it was made by life."
+    },
+    {
+      "type": "tangible",
+      "order": 4,
+      "content": {
+        "items": [
+          "Oxygen stayed a poison for hundreds of millions of years before any life evolved to breathe it.",
+          "Squeeze Earth's 4.5 billion years into one calendar year, and oxygen floods in around late June, with animals nowhere until November.",
+          "Even after the flood, the air held only a tiny fraction of today's oxygen for more than a billion more years."
+        ],
+        "visual_svg": "<svg viewBox='0 0 400 200' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='34' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.8' text-anchor='middle'>Earth's history as one year</text><rect x='30' y='96' width='340' height='30' rx='8' stroke='currentColor' stroke-width='2' opacity='0.5'/><line x1='190' y1='88' x2='190' y2='134' stroke='var(--accent)' stroke-width='3' stroke-linecap='round'/><text x='190' y='78' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>oxygen</text><text x='190' y='152' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' text-anchor='middle'>late Jun</text><line x1='326' y1='96' x2='326' y2='126' stroke='currentColor' stroke-width='2' opacity='0.7' stroke-linecap='round'/><text x='326' y='152' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.8' text-anchor='middle'>animals</text><text x='30' y='152' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.65' text-anchor='start'>Jan</text><text x='370' y='152' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.65' text-anchor='end'>Dec</text></svg>"
+      }
+    },
+    {
+      "type": "how_we_know",
+      "order": 5,
+      "content": "The date is not a guess. It is read out of the sulfur in old rock. Before oxygen, ultraviolet light reached down and split sulfur gas in the open air, leaving a faint isotope fingerprint that only forms with no ozone shield overhead. Once oxygen built that shield, the fingerprint stopped forming. It is there in rock older than about 2.4 billion years and gone from anything younger. That sharp cutoff is when the air changed."
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "Every leaf still runs on the first poisoners",
+          "body": "The story has a twist you can see in a salad. The cyanobacteria that first fouled the air were never wiped out. One of them was swallowed whole by a larger cell. Instead of being digested, it stayed on as a tenant, still splitting water and making sugar. That captive became the chloroplast. Every green cell in every plant and alga runs on the descendants of the microbes that once poisoned the world.",
+          "visual_svg": "<svg viewBox='0 0 400 230' xmlns='http://www.w3.org/2000/svg' fill='none'><ellipse cx='258' cy='120' rx='108' ry='78' stroke='currentColor' stroke-width='2.5'/><ellipse cx='60' cy='120' rx='30' ry='20' stroke='currentColor' stroke-width='2.5' opacity='0.8'/><g stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' opacity='0.55'><path d='M96 120 H150'/><path d='M150 120 l-11 -6 m11 6 l-11 6'/></g><ellipse cx='262' cy='120' rx='46' ry='30' stroke='var(--accent)' stroke-width='2.5'/><g stroke='var(--accent)' stroke-width='2' stroke-linecap='round' opacity='0.85'><path d='M238 112 H286'/><path d='M238 120 H286'/><path d='M238 128 H286'/></g><g font-family='var(--font-sans), system-ui, sans-serif' text-anchor='middle'><text x='60' y='162' fill='currentColor' font-size='13' font-weight='600' opacity='0.8'>microbe</text><text x='258' y='30' fill='currentColor' font-size='13' font-weight='600' opacity='0.8'>host cell</text><text x='262' y='185' fill='var(--accent)' font-size='14' font-weight='700'>chloroplast</text></g></svg>"
+        },
+        {
+          "title": "Oxygen may have frozen the whole planet solid",
+          "body": "Oxygen did more than poison the microbes. It attacked methane, the thick greenhouse gas that had kept a fainter young Sun from letting Earth freeze. As oxygen scrubbed the methane from the air, the warming blanket thinned. The world slid into the Huronian glaciation, perhaps the longest deep freeze in its history. The first great pollution may also have set off the first snowball Earth."
+        },
+        {
+          "title": "Rusted oceans became the world's iron mines",
+          "body": "The iron did not vanish. It settled. As oxygen rusted the seas, iron oxides sank in fine layers, building the banded iron formations that streak red and black through ancient rock. Almost all the iron ore mined today comes from these beds, formed during the great rusting. The steel in a car or a bridge is, in a real sense, dug out of the planet's first oxygen crisis.",
+          "image_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Banded_iron_formation_Dales_Gorge.jpg",
+          "image_caption": "A banded iron formation at Dales Gorge, Western Australia: dark iron oxides laid down when oxygen first rusted the ancient seas.",
+          "image_attribution": "Graeme Churchard, “Banded iron formation Dales Gorge”, CC BY 2.0 (Wikimedia Commons)"
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "Life did not just survive the poison. Some of it learned to run on the poison, and that changed everything. Burning food with oxygen releases far more energy than the old airless chemistry ever could, about 15 times as much from the same meal. That surplus is what large, fast, hungry bodies are built on, animals and us among them. We descend from the microbes that caused the catastrophe and then turned it into an engine. The same gas still corrodes us from within, the slow rust we call aging. We cannot go a few minutes without it."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "Why was the arrival of oxygen a catastrophe for life at the time?",
+          "options": [
+            "It made the planet far too hot to live on",
+            "Almost all life was anaerobic, and oxygen was toxic to it",
+            "It blocked sunlight from reaching the ocean surface",
+            "It was so heavy it smothered the microbes"
+          ],
+          "answer_index": 1,
+          "explanation": "Life had evolved for over a billion years without free oxygen, and to those anaerobic microbes the gas was corrosive and lethal. The same molecule that later powered animals first acted as a poison."
+        },
+        {
+          "question": "Where did that early oxygen come from?",
+          "options": [
+            "It was a waste product of microbes that split water for energy",
+            "It leaked up from volcanoes deep in the crust",
+            "It was delivered by comets and asteroids",
+            "It was released as the oceans' dissolved iron rusted"
+          ],
+          "answer_index": 0,
+          "explanation": "Cyanobacteria invented oxygenic photosynthesis, using water as a source of electrons and dumping oxygen as the leftover. It was metabolic garbage long before it was a resource."
+        },
+        {
+          "question": "How can scientists date the oxygen rise to about 2.4 billion years ago?",
+          "options": [
+            "Fossils of the first animals are found in rock that age",
+            "Ice cores preserve a sample of the ancient atmosphere",
+            "A sulfur-isotope fingerprint that needs oxygen-free air disappears from younger rock",
+            "Bubbles of the original air are trapped in the oldest stone"
+          ],
+          "answer_index": 2,
+          "explanation": "That sulfur fingerprint only forms when ultraviolet light can split sulfur gas in an atmosphere with no ozone shield. It is present in older rock and vanishes once oxygen builds that shield, marking the change."
+        },
+        {
+          "question": "Even though microbes made oxygen, why did it take so long to build up in the air?",
+          "options": [
+            "The microbes produced only tiny amounts at first",
+            "Most of the oxygen leaked away into space",
+            "It kept dissolving harmlessly back into the sea",
+            "Dissolved iron and other reducers kept soaking it up for ages"
+          ],
+          "answer_index": 3,
+          "explanation": "The young planet was full of oxygen-hungry material, above all the iron dissolved in the oceans. Only once those sinks were used up could oxygen start to accumulate in the atmosphere."
+        },
+        {
+          "question": "How is the oxygen rise linked to one of Earth's great ice ages?",
+          "options": [
+            "Oxygen destroyed methane, a greenhouse gas, so the planet cooled",
+            "Oxygen reflected sunlight straight back into space",
+            "Oxygen hung as a haze that blocked the Sun's warmth",
+            "Oxygen is a heavy gas that traps less heat than air"
+          ],
+          "answer_index": 0,
+          "explanation": "Methane was keeping the young, dim Sun's Earth warm. When oxygen reacted the methane away, the greenhouse weakened and the world plunged into the long Huronian glaciation."
+        },
+        {
+          "question": "What became of the microbes that first made the oxygen?",
+          "options": [
+            "They died out entirely in the freeze that followed",
+            "Their descendants live on inside plant cells as chloroplasts",
+            "They evolved directly into the first animals",
+            "They survive only around deep-sea vents today"
+          ],
+          "answer_index": 1,
+          "explanation": "A cyanobacterium was taken up by a larger cell and kept rather than digested, becoming the chloroplast. Every plant and alga still photosynthesises using the offspring of the original polluters."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "The Great Oxidation gave Earth the breathable, 21% oxygen air we have today.",
+          "reality": "It did not. Oxygen climbed from almost nothing to a small fraction of today's level, then stalled there for more than a billion years. Air you could actually breathe came much later, around 500 million years ago."
+        },
+        {
+          "myth": "Cyanobacteria are a kind of algae or plant.",
+          "reality": "They are bacteria, single cells with no nucleus. The old name “blue-green algae” has stuck, but algae are a wholly different, more complex branch of life."
+        },
+        {
+          "myth": "The microbes made oxygen so that later life could breathe.",
+          "reality": "Nothing was planned. Oxygen was waste, and it was poison first. Breathing it was a much later improvisation by life that had to adapt or die out."
+        }
+      ]
+    },
+    {
+      "type": "open_questions",
+      "order": 12,
+      "content": {
+        "body": "The date is firm, but a lot around it is not. How high oxygen actually climbed at the event is still argued, with estimates spread across orders of magnitude. Just as puzzling is why it then stalled at a low level for over a billion years before the second rise that complex life needed.",
+        "items": [
+          "How much oxygen did the event really produce, when estimates still span orders of magnitude?",
+          "Why did oxygen stall for more than a billion years before rising again?",
+          "Did cyanobacteria invent oxygen-making long before the event, or only just before it?"
+        ]
+      }
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Olejarz J, Iwasa Y, Knoll AH, Nowak MA. The Great Oxygenation Event as a consequence of ecological dynamics modulated by planetary change. Nature Communications 2021;12:3985",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8238953/",
+          "type": "paper"
+        },
+        {
+          "label": "Farquhar J, Bao H, Thiemens M. Atmospheric influence of Earth's earliest sulfur cycle. Science 2000;289:756-758",
+          "url": "https://www.science.org/doi/10.1126/science.289.5480.756",
+          "type": "paper"
+        },
+        {
+          "label": "Great Oxidation Event",
+          "url": "https://en.wikipedia.org/wiki/Great_Oxidation_Event",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Huronian glaciation",
+          "url": "https://en.wikipedia.org/wiki/Huronian_glaciation",
+          "type": "wikipedia"
+        },
+        {
+          "label": "The Great Oxidation Event: How Cyanobacteria Changed Life (American Society for Microbiology, 2022)",
+          "url": "https://asm.org/articles/2022/february/the-great-oxidation-event-how-cyanobacteria-change",
+          "type": "article"
+        },
+        {
+          "label": "Chloroplast (origin by endosymbiosis)",
+          "url": "https://en.wikipedia.org/wiki/Chloroplast",
+          "type": "wikipedia"
+        }
+      ]
+    }
+  ]
+}
