@@ -10,21 +10,24 @@ See CROSS_POST_VARIANCE.md for the format.
 
 ### Reframe opener
 - longer-sentence reversal (belief carried into a long sentence) - 3
-- mid-scene concrete open (lead on the fact, no flat belief-then-punch) - 2
+- mid-scene concrete open (lead on the fact, no flat belief-then-punch) - 3
+- flat declarative on the headline fact/number (gold-style, no reversal or imperative) - 1
 - staccato reversal punch (flat belief, then a 3-6 word negation) - 1
 - number-first mismatch (lead on the number gap) - 1
 - concrete-test / behavioral-mirror open - 1
-- object-in-hand imperative - 1
+- object-in-hand imperative - 2
 - accounting "start with" reframe - 1
 
 ### Closing line
 - deep-time / long-duration aphorism - 2
 - spatial / elemental image - 1
 - identity / boundary reflection - 2
-- quiet-utility, present-day consequence - 2
+- quiet-utility, present-day consequence - 3
 - elevated "written across/into [X]" aphorism - 1
 - concrete callback to the opening object - 1
+- flat callback to the opener motif - 1
 - measured causal present-day (tied to the cause) - 1
+- present-day, mildly urgent (loss outpacing knowledge) - 1
 
 ### Story pivot
 - "the explanation waited until [year], when [role] [Name]" - 1
@@ -36,9 +39,15 @@ See CROSS_POST_VARIANCE.md for the format.
 - discoverer + confirmer, replication holds - 1
 - old prediction, dated confirmation ("the case broke open on [date]") - 1
 - process/recovery narrative (get the sample, then read it) - 1
-- heresy then vindication (defended for years, then proof) - 1
+- heresy then vindication (defended for years, then proof) - 2
+- eureka scene, discoverer's reaction, no vindication arc - 1
 
 ## Recent batches
+
+### 2026-07-04-b
+- mirror-image: opener object-in-hand imperative (batch keeper) / close flat callback to opener motif ("stopped being a footnote") / pivot eureka scene, discoverer's reaction (Pasteur to Biot)
+- oxygen: opener mid-scene concrete (scene-first, frame lands after) / close quiet-utility present-day ("cannot go a few minutes without it") / pivot none (no story section)
+- mycorrhizal: opener flat declarative on the headline fact ("a teaspoon of soil can hold...") / close present-day, mildly urgent (loss outpacing knowledge) / pivot heresy then vindication + later confirmer (Frank dismissed, right; Simard confirms)
 
 ### 2026-07-04-a
 - quantum: opener number-first mismatch / close elevated "written across" aphorism (batch keeper) / pivot relay across several actors
