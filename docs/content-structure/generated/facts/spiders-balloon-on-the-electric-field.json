@@ -38,14 +38,14 @@
     {
       "type": "surprises",
       "order": 3,
-      "content": "A spider with no wings has been lifted from the air almost five kilometers up, over open ocean, hundreds of miles from the nearest land. It did not stow away on a bird or a boat. It flew there. For a long time the answer was wind, spiders casting out silk and catching a breeze like a kite. Wind is part of it. But spiders also balloon on days too still for a kite, and they take off straight up. The lift comes from somewhere else: the electric field of the planet itself. A faint charge hangs between the ground and the sky, and the spider rides it."
+      "content": "A spider with no wings has been lifted almost five kilometers into the air. Others have turned up over open ocean, hundreds of miles from the nearest land. They did not stow away on a bird or a boat. They flew there. For a long time the answer was wind, spiders casting out silk and catching a breeze like a kite. Wind is part of it. But spiders also balloon on days too still for a kite, and they take off straight up. The lift comes from somewhere else: the electric field of the planet itself. A faint charge hangs between the ground and the sky, and the spider rides it."
     },
     {
       "type": "tangible",
       "order": 4,
       "content": {
         "items": [
-          "The spiders that boarded Darwin's ship had crossed at least 100 kilometers of open water.",
+          "The spiders that boarded Darwin's ship had crossed nearly 100 kilometers of open water.",
           "Aircraft and weather balloons have collected ballooning spiders nearly 5 kilometers up, about the height of an Alpine summit.",
           "Most of these travelers are 2 to 3 millimeters across, lighter than a raindrop."
         ],
