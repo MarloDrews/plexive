@@ -32,7 +32,7 @@
     "headline": "The oxygen you breathe first entered the air as a poison, released as waste by microbes 2.4 billion years ago.",
     "teasers": [
       "The air turned lethal to almost everything alive",
-      "Why the first pollution may have frozen Earth",
+      "The first pollution may have frozen the whole planet",
       "The poisoners still hide inside every leaf"
     ],
     "post_difficulty": 2
@@ -53,7 +53,7 @@
     {
       "type": "surprises",
       "order": 3,
-      "content": "Picture the Earth before the change. The sky is a methane haze, the oceans are heavy with dissolved iron, and every living thing is a microbe that treats oxygen as a poison. Then one kind of microbe learns to split water for its energy and breathes out oxygen as waste. To the crowd already there, that waste was lethal. Oxygen was the planet's first great pollutant, and it was made by life."
+      "content": "The sky is a methane haze, the oceans are heavy with dissolved iron, and every living thing is a microbe that treats oxygen as a poison. That is the Earth just before the change. Then one kind of microbe learns to split water for its energy and breathes out oxygen as waste. To the crowd already there, that waste was lethal. Oxygen was the planet's first great pollutant, and it was made by life."
     },
     {
       "type": "tangible",
@@ -83,11 +83,11 @@
         },
         {
           "title": "Oxygen may have frozen the whole planet solid",
-          "body": "Oxygen did more than poison the microbes. It attacked methane, the thick greenhouse gas that had kept a fainter young Sun from letting Earth freeze. As oxygen scrubbed the methane from the air, the warming blanket thinned. The world slid into the Huronian glaciation, perhaps the longest deep freeze in its history. The first great pollution may also have set off the first snowball Earth."
+          "body": "Oxygen did more than poison the microbes. It attacked methane, the thick greenhouse gas that had kept a fainter young Sun from letting Earth freeze. As oxygen scrubbed the methane from the air, the warming blanket thinned. The world slid into the Huronian glaciation, perhaps the longest deep freeze in its history."
         },
         {
           "title": "Rusted oceans became the world's iron mines",
-          "body": "The iron did not vanish. It settled. As oxygen rusted the seas, iron oxides sank in fine layers, building the banded iron formations that streak red and black through ancient rock. Almost all the iron ore mined today comes from these beds, formed during the great rusting. The steel in a car or a bridge is, in a real sense, dug out of the planet's first oxygen crisis.",
+          "body": "The iron did not vanish. It settled. As oxygen rusted the seas, iron oxides sank in fine layers, building the banded iron formations that streak red and black through ancient rock. Almost all the iron ore mined today comes from these beds, formed during the great rusting. The steel in a car or a bridge is smelted from iron that oxygen rusted out of the ancient seas.",
           "image_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Banded_iron_formation_Dales_Gorge.jpg",
           "image_caption": "A banded iron formation at Dales Gorge, Western Australia: dark iron oxides laid down when oxygen first rusted the ancient seas.",
           "image_attribution": "Graeme Churchard, “Banded iron formation Dales Gorge”, CC BY 2.0 (Wikimedia Commons)"
@@ -97,7 +97,7 @@
     {
       "type": "bigger_picture",
       "order": 9,
-      "content": "Life did not just survive the poison. Some of it learned to run on the poison, and that changed everything. Burning food with oxygen releases far more energy than the old airless chemistry ever could, about 15 times as much from the same meal. That surplus is what large, fast, hungry bodies are built on, animals and us among them. We descend from the microbes that caused the catastrophe and then turned it into an engine. The same gas still corrodes us from within, the slow rust we call aging. We cannot go a few minutes without it."
+      "content": "Life did not just survive the poison. Some of it learned to run on the poison, and that changed everything. Burning food with oxygen releases far more energy than the old airless chemistry ever could, about 15 times as much from one meal. That surplus is what large, fast, hungry bodies are built on, animals and us among them. We descend from the microbes that caused the catastrophe and then turned it into an engine. That gas still corrodes us from within, the slow rust we call aging. We cannot go a few minutes without it."
     },
     {
       "type": "quiz",
@@ -193,9 +193,9 @@
       "type": "open_questions",
       "order": 12,
       "content": {
-        "body": "The date is firm, but a lot around it is not. How high oxygen actually climbed at the event is still argued, with estimates spread across orders of magnitude. Just as puzzling is why it then stalled at a low level for over a billion years before the second rise that complex life needed.",
+        "body": "The date is firm. What the oxygen level actually reached, and why it then sat low for so long, are still open questions. The line is sharp, the map around it is not.",
         "items": [
-          "How much oxygen did the event really produce, when estimates still span orders of magnitude?",
+          "How high the oxygen actually climbed is still uncertain, with estimates spread across orders of magnitude.",
           "Why did oxygen stall for more than a billion years before rising again?",
           "Did cyanobacteria invent oxygen-making long before the event, or only just before it?"
         ]
