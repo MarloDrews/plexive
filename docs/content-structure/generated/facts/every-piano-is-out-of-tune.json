@@ -89,7 +89,7 @@
       "content": [
         {
           "title": "A violin can do what a piano can't",
-          "body": "A piano is a grid of fixed pitches. Once it is tuned, the player cannot bend a note. A violinist, a trombonist, or a singer has no frets and no fixed keys, so they slide each note to wherever it sounds sweetest. A good string quartet or a barbershop chorus drifts toward pure intervals as they play, thirds and fifths locking in with no beating. A keyboard is stuck with the compromise. A violin is free of it."
+          "body": "A piano is a grid of fixed pitches. Once it is tuned, the player cannot bend a note. A violinist, a trombonist, or a singer has no frets and no fixed keys, so they slide each note to wherever it sounds sweetest. A good string quartet or a barbershop chorus drifts toward pure intervals as they play, thirds and fifths locking in with no beating. A keyboard is stuck with the compromise a violinist can slide right past."
         },
         {
           "title": "The error has to go somewhere",
@@ -101,7 +101,7 @@
     {
       "type": "bigger_picture",
       "order": 9,
-      "content": "The piano did not lose a battle with physics. It made a bargain. You cannot tune a fixed keyboard so that octaves, fifths, and thirds stay pure all at once. The numbers forbid it. Music took the small, even wrongness and made it the standard, and every one of the twelve keys became equally playable. Perfect tuning would have locked you into a single key. What sounds slightly off is what set music free to go anywhere."
+      "content": "The piano did not lose a battle with physics. It made a bargain. You cannot tune a fixed keyboard so that octaves, fifths, and thirds stay pure all at once. The numbers forbid it. Music took the small, even wrongness and made it the standard, and every one of the twelve keys became equally playable. Perfect tuning would have locked you into a single key. The slight flatness in every fifth is the price of playing in all twelve."
     },
     {
       "type": "quiz",
@@ -180,7 +180,7 @@
       "order": 11,
       "content": [
         {
-          "myth": "Bach wrote The Well-Tempered Clavier to show off equal temperament.",
+          "myth": "Bach wrote *The Well-Tempered Clavier* to show off equal temperament.",
           "reality": "He called it well-tempered, not equal-tempered. Those tunings let every key be played, but each key kept its own color, the very thing equal temperament later flattened away."
         },
         {
