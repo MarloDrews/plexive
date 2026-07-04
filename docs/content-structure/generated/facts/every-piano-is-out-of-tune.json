@@ -213,9 +213,9 @@
           "type": "article"
         },
         {
-          "label": "Indiana University Jacobs School of Music, Piano Technology: Equal Temperament and beat rates",
-          "url": "https://intranet.music.indiana.edu/departments/offices/piano-technology/temperaments/equal-temperament.html",
-          "type": "article"
+          "label": "Piano tuning (equal temperament and setting fifths by counting beats)",
+          "url": "https://en.wikipedia.org/wiki/Piano_tuning",
+          "type": "wikipedia"
         },
         {
           "label": "Well temperament (and Bach's Well-Tempered Clavier)",
