@@ -25,7 +25,7 @@
     "headline": "The Mediterranean Sea dried up almost completely, then the Atlantic refilled it in under two years.",
     "teasers": [
       "The salt a 1970 drill ship struck",
-      "A flood that ran a thousand Amazons",
+      "A flood that ran up to a thousand Amazons",
       "What sealed the door to the Atlantic"
     ],
     "post_difficulty": 2
@@ -54,7 +54,7 @@
       "content": {
         "items": [
           "It took the sea roughly 600,000 years to dry out, and under two years for the Atlantic to put most of the water back.",
-          "At the peak, the gap at Gibraltar carried about a thousand times the flow of the Amazon.",
+          "At the peak, the gap at Gibraltar carried hundreds to about a thousand times the flow of the Amazon.",
           "Inside the basin the water rose more than 10 meters a day, the height of a three-storey building."
         ],
         "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><line x1='56' y1='56' x2='56' y2='250' stroke='currentColor' stroke-width='2' opacity='0.5' stroke-linecap='round'/><line x1='56' y1='250' x2='362' y2='250' stroke='currentColor' stroke-width='2' opacity='0.5' stroke-linecap='round'/><line x1='56' y1='68' x2='350' y2='68' stroke='currentColor' stroke-width='1.5' opacity='0.3' stroke-dasharray='6 6' stroke-linecap='round'/><text x='62' y='62' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='start'>full</text><path d='M56 250 C 92 176 120 116 168 102 C 232 86 300 82 344 82' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/><circle cx='344' cy='82' r='4' fill='var(--accent)'/><text x='340' y='120' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='end'>90% refilled</text><text x='210' y='276' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>months to 2 years</text><text x='32' y='152' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle' transform='rotate(-90 32 152)'>basin filled</text></svg>"
@@ -151,10 +151,10 @@
             "Roughly equal to the Amazon",
             "About ten times the Amazon",
             "Less than the Nile in flood",
-            "Around a thousand times the discharge of the Amazon"
+            "Hundreds to about a thousand times the discharge of the Amazon"
           ],
           "answer_index": 3,
-          "explanation": "The peak discharge, on the order of 100 million cubic meters a second, was about three orders of magnitude beyond the Amazon, the largest river flowing today."
+          "explanation": "The peak discharge, on the order of 100 million cubic meters a second, was hundreds to about a thousand times the flow of the Amazon, the largest river flowing today."
         },
         {
           "question": "What happened to Mediterranean sea life across the crisis?",
