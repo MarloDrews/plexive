@@ -131,3 +131,63 @@ sources. Each entry stays `open` until a researcher confirms or resolves it.
 - finding: 2026-07-04-b correctness review re-confirmed the post has no sourced/licensed photograph (all four visuals are hand-drawn SVG). Same gap as the 2026-07-03-c entry above; a licensed photo of a Roman marine structure (e.g. Portus Cosanus pier) or an Al-tobermorite micrograph would give the eye a rest per IMAGE_STANDARD.
 - needs: same as the 2026-07-03-c item; fresh research to locate, license-verify, and attribute a real image (do not invent a URL). Deferred because it requires a new sourced asset, not a mechanical edit.
 - added: 2026-07-04, 2026-07-04-b
+
+### mirror-image-molecules
+- status: open
+- finding: MUST-FIX. The sources list points the 1992 FDA policy citation ("Development of New Stereoisomeric Drugs") at https://www.fda.gov/regulatory-information/search-fda-guidance-documents/development-new-stereoisomeric-drugs, which returns HTTP 404 (dead, not merely bot-blocked). The sources section is required to carry reachable URLs. The underlying 1992 FDA policy is real and widely cited, so this is a URL relocation, not a fabrication.
+- needs: a working FDA page for the 1992 stereoisomeric-drugs policy, or a Federal Register / Chirality (1992) citation to replace the dead link. Deferred because supplying a valid replacement URL requires a live source lookup, not a mechanical edit; the post is unchanged.
+- added: 2026-07-04, 2026-07-04-c
+
+### every-piano-is-out-of-tune
+- status: open
+- finding: sources are Wikipedia-heavy (4 of 5: Pythagorean comma, Equal temperament, Piano tuning, Well temperament; only Kyle Gann's tuning page is a non-aggregator). The skeleton prefers primary sources; a scholarly temperament reference would strengthen the citation set.
+- needs: a scholarly temperament/tuning reference to reduce Wikipedia reliance. Deferred because adding a new source requires research, not a mechanical edit; the post is unchanged.
+- added: 2026-07-04, 2026-07-04-c
+
+### oxygen-was-a-poison
+- status: open
+- finding: the Farquhar 2000 sulfur mass-independent-fractionation source (https://www.science.org/doi/10.1126/science.289.5480.756) 403-blocks automated fetch. Real paper; it is the specific source for the how_we_know sulfur-isotope dating mechanism, so a reachable equivalent would let readers verify that claim.
+- needs: a reachable PubMed / DOI / PMC equivalent for Farquhar et al. 2000. Deferred because sourcing a replacement URL requires a live lookup, not a mechanical edit; the post is unchanged.
+- added: 2026-07-04, 2026-07-04-c
+
+### when-the-mediterranean-dried-up
+- status: open
+- finding: two nature.com article links bot-block (303-redirect to idp.nature.com): Krijgsman 1999 (nature.com/articles/23231) and the Nature Reviews Earth & Environment 2024 MSC review (nature.com/articles/s43017-024-00533-1). Separately, angles[1] states turnover "above 30% in every group, from plankton to whales"; Agiadi 2024's load-bearing figure (only 86 endemic species survived) is confirmed, but the specific "above 30% in every group" and the span "to whales" (marine mammals) are not confirmable from the abstract/press, which report 66.8% overall dissimilarity across "nannoplankton to marine animals".
+- needs: reachable PubMed/DOI equivalents for Krijgsman 1999 and the NatRev 2024 review, and a check of the "above 30% in every group, to whales" claim against the full Agiadi 2024 paper before shipping the strong per-group wording. Deferred because both require live source access; the post is unchanged.
+- added: 2026-07-04, 2026-07-04-c
+
+### fossil-viruses-in-your-dna
+- status: open
+- finding: story features Howard Temin and David Baltimore (both Nobel laureates) with no image_url. Optional for a typographic Facts post; a verified free portrait would earn its place.
+- needs: fresh research to locate, license-verify, and attribute a freely licensed portrait genuinely of Temin or Baltimore (do not invent a URL). Deferred because it requires a new sourced asset, not a mechanical edit.
+- added: 2026-07-04, 2026-07-04-c
+
+### gold-is-older-than-the-sun
+- status: open
+- finding: story features Margaret Burbidge (featured) and Fred Hoyle with no image. A freely licensed portrait of Burbidge plausibly exists and would anchor the story. Optional for a Facts post.
+- needs: fresh research to locate, license-verify, and attribute a freely licensed portrait genuinely of Margaret Burbidge (do not invent a URL). Deferred because it requires a new sourced asset, not a mechanical edit.
+- added: 2026-07-04, 2026-07-04-c
+
+### quantum-tunneling-powers-the-sun
+- status: open
+- finding: story names Eddington, Gamow, and Bethe with no images; public-domain portraits of Eddington and Gamow plausibly exist on Wikimedia. Optional for an abstract Facts subject.
+- needs: fresh research to locate, license-verify, and attribute a public-domain portrait genuinely of Eddington or Gamow (do not invent a URL). Deferred because it requires a new sourced asset, not a mechanical edit.
+- added: 2026-07-04, 2026-07-04-c
+
+### scurvy-reopens-old-wounds
+- status: open
+- finding: the post carries a verified James Lind portrait but no illustrative image of the concrete subject (citrus, or a historical scurvy plate). A freely licensed citrus image would give a second rest. Optional, low priority.
+- needs: fresh research to locate, license-verify, and attribute a freely licensed citrus or historical scurvy image (do not invent a URL). Deferred because it requires a new sourced asset, not a mechanical edit.
+- added: 2026-07-04, 2026-07-04-c
+
+### spiders-balloon-on-the-electric-field
+- status: open
+- finding: the post carries one licensed gossamer-silk photo but no image of a spider in the silk-releasing "tiptoe" posture. Freely licensed Wikimedia spiderling images plausibly exist. Optional; much of the subject is abstract and the gossamer image already rests the eye.
+- needs: fresh research to locate, license-verify, and attribute a freely licensed image of a ballooning spider (do not invent a URL). Deferred because it requires a new sourced asset, not a mechanical edit.
+- added: 2026-07-04, 2026-07-04-c
+
+### antarctica-was-a-rainforest
+- status: open
+- finding: the 90-Ma landscape cannot be photographed and the Nature core photos are copyrighted, so zero images is defensible. A CC photo of the icebreaker Polarstern (named in the story) exists but is only tangential to the fact itself. Marginal, not required.
+- needs: fresh research to locate, license-verify, and attribute a freely licensed Polarstern photo if a fitting one is wanted (do not invent a URL). Deferred because it requires a new sourced asset, not a mechanical edit.
+- added: 2026-07-04, 2026-07-04-c
