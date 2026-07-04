@@ -119,12 +119,12 @@
         {
           "question": "How do a child's cells end up inside the mother?",
           "options": [
-            "They are injected during delivery",
             "They cross the placenta during pregnancy, and some are never cleared",
+            "They are injected during delivery",
             "The mother inhales them from the newborn",
             "They form spontaneously from the mother's own stem cells"
           ],
-          "answer_index": 1,
+          "answer_index": 0,
           "explanation": "During pregnancy, fetal cells pass through the placenta into the mother's blood. Most are cleared, but a few settle into her tissues and stay for years."
         },
         {
