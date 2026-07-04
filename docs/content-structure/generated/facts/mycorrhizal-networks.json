@@ -55,7 +55,7 @@
     {
       "type": "surprises",
       "order": 3,
-      "content": "Scoop a teaspoon of soil and you may be holding 10 metres of fungal thread, coiled too fine to see. Pull back and the picture rearranges. The trees you were looking at are not separate organisms standing in dirt. Each one has handed most of its underground foraging to fungi, paying in sugar for the water and minerals they haul back. What you call a root system is, in large part, not the plant's roots at all."
+      "content": "A teaspoon of soil can hold 10 metres of fungal thread, coiled too fine to see. Pull back and the picture rearranges. The trees you were looking at are not separate organisms standing in dirt. Each one has handed most of its underground foraging to fungi, paying in sugar for the water and minerals they haul back. What you call a root system is, in large part, not the plant's roots at all."
     },
     {
       "type": "tangible",
@@ -107,7 +107,7 @@
       "content": [
         {
           "title": "Plants pay their best fungal partners more",
-          "body": "The trade is not sentimental. Given several fungal strains at once, a plant sends the most sugar to the one delivering the most phosphorus, and the fungi push more phosphorus toward whichever roots pay best. Starve a partner and it withholds. Reward it and it delivers. Each side can sense a bad deal and pull back.",
+          "body": "The trade is transactional. Given several fungal strains at once, a plant sends the most sugar to the one delivering the most phosphorus, and the fungi push more phosphorus toward whichever roots pay best. Starve a partner and it withholds. Reward it and it delivers. Each side can sense a bad deal and pull back.",
           "visual_svg": "<svg viewBox='0 0 400 220' xmlns='http://www.w3.org/2000/svg' fill='none'><rect x='40' y='80' width='110' height='60' rx='16' stroke='currentColor' stroke-width='2.5'/><rect x='250' y='80' width='110' height='60' rx='16' stroke='currentColor' stroke-width='2.5'/><text x='95' y='116' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='700' text-anchor='middle'>plant</text><text x='305' y='116' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='700' text-anchor='middle'>fungus</text><path d='M150 100 H250' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><path d='M250 100 l-10 -6 m10 6 l-10 6' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/><text x='200' y='90' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>sugar</text><path d='M250 128 H150' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' opacity='0.7'/><path d='M150 128 l10 -6 m-10 6 l10 6' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' opacity='0.7'/><text x='200' y='150' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' text-anchor='middle' opacity='0.85'>phosphorus</text><text x='200' y='192' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>best partners paid most</text></svg>"
         },
         {
@@ -124,7 +124,7 @@
     {
       "type": "bigger_picture",
       "order": 9,
-      "content": "Step back far enough and the tidy outline of a single plant blurs. This arrangement is old. For more than 400 million years, land life has run on it, trading sugar from sunlight for a foraging service older than roots and leaves. Popular books turned that into a tale of friendship and talking trees. The ledger underneath is plainer and stranger: a market with no manager that most of the living world leans on. The same global map that measured its scale also measured its loss, with croplands running about half as dense as wild soil. We are tearing the network up faster than we can read it."
+      "content": "Step back far enough and the tidy outline of a single plant blurs. This arrangement is old. For more than 400 million years, land life has run on it, trading sugar from sunlight for a foraging service older than roots and leaves. Popular books turned that into a tale of friendship among the trees. The ledger underneath is plainer and stranger: a market with no manager that most of the living world leans on. The map that measured its scale also measured its loss, with croplands running about half as dense as wild soil. We are tearing the network up faster than we can read it."
     },
     {
       "type": "quiz",
@@ -208,7 +208,7 @@
         },
         {
           "myth": "The fungus helps the plant out of a kind of cooperation.",
-          "reality": "It is a trade under constant pressure. Each side supplies more only when the other pays, and gets shortchanged the moment it stops."
+          "reality": "It is a trade under constant pressure, each side supplying more only when the other pays and getting shortchanged the moment it stops."
         },
         {
           "myth": "All those threads in the soil are the tree's own roots.",
@@ -224,7 +224,7 @@
         "items": [
           "How much carbon or nutrient really moves between grown trees in the wild, and does it matter to the forest?",
           "Is there any true kin recognition or warning signal, or was that a leap from thin data?",
-          "What does the forest-tree web look like across the whole planet, still unmapped?"
+          "The shape of the forest-tree web across the whole planet is still unmapped."
         ]
       }
     },
