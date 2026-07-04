@@ -1,0 +1,246 @@
+{
+  "tags": [
+    "chemistry",
+    "medicine",
+    "history-of-science"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Chirality"
+      },
+      "featured": true
+    },
+    {
+      "format": "books",
+      "ref": {
+        "title": "Dark Remedy",
+        "author": "Trent Stephens and Rock Brynner"
+      },
+      "featured": true
+    },
+    {
+      "format": "questions",
+      "ref": {
+        "title": "Why is life built from a single molecular hand?"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "A molecule and its mirror image share every atom, yet one form of thalidomide was a mild sedative and the other caused about 10,000 birth defects.",
+    "teasers": [
+      "Spearmint and caraway are the same molecule",
+      "Why isolating the safe form would not help",
+      "The crystals Pasteur pulled apart by hand"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "A molecule and its mirror image share every atom, yet one form of thalidomide was a mild sedative and the other caused about 10,000 birth defects."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='34' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='600' opacity='0.8' text-anchor='middle'>Mirror images, same atoms</text><line x1='200' y1='74' x2='200' y2='222' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round' stroke-dasharray='2 10'/><text x='200' y='246' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.7' text-anchor='middle'>mirror</text><g stroke='currentColor' stroke-width='2.5' stroke-linecap='round'><line x1='110' y1='158' x2='110' y2='118'/><line x1='110' y1='158' x2='68' y2='146'/><line x1='110' y1='158' x2='140' y2='196'/><line x1='110' y1='158' x2='80' y2='198'/></g><g fill='currentColor'><circle cx='110' cy='158' r='4'/><circle cx='110' cy='114' r='3.5'/><circle cx='64' cy='144' r='3.5'/><circle cx='144' cy='200' r='3.5'/><circle cx='76' cy='202' r='3.5'/></g><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'><text x='110' y='105'>N</text><text x='50' y='142'>O</text><text x='156' y='206'>H</text><text x='62' y='207'>C</text></g><text x='104' y='278' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.75' text-anchor='middle'>left-handed</text><g stroke='currentColor' stroke-width='2.5' stroke-linecap='round'><line x1='290' y1='158' x2='290' y2='118'/><line x1='290' y1='158' x2='332' y2='146'/><line x1='290' y1='158' x2='260' y2='196'/><line x1='290' y1='158' x2='320' y2='198'/></g><g fill='currentColor'><circle cx='290' cy='158' r='4'/><circle cx='290' cy='114' r='3.5'/><circle cx='336' cy='144' r='3.5'/><circle cx='256' cy='200' r='3.5'/><circle cx='324' cy='202' r='3.5'/></g><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'><text x='290' y='105'>N</text><text x='350' y='142'>O</text><text x='244' y='206'>H</text><text x='338' y='207'>C</text></g><text x='296' y='278' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.75' text-anchor='middle'>right-handed</text></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "Take a molecule and its mirror image. Every atom is the same, joined in the same order, the two as alike as your left hand and your right. Drop them in a beaker and no instrument tells them apart. They melt at the same temperature and weigh the same to the last decimal. The body is a stricter judge. It runs almost entirely on single-handed parts, and a receptor shaped to fit one mirror-form will not close on its twin. The body reads a handedness no instrument can."
+    },
+    {
+      "type": "story",
+      "order": 7,
+      "content": {
+        "body": "In 1848 a 26-year-old chemist named Louis Pasteur sat over a microscope in Paris, sorting the crusty tartrate crystals that settle in wine casks. Two forms of the salt shared the same formula, yet one twisted polarized light while the other did nothing. Nobody could say why. Looking closer, Pasteur found the inert form was not one crystal but two, mirror images with facets angled left on some and right on the rest. He sorted them by hand with a fine pair of tweezers, a heap of left and a heap of right, and dissolved each on its own. The two piles bent light in opposite directions by the same amount: one molecule, existing as two shapes built from the same atoms mirrored. He carried it to the aging physicist Jean-Baptiste Biot, who took him by the arm: “My dear child, I have loved science so much in my life that this makes my heart pound.”",
+        "key_figures": [
+          {
+            "name": "Louis Pasteur",
+            "role": "Found molecular handedness",
+            "one_line": "In 1848 he sorted a tartrate salt into left and right crystals that bent light in opposite directions, the first proof that a molecule can come in mirror forms.",
+            "lifespan": "1822-1895",
+            "birth_year": 1822,
+            "featured": true,
+            "image_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Louis_Pasteur%2C_foto_av_Paul_Nadar%2C_Crisco_edit.jpg",
+            "image_attribution": "Paul Nadar, “Louis Pasteur”, public domain (Wikimedia Commons)"
+          }
+        ]
+      }
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "Thalidomide's two hands could not be kept apart",
+          "body": "Thalidomide reached the market in 1957 as a mild sedative, sold in 46 countries and given to pregnant women for morning sickness. Its two mirror-forms are not alike: in the lab the R form calms, while the S form interferes with a growing limb. More than 10,000 children were born with shortened or missing limbs, and roughly 40% did not survive infancy. The cruelty is in the chemistry. In the body the two forms convert into each other within hours. A dose of the pure R form soon carries its share of S, so isolating the safe hand would have changed nothing. There was never a clean version to sell.",
+          "visual_svg": "<svg viewBox='0 0 400 210' xmlns='http://www.w3.org/2000/svg' fill='none'><rect x='38' y='84' width='112' height='72' rx='16' stroke='currentColor' stroke-width='2.5'/><rect x='250' y='84' width='112' height='72' rx='16' stroke='currentColor' stroke-width='2.5'/><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' text-anchor='middle'><text x='94' y='116' font-size='19' font-weight='700'>R</text><text x='94' y='138' font-size='13' opacity='0.8'>sedative</text><text x='306' y='116' font-size='19' font-weight='700'>S</text><text x='306' y='138' font-size='13' opacity='0.8'>harms limbs</text></g><path d='M150 106 Q200 82 250 106' stroke='var(--accent)' stroke-width='2.5' fill='none' stroke-linecap='round'/><path d='M250 106 l-13 -2 m13 2 l-5 12' stroke='var(--accent)' stroke-width='2.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/><path d='M250 134 Q200 158 150 134' stroke='var(--accent)' stroke-width='2.5' fill='none' stroke-linecap='round'/><path d='M150 134 l13 2 m-13 -2 l5 12' stroke='var(--accent)' stroke-width='2.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/><text x='200' y='96' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.8' text-anchor='middle'>in the body</text><text x='200' y='190' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>a pure dose becomes a mix</text></svg>"
+        },
+        {
+          "title": "Your nose already knows the difference",
+          "body": "You have smelled this without knowing it. One molecule, carvone, comes in two mirror-forms: one is the scent of spearmint, the other of caraway and rye bread. Same atoms, opposite hand, and the nose files them as two unrelated smells. It can do that only because the receptors inside your nose are single-handed too, each a pocket that closes on one shape and refuses its reflection. The handedness that is harmless in a spice rack is the same property that made thalidomide two different drugs.",
+          "visual_svg": "<svg viewBox='0 0 400 240' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='30' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='600' opacity='0.8' text-anchor='middle'>A handed lock</text><path d='M56 188 H344' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' opacity='0.55'/><text x='200' y='212' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.65' text-anchor='middle'>receptor surface</text><g fill='currentColor'><circle cx='108' cy='188' r='4'/><circle cx='200' cy='188' r='4'/></g><circle cx='292' cy='188' r='5' fill='var(--accent)'/><circle cx='200' cy='92' r='5' fill='currentColor'/><g stroke='currentColor' stroke-width='2.5' stroke-linecap='round'><line x1='200' y1='92' x2='110' y2='184'/><line x1='200' y1='92' x2='200' y2='184'/></g><line x1='200' y1='92' x2='290' y2='184' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><text x='200' y='72' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.85' text-anchor='middle'>one molecule</text><text x='200' y='232' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>its mirror cannot reach all three</text></svg>"
+        },
+        {
+          "title": "Life itself is built from a single hand",
+          "body": "Step away from medicine and the handedness runs all the way down. Every protein in every living thing is strung from left-handed amino acids, and the backbone of DNA is built from right-handed sugars, the same choice in a bacterium and in you. A mirror-image biology would work just as well on paper. Life never built it. Why the first cells committed to one hand, and how that choice got frozen in, is still unknown."
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "Before thalidomide, a molecule's handedness was mostly a footnote. Chemists had known since Pasteur that molecules come in mirror forms, but a pill was made as a mixture and swallowed as one, and nobody checked the two halves apart. The catastrophe changed the rules. Since 1992 the US Food and Drug Administration has required a new drug's two mirror-forms to be tested on their own, each with its own record of benefit and risk. Most new medicines are now built as a single pure hand, and Europe's regulator has not cleared a mixed-handed one since 2016. Handedness stopped being a footnote."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "Two molecules are mirror images with the exact same atoms. Why can they still act as a medicine and a poison inside the body?",
+          "options": [
+            "One of them is slightly heavier than the other",
+            "The body is built from single-handed parts, so its receptors fit one mirror-form and not the other",
+            "One dissolves in blood and the other does not",
+            "The two have different melting points"
+          ],
+          "answer_index": 1,
+          "explanation": "A receptor is itself a handed shape, so it grips one mirror-form and slides off its twin. Nothing about the atoms differs. What changes is how the molecule sits in a handed pocket."
+        },
+        {
+          "question": "Why would selling only the sedative R form of thalidomide not have prevented the birth defects?",
+          "options": [
+            "The R form is even more harmful than the S form on its own",
+            "Patients would have taken larger doses to compensate",
+            "In the body the two mirror-forms convert into each other, so a pure dose becomes a mixture",
+            "The S form is the harmless one of the two"
+          ],
+          "answer_index": 2,
+          "explanation": "Thalidomide racemizes in the bloodstream within hours, turning a pure R dose into a mix of R and S. Because the body keeps regenerating the harmful hand, there was no stable safe form to isolate."
+        },
+        {
+          "question": "Sitting in a plain beaker with no other handed molecules around, how do two enantiomers differ?",
+          "options": [
+            "They have different weights and melting points",
+            "They react with ordinary acids at different speeds",
+            "One is a solid and the other a liquid",
+            "They are identical except that they rotate polarized light in opposite directions"
+          ],
+          "answer_index": 3,
+          "explanation": "In an even-handed environment the two share every measurable property, from density to boiling point. The one thing that separates them is the direction they twist polarized light, which is what Pasteur measured."
+        },
+        {
+          "question": "The two mirror-forms of carvone smell of spearmint and caraway. What does that reveal about the sense of smell?",
+          "options": [
+            "The two forms must have different molecular weights",
+            "Smell depends mostly on temperature",
+            "The odor receptors are themselves handed, so each mirror-form fits differently",
+            "Caraway molecules are larger than spearmint ones"
+          ],
+          "answer_index": 2,
+          "explanation": "If the nose registered the two as one smell, its receptors would be even-handed. Because it tells them apart, those receptors must be single-handed shapes that respond to one mirror-form more than the other."
+        },
+        {
+          "question": "Pasteur separated an optically inactive tartrate into two crystal piles that bent light in opposite directions. What did this show?",
+          "options": [
+            "The inactive substance was a 50/50 mix of two mirror-image forms whose rotations cancel",
+            "The two piles were entirely different chemicals",
+            "It is the crystal, not the molecule, that bends light",
+            "Tartaric acid has no handedness at all"
+          ],
+          "answer_index": 0,
+          "explanation": "Each pile alone twisted light, one left and one right, so the original was both forms together in equal amounts. Their opposite rotations had masked each other, which is why the mixture looked inactive."
+        },
+        {
+          "question": "Why did a drug's handedness become a routine safety question after the 1990s?",
+          "options": [
+            "Single-handed molecules are cheaper to manufacture",
+            "A drug's two mirror-forms can differ in what they cure and what they harm, so each has to be tested on its own",
+            "Regulators preferred single molecules for patent reasons",
+            "Mixed-handed drugs were made illegal everywhere"
+          ],
+          "answer_index": 1,
+          "explanation": "The thalidomide disaster proved that the two hands of one molecule can carry very different effects. Since 1992 regulators have required each mirror-form to be evaluated separately for benefit and harm."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "The disaster could have been avoided by selling only thalidomide's safe mirror-form.",
+          "reality": "The body turns one form into the other within hours, so a pure dose of the “safe” hand becomes a mixture inside the patient. There was no stable non-harmful version to isolate."
+        },
+        {
+          "myth": "Two mirror-image molecules are basically the same substance.",
+          "reality": "In an even-handed setting they are, identical down to melting point and density. Living tissue is not even-handed, so the two can behave as differently as a drug and a poison."
+        },
+        {
+          "myth": "Thalidomide was banned and is no longer used.",
+          "reality": "It returned. Since 1998 it has been an approved treatment for a painful complication of leprosy and for the blood cancer multiple myeloma, given under strict rules to prevent any pregnancy."
+        }
+      ]
+    },
+    {
+      "type": "open_questions",
+      "order": 12,
+      "content": {
+        "body": "The chemistry of handedness is settled. Why life runs on a single hand is not. Nobody knows what tipped the earliest biology onto left-handed amino acids, or whether that tilt was chance or somehow inevitable. Closer to the clinic, predicting which mirror-form of a new molecule will help and which will harm is still a question only testing can answer.",
+        "items": [
+          "Why did the first life commit to one molecular hand, and was that inevitable or frozen chance?",
+          "Can the helpful and harmful mirror-forms of a drug be told apart before a person takes it?",
+          "How exactly the S form of thalidomide derails a growing limb is still being worked out."
+        ]
+      }
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Vantomme G. Pasteur and chirality: A story of how serendipity favors the prepared minds. Chirality 2021",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9291139/",
+          "type": "paper"
+        },
+        {
+          "label": "Vargesson N. Thalidomide-induced teratogenesis: History and mechanisms. Birth Defects Research Part C 2015;105:140-156",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4737249/",
+          "type": "paper"
+        },
+        {
+          "label": "Tokunaga E et al. Understanding the thalidomide chirality in biological processes by the self-disproportionation of enantiomers. Scientific Reports 2018;8:17131",
+          "url": "https://www.nature.com/articles/s41598-018-35457-6",
+          "type": "paper"
+        },
+        {
+          "label": "US Food and Drug Administration. Development of New Stereoisomeric Drugs (policy statement, 1992)",
+          "url": "https://www.fda.gov/regulatory-information/search-fda-guidance-documents/development-new-stereoisomeric-drugs",
+          "type": "article"
+        },
+        {
+          "label": "Thalidomide scandal",
+          "url": "https://en.wikipedia.org/wiki/Thalidomide_scandal",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Carvone",
+          "url": "https://en.wikipedia.org/wiki/Carvone",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Homochirality",
+          "url": "https://en.wikipedia.org/wiki/Homochirality",
+          "type": "wikipedia"
+        }
+      ]
+    }
+  ]
+}
