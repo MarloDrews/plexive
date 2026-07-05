@@ -52,7 +52,7 @@
       "order": 4,
       "content": {
         "items": [
-          "At the bubble's collapse the gas briefly reaches at least 5,000 kelvin, in the range of the Sun's surface, then vanishes in a flash.",
+          "Within a few microseconds of the claw closing, the flash and its bang are gone, too fast for the heat to spread.",
           "The snap is among the loudest sounds in the sea, with a source level near 210 decibels underwater.",
           "The water jet that seeds the bubble leaves the claw at about 25 meters a second, fast enough to boil water at room temperature."
         ],
@@ -68,7 +68,7 @@
       "type": "story",
       "order": 7,
       "content": {
-        "body": "The physics came from an offhand remark. After Detlef Lohse gave a talk on sonoluminescence, the glow of a bubble squeezed by sound, the biologist Barbara Schmitz told him something. In her high-speed footage of snapping shrimp, she kept seeing a bubble near the claw. For a century the loud snap had been blamed on the two halves of the claw clapping shut. In 2000 the team filmed a shrimp at 40,000 frames a second. The claw closed in silence; the bang came a beat later, when the bubble it launched collapsed. A year on, they caught the flash.",
+        "body": "The physics came from an offhand remark. After Detlef Lohse gave a talk on sonoluminescence, the glow of a bubble squeezed by sound, the biologist Barbara Schmitz told him something. In her high-speed footage of snapping shrimp, she kept seeing a bubble near the claw. For a century the loud snap had been blamed on the two halves of the claw clapping shut. Her hunch and Lohse's bubble physics fit together. In 2000 the team filmed the snap, and caught its faint flash the year after.",
         "key_figures": [
           {
             "name": "Detlef Lohse",
@@ -94,7 +94,7 @@
       "content": [
         {
           "title": "The snap is a weapon, not a grip",
-          "body": "The shrimp is not grabbing anything. It aims the open claw at a small fish or crab and fires. The pressure wave from the collapsing bubble stuns or kills the prey from a short distance, with no contact at all. The same shockwave settles fights with rival shrimp and has cracked aquarium glass. For an animal a few centimeters long, that is a startling amount of force. The claw works more like a gun than a pincer, which is where the name pistol shrimp comes from.",
+          "body": "The shrimp is not grabbing anything. It aims the open claw at a small fish or crab and fires. The pressure wave from the collapsing bubble stuns or kills the prey from a short distance, with no contact at all. The shockwave also settles fights with rival shrimp and has cracked aquarium glass. For an animal a few centimeters long, that is a startling amount of force. The snap works like a gunshot, which is how the pistol shrimp got its name.",
           "image_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Alpheus_distinguendus.jpg",
           "image_caption": "A pistol shrimp; the oversized claw, not the small one, fires the jet that makes the bubble.",
           "image_attribution": "OpenCage, “Alpheus distinguendus”, CC BY-SA 2.5 (Wikimedia Commons)"
