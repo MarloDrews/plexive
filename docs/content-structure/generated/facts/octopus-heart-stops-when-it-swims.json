@@ -30,9 +30,9 @@
   "feed_card": {
     "headline": "An octopus has three hearts, and the one that feeds its body stops the moment it starts to swim.",
     "teasers": [
-      "The moment it swims, a heart shuts off",
+      "The tradeoff that keeps an octopus on the seafloor",
       "Why blue blood needs three separate pumps",
-      "Why the fastest escape is also the costliest"
+      "The fastest escape is also the costliest"
     ],
     "post_difficulty": 2
   },
@@ -52,7 +52,7 @@
     {
       "type": "surprises",
       "order": 3,
-      "content": "Watch an octopus escape. It fires a jet of water from its body and rockets backward, the fastest thing it can do. At that exact moment, the heart that carries oxygen to its muscles stops beating. The hard squeeze of the mantle that powers the jet also clamps down on the vessels feeding that heart, so it has nothing to pump. The animal's top speed and its oxygen supply cannot run at the same time. So the octopus does the sensible thing and crawls."
+      "content": "Watch an octopus escape. It fires a jet of water from its body and rockets backward, the fastest thing it can do. At that exact moment, the heart that carries oxygen to its muscles stops beating. The hard squeeze of the mantle that powers the jet also clamps down on the vessels feeding that heart, so it has nothing to pump. The animal's top speed and its oxygen supply cannot run at the same time."
     },
     {
       "type": "how_we_know",
@@ -65,16 +65,16 @@
       "content": [
         {
           "title": "The jet stalls the heart that powers it",
-          "body": "The mechanism is a plumbing problem. To jet, the octopus fills its mantle with water and squeezes, forcing a stream out through the funnel. That squeeze raises the pressure inside the mantle so high that blood can no longer flow back into the systemic heart. With nothing returning to it, the heart cannot fill, and it cannot pump. The muscle contraction that drives the escape shuts down the pump the escape depends on.",
+          "body": "The mechanism is a plumbing problem. To jet, the octopus fills its mantle with water and squeezes, forcing a stream out through the funnel. That squeeze raises the pressure inside the mantle so high that blood can no longer flow back into the systemic heart. With nothing returning to it, the heart cannot fill, and it cannot pump.",
           "visual_svg": "<svg viewBox='0 0 400 200' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='26' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Why a jet stops the heart</text><line x1='200' y1='48' x2='200' y2='180' stroke='currentColor' stroke-width='1.5' opacity='0.3' stroke-dasharray='6 6'/><text x='100' y='70' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>crawl</text><circle cx='118' cy='120' r='26' stroke='currentColor' stroke-width='2.5'/><path d='M40 120 h48' stroke='currentColor' stroke-width='2.5' stroke-linecap='round'/><path d='M92 120 l-12 -6 m12 6 l-12 6' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/><text x='118' y='124' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' text-anchor='middle'>heart</text><text x='64' y='162' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.75' text-anchor='middle'>blood in</text><text x='300' y='70' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>jet</text><circle cx='300' cy='120' r='26' stroke='var(--accent)' stroke-width='2.5'/><path d='M362 120 h-22' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' opacity='0.5'/><line x1='338' y1='104' x2='338' y2='136' stroke='var(--accent)' stroke-width='3.5' stroke-linecap='round'/><text x='300' y='124' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' text-anchor='middle'>stopped</text><text x='322' y='162' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>return blocked</text></svg>"
         },
         {
           "title": "Blue blood explains the extra pumps",
-          "body": "The blood itself is part of the reason there are three hearts. It is blue. Octopuses carry oxygen on hemocyanin, a copper-based protein, rather than the iron-based hemoglobin that makes our blood red. Hemocyanin is a weaker carrier in warm water, but it holds an edge in the cold, oxygen-poor depths where many octopuses live. To push enough of it around, the octopus needs the two gill hearts driving blood through the gills under pressure. Three pumps are the price of running on blue blood."
+          "body": "The blood itself is part of the reason there are three hearts. It is blue. Octopuses carry oxygen on hemocyanin, a copper-based protein, rather than the iron-based hemoglobin that makes our blood red. Hemocyanin is a weaker carrier in warm water, but it holds an edge in the cold, oxygen-poor depths where many octopuses live. To push enough of it around, the octopus needs the two gill hearts driving blood through the gills under pressure."
         },
         {
           "title": "A walker that can sprint, but only briefly",
-          "body": "Put together, the parts describe a crawler. The octopus spends almost all its time walking over rock and sand on its arms, tasting as it goes, with every heart beating. Jetting is the emergency gear: a fast, costly burst to escape a predator, often behind a cloud of ink, good for a few metres before the oxygen runs short. A squid, built to jet for a living, does this very differently. The octopus made the opposite bet, trading sustained speed for a life spent close to the bottom.",
+          "body": "Put together, the parts describe a crawler. The octopus spends almost all its time walking over rock and sand on its arms, tasting as it goes, with every heart beating. It trades sustained speed for a life spent close to the bottom. Jetting is the emergency gear: a fast, costly burst to escape a predator, often behind a cloud of ink, good for a few metres before the oxygen runs short. A squid, built to jet for a living, does this very differently.",
           "image_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Octopus_vulgaris_02.JPG",
           "image_caption": "The common octopus, Octopus vulgaris. Most octopuses spend their lives crawling over the seafloor rather than swimming.",
           "image_attribution": "H. Zell, “Octopus vulgaris 02”, CC BY-SA 3.0 (Wikimedia Commons)"
@@ -84,7 +84,7 @@
     {
       "type": "bigger_picture",
       "order": 9,
-      "content": "The stalling heart is a small window onto how differently an octopus is built. It is a mollusk, nearer kin to a snail than to a fish, that grew large and clever along a path all its own. Blue blood, three hearts, a nervous system spread through its arms: none of it is the vertebrate solution, and all of it works. The heart that quits mid-jet is not a flaw. It is a seam, the spot where one such design meets its limit, and the octopus organizes its life around it."
+      "content": "The stalling heart is one cost of how differently an octopus is built. It is a mollusk. Nearer kin to a snail than to a fish, it grew large and clever along a path all its own. Blue blood, three hearts, a nervous system spread through its arms: none of it is the vertebrate solution, and all of it works. The heart that quits mid-jet is simply the price of that body plan."
     },
     {
       "type": "quiz",
