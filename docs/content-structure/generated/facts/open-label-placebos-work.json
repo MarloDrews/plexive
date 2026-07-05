@@ -1,0 +1,231 @@
+{
+  "tags": [
+    "psychology",
+    "medicine",
+    "neuroscience"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Placebo effect"
+      },
+      "featured": true
+    },
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Classical conditioning"
+      },
+      "featured": false
+    },
+    {
+      "format": "books",
+      "ref": {
+        "title": "Cure",
+        "author": "Jo Marchant"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "Told the pills were placebos, patients still got better, more than those given no treatment at all.",
+    "teasers": [
+      "The sugar pills that came with a warning label",
+      "How a pill can heal without a lie",
+      "What honest placebos can and cannot touch"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "Told the pills were placebos, patients still got better, more than those given no treatment at all."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='34' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Reported adequate relief</text><line x1='40' y1='250' x2='360' y2='250' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><rect x='90' y='138' width='90' height='112' rx='8' stroke='var(--accent)' stroke-width='2.5' fill='var(--accent)' fill-opacity='0.12'/><rect x='250' y='184' width='90' height='66' rx='8' stroke='currentColor' stroke-width='2' opacity='0.55'/><text x='135' y='128' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='16' font-weight='700' text-anchor='middle'>59%</text><text x='295' y='174' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='15' font-weight='700' text-anchor='middle'>35%</text><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle'><text x='135' y='272'>Told it's placebo</text><text x='295' y='272'>No treatment</text></g></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "A placebo is supposed to need a lie. You believe the pill is medicine, belief does the healing, and telling the patient it is only sugar should end it. In 2010 a Harvard team tried the honest version. They handed people with irritable bowel syndrome a bottle openly labeled placebo and explained, to their faces, that the capsules held nothing active. The patients still improved, and more than those given no treatment. Whatever the sugar pills were doing, knowing the truth did not switch it off."
+    },
+    {
+      "type": "how_we_know",
+      "order": 5,
+      "content": "The design ruled out the easy explanations. Eighty patients were split at random. Half received the open placebo; half got nothing but the same time with the same providers. Nobody was deceived. The bottle read “placebo pills”. Patients were told the capsules were inert, like sugar pills, but that clinical studies had shown a benefit through mind-body processes. Three weeks later the placebo group scored higher on a standard IBS relief scale, 5.0 against 3.9, and 59% reported adequate relief against 35%. Because both groups shared the same visits, the gap traces to pills the patients knew held nothing."
+    },
+    {
+      "type": "story",
+      "order": 7,
+      "content": {
+        "body": "Ted Kaptchuk came to placebos from an odd direction. Trained in Chinese medicine rather than conventional medicine, he ran an acupuncture clinic for years before Harvard brought him in to study sham treatments. The received wisdom was firm. A placebo without deception was a contradiction, so no one had really tested it. Kaptchuk did. The 2010 result was strong enough that other groups took up the question. Open-label pills were tried against back pain, cancer fatigue, hay fever, and even depression. By 2021 a review of eleven trials found the effect holding up across the lot, medium to large.",
+        "key_figures": [
+          {
+            "name": "Ted Kaptchuk",
+            "role": "Ran the first open-label placebo trial",
+            "one_line": "The Chinese-medicine scholar who, at Harvard, ran the 2010 trial showing honestly labeled placebos still beat no treatment.",
+            "lifespan": "born 1947",
+            "birth_year": 1947,
+            "featured": true
+          }
+        ],
+        "visual_svg": "<svg viewBox='0 0 400 138' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='26' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Open-label placebo trials</text><line x1='45' y1='90' x2='355' y2='90' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><circle cx='60' cy='90' r='7' fill='var(--accent)'/><circle cx='160' cy='90' r='5' fill='currentColor'/><circle cx='255' cy='90' r='5' fill='currentColor'/><circle cx='345' cy='90' r='5' fill='currentColor'/><g font-family='var(--font-mono), ui-monospace, monospace' font-size='13' font-weight='700' text-anchor='middle'><text x='60' y='68' fill='var(--accent)'>2010</text><text x='160' y='68' fill='currentColor'>2016</text><text x='255' y='68' fill='currentColor'>2018</text><text x='345' y='68' fill='currentColor'>2021</text></g><g font-family='var(--font-sans), system-ui, sans-serif' font-size='13' text-anchor='middle'><text x='60' y='116' fill='var(--accent)' font-weight='600'>IBS</text><text x='160' y='116' fill='currentColor' opacity='0.8'>back pain</text><text x='255' y='116' fill='currentColor' opacity='0.8'>cancer fatigue</text><text x='345' y='116' fill='currentColor' opacity='0.8'>review</text></g></svg>"
+      }
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "The effect reaches well past IBS",
+          "body": "IBS was only the start. Open-label placebos have since been tested against chronic back pain, cancer-related fatigue, allergic rhinitis, and depression. Each trial kept a no-treatment group for comparison. In 2021 a review pooled eleven such trials. The combined effect was medium to large, the kind of size a real drug would be pleased with. Whatever this is, it is not a quirk of one gut condition.",
+          "visual_svg": "<svg viewBox='0 0 400 165' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='30' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Pooled effect across 11 trials</text><line x1='40' y1='120' x2='360' y2='120' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><g stroke='currentColor' stroke-width='1.5' opacity='0.5'><line x1='93' y1='113' x2='93' y2='127'/><line x1='173' y1='113' x2='173' y2='127'/><line x1='253' y1='113' x2='253' y2='127'/></g><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'><text x='93' y='146'>small</text><text x='173' y='146'>medium</text><text x='253' y='146'>large</text></g><rect x='232' y='108' width='43' height='24' rx='8' fill='var(--accent)' fill-opacity='0.22' stroke='var(--accent)' stroke-width='2'/><text x='253' y='97' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='15' font-weight='700' text-anchor='middle'>about 0.8</text></svg>"
+        },
+        {
+          "title": "It only moves what a mind can move",
+          "body": "Read the outcomes closely and a limit shows. Every symptom that responds is one a person feels and reports: pain, fatigue, nausea, gut discomfort. None of them is a tumor. Open placebos do not shrink cancers, clear infections, or move a cholesterol number. They act on the felt side of illness and leave the disease itself untouched. That is also why the honesty stays safe: no one is steered off real medicine.",
+          "visual_svg": "<svg viewBox='0 0 400 230' xmlns='http://www.w3.org/2000/svg' fill='none'><line x1='200' y1='38' x2='200' y2='205' stroke='currentColor' stroke-width='1.5' opacity='0.3' stroke-dasharray='6 6'/><text x='105' y='44' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='700' text-anchor='middle'>Responds</text><text x='300' y='44' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='700' opacity='0.85' text-anchor='middle'>Untouched</text><g fill='var(--accent)'><circle cx='55' cy='80' r='4'/><circle cx='55' cy='114' r='4'/><circle cx='55' cy='148' r='4'/><circle cx='55' cy='182' r='4'/></g><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' text-anchor='start'><text x='70' y='85'>pain</text><text x='70' y='119'>fatigue</text><text x='70' y='153'>nausea</text><text x='70' y='187'>discomfort</text></g><g stroke='currentColor' stroke-width='2' opacity='0.5' stroke-linecap='round'><line x1='248' y1='96' x2='260' y2='96'/><line x1='248' y1='140' x2='260' y2='140'/><line x1='248' y1='184' x2='260' y2='184'/></g><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' opacity='0.7' text-anchor='start'><text x='270' y='101'>tumors</text><text x='270' y='145'>infections</text><text x='270' y='189'>cholesterol</text></g></svg>"
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "So the effect never needed the lie. What the trial separated was belief in a fake cure from the ritual around it: being examined, handed something, told it might help. That ritual carries real weight by itself. It nudges the body's own systems for damping pain and settling a gut, the same systems a real drug also works through. The sugar was inert. The routine of treatment was not, and that part does not require fooling anyone."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "What made the 2010 IBS result surprising?",
+          "options": [
+            "The pills held a low dose of real medicine",
+            "Patients improved even though they were told the pills were placebos",
+            "The placebo group was compared only against itself",
+            "Only patients who believed in the pills improved"
+          ],
+          "answer_index": 1,
+          "explanation": "The long-standing assumption was that a placebo needs the patient to be fooled. Here the patients were told plainly the pills were inert, and they still improved more than an untreated group."
+        },
+        {
+          "question": "Why did the study include a group that got no pills at all?",
+          "options": [
+            "To measure how much people improve on their own, as a baseline",
+            "To give those patients the real drug instead",
+            "To keep the placebo group from knowing they were in a trial",
+            "Because sugar pills are unsafe for some patients"
+          ],
+          "answer_index": 0,
+          "explanation": "IBS symptoms rise and fall on their own, so some improvement is expected with no treatment. Beating that no-treatment baseline is what shows the open placebo did something."
+        },
+        {
+          "question": "Based on the results, open-label placebos are most likely to help with...",
+          "options": [
+            "shrinking a tumor",
+            "lowering blood cholesterol",
+            "self-reported pain, fatigue, and discomfort",
+            "clearing a bacterial infection"
+          ],
+          "answer_index": 2,
+          "explanation": "The outcomes that move are the ones a person feels and reports. The effect works on the experience of illness, not on the underlying disease process."
+        },
+        {
+          "question": "If the effect works without belief in a fake cure, what does the post credit it to?",
+          "options": [
+            "the ritual and context of being treated",
+            "a hidden active ingredient in the capsules",
+            "patients lying about feeling better",
+            "the natural course of IBS by itself"
+          ],
+          "answer_index": 0,
+          "explanation": "Being examined, handed a pill, and told it may help is itself a signal the body responds to. That ritual, not deception, appears to do the work."
+        },
+        {
+          "question": "Why doesn't telling patients the pills are placebos make the treatment dangerous?",
+          "options": [
+            "Because the pills secretly act like real drugs",
+            "Because it only shifts felt symptoms and no one is steered off real care",
+            "Because patients soon forget they were told",
+            "Because IBS is not a serious condition"
+          ],
+          "answer_index": 1,
+          "explanation": "An open placebo eases symptoms without replacing needed treatment, and patients are not misled about what they are taking. It is offered alongside real medicine, not in place of it."
+        },
+        {
+          "question": "What does the 2021 review of eleven trials add to the single IBS study?",
+          "options": [
+            "It showed the effect appears only in IBS",
+            "It found the effect across several conditions, medium to large",
+            "It proved placebos can cure disease",
+            "It showed the effect disappears once disclosed"
+          ],
+          "answer_index": 1,
+          "explanation": "One study could be a fluke of IBS. Pooling eleven trials across back pain, fatigue, and other conditions showed a consistent, sizeable effect, which is much harder to dismiss."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "The placebo effect just means the patient was never really sick.",
+          "reality": "These patients had real, diagnosed symptoms, and a matched group with the same illness improved far less. Something changed; it was not imaginary sickness."
+        },
+        {
+          "myth": "If you know it is a placebo, it cannot possibly work.",
+          "reality": "That is the exact assumption the 2010 trial overturned. Patients told plainly still improved more than untreated ones, so awareness did not cancel the response."
+        },
+        {
+          "myth": "Open-label placebos could replace real drugs.",
+          "reality": "They move the symptoms you feel, not the disease underneath. A sugar pill can ease the ache of an illness without touching its cause, so it belongs beside real treatment, not in place of it."
+        }
+      ]
+    },
+    {
+      "type": "open_questions",
+      "order": 12,
+      "content": {
+        "body": "Nobody is sure why an honest placebo works. Two ideas compete. One says the body learns, like Pavlov's dogs, to answer the ritual of a pill after a lifetime of pills that did carry drugs. The other says a flicker of expectation survives being told the truth. Being cared for still signals that help is near. The trials catch the effect cleanly but cannot yet see the gears turning.",
+        "items": [
+          "Is it conditioning from a lifetime of real pills, or leftover expectation?",
+          "How long does the benefit last, and does it fade with repetition?",
+          "Which patients respond, and can a doctor tell in advance?"
+        ]
+      }
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Kaptchuk TJ, et al. Placebos without deception: a randomized controlled trial in irritable bowel syndrome. PLoS ONE 2010;5(12):e15591",
+          "url": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0015591",
+          "type": "paper"
+        },
+        {
+          "label": "Carvalho C, et al. Open-label placebo treatment in chronic low back pain: a randomized controlled trial. Pain 2016;157(12):2766-2772",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5113234/",
+          "type": "paper"
+        },
+        {
+          "label": "von Wernsdorff M, et al. Effects of open-label placebos in clinical trials: a systematic review and meta-analysis. Scientific Reports 2021;11:3855",
+          "url": "https://www.nature.com/articles/s41598-021-83148-6",
+          "type": "paper"
+        },
+        {
+          "label": "Ted Kaptchuk (Harvard Program in Placebo Studies)",
+          "url": "https://en.wikipedia.org/wiki/Ted_Kaptchuk",
+          "type": "wikipedia"
+        }
+      ]
+    }
+  ]
+}
