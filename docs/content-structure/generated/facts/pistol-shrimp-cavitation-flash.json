@@ -1,0 +1,242 @@
+{
+  "tags": [
+    "animals",
+    "physics",
+    "nature-phenomena"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Cavitation"
+      },
+      "featured": true
+    },
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Sonoluminescence"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "When a pistol shrimp snaps its claw, the bubble it makes briefly hits at least 5,000 K, close to the Sun's surface.",
+    "teasers": [
+      "How a claw-snap lights a spark underwater",
+      "The bang that isn't the claw at all",
+      "Why submarines once hid inside their crackle"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "When a pistol shrimp snaps its claw, the bubble it makes briefly hits at least 5,000 K, close to the Sun's surface."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 0 400 170' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='26' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>From snap to spark</text><g stroke='currentColor' stroke-width='2.5'><rect x='10' y='48' width='76' height='54' rx='14'/><rect x='108' y='48' width='76' height='54' rx='14'/><rect x='206' y='48' width='76' height='54' rx='14'/></g><rect x='304' y='48' width='76' height='54' rx='14' stroke='var(--accent)' stroke-width='2.5'/><g stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' opacity='0.55'><path d='M88 75 h16'/><path d='M104 75 l-7 -4 m7 4 l-7 4'/><path d='M186 75 h16'/><path d='M202 75 l-7 -4 m7 4 l-7 4'/><path d='M284 75 h16'/><path d='M300 75 l-7 -4 m7 4 l-7 4'/></g><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' text-anchor='middle'><text x='48' y='80'>Snap</text><text x='146' y='80'>Jet</text><text x='244' y='80'>Bubble</text></g><text x='342' y='80' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>Collapse</text><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.65' text-anchor='middle'><text x='48' y='122'>claw shuts</text><text x='244' y='122'>low pressure</text></g><text x='146' y='122' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' opacity='0.7' text-anchor='middle'>~25 m/s</text><text x='342' y='122' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>flash + bang</text></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "The surface of the Sun sits near 5,800 kelvin (about 5,500 °C), hot enough to boil iron. Now look down at a tide pool. A shrimp no longer than your thumb snaps its claw. For a sliver of a second, the gas inside a collapsing bubble reaches at least 5,000 kelvin, close to the Sun's own surface. It does not cook the shrimp, or even the nearby water. The flash is gone in an instant, before anything can warm."
+    },
+    {
+      "type": "tangible",
+      "order": 4,
+      "content": {
+        "items": [
+          "At the bubble's collapse the gas briefly reaches at least 5,000 kelvin, in the range of the Sun's surface, then vanishes in a flash.",
+          "The snap is among the loudest sounds in the sea, with a source level near 210 decibels underwater.",
+          "The water jet that seeds the bubble leaves the claw at about 25 meters a second, fast enough to boil water at room temperature."
+        ],
+        "visual_svg": "<svg viewBox='0 0 400 195' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='28' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Temperature, side by side</text><g stroke-width='2' opacity='0.55'><rect x='130' y='46' width='13' height='20' rx='4' stroke='currentColor'/><rect x='130' y='82' width='52' height='20' rx='4' stroke='currentColor'/><rect x='130' y='154' width='200' height='20' rx='4' stroke='currentColor'/></g><rect x='130' y='118' width='172' height='20' rx='4' fill='var(--accent)' fill-opacity='0.16' stroke='var(--accent)' stroke-width='2.5'/><g font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='end'><text x='122' y='61' fill='currentColor'>boiling water</text><text x='122' y='97' fill='currentColor'>lava</text><text x='122' y='133' fill='var(--accent)'>shrimp bubble</text><text x='122' y='169' fill='currentColor'>Sun's surface</text></g><g font-family='var(--font-mono), ui-monospace, monospace' font-size='13' text-anchor='start'><text x='150' y='61' fill='currentColor' opacity='0.8'>373 K</text><text x='189' y='97' fill='currentColor' opacity='0.8'>1,500 K</text><text x='309' y='133' fill='var(--accent)' font-weight='700'>&#8805;5,000 K</text><text x='337' y='169' fill='currentColor' opacity='0.8'>~5,800 K</text></g></svg>"
+      }
+    },
+    {
+      "type": "how_we_know",
+      "order": 5,
+      "content": "Two instruments cracked the case. A hydrophone recorded the snap while an ultra-fast camera, running at 40,000 frames a second, watched the claw. The frames showed the halves shutting a hair before the sound, then a bubble ballooning off the water jet and collapsing just as the bang arrived. So the noise was the bubble, not the claw. Catching the light took finer work. Sensitive detectors picked up a faint pulse of photons at each collapse, far too dim for any eye to see."
+    },
+    {
+      "type": "story",
+      "order": 7,
+      "content": {
+        "body": "The physics came from an offhand remark. After Detlef Lohse gave a talk on sonoluminescence, the glow of a bubble squeezed by sound, the biologist Barbara Schmitz told him something. In her high-speed footage of snapping shrimp, she kept seeing a bubble near the claw. For a century the loud snap had been blamed on the two halves of the claw clapping shut. In 2000 the team filmed a shrimp at 40,000 frames a second. The claw closed in silence; the bang came a beat later, when the bubble it launched collapsed. A year on, they caught the flash.",
+        "key_figures": [
+          {
+            "name": "Detlef Lohse",
+            "role": "Brought bubble physics to the shrimp",
+            "one_line": "The fluid physicist whose work on sonoluminescence, prompted by a colleague's chance remark, revealed the shrimp's snap as a light-emitting bubble collapse.",
+            "lifespan": "born 1963",
+            "birth_year": 1963,
+            "featured": true
+          },
+          {
+            "name": "Barbara Schmitz",
+            "role": "Spotted the bubble on high-speed video",
+            "one_line": "The biologist who noticed a bubble at the shrimp's claw in her high-speed footage and connected it to Lohse's bubble physics.",
+            "featured": false
+          }
+        ],
+        "visual_svg": "<svg viewBox='0 0 400 165' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='26' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>The bang is the bubble, not the claw</text><line x1='55' y1='100' x2='345' y2='100' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><path d='M345 100 l-8 -4 m8 4 l-8 4' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><line x1='115' y1='92' x2='115' y2='108' stroke='currentColor' stroke-width='2'/><text x='115' y='82' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle'>claw shuts</text><text x='115' y='128' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='middle'>silent</text><line x1='285' y1='90' x2='285' y2='110' stroke='var(--accent)' stroke-width='2.5'/><text x='285' y='82' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>bubble collapses</text><text x='285' y='128' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.8' text-anchor='middle'>bang + flash</text><text x='200' y='151' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.55' text-anchor='middle'>a few microseconds apart</text></svg>"
+      }
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "The snap is a weapon, not a grip",
+          "body": "The shrimp is not grabbing anything. It aims the open claw at a small fish or crab and fires. The pressure wave from the collapsing bubble stuns or kills the prey from a short distance, with no contact at all. The same shockwave settles fights with rival shrimp and has cracked aquarium glass. For an animal a few centimeters long, that is a startling amount of force. The claw works more like a gun than a pincer, which is where the name pistol shrimp comes from.",
+          "image_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Alpheus_distinguendus.jpg",
+          "image_caption": "A pistol shrimp; the oversized claw, not the small one, fires the jet that makes the bubble.",
+          "image_attribution": "OpenCage, “Alpheus distinguendus”, CC BY-SA 2.5 (Wikimedia Commons)"
+        },
+        {
+          "title": "A crackle loud enough to jam sonar",
+          "body": "Alone, one snap is a faint click. Together, they are a roar. Snapping shrimp pack dense colonies on reefs and oyster beds, and their combined popping is one of the loudest, steadiest sounds in the shallow sea. It sizzles like frying fat. The racket can swamp sonar and confuse hydrophones; in the Second World War, submarines are said to have hidden inside it."
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "Cavitation is usually a wrecking force. The same collapsing bubbles the shrimp fires will, over months, chew pits into bronze ship propellers and steel pump housings. Engineers spend fortunes designing them out. A shrimp the size of a fingernail runs that identical physics as a weapon, and has for millions of years. The heat is a byproduct of the violence: gas crushed so fast it cannot shed the energy, so it glows. The sea was running sonoluminescence long before anyone built a rig to study it."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "What actually produces the loud snapping sound?",
+          "options": [
+            "The two halves of the claw striking each other",
+            "The collapse of a cavitation bubble",
+            "Air escaping from inside the claw",
+            "The shrimp's shell cracking"
+          ],
+          "answer_index": 1,
+          "explanation": "High-speed film showed the claw closes almost silently. The bang follows a moment later, when the bubble thrown off by the water jet implodes."
+        },
+        {
+          "question": "How hot does the collapsing bubble briefly get inside?",
+          "options": [
+            "About the temperature of boiling water",
+            "About the temperature of molten lava",
+            "At least 5,000 kelvin, near the Sun's surface",
+            "Hotter than the center of the Sun"
+          ],
+          "answer_index": 2,
+          "explanation": "Squeezing the bubble's gas so fast and hard drives its temperature to at least 5,000 kelvin, in the range of the Sun's surface, though only for an instant."
+        },
+        {
+          "question": "What is true of the flash of light the bubble gives off?",
+          "options": [
+            "It is bright enough to see from the surface",
+            "It is far too faint to see with the naked eye",
+            "It lasts for several seconds",
+            "It is the same process as a firefly's glow"
+          ],
+          "answer_index": 1,
+          "explanation": "The flash is real but emits very few photons, thousands of times dimmer than lab sonoluminescence. Only sensitive detectors can register it."
+        },
+        {
+          "question": "How does a pistol shrimp actually catch its prey?",
+          "options": [
+            "It grabs the prey with its large claw",
+            "It bites through the shell",
+            "The shockwave from the bubble stuns the prey from a distance",
+            "It traps the prey inside the bubble"
+          ],
+          "answer_index": 2,
+          "explanation": "The shrimp does not need to touch its target. The pressure wave from the collapsing bubble stuns or kills small prey a short distance away."
+        },
+        {
+          "question": "Where else does this same bubble-collapse physics show up?",
+          "options": [
+            "In the pitting of ship propellers and pumps",
+            "In the formation of pearls",
+            "In the rise and fall of the tides",
+            "In the growth of coral reefs"
+          ],
+          "answer_index": 0,
+          "explanation": "Cavitation bubbles that collapse against metal slowly erode it, which is why the same physics that arms the shrimp damages propellers and pump parts."
+        },
+        {
+          "question": "For a long time, what was wrongly blamed for the snap's sound?",
+          "options": [
+            "A tiny electric spark in the water",
+            "The claw's two halves clapping shut",
+            "A vocal organ in the shrimp",
+            "Bubbles rising from the seabed"
+          ],
+          "answer_index": 1,
+          "explanation": "It seemed obvious the noise was the claw slamming closed. High-speed imaging in 2000 showed the real source was the bubble collapsing just after."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "The snapping sound is the claw slamming shut.",
+          "reality": "It comes from a bubble. The claw closes almost silently, and the bang follows when the cavitation bubble it launches implodes."
+        },
+        {
+          "myth": "You could see the flash if you looked closely enough.",
+          "reality": "The light is real but far too faint for human eyes, dimmer even than lab sonoluminescence. It took sensitive detectors to catch it."
+        },
+        {
+          "myth": "Pistol shrimp and mantis shrimp are the same animal.",
+          "reality": "They are different creatures. The mantis shrimp punches with a hammer-like limb fast enough to cavitate too, while the pistol shrimp fires a jet from a specialized claw."
+        }
+      ]
+    },
+    {
+      "type": "open_questions",
+      "order": 12,
+      "content": {
+        "body": "Why the bubble glows at all is not fully settled. The leading picture matches lab sonoluminescence: as the bubble caves in, the gas is compressed so hard it briefly ionizes and radiates. The exact peak temperature is still debated. So is whether a real plasma forms. And it is not clear the shrimp gains anything from the light at all.",
+        "items": [
+          "How hot does the bubble's core truly get at peak collapse?",
+          "Does a real plasma form inside for that instant?",
+          "Is the light useful to the shrimp, or just a side effect?"
+        ]
+      }
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Lohse D, Schmitz B, Versluis M. Snapping shrimp make flashing bubbles. Nature 2001;413:477-478",
+          "url": "https://www.nature.com/articles/35097152",
+          "type": "paper"
+        },
+        {
+          "label": "Versluis M, Schmitz B, von der Heydt A, Lohse D. How snapping shrimp snap: through cavitating bubbles. Science 2000;289:2114-2117",
+          "url": "https://www.science.org/doi/10.1126/science.289.5487.2114",
+          "type": "paper"
+        },
+        {
+          "label": "Snapping shrimp (Alpheidae)",
+          "url": "https://en.wikipedia.org/wiki/Alpheidae",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Science News: Shrimps spew bubbles as hot as the sun",
+          "url": "https://www.sciencenews.org/article/shrimps-spew-bubbles-hot-sun",
+          "type": "article"
+        }
+      ]
+    }
+  ]
+}
