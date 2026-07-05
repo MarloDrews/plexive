@@ -69,7 +69,7 @@
     {
       "type": "how_we_know",
       "order": 5,
-      "content": "A shark is mostly cartilage, which rots long before it can turn to stone. Whole shark fossils are rare. What lasts is the hard stuff: thousands of teeth, and the tiny tooth-shaped scales, called “denticles”, that roughen a shark's skin. The oldest denticles, pulled from rock in Colorado and Mongolia, date to 450 million years ago. Trees leave a firmer record: wood mineralizes well, and the oldest known stumps sit in 385-million-year-old ground at Gilboa, New York. Every date here is read from the rock itself, whose age is set by the steady decay of radioactive elements inside it."
+      "content": "A shark is mostly cartilage, which rots long before it can turn to stone. Whole shark fossils are rare. What lasts is the hard stuff: thousands of teeth, and the tiny tooth-shaped scales, called “denticles”, that roughen a shark's skin. The oldest denticles, pulled from rock in Colorado and Mongolia, date to 450 million years ago. Trees leave a firmer record: wood mineralizes well, and some of the oldest known stumps sit in 385-million-year-old ground at Gilboa, New York. Every date here is read from the rock itself, whose age is set by the steady decay of radioactive elements inside it."
     },
     {
       "type": "angles",
@@ -162,7 +162,7 @@
           "options": [
             "Because trees are actually far younger than 385 million years",
             "Because those scales were re-dated to 500 million years",
-            "Because unmistakable shark teeth still appear about 25 million years before the first tree",
+            "Because clear shark teeth still appear about 25 million years before the first tree",
             "Because sharks and the first trees appeared at the same time"
           ],
           "answer_index": 2,
@@ -180,7 +180,7 @@
         },
         {
           "myth": "The 450-million-year date is rock solid.",
-          "reality": "It rests on scales alone, and some researchers doubt those earliest denticles came from true sharks. But even the cautious reading holds: unmistakable shark teeth appear by about 410 million years ago, still 25 million years before the first tree."
+          "reality": "It rests on scales alone, and some researchers doubt those earliest denticles came from true sharks. But even the cautious reading holds: clear shark teeth appear by about 410 million years ago, still 25 million years before the first tree."
         },
         {
           "myth": "The first tree was also the first plant on land.",
