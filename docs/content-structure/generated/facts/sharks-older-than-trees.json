@@ -52,7 +52,7 @@
     {
       "type": "surprises",
       "order": 3,
-      "content": "We tend to picture the deep past as one long green age of forests. Wind the clock back to the first sharks. The land is nearly empty. Moss, a few centimetres high, is the tallest thing growing on it. There is no wood anywhere on Earth, no bark, no deep roots. Sharks were already fast, jawed hunters in the sea. On land, nothing yet grew past your ankle."
+      "content": "The tallest thing growing on land is moss, a few centimetres high. There is no wood anywhere on Earth, no bark, no deep roots. On land the world is nearly empty. In the sea, the first sharks are already fast, jawed hunters, and nothing yet grows past your ankle."
     },
     {
       "type": "tangible",
@@ -77,16 +77,16 @@
       "content": [
         {
           "title": "They swam through all five mass extinctions",
-          "body": "Five times, life on Earth has nearly collapsed. The worst, about 252 million years ago, killed most species in the sea. Sharks are wide-ranging, generalist hunters, and each time some populations came through. During that worst extinction, a few small sharks seem to have escaped the poisoned coastal water by heading into the deep ocean, where they waited out the crisis. The group has now outlasted the dinosaurs, the trilobites, and nearly everything else that once shared its water.",
+          "body": "Five times, life on Earth has nearly collapsed. The worst, about 252 million years ago, killed most species in the sea. Sharks are wide-ranging, generalist hunters, and each time some populations came through. During that worst extinction, a few small sharks seem to have escaped the poisoned coastal water by heading into the deep ocean, where they waited out the crisis. Today the group is still here, while the dinosaurs and the trilobites are long gone.",
           "visual_svg": "<svg viewBox='0 0 400 220' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='30' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Five mass extinctions, one unbroken line</text><g stroke='currentColor' stroke-width='7' opacity='0.16' stroke-linecap='round'><line x1='44' y1='80' x2='44' y2='170'/><line x1='98' y1='80' x2='98' y2='170'/><line x1='186' y1='80' x2='186' y2='170'/><line x1='224' y1='80' x2='224' y2='170'/><line x1='323' y1='80' x2='323' y2='170'/></g><line x1='34' y1='125' x2='378' y2='125' stroke='var(--accent)' stroke-width='3' stroke-linecap='round'/><circle cx='34' cy='125' r='5' fill='var(--accent)'/><text x='34' y='150' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' font-weight='700' text-anchor='start'>450 Ma</text><text x='378' y='150' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='end'>today</text><g fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' opacity='0.6' text-anchor='middle'><text x='44' y='72'>1</text><text x='98' y='72'>2</text><text x='186' y='72'>3</text><text x='224' y='72'>4</text><text x='323' y='72'>5</text></g><text x='200' y='200' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.65' text-anchor='middle'>the shark lineage, straight through all five</text></svg>"
         },
         {
           "title": "A tree is a late, hard-won invention",
-          "body": "Plants had crept onto land long before sharks, but they stayed low. Height is a hard engineering problem. A plant that means to stand tall needs stiff wood to hold itself up, roots to grip against the wind, and plumbing to lift water many metres. Solving all three at once took plants tens of millions of years, most of the sharks' head start. When they finally managed it, the first true trees appeared, like the 8-metre Wattieza. Their forests pulled down so much carbon dioxide that the planet cooled."
+          "body": "Plants had crept onto land long before sharks, but they stayed low. Height is a hard engineering problem. A plant that means to stand tall needs stiff wood to hold itself up, roots to grip against the wind, and plumbing to lift water many metres. Solving all three at once took plants tens of millions of years, most of the sharks' head start. When they finally managed it, the first true trees appeared, like the 8-metre Wattieza, whose forests pulled down so much carbon dioxide that the planet cooled."
         },
         {
           "title": "Whole sharks almost never turn to stone",
-          "body": "Because cartilage decays, a complete fossil shark is a small miracle. The finest come from black shale near Cleveland, Ohio. There, roughly 360-million-year-old Cladoselache fossils preserved the body outline, the muscle fibres, even the animal's last meal still in its gut. Cladoselache already looked unmistakably like a shark: streamlined and fast, with a mouth of sharp teeth. It shared its water with armoured fish the size of a bus, and it swam much the way a shark swims now.",
+          "body": "A complete fossil shark is a rare and lucky find. The finest come from black shale near Cleveland, Ohio. There, roughly 360-million-year-old Cladoselache fossils preserved the body outline, the muscle fibres, even the animal's last meal still in its gut. Cladoselache already looked unmistakably like a shark: streamlined and fast, with a mouth of sharp teeth. It shared its water with armoured fish the size of a bus, and it swam much the way a shark swims now.",
           "image_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Cladoselache_fyleri_(fossil_shark)_(Cleveland_Shale_Member,_Ohio_Shale,_Upper_Devonian;_Brooklyn,_Ohio,_USA)_2_(33699470716).jpg",
           "image_caption": "A Cladoselache from the Cleveland Shale of Ohio, one of the oldest near-complete shark fossils known, preserved down to skin and muscle.",
           "image_attribution": "James St. John, “Cladoselache fyleri (fossil shark)”, CC BY 2.0 (Wikimedia Commons)"
@@ -96,7 +96,7 @@
     {
       "type": "bigger_picture",
       "order": 9,
-      "content": "Sharks are often called primitive, as if being old meant being unfinished. The opposite is closer to the truth. The shark body plan arrived early and kept working, while the world rebuilt itself around it many times over. Forests rose, dinosaurs came and went, and the continents slid apart and back together. Through all of it, a fast cartilage hunter kept being a good answer to the same problem. Most of what we call ancient on land is young beside the shark."
+      "content": "Sharks are often called primitive, as if being old meant being unfinished. It is a strange charge. The shark body plan arrived early and kept working, while the world rebuilt itself around it many times over. Forests rose, dinosaurs came and went, and the continents slid apart and back together. Through all of it, a fast cartilage hunter kept being a good answer to the same problem."
     },
     {
       "type": "quiz",
@@ -192,7 +192,7 @@
       "type": "open_questions",
       "order": 12,
       "content": {
-        "body": "The pattern is clear; the causes are not. We can date the first sharks and the first trees precisely. Saying why the shark body plan was so hard to kill, when the same disasters erased almost everything around it, is a different matter. The opening chapter is blurry too, written in loose scales rather than skeletons.",
+        "body": "The pattern is clear; the causes are not. We can date the first sharks and the first trees precisely. Saying why the shark body plan was so hard to kill, when the same disasters erased almost everything around it, is a different matter. The opening chapter is blurry too, preserved in scattered scales and little else.",
         "items": [
           "Were the 450-million-year-old denticles shed by true sharks, or by close relatives on the way to becoming sharks?",
           "What let sharks survive mass extinctions that wiped out most of the ocean, again and again?",
