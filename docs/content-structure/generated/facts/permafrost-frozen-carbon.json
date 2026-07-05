@@ -1,0 +1,227 @@
+{
+  "tags": [
+    "climate",
+    "geology",
+    "ecology"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Positive feedback loop"
+      },
+      "featured": true
+    },
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "The carbon cycle"
+      },
+      "featured": true
+    },
+    {
+      "format": "books",
+      "ref": {
+        "title": "The Uninhabitable Earth",
+        "author": "David Wallace-Wells"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "Arctic permafrost holds about 1,500 billion tonnes of carbon, nearly twice the amount in the atmosphere today.",
+    "teasers": [
+      "Why a frozen store will not stay frozen",
+      "The gas that hides in the wet ground",
+      "When whole hillsides cave in at once"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "Arctic permafrost holds about 1,500 billion tonnes of carbon, nearly twice the amount in the atmosphere today."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><g stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'><circle cx='200' cy='70' r='42'/><circle cx='110' cy='215' r='42'/><circle cx='290' cy='215' r='42'/></g><g stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' opacity='0.55'><path d='M168 108 Q120 140 96 178'/><path d='M96 178 l-3 -14 m3 14 l13 -6'/><path d='M152 230 Q200 250 248 230'/><path d='M248 230 l-13 -5 m13 5 l-2 14'/><path d='M304 178 Q280 140 232 108'/><path d='M232 108 l14 2 m-14 -2 l5 13'/></g><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' text-anchor='middle'><text x='200' y='75'>Warming</text><text x='110' y='220'>Thaw</text><text x='290' y='220'>CO2 + CH4</text></g></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "A big carbon store is not, by itself, alarming. Forests hold carbon too. What makes the permafrost different is that warming is prying it loose, and what comes loose makes the warming worse. Thaw wakes up microbes that have been on pause for millennia, and they breathe out CO2 and methane as they feed on the old soil. Those gases warm the air, which thaws more ground, which frees more carbon. The stock is not sitting still."
+    },
+    {
+      "type": "tangible",
+      "order": 4,
+      "content": {
+        "items": [
+          "The frozen store holds nearly twice the carbon now floating in the atmosphere as CO2.",
+          "It outweighs all the carbon humans have added to the air by burning coal, oil, and gas since the 1700s.",
+          "Most of it has been locked in the cold since the last ice age, tens of thousands of years."
+        ],
+        "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='28' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='700' text-anchor='middle'>Carbon in permafrost vs the air</text><text x='200' y='46' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.65' text-anchor='middle'>billion tonnes of carbon</text><line x1='60' y1='252' x2='340' y2='252' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><rect x='95' y='72' width='74' height='180' rx='6' stroke='var(--accent)' stroke-width='2.5' fill='var(--accent)' fill-opacity='0.15'/><rect x='231' y='149' width='74' height='103' rx='6' stroke='currentColor' stroke-width='2'/><text x='132' y='64' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='15' font-weight='700' text-anchor='middle'>~1,500</text><text x='268' y='141' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='15' font-weight='700' text-anchor='middle'>~860</text><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle'><text x='132' y='272'>Permafrost</text><text x='268' y='272'>Atmosphere</text></g></svg>"
+      }
+    },
+    {
+      "type": "how_we_know",
+      "order": 5,
+      "content": "Nobody dug up a trillion tonnes to weigh it. The estimate is built from the ground up, one core at a time. Researchers drill into frozen soil across the Arctic, measure how much carbon each sample holds and how deep the frozen layer runs, then scale those readings across the whole permafrost map. A 2009 survey put the northern total near 1,700 billion tonnes, and later work narrowed it toward 1,500. The exact figure is still argued. The scale is not. It holds more carbon than any forest, sitting in the dirt."
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "Wet ground releases methane, the stronger gas",
+          "body": "The thaw does not give up only CO2. Where the ground turns waterlogged, different microbes take over and produce methane instead. That matters because methane punches far above its weight: over 20 years, a tonne of it traps roughly 80 times as much heat as a tonne of CO2. By mass, most of what escapes is still CO2. But the methane fraction pulls hard on near-term warming, the part that drives more thaw.",
+          "visual_svg": "<svg viewBox='0 55 400 195' xmlns='http://www.w3.org/2000/svg' fill='none'><rect x='30' y='120' width='118' height='60' rx='14' stroke='currentColor' stroke-width='2'/><text x='89' y='155' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' text-anchor='middle'>Thawed soil</text><g stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' opacity='0.55'><path d='M148 138 Q200 118 250 100'/><path d='M250 100 l-14 1 m14 -1 l-6 12'/><path d='M148 162 Q200 182 250 200'/><path d='M250 200 l-14 -1 m14 1 l-6 -12'/></g><rect x='250' y='74' width='120' height='52' rx='14' stroke='currentColor' stroke-width='2'/><text x='310' y='104' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' text-anchor='middle'>Dry: CO2</text><rect x='250' y='174' width='120' height='52' rx='14' stroke='var(--accent)' stroke-width='2.5' fill='var(--accent)' fill-opacity='0.12'/><text x='310' y='204' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>Wet: methane</text></svg>"
+        },
+        {
+          "title": "Whole hillsides can slump in a single season",
+          "body": "Most models picture the thaw as slow, the frozen layer creeping down a few centimeters a year. Real ground is messier. When ice-rich permafrost melts, the land above can cave in, opening lakes and raw earthen scars called thaw slumps that can carve away entire hillsides. This abrupt thaw exposes deep carbon fast, and one study found it could more than double the warming that circumpolar permafrost adds this century. Most climate models still leave it out. The slow number on the page is probably too kind.",
+          "image_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Atigun_Gorge_retrogressive_thaw_slump.jpg",
+          "image_caption": "A retrogressive thaw slump in Alaska, where ice-rich permafrost has collapsed and laid the frozen soil open to the air.",
+          "image_attribution": "Monteuxs, “Atigun Gorge retrogressive thaw slump”, CC BY-SA 4.0 (Wikimedia Commons)"
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "The permafrost turns the climate problem into a moving target. Cut human emissions and the planet still warms for a while. That warming thaws ground that releases carbon of its own, on top of anything people do. The carbon budgets that tell us how much more we can burn mostly assume this ground stays frozen. It is starting not to. So the room left to act may be smaller than the headline numbers suggest."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "What makes permafrost carbon a feedback rather than just a large store?",
+          "options": [
+            "It is the single largest carbon store on Earth",
+            "Warming releases it, and the released gases cause more warming and more thaw",
+            "It is made almost entirely of pure methane",
+            "It reflects sunlight back into space when exposed"
+          ],
+          "answer_index": 1,
+          "explanation": "A store just sits there. This one amplifies itself: warming thaws the ground, the thaw releases CO2 and methane, and those gases warm the ground further, which thaws still more."
+        },
+        {
+          "question": "Roughly how does the permafrost carbon compare with the carbon in the atmosphere?",
+          "options": [
+            "About a tenth as much",
+            "About the same",
+            "Nearly twice as much",
+            "About fifty times as much"
+          ],
+          "answer_index": 2,
+          "explanation": "The frozen ground holds on the order of 1,500 billion tonnes of carbon, close to double the amount currently in the air. That is why even a fraction of it escaping is a large number."
+        },
+        {
+          "question": "Why does methane matter even though most of the released carbon is CO2?",
+          "options": [
+            "Methane is the only gas that causes any warming",
+            "Methane is released in far greater quantities than CO2",
+            "Methane traps much more heat per tonne, especially over the near term",
+            "Methane refreezes the ground it comes from"
+          ],
+          "answer_index": 2,
+          "explanation": "Over 20 years, a tonne of methane warms about 80 times as much as a tonne of CO2. So even a small methane fraction pulls hard on the near-term warming that drives more thaw."
+        },
+        {
+          "question": "Why might current estimates of future permafrost emissions be on the low side?",
+          "options": [
+            "They overcount how much carbon is actually in the ground",
+            "They mostly leave out abrupt thaw, like collapsing ice-rich ground",
+            "They assume the Arctic is going to cool",
+            "They double-count human fossil-fuel emissions"
+          ],
+          "answer_index": 1,
+          "explanation": "Most models only capture slow, top-down thaw. Sudden collapse features like thaw slumps and thermokarst lakes expose deep carbon fast and are largely missing, so the real total is likely higher."
+        },
+        {
+          "question": "What happens to the carbon when the frozen soil thaws?",
+          "options": [
+            "Microbes decompose the old organic matter and release CO2 and methane",
+            "It stays locked in place for good",
+            "It hardens into rock",
+            "Arctic plants absorb essentially all of it"
+          ],
+          "answer_index": 0,
+          "explanation": "The carbon is ancient plant material that froze before it could rot. Thawing lets microbes finish the job, and their waste products are the greenhouse gases CO2 and methane."
+        },
+        {
+          "question": "How do scientists expect the release to unfold?",
+          "options": [
+            "A sudden global methane explosion within a few years",
+            "No release at all as long as some ground stays frozen",
+            "A one-time burst that then stops permanently",
+            "A large but gradual release over decades and centuries"
+          ],
+          "answer_index": 3,
+          "explanation": "The likely picture is a slow, prolonged leak rather than a single blast. That makes it less dramatic but harder to stop, since it keeps adding to warming for a very long time."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "Thawing permafrost is a methane bomb about to go off.",
+          "reality": "Scientists expect a gradual release over decades and centuries. The real worry is a slow leak that adds up and is very hard to reverse."
+        },
+        {
+          "myth": "We know exactly how much carbon is down there.",
+          "reality": "The estimates cluster near 1,500 billion tonnes but still carry real uncertainty, especially for the deep and subsea deposits that are hardest to sample."
+        },
+        {
+          "myth": "It is all carbon dioxide.",
+          "reality": "Most of the release is CO2, but waterlogged ground also produces methane, which traps far more heat per tonne over the decades that matter most."
+        }
+      ]
+    },
+    {
+      "type": "open_questions",
+      "order": 12,
+      "content": {
+        "body": "The pattern is settled. The size and the speed are not. How much of the 1,500 billion tonnes escapes this century depends on three things: how fast the Arctic warms, how wet the thawed ground gets, and how much thaw happens abruptly. The last two are the hardest to model, and they are where the estimates split most.",
+        "items": [
+          "How much of the release will be methane rather than CO2, which turns on how wet the ground becomes?",
+          "How much extra carbon comes from abrupt collapse, the part most models still leave out?",
+          "Is there a temperature past which the feedback speeds up sharply, or does it stay gradual?"
+        ]
+      }
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Schuur EAG et al. Climate change and the permafrost carbon feedback. Nature 2015;520:171-179",
+          "url": "https://www.nature.com/articles/nature14338",
+          "type": "paper"
+        },
+        {
+          "label": "Tarnocai C et al. Soil organic carbon pools in the northern circumpolar permafrost region. Global Biogeochemical Cycles 2009;23:GB2023 (the ~1,672 billion tonne estimate)",
+          "url": "https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/2008GB003327",
+          "type": "paper"
+        },
+        {
+          "label": "Walter Anthony K et al. 21st-century modeled permafrost carbon emissions accelerated by abrupt thaw beneath lakes. Nature Communications 2018;9:3262",
+          "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6093858/",
+          "type": "paper"
+        },
+        {
+          "label": "Permafrost carbon",
+          "url": "https://en.wikipedia.org/wiki/Permafrost_carbon",
+          "type": "wikipedia"
+        }
+      ]
+    }
+  ]
+}
