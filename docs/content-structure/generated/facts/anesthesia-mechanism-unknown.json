@@ -47,7 +47,7 @@
         "items": [
           "Ether reached the operating room in 1846, two decades before surgeons began sterilizing their tools, and before anyone knew germs cause infection.",
           "Today anesthesia is given for well over 200 million operations a year, on the order of seven every second somewhere in the world.",
-          "In all that time, and all those patients, no one has been able to write down exactly how the drugs switch awareness off."
+          "Potency runs across a hundred-thousand-fold span, from the feeblest gases to the strongest agents."
         ],
         "visual_svg": "<svg viewBox='0 0 400 150' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='30' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Used every day since 1846</text><rect x='45' y='64' width='310' height='26' rx='13' stroke='currentColor' stroke-width='2' opacity='0.5'/><text x='200' y='81' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' text-anchor='middle' opacity='0.85'>180 years, in daily use</text><text x='48' y='112' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' text-anchor='start' opacity='0.7'>1846</text><text x='352' y='112' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' text-anchor='end' opacity='0.7'>2026</text><text x='200' y='132' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>still no agreed explanation</text></svg>"
       }
@@ -55,13 +55,13 @@
     {
       "type": "how_we_know",
       "order": 5,
-      "content": "None of this is guesswork on the anesthetist's part. Each drug has a measured potency, the dose at which half of patients stop responding to a cut, so the amount needed is known to a fine margin. During the operation the brain's electrical activity is watched, and deep anesthesia leaves a clear signature: the fast chatter of waking thought gives way to slow, sweeping waves. The state is real, gradable, and repeatable. What is missing is the layer below, the chain from molecule to blankness."
+      "content": "None of this is guesswork on the anesthetist's part. Each drug has a measured potency, the dose at which half of patients stop responding to a cut, so the amount needed is known to a fine margin. During the operation the brain's electrical activity is watched, and deep anesthesia leaves a clear signature: the fast chatter of waking thought gives way to slow, sweeping waves. The state is real, gradable, and repeatable. The missing part is everything below that, the steps from the molecule to a blank mind."
     },
     {
       "type": "story",
       "order": 7,
       "content": {
-        "body": "On October 16, 1846, a Boston dentist named William Morton stood in a surgical theater at Massachusetts General Hospital. Not long before, in the same hospital, a demonstration of nitrous oxide had failed, and the crowd had jeered “Humbug”. Morton had his patient breathe ether from a glass globe until the man slumped, unconscious. The surgeon, John Collins Warren, cut a tumor from his neck while he lay still and silent. Warren turned to the stunned room: “Gentlemen, this is no humbug.” Surgery changed that afternoon. The mystery it opened did not close. Nearly 180 years on, the drug that made painless surgery possible still has no agreed explanation.",
+        "body": "On October 16, 1846, a Boston dentist named William Morton stood in a surgical theater at Massachusetts General Hospital. Not long before, in the same hospital, a demonstration of nitrous oxide had failed, and the crowd had jeered “Humbug”. Morton had his patient breathe ether from a glass globe until the man slumped, unconscious. The surgeon, John Collins Warren, cut a tumor from his neck while he lay still and silent. Warren turned to the stunned room: “Gentlemen, this is no humbug.” Surgery changed that afternoon. The mystery it opened did not close.",
         "key_figures": [
           {
             "name": "William T. G. Morton",
@@ -91,19 +91,19 @@
       "content": [
         {
           "title": "A century-old clue that never paid off",
-          "body": "In 1899 Hans Meyer noticed something clean. The better a substance dissolves in oil, the more potent it is as an anesthetic. The rule holds across a hundred-thousand-fold range of potency, from feeble gases to drugs far stronger, every one on the same line. For decades it looked like proof: anesthetics melt into the fatty membranes of nerve cells. Then, in 1984, two researchers showed the drugs also dim a firefly's glow, a reaction run by an enzyme with no membrane at all. So they grab proteins, not fat. The clean line turned into a deeper puzzle.",
+          "body": "In 1899 Hans Meyer noticed something clean. The better a substance dissolves in oil, the more potent it is as an anesthetic. The rule holds across a hundred-thousand-fold range of potency, from feeble gases to drugs far stronger, every one on the same line. For decades it looked like proof: anesthetics melt into the fatty membranes of nerve cells. Then, in 1984, two researchers showed the drugs also dim a firefly's glow, a reaction run by an enzyme with no membrane at all. If they could block that, they were binding proteins directly, and the neat membrane picture fell apart.",
           "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><g stroke='currentColor' stroke-width='2' opacity='0.5' stroke-linecap='round'><line x1='60' y1='250' x2='360' y2='250'/><line x1='60' y1='250' x2='60' y2='50'/></g><line x1='85' y1='232' x2='335' y2='72' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><g fill='currentColor'><circle cx='95' cy='226' r='4'/><circle cx='160' cy='188' r='4'/><circle cx='225' cy='150' r='4'/><circle cx='290' cy='110' r='4'/><circle cx='330' cy='76' r='4'/></g><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='12' opacity='0.75'><text x='103' y='243' text-anchor='start'>weak gases</text><text x='326' y='64' text-anchor='end'>potent drugs</text></g><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7'><text x='215' y='283' text-anchor='middle'>dissolves in fat</text><text x='26' y='150' text-anchor='middle' transform='rotate(-90 26 150)'>anesthetic potency</text></g></svg>"
         },
         {
           "title": "A gas that reacts with nothing still puts you under",
-          "body": "Xenon makes the puzzle sharper. It is a noble gas, so inert it forms almost no chemical bonds, the last element you would expect to touch a brain. Breathe enough of it, though, and you go under as surely as with any drug. A few countries use it in surgery. Xenon and propofol could hardly be more different, an inert atom versus a designed molecule, and they act on different receptors. Both still end in the same blank unconsciousness."
+          "body": "Xenon is the strangest case of all. It is a noble gas, so inert it forms almost no chemical bonds, the last element you would expect to touch a brain. Breathe enough of it, though, and you go under as surely as with any drug. A few countries use it in surgery. Xenon and propofol could hardly be more different, one an inert atom and the other a designed molecule, and they act on different receptors, though both leave the patient equally unconscious."
         }
       ]
     },
     {
       "type": "bigger_picture",
       "order": 9,
-      "content": "The gap is bigger than a missing detail. To switch consciousness off cleanly, on schedule, and back on again is to hold the thing in your hand, and still we cannot say what we are holding. That is really a statement about consciousness itself. We have a reliable dial for it and no theory of what the dial turns. Some researchers now run the process backward, watching the brain reassemble awareness as the drug clears, hoping the way out shows the machinery the way in hid. For now the oldest tool in the operating room is also one of its deepest unsolved problems."
+      "content": "The gap is bigger than a missing detail. Being able to switch consciousness off cleanly, on schedule, and back on again is one thing. Saying what has been switched is another, and it is a gap in our understanding of consciousness itself. Medicine has a dependable control over it and no account of what that control acts on. Some researchers now run the process backward, watching the brain reassemble awareness as the drug clears, to learn whether the way out reveals what the way in hides. The oldest tool in the operating room is still one of its least understood."
     },
     {
       "type": "quiz",
