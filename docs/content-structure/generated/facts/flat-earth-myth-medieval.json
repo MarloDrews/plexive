@@ -1,0 +1,233 @@
+{
+  "tags": [
+    "forgotten-history",
+    "history-of-science",
+    "medieval-history",
+    "critical-thinking"
+  ],
+  "connections": [
+    {
+      "format": "books",
+      "ref": {
+        "title": "Inventing the Flat Earth",
+        "author": "Jeffrey Burton Russell"
+      },
+      "featured": true
+    },
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Conflict thesis"
+      },
+      "featured": true
+    },
+    {
+      "format": "facts",
+      "ref": {
+        "title": "Eratosthenes measured the Earth"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "The belief that medieval Europe thought the world was flat is a myth, invented in 1828, centuries after its scholars taught that the Earth is a sphere.",
+    "teasers": [
+      "Where the flat-Earth story actually comes from",
+      "What Columbus actually got wrong out there",
+      "The medieval textbook that taught otherwise"
+    ],
+    "post_difficulty": 1
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "The belief that medieval Europe thought the world was flat is a myth, invented in 1828, centuries after its scholars taught that the Earth is a sphere."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='30' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='700' text-anchor='middle'>How old is the flat-Earth story?</text><rect x='60' y='92' width='312' height='38' rx='10' stroke='currentColor' stroke-width='2' fill='currentColor' fill-opacity='0.08'/><text x='216' y='116' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' text-anchor='middle'>Earth known to be round</text><text x='60' y='150' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' opacity='0.7' text-anchor='start'>Eratosthenes, 240 BC</text><text x='372' y='150' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' opacity='0.7' text-anchor='end'>today</text><line x1='346' y1='92' x2='346' y2='214' stroke='var(--accent)' stroke-width='2' stroke-dasharray='5 5' opacity='0.75'/><rect x='346' y='182' width='26' height='34' rx='8' stroke='var(--accent)' stroke-width='2.5' fill='var(--accent)' fill-opacity='0.15'/><text x='336' y='204' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='end'>flat-Earth myth, from 1828</text></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "Everyone knows the story. Medieval Europe thought the world was flat, and Columbus was the brave man who proved otherwise. Almost none of it is true. Educated people had known the Earth was a sphere since antiquity, and the schoolmen of the Middle Ages taught it as plain fact. The idea that they thought it flat was invented in the 1800s. What Columbus actually got wrong was the size of the Earth. Its shape was never in doubt."
+    },
+    {
+      "type": "story",
+      "order": 7,
+      "content": {
+        "body": "The flat-Earth story has an author, and a date. In 1828 the American writer Washington Irving published a popular life of Columbus and dressed up the scene at the Spanish court. In his telling, frightened clergy warned Columbus that his ships would sail off the edge of a flat world. It was fiction, but it read like history and it spread. Six years later a French scholar, Antoine-Jean Letronne, gave it a scholarly gloss and claimed the Church Fathers had taught a flat Earth. They had not. Late in the century, writers pushing a war between science and religion seized on the tale, and it hardened into common knowledge between about 1870 and 1920. The historian Jeffrey Burton Russell later traced the story back to its makers and found there had been almost no medieval flat-earthers to begin with.",
+        "key_figures": [
+          {
+            "name": "Washington Irving",
+            "role": "Invented the flat-Earth Columbus scene",
+            "one_line": "His 1828 life of Columbus staged a dramatic court debate over a flat Earth that never took place.",
+            "lifespan": "1783-1859",
+            "birth_year": 1783,
+            "featured": true
+          },
+          {
+            "name": "Antoine-Jean Letronne",
+            "role": "Gave the myth a scholarly gloss",
+            "one_line": "In 1834 he misread the Church Fathers as flat-earthers, lending the invented story the weight of scholarship.",
+            "lifespan": "1787-1848",
+            "birth_year": 1787,
+            "featured": false
+          },
+          {
+            "name": "Jeffrey Burton Russell",
+            "role": "Traced and debunked the myth",
+            "one_line": "His 1991 book showed the flat-Earth belief was a 19th-century invention and found almost no real medieval examples.",
+            "lifespan": "1934-2023",
+            "birth_year": 1934,
+            "featured": false
+          }
+        ],
+        "image_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Charles_Loring_Elliott_-_Washington_Irving_-_NPG.99.69_-_National_Portrait_Gallery.jpg",
+        "image_caption": "Washington Irving, whose 1828 life of Columbus put the flat-Earth debate into the world as fact.",
+        "image_attribution": "Charles Loring Elliott, “Washington Irving”, 1860, public domain (National Portrait Gallery, via Wikimedia Commons)"
+      }
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "The medieval classroom taught the sphere",
+          "body": "The sphere was standard curriculum. Around 1230, Sacrobosco's *On the Sphere of the World* opened by stating the Earth is a globe, and it stayed required reading in European universities for 400 years. Dante wrote a round Earth into the *Divine Comedy*. And the roundness was old news even then. Around 240 BC, Eratosthenes had read the Earth's whole circumference off the 7-degree angle of a shadow between two Egyptian cities. A student in 1300 no more doubted the sphere than a student today does.",
+          "visual_svg": "<svg viewBox='0 45 400 200' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='208' y='60' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.75' text-anchor='start'>sun's rays</text><path d='M80 199 Q200 170 320 199' stroke='currentColor' stroke-width='2.5' opacity='0.6' fill='none'/><line x1='256' y1='146' x2='268' y2='64' stroke='currentColor' stroke-width='2' opacity='0.7' stroke-linecap='round'/><line x1='156' y1='64' x2='138' y2='187' stroke='currentColor' stroke-width='2' opacity='0.7' stroke-linecap='round'/><line x1='150' y1='187' x2='144' y2='146' stroke='currentColor' stroke-width='2.5' stroke-linecap='round'/><line x1='250' y1='187' x2='256' y2='146' stroke='currentColor' stroke-width='2.5' stroke-linecap='round'/><line x1='150' y1='187' x2='138' y2='187' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.9'/><path d='M146.3 161.8 Q144 166 141.7 161.8' stroke='var(--accent)' stroke-width='2' fill='none'/><text x='160' y='160' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='14' font-weight='700' text-anchor='start'>7.2°</text><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle'><text x='142' y='212'>Alexandria</text><text x='253' y='212'>Syene</text></g><text x='200' y='236' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.75' text-anchor='middle'>one shadow gives the whole circumference</text></svg>"
+        },
+        {
+          "title": "Columbus's real mistake was the distance",
+          "body": "The real argument at court was about distance. Reading optimistic maps, Columbus figured Asia lay about 2,800 miles west of the Canaries. The scholars who doubted him had the better numbers. The true distance is closer to 12,000 miles, and no ship of the day could carry enough food and water to cross it. He set out on a hopeless estimate and lived only because two unknown continents happened to sit in the gap, near where he expected Japan. The experts had the math right. Columbus had the luck.",
+          "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='30' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='700' text-anchor='middle'>How far west to Asia?</text><line x1='50' y1='80' x2='50' y2='210' stroke='currentColor' stroke-width='1.5' opacity='0.4'/><text x='48' y='230' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.75' text-anchor='start'>Canaries</text><text x='52' y='89' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.85' text-anchor='start'>Columbus's guess</text><rect x='50' y='96' width='70' height='28' rx='6' stroke='currentColor' stroke-width='2' fill='currentColor' fill-opacity='0.1'/><text x='85' y='115' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' font-weight='700' text-anchor='middle'>2,800 mi</text><text x='52' y='145' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.85' text-anchor='start'>the real distance</text><rect x='50' y='152' width='300' height='28' rx='6' stroke='currentColor' stroke-width='2' fill='currentColor' fill-opacity='0.1'/><text x='245' y='171' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' font-weight='700' text-anchor='middle'>12,000 mi</text><text x='356' y='171' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='start'>Asia</text><line x1='150' y1='82' x2='150' y2='208' stroke='var(--accent)' stroke-width='2.5' stroke-dasharray='5 5'/><circle cx='150' cy='166' r='5' fill='var(--accent)'/><text x='150' y='74' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>the Americas</text></svg>"
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "The myth caught on because it was useful. In the late 1800s, writers arguing that religion had always strangled science needed a villain, and a Church that supposedly forced a flat Earth on everyone was perfect. It did not matter that it never happened. The story flattered the present: we are the clear-eyed moderns, they were the fearful ancients. That is the quiet appeal of a dark age. It lets every era believe it was the one that finally knew better. That is worth being skeptical about."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "Why is it wrong to say Columbus proved the Earth was round?",
+          "options": [
+            "Because he secretly believed it was flat himself",
+            "Because the Earth's roundness was already settled knowledge long before 1492",
+            "Because he never actually reached land",
+            "Because the round-Earth idea only appeared after his death"
+          ],
+          "answer_index": 1,
+          "explanation": "Sphericity had been standard among educated Europeans for centuries. Columbus could not prove what everyone schooled already accepted; the live question was how far away Asia was."
+        },
+        {
+          "question": "The dispute over Columbus's plan was really about which of these?",
+          "options": [
+            "Whether the Earth was flat or round",
+            "Whether ships could survive Atlantic storms",
+            "How far west Asia actually lay",
+            "Who would pay for the voyage"
+          ],
+          "answer_index": 2,
+          "explanation": "The scholars who doubted him were arguing distance, not shape. They had the better estimate: Asia was far too distant to reach by sea, which is why they thought the plan doomed."
+        },
+        {
+          "question": "What made the flat-Earth myth so appealing to writers in the late 1800s?",
+          "options": [
+            "New archaeological evidence had just surfaced",
+            "It fit a picture of religion holding back science",
+            "The Church had recently endorsed the idea",
+            "Columbus's own logs had just been rediscovered"
+          ],
+          "answer_index": 1,
+          "explanation": "The tale gave a clean villain to anyone arguing that faith and science are locked in war. Its usefulness to that story, not any evidence, is what kept it alive."
+        },
+        {
+          "question": "A university student around 1300 would most likely have been taught that the Earth is what?",
+          "options": [
+            "A sphere",
+            "A flat disc",
+            "Too sacred a question to study",
+            "Unknowable in shape"
+          ],
+          "answer_index": 0,
+          "explanation": "Sacrobosco's textbook, required reading for centuries, opened by describing the Earth as a globe. The sphere was ordinary classroom material, not a forbidden or fringe idea."
+        },
+        {
+          "question": "Were there any real historical figures who argued the Earth was flat?",
+          "options": [
+            "No, the idea was unknown before 1828",
+            "Yes, but only a rare few far outside the mainstream, such as Lactantius and Cosmas",
+            "Yes, nearly everyone until the Renaissance",
+            "Only uneducated sailors, never any writers"
+          ],
+          "answer_index": 1,
+          "explanation": "A couple of figures did argue it, centuries apart, but they were fringe voices with little influence. The myth blew those rare exceptions up into an entire age of belief."
+        },
+        {
+          "question": "What does the flat-Earth story best show about how history gets told?",
+          "options": [
+            "Ancient measurements were usually unreliable",
+            "A tidy, flattering myth can outlast the facts when it serves a larger narrative",
+            "Religious sources can never be trusted",
+            "Columbus was simply a poor navigator"
+          ],
+          "answer_index": 1,
+          "explanation": "The belief survived because it made the present look enlightened and the past look foolish. A story that flatters us is one to check, not to trust."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "Columbus proved the Earth was round.",
+          "reality": "Its roundness had been settled for centuries. Educated people already knew it, and the real question in 1492 was how far away Asia lay."
+        },
+        {
+          "myth": "The medieval Church taught that the Earth was flat.",
+          "reality": "Church scholars taught the opposite. The flat-Earth charge was pinned on the Church Fathers in 1834 by a writer who had read them badly."
+        },
+        {
+          "myth": "Nobody in the past ever thought the Earth was flat.",
+          "reality": "A rare few did. Lactantius around 310 and Cosmas Indicopleustes around 548 argued for a flat Earth, but they were fringe voices the later myth blew up into an entire age."
+        }
+      ]
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Myth of the flat Earth",
+          "url": "https://en.wikipedia.org/wiki/Myth_of_the_flat_Earth",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Russell JB. The Myth of the Flat Earth (American Scientific Affiliation lecture, 1997; from Inventing the Flat Earth, 1991)",
+          "url": "https://www.asa3.org/ASA/topics/history/1997Russell.html",
+          "type": "article"
+        },
+        {
+          "label": "De sphaera mundi (Sacrobosco, c. 1230, the standard university textbook describing a spherical Earth)",
+          "url": "https://en.wikipedia.org/wiki/De_sphaera_mundi",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Voyages of Christopher Columbus (his distance estimate to Asia vs the real figure)",
+          "url": "https://en.wikipedia.org/wiki/Voyages_of_Christopher_Columbus",
+          "type": "wikipedia"
+        }
+      ]
+    }
+  ]
+}
