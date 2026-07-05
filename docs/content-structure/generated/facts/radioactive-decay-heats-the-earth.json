@@ -45,7 +45,7 @@
     {
       "type": "surprises",
       "order": 3,
-      "content": "Picture the Earth the way most of us do: a ball of rock slowly cooling since it formed, radiating away the warmth of its birth. Half of that warmth is not ancient at all. It is being made right now. Deep in the rock, uranium, thorium, and potassium are quietly splitting apart. The planet is not only cooling. Part of it is a nuclear furnace, and it has been since the start."
+      "content": "The usual picture of the Earth is a ball of rock slowly cooling since it formed, radiating away the warmth of its birth. Half of that warmth is not ancient at all. It is being made right now. Deep in the rock, uranium, thorium, and potassium are quietly splitting apart. Part of it is a nuclear furnace, and it has been since the start."
     },
     {
       "type": "tangible",
@@ -62,13 +62,13 @@
     {
       "type": "how_we_know",
       "order": 5,
-      "content": "You cannot drill to the core, so the proof arrives as ghosts. Every radioactive decay in the rock throws off a neutrino, a particle so aloof it passes through the whole planet untouched. Nearly all of them slip clean through. But in a tank holding over a thousand tons of clear fluid, deep underground, one now and then strikes a proton and leaves a faint double flash. KamLAND in Japan caught the first of these earth-neutrinos in 2005, and Borexino in Italy confirmed them in 2010. Count the flashes and you count the decays below. By 2011 the tally put the nuclear share of Earth's heat near half."
+      "content": "You cannot drill to the core, so the proof arrives as ghosts. Every radioactive decay in the rock throws off a neutrino, a particle so weakly interacting it passes through the whole planet untouched. Nearly all of them slip clean through. But in a tank holding over a thousand tons of clear fluid, deep underground, one now and then strikes a proton and leaves a faint double flash. KamLAND in Japan caught the first of these earth-neutrinos in 2005, and Borexino in Italy confirmed them in 2010. Count the flashes and you count the decays below. By 2011 the tally put the nuclear share of Earth's heat near half."
     },
     {
       "type": "story",
       "order": 7,
       "content": {
-        "body": "For a long time the Earth's heat had no known source. In the 1860s William Thomson, Lord Kelvin, treated the planet as a once-molten ball simply cooling down. From that rate of cooling he put its age at only tens of millions of years. Geologists knew that was far too short. They just could not say why he was wrong. The missing piece came in 1896, when Henri Becquerel found that uranium gives off energy on its own. Rutherford saw it at once. The rocks carry their own furnace, a heat source Kelvin's cooling ball never had. That was not the whole reason his young age was wrong, but it was real. Measuring how much heat that furnace makes waited another century, for the neutrino detectors.",
+        "body": "In the 1860s the Earth's heat still had no known source. William Thomson, Lord Kelvin, treated the planet as a once-molten ball cooling down. From that rate of cooling he put its age at only tens of millions of years. Geologists knew that was far too short. They just could not say why he was wrong. The missing piece came in 1896, when Henri Becquerel found that uranium gives off energy on its own. Rutherford saw it at once. The rocks carry their own furnace, a heat source Kelvin's cooling ball never had. That was not the whole reason his young age was wrong, but it was real. Measuring how much heat that furnace makes waited another century, for the neutrino detectors.",
         "key_figures": [
           {
             "name": "William Thomson, Lord Kelvin",
@@ -104,12 +104,12 @@
       "content": [
         {
           "title": "Three clocks, still ticking from Earth's birth",
-          "body": "Three isotopes do almost all the heating. Uranium-238 and thorium-232 supply the bulk, roughly 8 terawatts each, and potassium-40 adds about 4 more. What makes them last is how slowly they go: uranium-238 sheds half its atoms every 4.5 billion years, thorium-232 every 14 billion. They were forged in dying stars before the Sun existed, seeded into the rock as the Earth formed, and they have been ticking down ever since. The furnace is running low, just very slowly.",
+          "body": "Three isotopes do almost all the heating. Uranium-238 and thorium-232 supply the bulk, roughly 8 terawatts each, and potassium-40 adds about 4 more. What makes them last is how slowly they go: uranium-238 sheds half its atoms every 4.5 billion years, thorium-232 every 14 billion. They were forged in dying stars before the Sun existed, seeded into the rock as the Earth formed, and they have been ticking down ever since.",
           "visual_svg": "<svg viewBox='0 0 400 195' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='28' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>The radiogenic heat, by isotope</text><g stroke='currentColor' stroke-width='2' opacity='0.55'><rect x='130' y='50' width='170' height='22' rx='6'/><rect x='130' y='90' width='170' height='22' rx='6'/><rect x='130' y='130' width='85' height='22' rx='6'/></g><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='end'><text x='122' y='66'>U-238</text><text x='122' y='106'>Th-232</text><text x='122' y='146'>K-40</text></g><g fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' text-anchor='start'><text x='308' y='66'>8 TW</text><text x='308' y='106'>8 TW</text><text x='223' y='146'>4 TW</text></g><text x='200' y='180' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='14' font-weight='700' text-anchor='middle'>together, about 20 TW</text></svg>"
         },
         {
           "title": "The leftover heat runs the planet's engine",
-          "body": "This heat is not just leaking away; it is doing work on the way out. The slow churn of the mantle it drives carries the continents, lifts mountains, and feeds volcanoes. A colder planet is a still one. Deeper down, heat escaping the core keeps its liquid iron stirring, and that motion runs the magnetic field that deflects the solar wind. Mars, smaller and quicker to cool, lost that churn and most of its field long ago, and its thin air bled into space."
+          "body": "On its way out, this heat does work. The slow churn of the mantle it drives carries the continents, lifts mountains, and feeds volcanoes. Deeper down, heat escaping the core keeps its liquid iron stirring, and that motion runs the magnetic field that deflects the solar wind. Mars, smaller and quicker to cool, lost that churn and most of its field long ago, and its thin air bled into space."
         }
       ]
     },
@@ -196,7 +196,7 @@
       "content": [
         {
           "myth": "The Earth's heat is just leftover warmth from when it formed.",
-          "reality": "Only about half is. The rest is generated continuously, as uranium, thorium, and potassium in the rock decay today."
+          "reality": "Only about half is. The rest is generated continuously, as radioactive elements in the rock decay today."
         },
         {
           "myth": "There must be a natural nuclear reactor running at the Earth's core.",
