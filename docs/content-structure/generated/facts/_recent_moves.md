@@ -12,25 +12,29 @@ See CROSS_POST_VARIANCE.md for the format.
 - longer-sentence reversal (belief carried into a long sentence) - 3
 - mid-scene concrete open (lead on the fact, no flat belief-then-punch) - 4
 - flat declarative on the headline fact/number (gold-style, no reversal or imperative) - 1
-- staccato reversal punch (flat belief, then a 3-6 word negation) - 2
+- staccato reversal punch (flat belief, then a 3-6 word negation) - 3
 - number-first mismatch (lead on the number gap) - 1
-- concrete-test / behavioral-mirror open - 2
-- object-in-hand imperative - 2
+- concrete-test / behavioral-mirror open - 3
+- object-in-hand imperative - 3
 - accounting "start with" reframe - 2
 - threshold-fact / boundary-value opener - 1
+- flat paradox / two-true-claims statement - 1
+- concede-then-pivot ("[X] is not, by itself, [Y]") - 1
 
 ### Closing line
 - deep-time / long-duration aphorism - 2
 - spatial / elemental image - 2
-- identity / boundary reflection - 3
+- identity / boundary reflection - 4
 - quiet-utility, present-day consequence - 3
 - elevated "written across/into [X]" aphorism - 1
 - concrete callback to the opening object - 1
 - flat callback to the opener motif - 1
-- measured causal present-day (tied to the cause) - 2
+- measured causal present-day (tied to the cause) - 3
 - present-day, mildly urgent (loss outpacing knowledge) - 1
 - flat trade-off / cost statement - 1
-- blunt principle / rule statement - 1
+- blunt principle / rule statement - 2
+- practical how-to imperative - 1
+- flat observation on why a belief persisted - 1
 
 ### Story pivot
 - "the explanation waited until [year], when [role] [Name]" - 1
@@ -39,15 +43,24 @@ See CROSS_POST_VARIANCE.md for the format.
 - single-episode experiment, doubt beat, no why-pivot - 1
 - evidence settles it (no fresh dated scientist) - 1
 - relay across several actors (answer arrives from elsewhere) - 1
-- discoverer + confirmer, replication holds - 1
+- discoverer + confirmer, replication holds - 2
 - old prediction, dated confirmation ("the case broke open on [date]") - 2
 - process/recovery narrative (get the sample, then read it) - 1
 - heresy then vindication (defended for years, then proof) - 2
 - eureka scene, discoverer's reaction, no vindication arc - 1
 - found, then lost, then re-established - 1
 - finding resisted / ignored after proof (inverse vindication) - 1
+- untested/invented claim -> century of repetition -> modern debunk - 2
+- worry investigated, then dismissed (analyst finds no effect) - 1
 
 ## Recent batches
+
+### 2026-07-05-a
+- simpsons: opener flat paradox statement ("Two claims sat in the same file, and both were true.") / close blunt epistemic principle ("Neither view is automatically the real one.", batch keeper) / pivot worry investigated then dismissed (Bickel finds no bias; Yule 1903, Simpson 1951 named earlier)
+- flat-earth: opener staccato reversal ("Everyone knows the story... Almost none of it is true.") / close flattened to a plain observation on why the myth persisted (de-landed from reflective aphorism, reserved for peak-end) / pivot untested/invented claim -> century of repetition -> modern debunk (Irving 1828, Russell); story OPENER recast off the shared "has an author, and a date" mold
+- permafrost: opener concede-then-pivot ("A big carbon store is not, by itself, alarming.") / close measured causal present-day stakes ("room left to act may be smaller...") / pivot none (no story section)
+- peak-end: opener concrete-test / behavioral-mirror (recall a memory) / close identity-boundary reflection ("which self you are living for", batch keeper, the batch's one earned reflective aphorism) / pivot discoverer + confirmer, lab then clinic (Kahneman + Redelmeier, named duration neglect)
+- searing: opener object-in-hand imperative ("Heat a pan until it smokes... Listen.", batch keeper) / close practical how-to imperative ("Sear your steak... keep it juicy some other way.") / pivot untested claim -> century of repetition -> modern debunk (Liebig 1847, McGee); keeps the "has a birthday" story-opener shape
 
 ### 2026-07-04-c
 - capsaicin: opener threshold-fact / boundary-value (43C injury line) / close identity-boundary reflection ("the gauge is all you ever get", batch keeper) / pivot long dormancy, "then in 1997 Julius went hunting"
