@@ -54,7 +54,7 @@
     {
       "type": "surprises",
       "order": 3,
-      "content": "Think of the most painful thing that happened to you years ago. Notice what your mind hands back: the worst moment, and how it ended. Almost never the length. Looking back on pain, we do not tally it minute by minute. We keep the peak and the final stretch and drop the rest. So a long, steady ache can leave a lighter memory than a short ordeal that ends on a spike. Duration barely leaves a mark."
+      "content": "Think of the most painful thing that happened to you years ago. Notice what your mind hands back: the worst moment, and how it ended. Almost never the length. Looking back on pain, we do not tally it minute by minute. We keep the peak and the final stretch and drop the rest. So a long, steady ache can leave a lighter memory than a short ordeal that ends on a spike."
     },
     {
       "type": "story",
@@ -85,11 +85,11 @@
       "content": [
         {
           "title": "Doctors used the rule on purpose",
-          "body": "If the ending is what sticks, you can engineer it. In a 2003 trial, 682 colonoscopy patients were split at random. For half, the doctor left the scope resting in place for an extra minute or two at the very end, a dull pressure that hurt less than the procedure itself. Nothing was taken away. Time was only added at the gentle end. That group rated the whole ordeal as less unpleasant, 4.4 against 4.9, and years later were more likely to come back for the next one. A worse experience, softened at the finish, became the easier one to face again."
+          "body": "If the ending is what sticks, you can engineer it. In a 2003 trial, 682 colonoscopy patients were split at random. For half, the doctor left the scope resting in place for an extra minute or two at the very end, a dull pressure that hurt less than the procedure itself. Nothing was taken away. Time was only added at the gentle end. That group rated the whole ordeal as less unpleasant, 4.4 against 4.9, and years later were more likely to come back for the next one."
         },
         {
           "title": "The self that remembers overrules the self that felt it",
-          "body": "Kahneman split the mind into two characters. The experiencing self lives each moment as it comes and then lets it go. The remembering self keeps score, and it files each episode under two numbers: how bad the worst part was, and how it ended. When you choose your next vacation or judge your last one, it is the remembering self doing the choosing. So we will trade a genuinely better time for a better story about it.",
+          "body": "Kahneman split the mind into two characters. The experiencing self lives each moment as it comes and then lets it go. The remembering self keeps score, and it files each episode under two numbers: how bad the worst part was, and how it ended. When you choose your next vacation or judge your last one, it is the remembering self doing the choosing.",
           "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='26' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='700' text-anchor='middle'>What memory keeps</text><g stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'><line x1='50' y1='84' x2='50' y2='250'/><line x1='50' y1='250' x2='362' y2='250'/></g><text x='42' y='90' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='end' transform='rotate(-90 42 90)'>pain</text><text x='356' y='268' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='end'>time</text><polyline points='60,232 100,150 140,110 172,96 210,158 250,196 296,176 336,214' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' opacity='0.5'/><circle cx='172' cy='96' r='6' fill='var(--accent)'/><circle cx='336' cy='214' r='6' fill='var(--accent)'/><text x='172' y='84' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>peak</text><text x='336' y='234' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>end</text><text x='200' y='288' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>the rest, and the length, fade</text></svg>"
         }
       ]
