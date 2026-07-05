@@ -1,15 +1,43 @@
 // Maps character offsets in the combined string back to DOM Ranges and
 // paints them with the CSS Custom Highlight API. The matching ::highlight()
-// rules live in globals.css. Browsers without the API silently skip the
-// visuals; speaking never depends on this file succeeding.
+// rules are injected at runtime by ensureHighlightStyles() below (they cannot
+// live in globals.css: Lightning CSS, the build-time CSS transformer, rejects
+// the ::highlight() pseudo-element and fails the whole file). Browsers without
+// the API silently skip the visuals; speaking never depends on this file.
 
 import type { TextSegment } from "./extractText"
 
 export const SENTENCE_HIGHLIGHT = "read-aloud-sentence"
 export const WORD_HIGHLIGHT = "read-aloud-word"
 
+const HIGHLIGHT_STYLE_ID = "read-aloud-highlights"
+
+// The ::highlight() styling, reproduced verbatim from the old globals.css rules:
+// the sentence is a soft wash of the post's format accent (var(--accent), which
+// resolves against the highlighted text's element), the spoken word a stronger
+// step of the same accent. Kept out of globals.css so the static parser never
+// sees ::highlight(); injected once, client-side, before the first paint.
+const HIGHLIGHT_CSS = `::highlight(read-aloud-sentence) {
+  background-color: color-mix(in srgb, var(--accent) 18%, transparent);
+}
+::highlight(read-aloud-word) {
+  background-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  color: var(--color-ink);
+}`
+
 function highlightsSupported(): boolean {
   return typeof CSS !== "undefined" && "highlights" in CSS
+}
+
+// Inject the ::highlight() rules into <head> once. Idempotent (id-guarded) and
+// client-only; called from setHighlight so it runs only where highlights paint.
+function ensureHighlightStyles() {
+  if (typeof document === "undefined") return
+  if (document.getElementById(HIGHLIGHT_STYLE_ID)) return
+  const style = document.createElement("style")
+  style.id = HIGHLIGHT_STYLE_ID
+  style.textContent = HIGHLIGHT_CSS
+  document.head.appendChild(style)
 }
 
 // Finds the Text nodes covering [start, end) of the combined string and
@@ -45,6 +73,7 @@ export function rangeFromOffsets(
 
 export function setHighlight(name: string, range: Range | null) {
   if (!highlightsSupported()) return
+  ensureHighlightStyles()
   if (range) CSS.highlights.set(name, new Highlight(range))
   else CSS.highlights.delete(name)
 }

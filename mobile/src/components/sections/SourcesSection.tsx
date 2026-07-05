@@ -3,6 +3,7 @@ import Svg, { Path } from "react-native-svg"
 import type { SourceItem } from "../../types/post"
 import { SectionBlock, sans, sansSemiBold } from "./primitives"
 import { colors } from "../../theme/tokens"
+import { unescapeDollar } from "../../lib/prose"
 
 // Port of frontend/src/components/sections/SourcesSection.tsx
 // Type badge (W/P/B/A/D) + label + external link icon; opens the URL in the
@@ -54,7 +55,7 @@ export default function SourcesSection({ content }: { content: SourceItem[] }) {
           >
             <Text style={sansSemiBold(10, colors["ink-dim"])}>{TYPE_LABELS[source.type] ?? "?"}</Text>
           </View>
-          <Text style={[sans(14, colors["ink-dim"], { lineHeight: 19 }), { flex: 1 }]}>{source.label}</Text>
+          <Text style={[sans(14, colors["ink-dim"], { lineHeight: 19 }), { flex: 1 }]}>{unescapeDollar(source.label)}</Text>
           <ExternalLinkIcon />
         </Pressable>
       ))}

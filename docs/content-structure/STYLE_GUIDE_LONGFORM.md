@@ -1,4 +1,4 @@
-# Deepscroll — Long-Form Style Guide
+# Deepscroll: Long-Form Style Guide
 
 The binding standard for **how the language reads** across all seven formats:
 books, facts, people, concepts, questions, stories, academy.
@@ -33,10 +33,19 @@ and make the moving worthwhile.
 
 ---
 
-# Part A — The shared voice
+# Part A: The shared voice
 
 These rules hold for all seven formats. Part B adds the small, named per-format
 deviations.
+
+Scope convention (shared with the texture standard): any unmarked line in Part A
+binds all seven formats. A line that holds for only some is marked inline with a
+fixed, greppable label, "Format-specific (Facts): ..." or "Format-specific
+(Books, Questions): ...", naming which formats it binds. If a rule would be wrong
+for any format it is not written here unmarked: it is either scoped with the
+label or moved to Part B. Measured figures are never baked into a Part A rule;
+the principle stays here and the figure lives per format, delegated by reference
+(for example A11 sets the teaser voice and points to each skeleton for length).
 
 ## A1. Voice and address
 
@@ -136,6 +145,72 @@ if a word shows up more in model output than in good human writing, cut it.
 - No colon-reveal "ta-da" rhythm on every other sentence.
 - Bold is rare. If everything is emphasized, nothing is.
 
+**Symbols and quotation marks:**
+- Use the symbol, not the spelled-out word, wherever a symbol exists and renders
+  cleanly: % not “percent” and € not “euro”. A symbol takes a digit, never a
+  spelled number: write 16%, not sixteen percent. This keeps figures scannable and
+  matches how the reader meets these quantities in the wild.
+- Currency uses a symbol with a digit too ($ and £), shown to the reader as $100. A
+  bare $ collides with the inline math that some formats use in prose, so a literal
+  currency dollar is escaped with a backslash: the content string is \$100, and in
+  the JSON source, where the backslash is itself escaped, the field is typed as
+  \\$100 and the reader sees $100. Never write a bare unescaped $ for currency; the
+  bare $ is reserved for inline math.
+- Italics are written with an asterisk pair, *like this*. The asterisk is the only
+  italic marker. The underscore is never used, since inline math reserves it for
+  subscripts. Like the bare $, the marker is read only outside the $...$ math spans,
+  so an asterisk inside math is left untouched. A single unpaired asterisk renders
+  literally, but avoid a stray pair of asterisks in prose, since the pair opens an
+  unwanted italic run, and there is no backslash escape for it the way there is for
+  currency.
+- Quotation uses typographic double quotes, the curly pair, for any quoted word or
+  phrase: the patient hears “a 90% survival rate” and relaxes. Curly doubles are
+  cleaner here than straight quotes, which must be escaped inside JSON, and they
+  render as real typography. Use them in place of single quotes for quotation, and
+  keep the ordinary apostrophe for possessives and contractions.
+- A word or short term named as a mention, not quoted from a speaker, takes the same curly doubles:
+  the word "fission", the term "regression". This is the use-mention distinction, naming a term as a
+  term, not attribution; reserve it for a term being introduced or pointed at, not for ordinary words.
+- Titles of works (books, papers, paintings, films) and the names of theories,
+  frameworks, and schools of thought take italics on mention: the book *Thinking,
+  Fast and Slow*, the painting *The Supper at Emmaus*, the theory of *predictive
+  coding*, the *free-energy principle*. This is title italics, naming a work or a
+  named idea, not emphasis italics, so it does not compete with the rare bold. The
+  boundary against the use-mention rule above is what kind of thing is named: a work
+  or a named body of thought is italicized, while a plain term pointed at as a term
+  keeps the curly doubles (the term "regression", the word "fission"). For a name on
+  the line between the two, a coinage that is half term and half framework,
+  italicize it when it names a body of work and quote it when it is being defined as
+  a word. Let what the sentence is doing decide. A single law, theorem, or rule of thumb is not a body of work and stays plain: Occam's razor,
+  Bayes' theorem, Hebb's rule. A research program keeps its italics even when its name contains the
+  word principle, as with the *free-energy principle*, because there the name points at a framework,
+  not at one rule.
+  Named effects, biases, and models stay plain in the same way, since a phenomenon or a single
+  construct is not a body of explanatory work: the framing effect, loss aversion, regression to the
+  mean, the liquid-drop model. A broad ism used as a category stays plain too (utilitarianism,
+  empiricism). Italics mark a specific named theory or framework, like *prospect theory* or
+  *predictive coding*, not the effect, the model, or the category it sits among.
+  This covers a represented question or thought in direct form, such as the
+  substituted question “do I like Ford cars?”, but not indirect speech, such as
+  asks whether to buy Ford stock.
+
+**Numbers and fractions:**
+- Spell out one through twelve in flowing prose; use digits from 13 up. Always use
+  digits with a unit or a symbol (16%, 63 years, age 27, a 60-gram primate), and in
+  a comparison use digits for every item so the spread is scannable (a shrew gets 2,
+  a cat 15, an elephant 65), even ones below 13.
+- Keep words for idiomatic or rounded quantities: the rounded motif (a billion beats,
+  half a billion), a dozen, a thousand-beat pulse, and small ratios woven into prose
+  (three times heavier, the two effects). A number that opens a sentence is spelled
+  out, or the sentence is recast.
+- Fractions and technical exponents use the slash form, not words: the 3/4 power, the
+  2/3 power, the negative 1/4 power, and 1/4, 2/3, 3/4 as standalone fractions. This
+  is plain text, since most prose paths do not render math, so no LaTeX here. Loose
+  proportions stay words (half the evidence).
+- The lean is format-dependent: data-forward formats such as Facts tilt toward
+  digits, narrative formats tilt toward words. The principle is shared; the tilt is
+  per format.
+
 **The positive directive:** write the way a sharp, well-read person writes when
 they care about being understood and have no template in front of them.
 
@@ -234,6 +309,43 @@ Weak: "You won't believe what scientists found about sleep."
 Strong: "Skip a night and your body starts clearing waste from neurons less
 well within a week."
 
+Teasers come as a set, usually three, so the within-post sameness rule applies
+to them (texture standard 2.6): the three must not read as one template or make
+the same promise three times. Each opens a different loop the post then closes, a
+real curiosity or tension that makes the reader want in, and none restates the
+finding or spends the payoff up front. Let the three share a register so they
+cohere as a set, and reach for variety in form so they do not clone one shape,
+but let that serve the content. A question, a direct address, a flat claim are
+ways to vary when they fit, never a quota to fill: three teasers that each suit
+their loop beat a forced variety that suits none, so if a shape does not fit a
+post, do not force it. Speak in terms the reader already has: a teaser meets them before the
+post, so it never leans on a name or concept the post itself will only teach.
+What counts as already-had shifts by format, but teasing with the very thing you
+are about to explain is the error everywhere. The no-overpromise rule above is the leash: a loop the body never closes
+is the clickbait this forbids. No category labels, and nothing in the "you won't
+believe" register. How many teasers, their length, and any format-specific axis
+for varying them are set in each skeleton; the voice is set here.
+
+The same promise rule reaches past the card. An internal section title or unit
+heading is a promise too: it commits the body to deliver what it names. A defining
+moment titled for a scene has to show that scene; an example titled for a case has
+to render it. A heading that names a walk in the snow when the body has no walk and
+no snow is the in-post form of overpromise, and it costs the most when the scene was
+the best thing the section had. Render what the title names, or rename the title to
+what the body delivers.
+
+A teaser is one line. Picture a good thumbnail: short, and it earns the tap by opening a real
+curiosity loop the post then closes, in plain words the reader already has. The pull comes from the
+hook, not from the length. Two failure modes are equal and opposite: clickbait that oversells what is
+not there, and a flat category label that undersells what is (a tag like "the flaw in before-and-after
+results" is accurate but gives the reader nothing to wonder about). Each format fixes its own short
+length band in its skeleton, Facts the tightest and Books a little longer, and names a few example
+angles the hook can take. Those angles are examples, not a quota: vary the form across the three where
+it fits, but if a question or a second-person line does not suit one of them, use whatever angle does,
+even if that repeats a form. Never restate the finding or spend the payoff, and never lean on a term
+the post will only teach. Reach for the concrete, a specific image, fact, or stake the reader can
+picture, not an abstract pointer to the theme, and open only a loop the post itself closes.
+
 ## A12. Quotes have to earn their place
 
 A quote is included only when the exact words carry something a paraphrase
@@ -248,6 +360,12 @@ Ask why something is true or what it implies, not for a date, a name, or a place
 The wrong options are plausible to someone who half-understood, never throwaway
 filler. The explanation teaches the logic of the right answer in a sentence or
 two; it does not open with "The correct answer is."
+
+Every question has to be answerable from the post itself. A question that tests a fact or idea the
+body never explains is a defect, however on-topic it sounds: the reader has no way to reason it out,
+and the quiz stops measuring understanding of this post. A question may pose a fresh scenario to test
+transfer, but the principle it turns on must be one the post actually taught. Before finalizing a quiz,
+check each question against the body and replace any whose answer the post does not teach.
 
 ## A14. Gravity: the tone yields to the subject
 
@@ -272,6 +390,16 @@ references only one country would catch, or explain them in passing when they
 are essential. Keep notation consistent across posts: one style for numbers,
 units, and dates, so a feed of many posts reads as a single publication.
 
+Reach for the plain word when it carries the same meaning as a rarer or more
+ornamental one. Many readers are fluent but not native, and a needless hard word
+or a clause they must read twice costs them the flow this guide exists to protect.
+Keep the syntax navigable: one main idea to a sentence, modifiers next to what
+they modify, no clause buried inside another. This is not the simplification the
+one principle rules out. The substance and the educated-general-adult target both
+stand; the difficulty stays in the idea and leaves the sentence. The exact
+technical word still earns its place when it is the right one (A5): use it and
+light it up in the same breath, never swap in a vaguer word that loses the meaning.
+
 ## A17. Visuals, the language part only
 
 A visual carries information; it is never decoration. Its caption follows every
@@ -280,7 +408,7 @@ they are drawn live in the skeletons and in `SVG_STANDARD.md`, not here.
 
 ---
 
-# Part B — Per-format voice
+# Part B: Per-format voice
 
 One base voice (Part A). Each format tilts it in one named, bounded way. Nothing
 else deviates. For the full worked example of each, read that format's benchmark
@@ -342,7 +470,7 @@ slowly and concretely.
 
 ---
 
-# Part C — Before output
+# Part C: Before output
 
 Run this check on every generated post. Any hit is a rewrite, not a maybe.
 
@@ -350,6 +478,11 @@ Run this check on every generated post. Any hit is a rewrite, not a maybe.
       real and verifiable; nothing invented, estimated, or embellished.
 - [ ] Zero em-dashes anywhere in user-facing text.
 - [ ] Semicolons sparse, none standing in for an em-dash.
+- [ ] Symbols for percent and currency, written with digits (16%, $100), not
+      spelled out; quotation in curly double quotes, not single or straight quotes.
+- [ ] Numbers follow the rule: digits from 13 up and with units or symbols, words
+      for idiomatic or rounded amounts; fractions and exponents in slash form
+      (the 3/4 power), not words.
 - [ ] No banned vocabulary; no contrast frames ("not X, it's Y"); no sweeping
       openers; no summarizing sign-off.
 - [ ] Sentence length varies; no flat run of same-length sentences.

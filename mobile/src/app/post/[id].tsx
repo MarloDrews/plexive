@@ -230,6 +230,7 @@ export default function PostDetailScreen() {
               sections={post.sections}
               isUserContent={post.is_user_content}
               postId={post.id}
+              readingMinutes={post.reading_minutes}
             />
 
             {/* Read Next — server-resolved featured edges (graph_edges.

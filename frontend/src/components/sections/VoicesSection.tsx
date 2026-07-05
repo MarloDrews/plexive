@@ -1,5 +1,6 @@
 import SectionLabel from "../SectionLabel"
 import type { VoiceItem } from "../../types/post"
+import { unescapeDollar } from "@/lib/prose"
 
 interface Props {
   content: VoiceItem[]
@@ -15,10 +16,10 @@ export default function VoicesSection({ content, label }: Props) {
       {content.map((voice, i) => (
         <blockquote key={i} className="border-l-2 border-edge-strong pl-4">
           <p className="text-lg font-serif text-ink leading-relaxed">
-            &ldquo;{voice.quote}&rdquo;
+            &ldquo;{unescapeDollar(voice.quote)}&rdquo;
           </p>
           <footer className="mt-2 text-sm italic text-ink-dim">
-            &mdash; {voice.attribution}
+            &mdash; {unescapeDollar(voice.attribution)}
           </footer>
         </blockquote>
       ))}

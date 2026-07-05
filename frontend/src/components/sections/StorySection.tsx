@@ -2,6 +2,9 @@ import SectionLabel from "../SectionLabel"
 import type { StoryContent } from "../../types/post"
 import SvgBlock from "../SvgBlock"
 import ContentImage from "./ContentImage"
+import Prose from "../Prose"
+import MathText from "../MathText"
+import { unescapeDollar } from "@/lib/prose"
 
 interface Props {
   content: StoryContent
@@ -12,7 +15,7 @@ export default function StorySection({ content, isUserContent }: Props) {
   return (
     <div className="px-6 py-8 flex flex-col gap-5">
       <SectionLabel>The Story Behind It</SectionLabel>
-      <p className="prose-post">{content.body}</p>
+      <Prose><MathText text={content.body} /></Prose>
 
       {content.visual_svg && (
         <div className="w-full max-w-[360px] mx-auto bg-transparent">
@@ -42,17 +45,17 @@ export default function StorySection({ content, isUserContent }: Props) {
               )}
               <div className="flex flex-col gap-0.5 min-w-0">
                 <div className="flex items-baseline gap-2 flex-wrap">
-                  <span className="text-sm font-semibold text-ink">{fig.name}</span>
+                  <span className="text-sm font-semibold text-ink">{unescapeDollar(fig.name)}</span>
                   {fig.lifespan && (
-                    <span className="text-xs text-ink-muted">{fig.lifespan}</span>
+                    <span className="text-xs text-ink-muted">{unescapeDollar(fig.lifespan)}</span>
                   )}
                 </div>
-                <span className="text-xs text-(--accent)/70">{fig.role}</span>
+                <span className="text-xs text-(--accent)/70">{unescapeDollar(fig.role)}</span>
                 {fig.one_line && (
-                  <p className="text-sm text-ink-body leading-relaxed mt-1">{fig.one_line}</p>
+                  <p className="text-sm text-ink-body leading-relaxed mt-1"><MathText text={fig.one_line} /></p>
                 )}
                 {fig.image_url && fig.image_attribution && (
-                  <p className="text-[10px] text-ink-faint leading-snug mt-1">{fig.image_attribution}</p>
+                  <p className="text-[10px] text-ink-faint leading-snug mt-1">{unescapeDollar(fig.image_attribution)}</p>
                 )}
               </div>
             </div>

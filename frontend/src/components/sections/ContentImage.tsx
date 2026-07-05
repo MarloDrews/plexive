@@ -2,6 +2,9 @@
 // content width, never distorted, caption then a smaller muted credit line
 // below. A failed load hides the figure rather than leaving a broken image.
 
+import MathText from "../MathText"
+import { unescapeDollar } from "@/lib/prose"
+
 interface Props {
   url: string
   caption?: string
@@ -25,10 +28,10 @@ export default function ContentImage({ url, caption, attribution, className = "w
         }}
       />
       {caption && (
-        <figcaption className="text-xs text-ink-muted leading-snug">{caption}</figcaption>
+        <figcaption className="text-xs text-ink-muted leading-snug"><MathText text={caption} /></figcaption>
       )}
       {attribution && (
-        <p className="text-[10px] text-ink-faint leading-snug">{attribution}</p>
+        <p className="text-[10px] text-ink-faint leading-snug">{unescapeDollar(attribution)}</p>
       )}
     </figure>
   )

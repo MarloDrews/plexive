@@ -10,6 +10,7 @@ import type {
 import { SectionBlock, sans } from "./primitives"
 import { colors, fonts } from "../../theme/tokens"
 import { useAccent } from "../../lib/accent"
+import { unescapeDollar } from "../../lib/prose"
 
 // Port of frontend/src/components/sections/AtAGlanceSection.tsx
 // Two-column fact grid; the variant is detected from marker fields exactly
@@ -101,17 +102,24 @@ function isStories(c: AnyAtAGlance): c is AtAGlanceStoriesContent {
   return "sources_reliability" in c
 }
 
-export default function AtAGlanceSection({ content }: { content: AnyAtAGlance }) {
+export default function AtAGlanceSection({
+  content,
+  readingMinutes,
+}: {
+  content: AnyAtAGlance
+  // Server-computed reading time (post.reading_minutes); not stored in content.
+  readingMinutes: number
+}) {
   if (isAcademy(content)) {
     const rows: Row[] = [
-      { label: "Study type", value: content.study_type },
-      { label: "Peer review", value: content.peer_review_status },
-      { label: "Result direction", value: content.result_direction },
-      { label: "Replication", value: content.replication_status },
+      { label: "Study type", value: unescapeDollar(content.study_type) },
+      { label: "Peer review", value: unescapeDollar(content.peer_review_status) },
+      { label: "Result direction", value: unescapeDollar(content.result_direction) },
+      { label: "Replication", value: unescapeDollar(content.replication_status) },
       { label: "Pre-registered", value: content.pre_registered ? "Yes" : "No" },
       { label: "Open data", value: content.open_data ? "Yes" : "No" },
       { label: "Open code", value: content.open_code ? "Yes" : "No" },
-      { label: "Read time", value: `${content.post_reading_time_min} min` },
+      { label: "Read time", value: `${readingMinutes} min` },
       { label: "Difficulty", value: <DotScale value={content.post_difficulty} /> },
     ]
     return (
@@ -123,12 +131,12 @@ export default function AtAGlanceSection({ content }: { content: AnyAtAGlance })
 
   if (isQuestions(content)) {
     const rows: Row[] = [
-      { label: "Field", value: content.field },
-      { label: "Type", value: content.type },
-      { label: "First posed by", value: content.first_posed_by },
+      { label: "Field", value: unescapeDollar(content.field) },
+      { label: "Type", value: unescapeDollar(content.type) },
+      { label: "First posed by", value: unescapeDollar(content.first_posed_by) },
       { label: "Key year", value: String(content.year) },
       { label: "Still debated", value: content.still_debated ? "Yes" : "No" },
-      { label: "Read time", value: `${content.post_reading_time_min} min` },
+      { label: "Read time", value: `${readingMinutes} min` },
       { label: "Difficulty", value: <DotScale value={content.post_difficulty} /> },
     ]
     return (
@@ -140,11 +148,11 @@ export default function AtAGlanceSection({ content }: { content: AnyAtAGlance })
 
   if (isStories(content)) {
     const rows: Row[] = [
-      { label: "Era", value: content.era },
-      { label: "Location", value: content.location },
-      { label: "Category", value: content.category },
+      { label: "Era", value: unescapeDollar(content.era) },
+      { label: "Location", value: unescapeDollar(content.location) },
+      { label: "Category", value: unescapeDollar(content.category) },
       { label: "Source reliability", value: <DotScale value={content.sources_reliability} /> },
-      { label: "Read time", value: `${content.post_reading_time_min} min` },
+      { label: "Read time", value: `${readingMinutes} min` },
       { label: "Difficulty", value: <DotScale value={content.post_difficulty} /> },
     ]
     return (
@@ -156,34 +164,34 @@ export default function AtAGlanceSection({ content }: { content: AnyAtAGlance })
 
   if (isPeople(content)) {
     const rows: Row[] = [
-      { label: "Born", value: content.born },
-      ...(content.died ? [{ label: "Died", value: content.died }] : []),
-      { label: "Nationality", value: content.nationality },
-      { label: "Field", value: content.field },
-      { label: "Read time", value: `${content.post_reading_time_min} min` },
+      { label: "Born", value: unescapeDollar(content.born) },
+      ...(content.died ? [{ label: "Died", value: unescapeDollar(content.died) }] : []),
+      { label: "Nationality", value: unescapeDollar(content.nationality) },
+      { label: "Field", value: unescapeDollar(content.field) },
+      { label: "Read time", value: `${readingMinutes} min` },
       { label: "Difficulty", value: <DotScale value={content.post_difficulty} /> },
     ]
     return (
       <SectionBlock>
         <FactGrid rows={rows} />
-        <FooterRow label="Known for" value={content.known_for} />
+        <FooterRow label="Known for" value={unescapeDollar(content.known_for)} />
       </SectionBlock>
     )
   }
 
   const rows: Row[] = [
-    { label: "Genre", value: content.genre },
+    { label: "Genre", value: unescapeDollar(content.genre) },
     { label: "Year", value: content.year },
-    { label: "Country", value: content.country },
+    { label: "Country", value: unescapeDollar(content.country) },
     { label: "Pages", value: content.pages },
     { label: "Reading ease", value: <DotScale value={content.reading_ease} /> },
-    { label: "Read time", value: `${content.post_reading_time_min} min` },
+    { label: "Read time", value: `${readingMinutes} min` },
     { label: "Difficulty", value: <DotScale value={content.post_difficulty} /> },
   ]
   return (
     <SectionBlock>
       <FactGrid rows={rows} />
-      <FooterRow label="Best for" value={content.best_for} />
+      <FooterRow label="Best for" value={unescapeDollar(content.best_for)} />
     </SectionBlock>
   )
 }

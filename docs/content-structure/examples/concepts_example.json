@@ -22,32 +22,27 @@
     }
   ],
   "feed_card": {
-    "field": "Statistics",
     "concept_name": "Regression to the Mean",
     "one_line": "An unusually high or low result is usually followed by a more ordinary one, because luck rarely repeats.",
-    "card_visual": {
-      "svg": "<svg viewBox='0 0 56 32' xmlns='http://www.w3.org/2000/svg' fill='none'><path d='M3 26 C15 26 17 7 28 7 C39 7 41 26 53 26' stroke='var(--accent)' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/></svg>"
-    },
     "teasers": [
-      "Why punishment seems to beat praise",
-      "The flaw in before-and-after results",
-      "Spotting luck disguised as cause"
+      "Your best month ever is a bad sign for the next one.",
+      "The cure you swear by may just be good timing.",
+      "Why does punishment seem to work and praise seem to backfire?"
     ],
-    "post_reading_time_min": 10,
     "post_difficulty": 2
   },
   "sections": [
     {
       "type": "intuition",
       "order": 1,
-      "content": "A sales rep closes a record number of deals in March, the best month anyone on the team has seen. Management promotes her and raises her target. April comes in lower. The natural reading is that success went to her head, or the new pressure hurt. The duller reading is closer to the truth. March combined real ability with a run of warm leads, a competitor who stumbled, and a few clients who happened to be ready to buy that week. The ability carried into April. The lucky run did not. Strip out the luck and what remains is closer to ordinary, which is roughly where April landed. Nothing went wrong in April. A March that good was never going to be her normal."
+      "content": "A sales rep closes a record number of deals in March, the best month anyone on the team has seen. Management promotes her and raises her target. April comes in lower. The natural reading is that success went to her head, or the new pressure hurt. The duller reading is closer to the truth. March combined real ability with a run of warm leads, a competitor who stumbled, and a few clients who happened to be ready to buy that week. The ability carried into April. The lucky run did not. Strip out the luck and what remains is closer to ordinary, which is roughly where April landed. A March that good was never going to be her normal."
     },
     {
       "type": "visual_explanation",
       "order": 2,
       "content": {
-        "visual_svg": "<svg viewBox='6 30 366 246' xmlns='http://www.w3.org/2000/svg' fill='none'><g stroke='currentColor' stroke-width='2' stroke-linecap='round' opacity='0.5'><line x1='60' y1='240' x2='360' y2='240'/><line x1='60' y1='240' x2='60' y2='40'/></g><g stroke='currentColor' stroke-width='1.5' stroke-dasharray='5 5' opacity='0.28'><line x1='210' y1='40' x2='210' y2='240'/><line x1='60' y1='140' x2='360' y2='140'/></g><line x1='60' y1='240' x2='360' y2='40' stroke='currentColor' stroke-width='1.8' stroke-dasharray='6 5' stroke-linecap='round' opacity='0.5'/><line x1='60' y1='200' x2='360' y2='80' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><g fill='currentColor' opacity='0.55'><circle cx='100' cy='205' r='3.5'/><circle cx='128' cy='184' r='3.5'/><circle cx='158' cy='176' r='3.5'/><circle cx='188' cy='150' r='3.5'/><circle cx='214' cy='160' r='3.5'/><circle cx='244' cy='132' r='3.5'/><circle cx='274' cy='120' r='3.5'/><circle cx='300' cy='98' r='3.5'/></g><circle cx='335' cy='57' r='4' stroke='currentColor' stroke-width='2' opacity='0.7'/><circle cx='335' cy='90' r='5' fill='var(--accent)'/><path d='M335 64 L335 84' stroke='var(--accent)' stroke-width='2' stroke-linecap='round'/><path d='M335 84 l-4 -8 m4 8 l4 -8' stroke='var(--accent)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/><g font-family='var(--font-sans), system-ui, sans-serif'><text x='210' y='264' fill='currentColor' font-size='13' font-weight='600' text-anchor='middle' opacity='0.75'>First measurement</text><text x='24' y='140' fill='currentColor' font-size='13' font-weight='600' text-anchor='middle' opacity='0.75' transform='rotate(-90 24 140)'>Second measurement</text><text x='150' y='84' fill='currentColor' font-size='13' text-anchor='middle' opacity='0.6'>if repeated</text><text x='358' y='76' fill='var(--accent)' font-size='14' font-weight='700' text-anchor='end'>real trend</text><text x='326' y='108' fill='var(--accent)' font-size='13' font-weight='600' text-anchor='end'>expected</text><text x='94' y='132' fill='currentColor' font-size='13' text-anchor='start' opacity='0.55'>average</text></g></svg>",
-        "image_caption": "Each dot pairs a first and second measurement of the same thing, and the highlighted line runs flatter than the dashed line of perfect repetition, so a high first score predicts a second pulled back toward the average."
+        "visual_svg": "<svg viewBox='12 38 376 242' xmlns='http://www.w3.org/2000/svg' fill='none'><g stroke='currentColor' stroke-width='2' stroke-linecap='round' opacity='0.5'><line x1='55' y1='250' x2='378' y2='250'/><line x1='55' y1='250' x2='55' y2='42'/></g><line x1='55' y1='150' x2='378' y2='150' stroke='currentColor' stroke-width='1.5' stroke-dasharray='5 5' stroke-linecap='round' opacity='0.3'/><line x1='55' y1='250' x2='375' y2='45' stroke='currentColor' stroke-width='1.8' stroke-dasharray='6 5' stroke-linecap='round' opacity='0.5'/><g fill='currentColor' opacity='0.5'><circle cx='95' cy='196' r='3.5'/><circle cx='150' cy='172' r='3.5'/><circle cx='195' cy='152' r='3.5'/><circle cx='245' cy='138' r='3.5'/><circle cx='290' cy='122' r='3.5'/><circle cx='350' cy='98' r='3.5'/></g><g fill='currentColor'><circle cx='110' cy='189' r='4'/><circle cx='320' cy='111' r='4'/></g><line x1='55' y1='210' x2='375' y2='90' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><g stroke='var(--accent)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M320 82 L320 107'/><path d='M320 107 l-4 -7 m4 7 l4 -7'/><path d='M110 213 L110 192'/><path d='M110 192 l-4 7 m4 -7 l4 7'/></g><g font-family='var(--font-sans), system-ui, sans-serif'><text x='216' y='272' fill='currentColor' font-size='13' font-weight='600' text-anchor='middle' opacity='0.75'>First measurement</text><text x='28' y='150' fill='currentColor' font-size='13' font-weight='600' text-anchor='middle' opacity='0.75' transform='rotate(-90 28 150)'>Second measurement</text><text x='62' y='144' fill='currentColor' font-size='13' text-anchor='start' opacity='0.5'>average</text><text x='300' y='70' fill='currentColor' font-size='13' text-anchor='end' opacity='0.65'>if scores stay equal</text><text x='300' y='170' fill='var(--accent)' font-size='13' font-weight='700' text-anchor='middle'>actual average</text><text x='300' y='186' fill='var(--accent)' font-size='13' font-weight='700' text-anchor='middle'>second score</text></g></svg>",
+        "image_caption": "Each dot is one thing measured twice. The solid line runs flatter than the dashed line that marks an equal second score, so after a high first score the second tends to come down toward the average, and after a low first score it tends to come up."
       }
     },
     {
@@ -57,7 +52,7 @@
         {
           "step_number": 1,
           "title": "Every result mixes signal and luck",
-          "body": "Any measured performance has two parts. One is stable: real skill, true quality, the underlying rate. The other is transient: luck, timing, mood, measurement error, the conditions of that one day. A good day at work is part real ability and part how the day happened to break. The stable part tends to repeat. The transient part does not."
+          "body": "Any measured performance has two parts. One is stable: real skill, true quality, the underlying rate. The other is transient, drawn from luck, timing, mood, measurement error, and the conditions of that one day. A good day at work is part real ability and part how the day happened to break."
         },
         {
           "step_number": 2,
@@ -68,17 +63,17 @@
         {
           "step_number": 3,
           "title": "Luck resets on the next measurement",
-          "body": "Measure the same thing again and the stable part is still there. The favorable luck is gone, replaced by a fresh draw that is, on average, ordinary. The second result keeps the skill but loses the tailwind."
+          "body": "Measure the same thing again and the stable part is still there. The favorable luck is gone. A fresh draw of luck takes its place, and on average that draw is ordinary."
         },
         {
           "step_number": 4,
           "title": "The result drifts back toward average",
-          "body": "With only the stable part and an ordinary draw of luck, the second measurement settles closer to the mean than the first. The more the first result owed to luck, the larger the drop. This drift needs no cause beyond arithmetic. Nothing has to act on the performer between the two measurements."
+          "body": "With only the stable part and an ordinary draw of luck, the second measurement settles closer to the mean than the first. The more the first result owed to luck, the larger the drop. Nothing has to act on the performer for this to happen. The second reading is the same skill, now showing up on a more ordinary day."
         },
         {
           "step_number": 5,
           "title": "Weak correlation means strong regression",
-          "body": "How far a result regresses depends on how much of it was luck. When two measurements of the same thing track each other tightly, the measure is mostly signal and there is little regression. When they track loosely, the measure is mostly noise and the second result falls almost all the way back to the average."
+          "body": "How far a result regresses depends on how closely two measurements of the same thing agree. When they agree tightly, the second barely moves. Measure height twice with a good tape and the readings nearly match. When they agree only loosely, as with a sales rep's month, the second falls most of the way back to the average."
         }
       ]
     },
@@ -86,7 +81,7 @@
       "type": "formal_definition",
       "order": 4,
       "content": {
-        "body": "In standardized terms, the effect has an exact size. Write each measurement as the number of standard deviations it sits from the average. The best prediction for the second standardized score is the first standardized score multiplied by the correlation between the two measurements. Since that correlation is at most 1, the prediction always sits closer to zero, which is the mean. A correlation of 0.5 means a first score two standard deviations above average predicts a second score only one standard deviation above average.",
+        "body": "In standardized terms, the effect has an exact size. Each measurement can be written as the number of standard deviations it sits from the average. The best prediction for the second standardized score is the first standardized score multiplied by the correlation between the two measurements. That correlation runs from -1 to 1. Since anything short of a perfect 1 shrinks the score when you multiply, the predicted second score keeps the same sign but lands closer to zero, the mean. A correlation of 0.5 means a first score two standard deviations above average predicts a second score only one standard deviation above average.",
         "formula": "\\hat{z}_2 = r \\cdot z_1",
         "notation_legend": [
           {
@@ -99,7 +94,7 @@
           },
           {
             "symbol": "r",
-            "meaning": "the correlation between the two measurements, from 0 to 1"
+            "meaning": "the correlation between the two measurements, which runs from -1 to 1"
           }
         ]
       }
@@ -109,24 +104,24 @@
       "order": 5,
       "content": [
         {
-          "title": "The second-season slump is mostly arithmetic",
+          "title": "Rookie award and the year after",
           "domain": "Sports",
-          "body": "An athlete wins the season's top rookie award, then disappoints in the second season, and commentators reach for reasons: complacency, pressure, opponents catching on. The rookie award goes to whoever combined real talent with a season where the breaks fell their way. The talent stays. The breaks scatter. A second season nearer the player's true level reads as a decline only against an inflated baseline. The same logic sits behind the idea that athletes fade after appearing on a famous sports magazine's cover, because the cover finds them at a peak."
+          "body": "An athlete wins the season's top rookie award, then disappoints in the second season, and commentators reach for reasons: complacency, pressure, opponents catching on. The rookie award goes to whoever combined real talent with a season where the breaks fell their way. The talent carries over to the next season. The lucky breaks that came with the award were never going to repeat at the same rate. A second season nearer the player's true level reads as a decline only against an inflated baseline. The same logic sits behind the idea that athletes fade after appearing on a famous sports magazine's cover."
         },
         {
-          "title": "Speed cameras take credit for chance",
+          "title": "Speed cameras after a crash spike",
           "domain": "Road safety",
-          "body": "Authorities install speed cameras where serious crashes recently spiked. Crashes then fall, and the camera is declared a success. Some of that fall is real deterrence. A large part is regression: a site gets chosen precisely because it had an unusually bad year, and unusually bad years are followed by ordinary ones whether or not a camera arrives. Road safety studies that ignore this overstate the camera's benefit, which is why careful evaluations compare against control sites that were equally bad and left untreated."
+          "body": "Authorities install speed cameras where serious crashes recently spiked. Crashes then fall, and the camera is declared a success. Some of that fall is real deterrence. A large part is regression: a site gets chosen precisely because it had an unusually bad year, and unusually bad years are followed by ordinary ones whether or not a camera arrives. Road safety studies that ignore this overstate the camera's benefit."
         },
         {
-          "title": "The second doctor visit looks better on its own",
+          "title": "The doctor visit at the worst moment",
           "domain": "Medicine",
-          "body": "People book a doctor when symptoms are at their worst, because that is what drives them to call. Many conditions then ease regardless of what the doctor does, since the visit was timed to a low point that was always going to lift. The patient credits the new medicine and the doctor credits the treatment, when both may be reading a recovery that regression would have delivered anyway."
+          "body": "People book a doctor when symptoms are at their worst, because that is what drives them to call. Many conditions then ease regardless of what the doctor does, since the visit was timed to a low point that was always going to lift. The patient credits the new medicine and the doctor credits the treatment."
         },
         {
-          "title": "Flight instructors learned the wrong lesson",
+          "title": "Flight instructors",
           "domain": "Training",
-          "body": "Israeli air force instructors noticed that praising a cadet after an excellent maneuver was followed by a worse one, while shouting at a cadet after a poor maneuver was followed by improvement. They concluded that criticism works and praise backfires. The pattern was regression. An excellent maneuver is a high outlier whose next attempt lands closer to average, and a poor one is a low outlier whose next attempt lands better. The instructors were rewarding and punishing chance, then misreading the rebound as proof."
+          "body": "Air force flight instructors noticed that praising a cadet after an excellent maneuver was followed by a worse one, while shouting at a cadet after a poor maneuver was followed by improvement. They concluded that criticism works and praise backfires. The pattern was regression. An excellent maneuver is a high outlier whose next attempt lands closer to average, and a poor one is a low outlier whose next attempt lands better. The instructors were rewarding and punishing chance."
         }
       ]
     },
@@ -134,7 +129,7 @@
       "type": "how_to_apply",
       "order": 6,
       "content": {
-        "body": "Reach for regression to the mean whenever you are about to draw a lesson from a before-and-after comparison. Ask first why this case landed in front of you. If you picked it because it was a high or a low point, a record quarter, a worst-ever month, a patient at their sickest, then expect the next measurement to move toward the average on its own, before you credit anything you did. The harder you selected on the extreme, the more free movement you should expect. To separate a real effect from this drift, you need a comparison: a group that was equally extreme and left untreated. If your treated group improves no more than that control, the change was regression. If it beats the control, you have found something real. When no control exists, at least ask whether the size of the change is larger than chance alone would produce.",
+        "body": "Reach for regression to the mean whenever you are about to draw a lesson from a before-and-after comparison. Ask first why this case landed in front of you. Often you picked it because it was a high or a low point: a record quarter, a worst-ever month, a patient at their sickest. When that is the reason, expect the next measurement to move toward the average on its own, before you credit anything you did. The harder you selected on the extreme, the more free movement you should expect. To separate a real effect from this drift, you need a comparison: a group that was equally extreme and left untreated. If your treated group improves no more than that control, the change was regression. If it beats the control, you have found something real. When no control exists, at least ask whether the size of the change is larger than chance alone would produce.",
         "checklist": [
           "Was this case chosen because it was a high or a low point?",
           "Does the measure carry luck, timing, mood, or noise?",
@@ -147,13 +142,13 @@
     {
       "type": "where_it_breaks",
       "order": 7,
-      "content": "Regression to the mean is a property of selection plus noise, not a force, and treating it as a force creates its own errors. The most common is over-diagnosis: waving away a genuine effect as 'just regression' when a proper control shows the treated group improved more than chance would deliver. A second error is to forget which average a result returns to. A result settles toward the mean of its own group, so a consistently elite performer regresses toward an elite average, which sits well above the population's middle. Regression also says nothing certain about a single next case. It describes a tendency across many cases, and any one performer can still post a second extreme. In 1933 Horace Secrist filled a book with charts of firms drifting toward 'mediocrity' and concluded that competition erodes excellence. The statistician Harold Hotelling reviewed it and showed the drift was nothing but regression to the mean."
+      "content": "Regression to the mean is a property of selection plus noise, not a force, and treating it as a force creates its own errors. The most common is over-diagnosis: waving away a genuine effect as “just regression” when a proper control shows the treated group improved more than chance would deliver. A second error is to forget which average a result returns to. A result settles toward the mean of its own group, so a consistently elite performer regresses toward an elite average, which sits well above the population's middle. Regression also says nothing certain about a single next case. It describes a tendency across many cases, and any one performer can still post a second extreme. In 1933 Horace Secrist filled a book with charts of firms drifting toward “mediocrity” and concluded that competition erodes excellence. The statistician Harold Hotelling reviewed it and showed the drift was nothing but regression to the mean."
     },
     {
       "type": "mental_takeaway",
       "order": 8,
       "content": {
-        "body": "A case singled out because it stood out tends to show up tamer the next time. The standout was part signal and part luck, and luck does not appear on cue twice. We are quick to read cause into these returns to normal, a manager who fixed things or a remedy that worked, when often we are watching arithmetic.",
+        "body": "When an extreme result settles back toward normal, we are quick to credit a cause, a manager who turned things around or a remedy that worked. Often the only thing at work is arithmetic.",
         "visual_svg": "<svg viewBox='56 44 260 170' xmlns='http://www.w3.org/2000/svg' fill='none'><line x1='70' y1='180' x2='306' y2='180' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-dasharray='5 5' opacity='0.4'/><text x='70' y='200' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.6'>average</text><circle cx='250' cy='80' r='6' fill='var(--accent)'/><path d='M250 90 Q300 135 256 172' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><path d='M256 172 l9 -3 m-9 3 l3 -9' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/><text x='250' y='64' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>standout</text></svg>"
       }
     },
@@ -162,15 +157,15 @@
       "order": 9,
       "content": [
         {
-          "question": "A teacher screams at the class after their worst quiz of the year, and the next quiz scores improve. What is the most likely explanation?",
+          "question": "A sales manager praises reps after their best month and criticizes them after their worst. Over time she sees that criticized reps usually improve while praised reps usually slip, and concludes that criticism is the more effective tool. What is she most likely missing?",
           "options": [
-            "Fear is an effective teaching method",
-            "The students studied harder out of resentment",
-            "The worst quiz was a low outlier, so scores were likely to rise on their own",
-            "The second quiz was easier"
+            "Her read holds up, since the numbers consistently show criticism beating praise",
+            "A best or worst month is mostly luck sitting on steady skill, so each rep's next month drifts back toward their own normal whatever she says",
+            "Praise breeds complacency while criticism sharpens focus, and that is what moves the numbers",
+            "The reps she criticized happened to draw easier targets the following month"
           ],
-          "answer_index": 2,
-          "explanation": "A worst-ever quiz is a low extreme, and extremes are followed by results nearer the average regardless of what the teacher does. To know whether the shouting helped, it would take a comparable class that scored just as badly and was left alone."
+          "answer_index": 1,
+          "explanation": "Best and worst months sit at the extremes, where luck runs strongest, so the month after tends back toward each rep's usual level on its own. The feedback collects the credit, though the same swing would appear if she said nothing."
         },
         {
           "question": "A supplement is advertised with glowing testimonials from people who started taking it when they felt at their absolute worst. Why is this evidence weak?",
@@ -181,7 +176,7 @@
             "The improvement is real, so the supplement must deserve some of the credit"
           ],
           "answer_index": 0,
-          "explanation": "Starting 'at their worst' selects a low point, and low points are followed by improvement on their own. The testimonials may be honest and still reveal nothing about the supplement, because regression predicts the same recovery without it."
+          "explanation": "Starting “at their worst” selects a low point, and low points are followed by improvement on their own. The testimonials may be honest and still reveal nothing about the supplement, because regression predicts the same recovery without it."
         },
         {
           "question": "Which case shows the LEAST regression to the mean between two measurements?",
@@ -209,8 +204,8 @@
           "question": "Why does a clinical trial need a control group even when patients on the new drug get better?",
           "options": [
             "Because patients enrolled at their sickest would tend to improve anyway, and the control measures that baseline drift",
-            "To make the study look more rigorous to reviewers",
-            "To double the sample size",
+            "Because without a control, every gain in the treated group has to be chalked up to regression rather than to the drug",
+            "Because improvement and the drug only move together, and a correlation like that can never establish cause",
             "Because drugs only work in comparison to other drugs"
           ],
           "answer_index": 0,
@@ -228,7 +223,7 @@
           "explanation": "Regression pulls a result toward the mean of its own group, which for her is an elite average. Her skill is real and stays high, so her next result settles near that personal average, well above ordinary players and a step below her best."
         },
         {
-          "question": "A manager dismisses a training program's measured gains by saying 'that is just regression to the mean.' When is the manager wrong?",
+          "question": "A manager dismisses a training program's measured gains by saying “that is just regression to the mean.” When is the manager wrong?",
           "options": [
             "Whenever a before-and-after gain appears, regression fully explains it",
             "The manager is never wrong, since all gains are regression",
@@ -244,12 +239,12 @@
       "type": "origin",
       "order": 10,
       "content": {
-        "body": "Francis Galton named the effect in 1886, in a paper titled 'Regression towards Mediocrity in Hereditary Stature.' He had gathered the heights of more than nine hundred adult children alongside their parents and noticed a pattern that puzzled him: tall parents had children taller than average, but shorter than the parents themselves, and short parents had children below average yet taller than themselves. Each generation leaned back toward the population's middle. Galton first called this 'reversion,' then settled on 'regression,' and the word later attached itself to the whole statistical method of fitting a line through data. The mathematics that explains it was sharpened by his protégé Karl Pearson into the correlation coefficient. Galton also coined the word 'eugenics' and pursued the heredity studies in its service, a use of the same data that the science has long since rejected.",
+        "body": "Francis Galton named the effect in 1886, in a paper titled *Regression towards Mediocrity in Hereditary Stature*. He had gathered the heights of more than nine hundred adult children alongside their parents and noticed a pattern that puzzled him: tall parents had children taller than average, but shorter than the parents themselves, and short parents had children below average yet taller than themselves. Each generation leaned back toward the population's middle. Galton first called this “reversion,” then settled on “regression,” and the word later attached itself to the whole statistical method of fitting a line through data. The mathematics that explains it was sharpened by his protégé Karl Pearson into the correlation coefficient. Galton also coined the word “eugenics” and pursued the heredity studies in its service, a use of the same data that the science has long since rejected.",
         "key_thinkers": [
           {
             "name": "Francis Galton",
             "role": "Named and first described the effect",
-            "one_line": "Victorian polymath who measured heredity, coined the term 'regression,' and also founded eugenics.",
+            "one_line": "Victorian polymath who measured heredity, coined the term “regression,” and also founded eugenics.",
             "lifespan": "1822-1911",
             "birth_year": 1822,
             "featured": true
@@ -271,11 +266,7 @@
       "content": [
         {
           "concept": "Gambler's Fallacy",
-          "distinction": "The gambler's fallacy expects independent events to self-correct, as if a coin that landed heads five times now 'owes' tails. Regression involves no such force and no memory between events. It describes how a selected extreme, made partly of luck, tends to look milder on remeasurement."
-        },
-        {
-          "concept": "Survivorship Bias",
-          "distinction": "Survivorship bias is about which cases are visible at all, since the failures drop out of sight. Regression is about how an already-visible extreme case behaves on the next measurement."
+          "distinction": "The gambler's fallacy expects independent events to self-correct, as if a coin that landed heads five times now “owes” tails. Regression involves no such force and no memory between events. It describes how a selected extreme, made partly of luck, tends to look milder on remeasurement."
         },
         {
           "concept": "Mean Reversion in markets",
@@ -300,7 +291,7 @@
         {
           "label": "Kahneman D. Thinking, Fast and Slow. Farrar, Straus and Giroux, 2011 (Chapter 17, Regression to the Mean)",
           "url": "https://en.wikipedia.org/wiki/Thinking,_Fast_and_Slow",
-          "type": "book"
+          "type": "wikipedia"
         },
         {
           "label": "Stigler SM. The History of Statistics in 1933. Statistical Science 1996;11(3) (covers Hotelling's refutation of Secrist's regression fallacy)",

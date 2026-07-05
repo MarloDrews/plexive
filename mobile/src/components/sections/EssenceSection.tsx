@@ -1,5 +1,6 @@
 import { Text, View } from "react-native"
 import { colors, fonts } from "../../theme/tokens"
+import { unescapeDollar } from "../../lib/prose"
 
 // Port of frontend/src/components/sections/EssenceSection.tsx
 // Large centered statement, min-height 140.
@@ -24,7 +25,7 @@ export default function EssenceSection({ content }: { content: string }) {
           maxWidth: 384,
         }}
       >
-        {content}
+        {unescapeDollar(content)}
       </Text>
     </View>
   )

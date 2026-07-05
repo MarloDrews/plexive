@@ -1,4 +1,6 @@
 import SectionLabel from "../SectionLabel"
+import Prose from "../Prose"
+import MathText from "../MathText"
 
 interface Props {
   content: string
@@ -7,8 +9,8 @@ interface Props {
 export default function WhatItMeansSection({ content }: Props) {
   return (
     <div className="px-6 py-8">
-      <SectionLabel className="mb-3">What It Means</SectionLabel>
-      <p className="prose-post text-ink-dim">{content}</p>
+      <SectionLabel className="mb-3">Why It Endures</SectionLabel>
+      <Prose className="text-ink-dim"><MathText text={content} /></Prose>
     </div>
   )
 }

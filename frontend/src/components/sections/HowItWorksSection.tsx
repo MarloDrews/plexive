@@ -1,5 +1,8 @@
 import SectionLabel from "../SectionLabel"
 import SvgBlock from "../SvgBlock"
+import Prose from "../Prose"
+import MathText from "../MathText"
+import { unescapeDollar } from "@/lib/prose"
 
 interface Step {
   step_number: number
@@ -23,8 +26,8 @@ export default function HowItWorksSection({ content, isUserContent }: Props) {
             {step.step_number}
           </span>
           <div className="flex flex-col gap-1.5">
-            <h3 className="text-sm font-semibold text-(--accent) leading-snug">{step.title}</h3>
-            <p className="prose-post text-ink-dim">{step.body}</p>
+            <h3 className="text-sm font-semibold text-(--accent) leading-snug">{unescapeDollar(step.title)}</h3>
+            <Prose className="text-ink-dim"><MathText text={step.body} /></Prose>
             {step.visual_svg && (
               <SvgBlock
                 svg={step.visual_svg}

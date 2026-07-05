@@ -4,7 +4,9 @@ import { use, useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { formatStyle } from "@/lib/formats"
-import { fcNum, fcStr, type CardVisual, type Post } from "@/types/post"
+import { unescapeDollar } from "@/lib/prose"
+import { fcNum, fcStr, type Post } from "@/types/post"
+import { FIELD_GLYPHS } from "@/lib/glyphs"
 import SectionRenderer from "@/components/SectionRenderer"
 import SectionLabel from "@/components/SectionLabel"
 import HeadlineSection from "@/components/sections/HeadlineSection"
@@ -25,17 +27,23 @@ import { queueEvent, hasPendingLike, cancelPendingLike } from "@/app/lib/eventQu
 import { likePost, unlikePost, isPostLiked, getCachedLikeCount, setCachedLikeCount, isLikeSent, markLikeSent, unmarkLikeSent } from "@/app/lib/likedPosts"
 import { updatePostInFeedCaches } from "@/app/lib/swr"
 
-// Small field glyph at the right end of the facts field line, mirroring the
-// feed card (~28px tall, aspect preserved). The glyph belongs to the field, not
-// the post (a future field-to-glyph set, see ROADMAP.md); for now it renders the
-// inline card_visual.svg (compact viewBox). SVG security split handled by SvgBlock.
-function FieldGlyph({ cv, isUserContent }: { cv: CardVisual | undefined; isUserContent: boolean }) {
-  if (!cv?.svg) return null
+// Large category glyph anchored to the TOP RIGHT of the detail header, filling the
+// field-line zone from the label's top down to the headline, mirroring the feed
+// card (LAYOUT_STANDARD s3, SVG_STANDARD s6). An absolute OVERLAY: out of the flow,
+// it occupies no layout space, so the label and headline do not move — the
+// field-line row keeps its height (min-h-7). `reach` is a negative bottom inset
+// bleeding the glyph down to the headline top (here the HeadlineSection pt-3), so it
+// never overlaps the headline. Width follows the viewBox aspect (landscape ~56x32),
+// capped (max-w) to clear the label. From FIELD_GLYPHS[tags[0]] (ROADMAP.md);
+// trusted content, official SVG path (isUserContent=false).
+function FieldGlyph({ slug, reach = "bottom-0" }: { slug: string | undefined; reach?: string }) {
+  const svg = slug ? FIELD_GLYPHS[slug] : undefined
+  if (!svg) return null
   return (
     <SvgBlock
-      svg={cv.svg}
-      isUserContent={isUserContent}
-      className="shrink-0 [&_svg]:h-7 [&_svg]:w-auto [&_img]:h-7 [&_img]:w-auto"
+      svg={svg}
+      isUserContent={false}
+      className={`pointer-events-none absolute top-0 right-0 ${reach} flex items-center justify-end max-w-[45%] [&_svg]:h-full [&_svg]:w-auto [&_img]:h-full [&_img]:w-auto`}
     />
   )
 }
@@ -76,11 +84,10 @@ function HeaderMeta({ post }: { post: Post }) {
         {fcNum(post.feed_card, "post_difficulty") > 0 && (
           <DotScale value={fcNum(post.feed_card, "post_difficulty") as 1 | 2 | 3} />
         )}
-        {fcNum(post.feed_card, "post_reading_time_min") > 0 && (
-          <span className="text-[11px] font-mono text-ink-muted leading-none">
-            {fcNum(post.feed_card, "post_reading_time_min")} min
-          </span>
-        )}
+        {/* Reading time computed on the server from the post's text. */}
+        <span className="text-[11px] font-mono text-ink-muted leading-none">
+          {post.reading_minutes} min
+        </span>
       </span>
     </div>
   )
@@ -267,6 +274,12 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
   const typographic =
     !!post &&
     (post.format === "facts" || post.format === "concepts" || post.format === "questions")
+  // Academy is the second typographic variant (LAYOUT_STANDARD s1): the same flat,
+  // no-slab, no-cover header as facts/concepts (field line + glyph + headline),
+  // with a citation context line and the key_finding_one_line dek. Kept separate
+  // from `typographic` only because it reads different feed-card fields; it is NOT
+  // a cover format and shares no centered-cover/portrait behavior.
+  const typographicAcademy = !!post && post.format === "academy"
   // Cover formats use the flat (no-slab) header: people opens straight into the
   // page like facts/concepts, with a portrait + context fields instead of a glyph
   // field line (LAYOUT_STANDARD s1/s3). People places the portrait to the left of
@@ -274,9 +287,13 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
   // formats place their image differently on purpose (LAYOUT_STANDARD s3).
   const coverFlat = !!post && post.format === "people"
   const coverBooks = !!post && post.format === "books"
+  // Stories is the third card look (LAYOUT_STANDARD s1): a real lead image as a
+  // full-width top band when one fits, else the field glyph; the era as the
+  // context line; the headline once; no dek (the headline is a narrative opening).
+  const coverStories = !!post && post.format === "stories"
   // Every flat header (typographic + cover formats) shares the top-bar format
   // label, the end-of-post tags, and the headline-section filter.
-  const flatHeader = typographic || coverFlat || coverBooks
+  const flatHeader = typographic || typographicAcademy || coverFlat || coverBooks || coverStories
 
   return (
     <div className="h-[100dvh] bg-surface-0 flex justify-center">
@@ -386,22 +403,21 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                 <div ref={readableRef}>
                 {typographic ? (
                   /* Typographic header per LAYOUT_STANDARD (facts, concepts): a
-                     field line (field label left, small glyph at its right end,
-                     same as the card), the serif headline once, an optional dek,
+                     field line (category label top left, large category glyph filling
+                     the top right as an overlay, same as the card), the serif headline once, an optional dek,
                      then the meta row. The format label lives in the top bar; the
                      headline section is filtered out of the body below so it never
                      doubles. */
                   <div className="relative">
-                    <div className="px-6 pt-4 flex items-start justify-between gap-3">
-                      {fcStr(post.feed_card, "field") && (
-                        <p className="label-caps text-(--accent)">
-                          {fcStr(post.feed_card, "field")}
-                        </p>
-                      )}
-                      <FieldGlyph
-                        cv={(post.feed_card as { card_visual?: CardVisual }).card_visual}
-                        isUserContent={post.is_user_content}
-                      />
+                    <div className="px-6 pt-4">
+                      <div className="relative min-h-7 flex items-center">
+                        {post.primary_category_name && (
+                          <p className="label-caps text-(--accent)">
+                            {post.primary_category_name}
+                          </p>
+                        )}
+                        <FieldGlyph slug={post.tags?.[0]} reach="-bottom-3" />
+                      </div>
                     </div>
                     <HeadlineSection content={post.title} />
                     {/* Dek — the one-line plain-language gloss from the feed card,
@@ -409,12 +425,52 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                         carries one_line; facts has none, so this stays facts-free. */}
                     {fcStr(post.feed_card, "one_line") && (
                       <p className="px-6 -mt-2 mb-5 font-serif italic text-base text-ink-body leading-relaxed">
-                        {fcStr(post.feed_card, "one_line")}
+                        {unescapeDollar(fcStr(post.feed_card, "one_line"))}
                       </p>
                     )}
                     {/* Meta row — round avatar + creator, reading time,
                         difficulty. Reads the same author fields as the feed
                         card footer, so the two always match. */}
+                    <HeaderMeta post={post} />
+                  </div>
+                ) : typographicAcademy ? (
+                  /* Academy typographic header (LAYOUT_STANDARD s1): the same flat
+                     structure as facts/concepts — a field line (category label top left,
+                     large category glyph filling the top right as an overlay), the paper title as the
+                     single serif headline, then a citation context line
+                     (authors_compact / published_year / venue), the
+                     key_finding_one_line dek, and the shared meta row. No slab, no
+                     cover. The full bibliographic record follows in the paper_card
+                     section below. */
+                  <div className="relative">
+                    <div className="px-6 pt-4">
+                      <div className="relative min-h-7 flex items-center">
+                        {post.primary_category_name && (
+                          <p className="label-caps text-(--accent)">
+                            {post.primary_category_name}
+                          </p>
+                        )}
+                        <FieldGlyph slug={post.tags?.[0]} reach="-bottom-3" />
+                      </div>
+                    </div>
+                    <HeadlineSection content={post.title} accentNumbers={false} />
+                    {/* Context line: authors_compact already carries the year
+                        (e.g. "Friston, 2010"), so published_year is not printed
+                        here; it stays in the data for sorting only. */}
+                    {(fcStr(post.feed_card, "authors_compact") ||
+                      fcStr(post.feed_card, "venue")) && (
+                      <p className="px-6 -mt-1 text-xs text-ink-muted font-mono">
+                        {[
+                          fcStr(post.feed_card, "authors_compact"),
+                          fcStr(post.feed_card, "venue"),
+                        ].filter(Boolean).join(" · ")}
+                      </p>
+                    )}
+                    {fcStr(post.feed_card, "key_finding_one_line") && (
+                      <p className="px-6 mt-3 mb-5 font-serif italic text-base text-ink-body leading-relaxed">
+                        {unescapeDollar(fcStr(post.feed_card, "key_finding_one_line"))}
+                      </p>
+                    )}
                     <HeaderMeta post={post} />
                   </div>
                 ) : coverFlat ? (
@@ -465,7 +521,7 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                     </div>
                     {fcStr(post.feed_card, "one_line") && (
                       <p className="px-6 mb-5 font-serif italic text-base text-ink-body leading-relaxed">
-                        {fcStr(post.feed_card, "one_line")}
+                        {unescapeDollar(fcStr(post.feed_card, "one_line"))}
                       </p>
                     )}
                     <HeaderMeta post={post} />
@@ -504,9 +560,55 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                     )}
                     {fcStr(post.feed_card, "one_line") && (
                       <p className="px-6 mt-3 mb-5 font-serif italic text-base text-ink-body leading-relaxed">
-                        {fcStr(post.feed_card, "one_line")}
+                        {unescapeDollar(fcStr(post.feed_card, "one_line"))}
                       </p>
                     )}
+                    <HeaderMeta post={post} />
+                  </div>
+                ) : coverStories ? (
+                  /* Stories header (LAYOUT_STANDARD s1/s3): the third card look
+                     mirrored at the top of the detail page. A real lead image as
+                     a full-width top band when one fits (not a side cover, because
+                     headlines are long), else the field glyph keyed on the field
+                     (tags[0]) at the right of the field line. The era is the
+                     context line above the headline; the serif headline appears
+                     once (post.title == feed_card.headline via the seed title
+                     derivation); then the meta row. No dek, because the headline
+                     is a narrative opening. */
+                  <div className="relative">
+                    {fcStr(post.feed_card, "lead_image_url") && (
+                      /* Slim full-width lead band, matching the card (a touch
+                         taller). block so no inline gap; pointer-events-none +
+                         draggable=false so the bare image never opens the platform
+                         image viewer. object-position keeps the central scene
+                         (faces and table) in frame on the slim crop. */
+                      <img
+                        src={fcStr(post.feed_card, "lead_image_url")}
+                        alt=""
+                        draggable={false}
+                        className="block w-full h-44 object-cover object-[center_38%] pointer-events-none select-none"
+                        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none" }}
+                      />
+                    )}
+                    {/* Field line: the era label (accent) at the left; when there
+                        is no lead image, the large category glyph fills the top
+                        right as an overlay (LAYOUT_STANDARD s3, mirroring the card).
+                        With a lead image the era label stands alone. */}
+                    {(fcStr(post.feed_card, "era_label") || !fcStr(post.feed_card, "lead_image_url")) && (
+                      <div className="px-6 pt-4">
+                        <div className={`relative flex items-center ${!fcStr(post.feed_card, "lead_image_url") ? "min-h-7" : ""}`}>
+                          {fcStr(post.feed_card, "era_label") && (
+                            <p className="label-caps text-(--accent)">
+                              {fcStr(post.feed_card, "era_label")}
+                            </p>
+                          )}
+                          {!fcStr(post.feed_card, "lead_image_url") && (
+                            <FieldGlyph slug={post.tags?.[0]} reach="-bottom-3" />
+                          )}
+                        </div>
+                      </div>
+                    )}
+                    <HeadlineSection content={post.title} />
                     <HeaderMeta post={post} />
                   </div>
                 ) : (
@@ -570,18 +672,24 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                 {/* Sections — for typographic formats the headline now lives in
                     the header above, so drop any headline section to avoid doubling
                     it (concepts has none, so this is a no-op there). Questions'
-                    the_question is likewise the header headline, so drop it too. */}
+                    the_question is likewise the header headline, so drop it too —
+                    but ONLY for questions: Academy also carries a the_question
+                    section, where it is a real body section (The Open Problem), not
+                    the page title, so it must render. */}
                 <SectionRenderer
                   sections={
                     flatHeader
                       ? post.sections.filter(
-                          (s) => s.type !== "headline" && s.type !== "the_question"
+                          (s) =>
+                            s.type !== "headline" &&
+                            !(s.type === "the_question" && post.format === "questions")
                         )
                       : post.sections
                   }
                   isUserContent={post.is_user_content}
                   postId={post.id}
                   format={post.format}
+                  readingMinutes={post.reading_minutes}
                 />
                 </div>
 

@@ -2,6 +2,8 @@ import katex from "katex"
 import SectionLabel from "../SectionLabel"
 import type { FormalismContent } from "../../types/post"
 import MathText from "../MathText"
+import Prose from "../Prose"
+import { unescapeDollar } from "@/lib/prose"
 
 interface Props {
   content: FormalismContent
@@ -22,20 +24,20 @@ export default function FormalismSection({ content }: Props) {
     <div className="px-6 py-8 flex flex-col gap-5">
       <SectionLabel>Formalism</SectionLabel>
 
-      <p className="prose-post text-ink-dim">
+      <Prose className="text-ink-dim">
         <MathText text={content.body} />
-      </p>
+      </Prose>
 
       <div className="flex flex-col gap-5">
         {content.equations.map((eq, i) => (
           <div key={i} className="flex flex-col gap-2">
-            <p className="text-xs font-semibold text-(--accent) uppercase tracking-wide">{eq.label}</p>
+            <p className="text-xs font-semibold text-(--accent) uppercase tracking-wide">{unescapeDollar(eq.label)}</p>
             <div className="bg-surface-1 rounded-card px-4 py-3 border border-edge">
               <DisplayMath latex={eq.latex} />
             </div>
-            <p className="prose-post text-ink-dim">
+            <Prose className="text-ink-dim">
               <MathText text={eq.description} />
-            </p>
+            </Prose>
           </div>
         ))}
       </div>
@@ -49,7 +51,7 @@ export default function FormalismSection({ content }: Props) {
                 <div className="shrink-0 w-28">
                   <MathText text={`$${item.symbol}$`} className="text-sm text-ink-body font-mono" />
                 </div>
-                <p className="text-sm text-ink-dim leading-snug">{item.meaning}</p>
+                <p className="text-sm text-ink-dim leading-snug">{unescapeDollar(item.meaning)}</p>
               </div>
             ))}
           </div>

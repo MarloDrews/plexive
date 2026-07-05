@@ -1,5 +1,6 @@
 import SectionLabel from "../SectionLabel"
 import SvgBlock from "../SvgBlock"
+import MathText from "../MathText"
 
 interface VisualExplanationContent {
   visual_svg: string
@@ -21,7 +22,7 @@ export default function VisualExplanationSection({ content, isUserContent }: Pro
         className="w-full max-w-[400px] mx-auto"
       />
       {content.image_caption && (
-        <p className="text-xs text-ink-muted text-center leading-snug">{content.image_caption}</p>
+        <p className="text-xs text-ink-muted text-center leading-snug"><MathText text={content.image_caption} /></p>
       )}
     </div>
   )

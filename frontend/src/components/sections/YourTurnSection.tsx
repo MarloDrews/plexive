@@ -1,4 +1,6 @@
 import SectionLabel from "../SectionLabel"
+import Prose from "../Prose"
+import MathText from "../MathText"
 import type { YourTurnContent } from "../../types/post"
 
 interface Props {
@@ -13,20 +15,20 @@ export default function YourTurnSection({ content }: Props) {
     // (HowToApplySection) and the facts one (SurprisesSection).
     <div className="px-6 py-8 flex flex-col gap-4 border-l-2 border-(--accent) bg-(--accent)/[0.06]">
       <SectionLabel>Your Turn</SectionLabel>
-      <p className="prose-post text-ink-dim">{content.intro}</p>
+      <Prose className="text-ink-dim"><MathText text={content.intro} /></Prose>
       {/* Prompts use the shared open-question affordance (the accent "?" marker),
           since each prompt is a real question handed back to the reader. */}
       <ul className="flex flex-col gap-3">
         {content.prompts.map((prompt, i) => (
           <li key={i} className="flex items-start gap-3">
             <span className="text-(--accent) font-semibold text-sm mt-0.5 shrink-0">?</span>
-            <p className="prose-post">{prompt}</p>
+            <Prose><MathText text={prompt} /></Prose>
           </li>
         ))}
       </ul>
       {content.closing_thought && (
         <p className="text-xs text-ink-muted leading-relaxed italic border-t border-edge pt-3">
-          {content.closing_thought}
+          <MathText text={content.closing_thought} />
         </p>
       )}
     </div>

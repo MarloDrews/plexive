@@ -10,8 +10,10 @@ import { savePost, unsavePost, isPostSaved } from "@/app/lib/savedPosts"
 import { requestAutoRead } from "@/lib/readAloud/autostart"
 import { likePost, unlikePost, isPostLiked, getCachedLikeCount, setCachedLikeCount, isLikeSent, markLikeSent, unmarkLikeSent } from "@/app/lib/likedPosts"
 import { updatePostInFeedCaches } from "@/app/lib/swr"
-import { fcNum, fcStr, type CardVisual, type Post } from "@/types/post"
+import { fcNum, fcStr, type Post } from "@/types/post"
 import { formatStyle } from "@/lib/formats"
+import { FIELD_GLYPHS } from "@/lib/glyphs"
+import { unescapeDollar } from "@/lib/prose"
 import Avatar from "@/components/Avatar"
 import BookCover from "@/components/BookCover"
 import DotScale from "@/components/DotScale"
@@ -35,27 +37,35 @@ function Teasers({ items }: { items: string[] }) {
       {items.map((teaser, i) => (
         <div key={i} className="flex items-start gap-2.5">
           <span className="w-1.5 h-1.5 rounded-full bg-(--accent) mt-2 shrink-0" />
-          <span className="text-[1.0625rem] text-ink leading-snug">{teaser}</span>
+          <span className="text-[1.0625rem] text-ink leading-snug">{unescapeDollar(teaser)}</span>
         </div>
       ))}
     </div>
   )
 }
 
-// Small field glyph for the typographic formats: a quiet category mark (~28px
-// tall) that sits at the right end of the field line, not a card image. The
-// glyph belongs to the field, not the post (a future field-to-glyph set, see
-// ROADMAP.md); for now it renders the inline card_visual.svg (compact viewBox,
-// e.g. 0 0 56 32). var(--accent) resolves from the card's --accent; the SVG
-// security split (user vs official) is handled by SvgBlock. h-7/w-auto forces a
-// small fixed height regardless of the svg's own sizing, aspect preserved.
-function FieldGlyph({ cv, isUserContent }: { cv: CardVisual | undefined; isUserContent: boolean }) {
-  if (!cv?.svg) return null
+// Large category glyph for the typographic formats: a bold accent mark anchored
+// to the TOP RIGHT of the card, filling the field-line zone from the label's top
+// down to the headline (LAYOUT_STANDARD s2, SVG_STANDARD s6). It is an absolute
+// OVERLAY: taken out of the flow, it occupies no layout space and so never moves
+// the label or the headline — the field-line row keeps its height (min-h-7) and
+// the label stays put. The glyph height is the row height plus `reach` (a negative
+// bottom inset that bleeds down to the headline top; the amount is the format's
+// field-line-to-headline gap, passed by the caller so the glyph never overlaps the
+// headline). Width follows the glyph's own viewBox aspect (landscape ~56x32) and
+// is capped (max-w) so it keeps a clear gap from the label and never runs under it.
+// The glyph belongs to the post's primary category, its first tag (tags[0]), from
+// the app-owned FIELD_GLYPHS set (ROADMAP.md); trusted content, so the official SVG
+// path (isUserContent=false). The accent bar (SlabAccent) is a separate element and
+// stays continuous.
+function FieldGlyph({ slug, reach = "bottom-0" }: { slug: string | undefined; reach?: string }) {
+  const svg = slug ? FIELD_GLYPHS[slug] : undefined
+  if (!svg) return null
   return (
     <SvgBlock
-      svg={cv.svg}
-      isUserContent={isUserContent}
-      className="shrink-0 [&_svg]:h-7 [&_svg]:w-auto [&_img]:h-7 [&_img]:w-auto"
+      svg={svg}
+      isUserContent={false}
+      className={`pointer-events-none absolute top-0 right-0 ${reach} flex items-center justify-end max-w-[45%] [&_svg]:h-full [&_svg]:w-auto [&_img]:h-full [&_img]:w-auto`}
     />
   )
 }
@@ -110,8 +120,8 @@ export function SlabAccent() {
 // detail page, never on the card.
 function CardFooter({ post, fc }: { post: Post; fc: Post["feed_card"] }) {
   const difficulty = fcNum(fc, "post_difficulty")
-  const minutes = fcNum(fc, "post_reading_time_min")
-  const metaText = minutes > 0 ? `${minutes} min` : ""
+  // Reading time is computed on the server from the post's text (post.reading_minutes).
+  const metaText = `${post.reading_minutes} min`
   return (
     <div className="flex items-center gap-2 pt-1 min-w-0">
       {post.author_username && (
@@ -390,7 +400,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
                   and people use. Books' card dek is one_line (the feed_card has no
                   essence field). */}
               {fcStr(fc, "one_line") && (
-                <p className="font-serif italic text-base text-ink-body leading-relaxed">{fcStr(fc, "one_line")}</p>
+                <p className="font-serif italic text-base text-ink-body leading-relaxed">{unescapeDollar(fcStr(fc, "one_line"))}</p>
               )}
 
               {/* Teasers */}
@@ -433,7 +443,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
               {/* Dek: People's card gloss is one_line (the feed_card has no
                   essence field, unlike Books). LAYOUT_STANDARD s4. */}
               {fcStr(fc, "one_line") && (
-                <p className="font-serif italic text-base text-ink-body leading-relaxed">{fcStr(fc, "one_line")}</p>
+                <p className="font-serif italic text-base text-ink-body leading-relaxed">{unescapeDollar(fcStr(fc, "one_line"))}</p>
               )}
 
               {Array.isArray(fc.teasers) && (fc.teasers as string[]).length > 0 && (
@@ -445,14 +455,15 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
           ) : post.format === "facts" && fc ? (
             <div className="card relative overflow-hidden px-6 py-7 flex flex-col gap-4">
               <SlabAccent />
-              {/* Typographic card: a field line (field label left, small glyph at
-                  its right end) then the full-width serif headline below. */}
+              {/* Typographic card: a field line (category label at the top left, the
+                  large category glyph filling the top right as an overlay) then the
+                  full-width serif headline. */}
               <div className="flex flex-col gap-1">
-                <div className="flex items-start justify-between gap-3">
-                  {fcStr(fc, "field") && (
-                    <p className="label-caps text-(--accent)">{fcStr(fc, "field")}</p>
+                <div className="relative min-h-7 flex items-center">
+                  {post.primary_category_name && (
+                    <p className="label-caps text-(--accent)">{post.primary_category_name}</p>
                   )}
-                  <FieldGlyph cv={fc.card_visual as CardVisual | undefined} isUserContent={post.is_user_content} />
+                  <FieldGlyph slug={post.tags?.[0]} reach="-bottom-1" />
                 </div>
                 <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
                   {fc.headline as string}
@@ -468,19 +479,21 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
           ) : post.format === "concepts" && fc ? (
             <div className="card relative overflow-hidden px-6 py-7 flex flex-col gap-4">
               <SlabAccent />
-              {/* Field line: field label left, small glyph at its right end, the
-                  same as the facts card (LAYOUT_STANDARD s2.1). */}
-              <div className="flex items-start justify-between gap-3">
-                {fcStr(fc, "field") && (
-                  <p className="label-caps text-(--accent)">{fcStr(fc, "field")}</p>
-                )}
-                <FieldGlyph cv={fc.card_visual as CardVisual | undefined} isUserContent={post.is_user_content} />
+              {/* Field line: category label top left, large category glyph filling
+                  the top right as an overlay, same as the facts card (LAYOUT_STANDARD s2.1). */}
+              <div className="flex flex-col gap-1">
+                <div className="relative min-h-7 flex items-center">
+                  {post.primary_category_name && (
+                    <p className="label-caps text-(--accent)">{post.primary_category_name}</p>
+                  )}
+                  <FieldGlyph slug={post.tags?.[0]} reach="-bottom-1" />
+                </div>
+                <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
+                  {fcStr(fc, "concept_name")}
+                </h2>
               </div>
-              <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
-                {fcStr(fc, "concept_name")}
-              </h2>
               {fcStr(fc, "one_line") && (
-                <p className="font-serif italic text-base text-ink-body leading-relaxed">{fcStr(fc, "one_line")}</p>
+                <p className="font-serif italic text-base text-ink-body leading-relaxed">{unescapeDollar(fcStr(fc, "one_line"))}</p>
               )}
 
               {Array.isArray(fc.teasers) && (fc.teasers as string[]).length > 0 && (
@@ -492,21 +505,23 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
           ) : post.format === "questions" && fc ? (
             <div className="card relative overflow-hidden px-6 py-7 flex flex-col gap-4">
               <SlabAccent />
-              {/* Field line: field label left, small glyph at its right end, the
-                  same as the facts/concepts cards (LAYOUT_STANDARD s2.1). */}
-              <div className="flex items-start justify-between gap-3">
-                {fcStr(fc, "field") && (
-                  <p className="label-caps text-(--accent)">{fcStr(fc, "field")}</p>
-                )}
-                <FieldGlyph cv={fc.card_visual as CardVisual | undefined} isUserContent={post.is_user_content} />
+              {/* Field line: category label top left, large category glyph filling
+                  the top right as an overlay, same as facts/concepts (LAYOUT_STANDARD s2.1). */}
+              <div className="flex flex-col gap-1">
+                <div className="relative min-h-7 flex items-center">
+                  {post.primary_category_name && (
+                    <p className="label-caps text-(--accent)">{post.primary_category_name}</p>
+                  )}
+                  <FieldGlyph slug={post.tags?.[0]} reach="-bottom-1" />
+                </div>
+                <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
+                  {fcStr(fc, "the_question")}
+                </h2>
               </div>
-              <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
-                {fcStr(fc, "the_question")}
-              </h2>
               {/* Dek: the one-line italic gloss (LAYOUT_STANDARD s2), the same
                   treatment concepts/people/books use. */}
               {fcStr(fc, "one_line") && (
-                <p className="font-serif italic text-base text-ink-body leading-relaxed">{fcStr(fc, "one_line")}</p>
+                <p className="font-serif italic text-base text-ink-body leading-relaxed">{unescapeDollar(fcStr(fc, "one_line"))}</p>
               )}
 
               {Array.isArray(fc.teasers) && (fc.teasers as string[]).length > 0 && (
@@ -518,19 +533,54 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
           ) : post.format === "stories" && fc ? (
             <div className="card relative overflow-hidden px-6 py-7 flex flex-col gap-4">
               <SlabAccent />
-              <div className="flex items-center gap-2 flex-wrap">
-                {fcStr(fc, "era_label") && (
-                  <span className="label-caps text-(--accent)">
-                    {fcStr(fc, "era_label")}
-                  </span>
-                )}
-                {fcStr(fc, "category") && (
-                  <span className="label-caps text-ink-faint">{fcStr(fc, "category")}</span>
-                )}
+              {/* Stories is the third card look (LAYOUT_STANDARD s1): a real lead
+                  image as a slim full-width top band when one fits, not a side
+                  cover, because story headlines are long. Full-bleed via negative
+                  margins that cancel the slab px-6/py-7 padding (block so no inline
+                  baseline gap); max-w-none is required because Tailwind Preflight
+                  sets img { max-width: 100% }, which otherwise clamps the
+                  calc(100%+3rem) width back to the content box and re-insets the
+                  right edge by 3rem. The slab's rounded overflow-hidden clips the
+                  top corners while the bottom runs straight into the content. A dead
+                  URL hides the band. pointer-events-none + draggable=false keep the bare
+                  image from swallowing the tap or opening the platform image viewer,
+                  so a tap anywhere falls through to the card's navigate handler.
+                  object-position keeps the central scene (faces and table) in frame
+                  on a slim crop of a near-square image. */}
+              {fcStr(fc, "lead_image_url") && (
+                <img
+                  src={fcStr(fc, "lead_image_url")}
+                  alt=""
+                  loading="lazy"
+                  draggable={false}
+                  className="block -mx-6 -mt-7 w-[calc(100%+3rem)] max-w-none h-32 object-cover object-[center_38%] pointer-events-none select-none"
+                  onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none" }}
+                />
+              )}
+              {/* Context line: the era (accent) with the reader-facing story
+                  category beside it. There is no dek on a stories card; the
+                  headline carries the narrative opening alone. The field glyph
+                  (keyed on tags[0]) fills the top right as a large overlay ONLY when
+                  there is no lead band, the same field-line shape as the typographic
+                  cards (LAYOUT_STANDARD s1/s2). */}
+              <div className="flex flex-col gap-1">
+                <div className={`relative flex items-center ${!fcStr(fc, "lead_image_url") ? "min-h-7" : ""}`}>
+                  <div className="flex items-center gap-2 flex-wrap min-w-0">
+                    {fcStr(fc, "era_label") && (
+                      <span className="label-caps text-(--accent)">{fcStr(fc, "era_label")}</span>
+                    )}
+                    {post.primary_category_name && (
+                      <span className="label-caps text-ink-faint">{post.primary_category_name}</span>
+                    )}
+                  </div>
+                  {!fcStr(fc, "lead_image_url") && (
+                    <FieldGlyph slug={post.tags?.[0]} reach="-bottom-1" />
+                  )}
+                </div>
+                <h2 className="font-serif text-2xl font-medium tracking-tight text-ink leading-snug">
+                  {fcStr(fc, "headline")}
+                </h2>
               </div>
-              <h2 className="font-serif text-2xl font-medium tracking-tight text-ink leading-snug">
-                {fcStr(fc, "headline")}
-              </h2>
 
               {Array.isArray(fc.teasers) && (fc.teasers as string[]).length > 0 && (
                 <Teasers items={fc.teasers as string[]} />
@@ -541,20 +591,33 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
           ) : post.format === "academy" && fc ? (
             <div className="card relative overflow-hidden px-6 py-7 flex flex-col gap-4">
               <SlabAccent />
-              {fcStr(fc, "field") && (
-                <p className="label-caps text-(--accent)">{fcStr(fc, "field")}</p>
-              )}
-              <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
-                {fcStr(fc, "title") || post.title}
-              </h2>
+              {/* Typographic card like facts/concepts: a field line (category label
+                  top left, large category glyph filling the top right as an overlay),
+                  then the serif paper title. */}
+              <div className="flex flex-col gap-1">
+                <div className="relative min-h-7 flex items-center">
+                  {post.primary_category_name && (
+                    <p className="label-caps text-(--accent)">{post.primary_category_name}</p>
+                  )}
+                  <FieldGlyph slug={post.tags?.[0]} reach="-bottom-1" />
+                </div>
+                <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
+                  {fcStr(fc, "title") || post.title}
+                </h2>
+              </div>
+              {/* Context line: short citation (authors_compact already carries
+                  the year, e.g. "Friston, 2010") and the venue. published_year
+                  stays in the data for sorting but is not printed here, to avoid
+                  showing the year twice. */}
               {(fcStr(fc, "authors_compact") || fcStr(fc, "venue")) && (
                 <p className="text-xs text-ink-muted font-mono">
                   {[fcStr(fc, "authors_compact"), fcStr(fc, "venue")].filter(Boolean).join(" · ")}
                 </p>
               )}
+              {/* Dek: the core finding in one technical sentence (key_finding_one_line). */}
               {fcStr(fc, "key_finding_one_line") && (
                 <p className="font-serif italic text-base text-ink-body leading-relaxed">
-                  {fcStr(fc, "key_finding_one_line")}
+                  {unescapeDollar(fcStr(fc, "key_finding_one_line"))}
                 </p>
               )}
               {Array.isArray(fc.teasers) && (fc.teasers as string[]).length > 0 && (
@@ -570,7 +633,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
                 {post.title}
               </h2>
               {fcStr(fc, "essence") && (
-                <p className="font-serif italic text-base text-ink-body leading-relaxed">{fcStr(fc, "essence")}</p>
+                <p className="font-serif italic text-base text-ink-body leading-relaxed">{unescapeDollar(fcStr(fc, "essence"))}</p>
               )}
               <CardFooter post={post} fc={fc} />
             </div>

@@ -1,4 +1,6 @@
 import SectionLabel from "../SectionLabel"
+import Prose from "../Prose"
+import MathText from "../MathText"
 import type { OpenQuestionsContent } from "../../types/post"
 
 interface Props {
@@ -11,13 +13,13 @@ export default function OpenQuestionsSection({ content }: Props) {
   return (
     <div className="px-6 py-8">
       <SectionLabel className="mb-3">Open Questions</SectionLabel>
-      <p className="prose-post">{content.body}</p>
+      <Prose><MathText text={content.body} /></Prose>
       {content.items && content.items.length > 0 && (
         <ul className="flex flex-col gap-3 mt-4">
           {content.items.map((line, i) => (
             <li key={i} className="flex items-start gap-3">
               <span className="text-(--accent) font-semibold text-sm mt-0.5 shrink-0">?</span>
-              <span className="prose-post">{line}</span>
+              <span className="prose-post"><MathText text={line} /></span>
             </li>
           ))}
         </ul>

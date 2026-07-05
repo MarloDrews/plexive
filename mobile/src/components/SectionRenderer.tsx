@@ -89,9 +89,12 @@ interface Props {
   sections: Section[]
   isUserContent: boolean
   postId: number
+  // Server-computed reading time (post.reading_minutes), passed down so the
+  // at_a_glance row shows the same value as the card footer and detail header.
+  readingMinutes: number
 }
 
-function renderSection(section: Section, isUserContent: boolean, postId: number) {
+function renderSection(section: Section, isUserContent: boolean, postId: number, readingMinutes: number) {
   const c = section.content
   switch (section.type) {
     case "essence":
@@ -99,7 +102,7 @@ function renderSection(section: Section, isUserContent: boolean, postId: number)
     case "voices":
       return <VoicesSection content={c as any} />
     case "at_a_glance":
-      return <AtAGlanceSection content={c as any} />
+      return <AtAGlanceSection content={c as any} readingMinutes={readingMinutes} />
     case "why_endures":
       return <WhyEnduresSection content={c as string} />
     case "heart":
@@ -254,13 +257,13 @@ function renderSection(section: Section, isUserContent: boolean, postId: number)
   }
 }
 
-export default function SectionRenderer({ sections, isUserContent, postId }: Props) {
+export default function SectionRenderer({ sections, isUserContent, postId, readingMinutes }: Props) {
   const sorted = [...sections].sort((a, b) => a.order - b.order)
 
   return (
     <View>
       {sorted.map((section, i) => {
-        const rendered = renderSection(section, isUserContent, postId)
+        const rendered = renderSection(section, isUserContent, postId, readingMinutes)
         if (rendered === null) return null
         return (
           <View

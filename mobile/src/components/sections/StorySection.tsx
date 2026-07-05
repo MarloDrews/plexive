@@ -5,6 +5,7 @@ import { SectionBlock, SectionLabel, Prose, SvgFigure, CaptionedImage, sans, san
 import { colors, radius } from "../../theme/tokens"
 import { useAccent } from "../../lib/accent"
 import { resolveImageUrl } from "../../config"
+import { unescapeDollar } from "../../lib/prose"
 
 // Port of frontend/src/components/sections/StorySection.tsx
 // Body prose, optional SVG/image, key-figure cards.
@@ -54,13 +55,13 @@ export default function StorySection({
               ) : null}
               <View style={{ flex: 1, gap: 2 }}>
                 <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap", alignItems: "baseline" }}>
-                  <Text style={sansSemiBold(14, colors.ink)}>{fig.name}</Text>
-                  {fig.lifespan ? <Text style={sans(12, colors["ink-muted"])}>{fig.lifespan}</Text> : null}
+                  <Text style={sansSemiBold(14, colors.ink)}>{unescapeDollar(fig.name)}</Text>
+                  {fig.lifespan ? <Text style={sans(12, colors["ink-muted"])}>{unescapeDollar(fig.lifespan)}</Text> : null}
                 </View>
-                <Text style={sans(12, accent + "b3")}>{fig.role}</Text>
+                <Text style={sans(12, accent + "b3")}>{unescapeDollar(fig.role)}</Text>
                 {fig.one_line ? (
                   <Text style={[sans(12, colors["ink-dim"], { lineHeight: 18 }), { marginTop: 4 }]}>
-                    {fig.one_line}
+                    {unescapeDollar(fig.one_line)}
                   </Text>
                 ) : null}
               </View>

@@ -1,5 +1,7 @@
 import SectionLabel from "../SectionLabel"
 import SvgBlock from "../SvgBlock"
+import Prose from "../Prose"
+import MathText from "../MathText"
 import type { WhatScienceSaysContent } from "../../types/post"
 
 interface Props {
@@ -11,7 +13,7 @@ export default function WhatScienceSaysSection({ content, isUserContent }: Props
   return (
     <div className="px-6 py-8 flex flex-col gap-4">
       <SectionLabel>What Science Says</SectionLabel>
-      <p className="prose-post">{content.body}</p>
+      <Prose><MathText text={content.body} /></Prose>
       {content.key_findings && content.key_findings.length > 0 && (
         <ul className="flex flex-col gap-2">
           {content.key_findings.map((finding, i) => (
@@ -19,7 +21,7 @@ export default function WhatScienceSaysSection({ content, isUserContent }: Props
               {/* Accent-dot list, the shared kit affordance for simple lists
                   (LAYOUT_STANDARD s7). */}
               <span className="w-1.5 h-1.5 rounded-full bg-(--accent) mt-2 shrink-0" />
-              <span className="text-sm text-ink-dim leading-snug">{finding}</span>
+              <span className="text-sm text-ink-dim leading-snug"><MathText text={finding} /></span>
             </li>
           ))}
         </ul>

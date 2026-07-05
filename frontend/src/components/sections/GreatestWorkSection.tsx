@@ -9,6 +9,9 @@ interface GreatestWorkContent {
 }
 
 import SvgBlock from "../SvgBlock"
+import Prose from "../Prose"
+import MathText from "../MathText"
+import { unescapeDollar } from "@/lib/prose"
 
 interface Props {
   content: GreatestWorkContent
@@ -19,8 +22,8 @@ export default function GreatestWorkSection({ content, isUserContent }: Props) {
   return (
     <div className="px-6 py-8 flex flex-col gap-3">
       <SectionLabel>Their Greatest Work</SectionLabel>
-      <h2 className="text-lg font-semibold text-(--accent) leading-snug">{content.title}</h2>
-      <p className="prose-post">{content.body}</p>
+      <h2 className="text-lg font-semibold text-(--accent) leading-snug">{unescapeDollar(content.title)}</h2>
+      <Prose><MathText text={content.body} /></Prose>
 
       {content.visual_svg && (
         <SvgBlock svg={content.visual_svg} isUserContent={isUserContent} className="w-full max-w-[400px] mx-auto my-4" />
@@ -36,10 +39,10 @@ export default function GreatestWorkSection({ content, isUserContent }: Props) {
             onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none" }}
           />
           {content.image_caption && (
-            <p className="text-xs text-ink-muted mt-2">{content.image_caption}</p>
+            <p className="text-xs text-ink-muted mt-2"><MathText text={content.image_caption} /></p>
           )}
           {content.image_attribution && (
-            <p className="text-xs text-ink-faint mt-0.5">{content.image_attribution}</p>
+            <p className="text-xs text-ink-faint mt-0.5">{unescapeDollar(content.image_attribution)}</p>
           )}
         </div>
       )}

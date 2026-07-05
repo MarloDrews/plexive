@@ -2,6 +2,7 @@ import { Text, View } from "react-native"
 import { SectionBlock, SectionLabel, Prose } from "./primitives"
 import { colors, fonts } from "../../theme/tokens"
 import { useAccent } from "../../lib/accent"
+import { unescapeDollar } from "../../lib/prose"
 
 // Port of frontend/src/components/sections/LegacySection.tsx
 // Body prose + optional present_day_impact accent callout box.
@@ -29,7 +30,7 @@ export default function LegacySection({ content }: { content: LegacyContent }) {
           }}
         >
           <Text style={{ fontFamily: fonts.sans, fontSize: 14, lineHeight: 22, color: colors.ink }}>
-            {content.present_day_impact}
+            {unescapeDollar(content.present_day_impact)}
           </Text>
         </View>
       ) : null}

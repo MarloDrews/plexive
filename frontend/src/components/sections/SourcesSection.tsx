@@ -1,4 +1,5 @@
 import type { SourceItem } from "../../types/post"
+import { unescapeDollar } from "@/lib/prose"
 
 interface Props {
   content: SourceItem[]
@@ -35,7 +36,7 @@ export default function SourcesSection({ content }: Props) {
               <span className="shrink-0 w-5 h-5 rounded flex items-center justify-center bg-surface-2 border border-edge-strong text-[10px] font-bold text-ink-dim">
                 {TYPE_LABELS[source.type] ?? "?"}
               </span>
-              <span className="flex-1 leading-snug">{source.label}</span>
+              <span className="flex-1 leading-snug">{unescapeDollar(source.label)}</span>
               <ExternalLinkIcon />
             </a>
           </li>

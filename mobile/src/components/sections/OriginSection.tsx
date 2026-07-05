@@ -2,6 +2,7 @@ import { Text, View } from "react-native"
 import { SectionBlock, SectionLabel, Prose, sans, sansSemiBold } from "./primitives"
 import { colors, radius } from "../../theme/tokens"
 import { useAccent } from "../../lib/accent"
+import { unescapeDollar } from "../../lib/prose"
 
 // Port of frontend/src/components/sections/OriginSection.tsx
 // History body + key thinker cards.
@@ -38,10 +39,10 @@ export default function OriginSection({ content }: { content: OriginContent }) {
               }}
             >
               <View style={{ flexDirection: "row", gap: 8, alignItems: "baseline" }}>
-                <Text style={sansSemiBold(14, colors.ink)}>{thinker.name}</Text>
-                <Text style={sans(12, accent + "cc")}>{thinker.role}</Text>
+                <Text style={sansSemiBold(14, colors.ink)}>{unescapeDollar(thinker.name)}</Text>
+                <Text style={sans(12, accent + "cc")}>{unescapeDollar(thinker.role)}</Text>
               </View>
-              <Text style={sans(12, colors["ink-muted"], { lineHeight: 17 })}>{thinker.one_line}</Text>
+              <Text style={sans(12, colors["ink-muted"], { lineHeight: 17 })}>{unescapeDollar(thinker.one_line)}</Text>
             </View>
           ))}
         </View>

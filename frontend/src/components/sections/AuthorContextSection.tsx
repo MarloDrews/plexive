@@ -1,5 +1,8 @@
 import type { AuthorContextContent } from "../../types/post"
 import SectionLabel from "../SectionLabel"
+import Prose from "../Prose"
+import MathText from "../MathText"
+import { unescapeDollar } from "@/lib/prose"
 
 interface Props {
   content: AuthorContextContent
@@ -29,13 +32,13 @@ export default function AuthorContextSection({ content }: Props) {
             />
             {content.image_attribution && (
               <p className="text-xs text-ink-faint mt-1 text-center max-w-[4rem]">
-                {content.image_attribution}
+                {unescapeDollar(content.image_attribution)}
               </p>
             )}
           </div>
         )}
         <div className="flex flex-col gap-2">
-          <p className="prose-post text-ink-dim">{content.body}</p>
+          <Prose className="text-ink-dim"><MathText text={content.body} /></Prose>
           {content.wikipedia_url && (
             <a
               href={content.wikipedia_url}

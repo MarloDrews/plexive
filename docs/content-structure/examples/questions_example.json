@@ -29,18 +29,13 @@
     }
   ],
   "feed_card": {
-    "field": "Ethics",
-    "the_question": "\"Do we have moral obligations to future generations?\"",
+    "the_question": "“Do we have moral obligations to future generations?”",
     "one_line": "A tunnel in Finland is being built to seal spent nuclear fuel away for a hundred thousand years, longer than any institution now standing.",
-    "card_visual": {
-      "svg": "<svg viewBox=\"0 0 56 32\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke=\"var(--accent, #43c3c4)\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M8 11 H48\"/><path d=\"M28 9 V25\"/><path d=\"M21 25 H35\"/><path d=\"M8 11 V14\"/><path d=\"M3 14 Q8 21 13 14\"/><path d=\"M48 11 V14\"/><path d=\"M43 14 Q48 21 53 14\"/></svg>"
-    },
     "teasers": [
-      "Whether their distance in time should change anything",
-      "The argument that duty needs a counterparty",
-      "A puzzle about who even exists"
+      "We are burying a danger and choosing to leave no warning.",
+      "The future we harm may owe us its very existence.",
+      "Can a duty be owed to someone who cannot claim it?"
     ],
-    "post_reading_time_min": 13,
     "post_difficulty": 2
   },
   "sections": [
@@ -52,12 +47,12 @@
     {
       "type": "setup",
       "order": 2,
-      "content": "Onkalo is a network of tunnels cut into the bedrock of western Finland, built to bury spent nuclear fuel. It is designed to stay sealed for a hundred thousand years, holding its danger apart from the living world. The people who might one day stand above it are separated from its engineers by more time than separates us from the first cave paintings. They cannot vote in our elections or pay into our pension funds. They cannot hold any of us to account. Many of them do not yet exist, and which of them ever will depends in part on what we do. Whether to warn them at all is unsettled, and the planners currently lean toward leaving the site unmarked, a patch of Finnish forest with the danger sealed beneath it."
+      "content": "Deep in the bedrock of western Finland, a network of tunnels called Onkalo is being cut to bury spent nuclear fuel and hold its danger apart from the living world. The people who might one day stand above it are separated from its engineers by more time than separates us from the first cave paintings. They cannot vote in our elections or pay into our pension funds. They cannot hold any of us to account. Many of them do not yet exist, and which of them ever will depends in part on what we do. Whether to warn them at all is unsettled, and the planners currently lean toward leaving the site unmarked, a patch of Finnish forest with the danger sealed beneath it."
     },
     {
       "type": "why_its_hard",
       "order": 3,
-      "content": "Almost everyone feels the pull. Saddling distant strangers with poisoned ground or a wrecked climate seems wrong, and protecting them seems right. The difficulty starts when that feeling is pressed for its grounds. Rights are usually claimed by someone who exists to claim them, and duties are usually owed to a person who can be wronged. A promise binds because someone stands at the other end of it. Future people have none of these features at the moment we act, because they are not yet here, and our choices help decide which of them ever will. So the intuition is strong and widely shared, while every standard foundation for it strains under inspection. Everyone in the debate grants the caring. What they cannot agree on is whether that caring is a duty owed to future people, or a strong reason of some other kind."
+      "content": "Almost everyone feels the pull. Saddling distant strangers with poisoned ground or a wrecked climate seems wrong, and protecting them seems right. The difficulty starts when that feeling is pressed for its grounds. Rights are usually claimed by someone who exists to claim them, and duties are usually owed to a person who can be wronged. A promise binds because someone stands at the other end of it. At the moment we act, future people are not yet here. They have none of these features, and our choices help decide which of them ever will. So the intuition is strong and widely shared, while every standard foundation for it strains under inspection. Everyone in the debate grants the caring. They differ over whether it is a duty owed to future people or a strong reason of some other kind."
     },
     {
       "type": "at_a_glance",
@@ -68,14 +63,13 @@
         "first_posed_by": "No single author. It took form across thinkers, with a precursor in Edmund Burke (1790), the first systematic account in John Rawls (1971), and its rigorous modern form in Derek Parfit (1984)",
         "year": "1971 to 1984 for the modern form, with a precursor in 1790",
         "still_debated": true,
-        "post_reading_time_min": 13,
         "post_difficulty": 2
       }
     },
     {
       "type": "what_hangs_on_it",
       "order": 5,
-      "content": "How fast a country cuts emissions, and how much present cost it will accept for benefit centuries out, turns on how much weight a person born in 2200 carries today. The same weight sets how much public debt one generation may hand to the next, and how to store waste that stays lethal long after every present institution is gone. It reaches into how we govern technologies whose effects compound for centuries. A government that treats future people as full rights-holders will budget very differently from one that treats them as beneficiaries of present goodwill, and the same policy can read as prudence to the first and as theft to the second. What separates the two readings is what each takes to be owed."
+      "content": "How fast a country cuts emissions, and how much present cost it will accept for benefit centuries out, turns on how much weight a person born in 2300 carries today. The same weight sets how much public debt one generation may hand to the next, and how to store waste that stays lethal long after every present institution is gone. It reaches into how we govern technologies whose effects compound for centuries. A government that treats future people as full rights-holders will budget very differently from one that treats them as beneficiaries of present goodwill. The same policy can read as prudence to the first and as theft to the second, depending on what each takes to be owed."
     },
     {
       "type": "perspectives",
@@ -84,15 +78,15 @@
         {
           "position_name": "Their welfare counts as much as ours",
           "school_or_thinker": "Impartial consequentialism / Sidgwick, Parfit, MacAskill",
-          "body": "A child born in 2200 will feel a burn or a hunger exactly as a child born today feels it. The date stamped on a life changes nothing about how much its pain matters. Once that is granted, treating a future person's welfare as worth less because it arrives later is as arbitrary as treating it as worth less for the person's skin color or country of birth. Distance in time is a fact about where we happen to stand. It says nothing about the moral weight of their experience. And the future is large. If humanity lasts even a fraction of its possible span, the people who could yet live outnumber everyone now alive many times over. Decisions that bend the long-run path then carry stakes larger than almost anything happening this year. Counted this way, the future is not asking us for charity. Its people are owed the same weight we give ourselves.",
+          "body": "A child born in 2300 will feel a burn or a hunger exactly as a child born today feels it. The date stamped on a life changes nothing about how much its pain matters. Once that is granted, treating a future person's welfare as worth less because it arrives later is as arbitrary as treating it as worth less for the person's skin color or country of birth. Distance in time is a fact about where we happen to stand. It says nothing about the moral weight of their experience. And the future is large. If humanity lasts even a fraction of its possible span, the people who could yet live outnumber everyone now alive many times over. Decisions that bend the long-run path then carry stakes larger than almost anything happening this year. Counted this way, the future is not asking us for charity. Its people are owed the same weight we give ourselves.",
           "strongest_argument": "If discounting welfare purely for occurring later cannot be defended without an arbitrary stipulation, then future people's interests weigh equally with ours, and their sheer number makes them decisive.",
           "concrete_example": "Burying waste that stays lethal for tens of thousands of years is, on this view, as serious as poisoning a well a neighbor will drink from tomorrow. The centuries in between do not thin the harm.",
-          "visual_svg": "<svg viewBox='0 0 400 220' xmlns='http://www.w3.org/2000/svg' fill='none'><line x1='40' y1='156' x2='350' y2='156' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' opacity='0.4'/><path d='M350 156 l-9 -4 m9 4 l-9 4' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' opacity='0.4'/><g stroke='currentColor' stroke-width='2.5'><circle cx='90' cy='108' r='28'/><circle cx='200' cy='108' r='28'/><circle cx='310' cy='108' r='28'/></g><line x1='58' y1='80' x2='342' y2='80' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><g font-family='var(--font-sans), system-ui, sans-serif' text-anchor='middle'><text x='200' y='66' fill='var(--accent)' font-size='15' font-weight='700'>equal weight</text><g fill='currentColor' font-size='14' font-weight='600'><text x='90' y='178'>today</text><text x='200' y='178'>year 2200</text><text x='310' y='178'>far future</text></g></g></svg>"
+          "visual_svg": "<svg viewBox='0 0 400 220' xmlns='http://www.w3.org/2000/svg' fill='none'><line x1='40' y1='156' x2='350' y2='156' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' opacity='0.4'/><path d='M350 156 l-9 -4 m9 4 l-9 4' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' opacity='0.4'/><g stroke='currentColor' stroke-width='2.5'><circle cx='90' cy='108' r='28'/><circle cx='200' cy='108' r='28'/><circle cx='310' cy='108' r='28'/></g><line x1='58' y1='80' x2='342' y2='80' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><g font-family='var(--font-sans), system-ui, sans-serif' text-anchor='middle'><text x='200' y='66' fill='var(--accent)' font-size='15' font-weight='700'>equal weight</text><g fill='currentColor' font-size='14' font-weight='600'><text x='90' y='178'>today</text><text x='200' y='178'>year 2300</text><text x='310' y='178'>far future</text></g></g></svg>"
         },
         {
           "position_name": "Obligation needs someone on the other end",
           "school_or_thinker": "Contractarianism / Gauthier, Narveson",
-          "body": "Start from what morality is for. On this account it is the set of constraints rational people would agree to, because each does better living under them than without. Obligations in the strict sense hold between parties who can make agreements with one another and be held to them. Future people can do none of this with us. They cannot bargain or reciprocate, and at the moment we choose they do not exist to try. None of this leaves us free to do as we please. Prudence and plain decency give most people strong reasons to care how the world goes after they are gone, and they act on those reasons. Those reasons come from attachment and character, the kind we feel for people we will never meet. A debt a rights-holder can press against us is a different thing, and future people are in no position to press one. The concern is real. Duty is the wrong name for it.",
+          "body": "No one alive in the year 2300 can hold us to anything. They cannot bargain with us or reciprocate, they have no promise from us to enforce, and at the moment we choose they do not exist to try. This is the clue to what morality is for. On this account it is the set of constraints rational people would agree to, because each does better living under them than without. Obligations in the strict sense hold between parties who can make agreements with one another and be held to them. Future people stand outside that circle. None of this leaves us free to do as we please. Prudence and plain decency give most people strong reasons to care how the world goes after they are gone, and they act on those reasons. Those reasons come from attachment and character, the kind we feel for people we will never meet. A debt a rights-holder can press against us is a different thing, and future people are in no position to press one. The concern is real. Duty is the wrong name for it.",
           "strongest_argument": "A duty owed to someone who does not yet exist and can never hold us to it is doing none of the work the concept of obligation was built to do.",
           "concrete_example": "We know what it is to break a promise to a living person who can confront us. There is no one in the year 2300 we have promised anything, and no one now who can release us or accuse us.",
           "visual_svg": "<svg viewBox='0 0 400 220' xmlns='http://www.w3.org/2000/svg' fill='none'><circle cx='118' cy='96' r='30' stroke='currentColor' stroke-width='2.5'/><circle cx='292' cy='96' r='30' stroke='currentColor' stroke-width='2.5' stroke-dasharray='5 6' opacity='0.6'/><g stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' opacity='0.75'><line x1='152' y1='82' x2='258' y2='82'/><path d='M258 82 l-9 -4 m9 4 l-9 5'/></g><line x1='258' y1='116' x2='152' y2='116' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-dasharray='5 5' opacity='0.4'/><g stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'><line x1='198' y1='110' x2='212' y2='122'/><line x1='212' y1='110' x2='198' y2='122'/></g><g font-family='var(--font-sans), system-ui, sans-serif' text-anchor='middle'><text x='118' y='102' fill='currentColor' font-size='15' font-weight='700'>us</text><text x='292' y='102' fill='currentColor' font-size='15' font-weight='600' opacity='0.8'>future</text><text x='205' y='68' fill='currentColor' font-size='14'>we act</text><text x='205' y='142' fill='var(--accent)' font-size='15' font-weight='700'>no return</text></g></svg>"
@@ -108,9 +102,9 @@
         {
           "position_name": "The usual way of asking the question is confused",
           "school_or_thinker": "The non-identity problem / Parfit",
-          "body": "Suppose a policy lets the present generation live a little more easily and leaves a depleted, dangerous world three hundred years out. It seems obvious that we have wronged the people who must live there. But ask who they are. Any large policy held in place over centuries changes countless small things, who meets whom, who marries, when children are conceived, which sperm reaches which egg. Choose the depleting path and one particular set of people comes to exist. Choose the careful path and a different set exists instead. The people in the damaged future were never going to appear in the careful one at all. They owe their existence to the very choice that supposedly harmed them, and their lives, though hard, are still worth living. So they cannot say the choice left them worse off than they would otherwise have been, because otherwise they would not have been at all. The feeling that we did wrong does not go away. What gives way is the usual account of why, the one that traces the wrong to harm done to particular future people.",
+          "body": "Suppose a policy lets the present generation live a little more easily and leaves a depleted, dangerous world three hundred years out. It seems obvious that we have wronged the people who must live there. But ask who they are. Any large policy held in place over centuries changes countless small things, who meets whom, who marries, when children are conceived, which sperm reaches which egg. Choose the depleting path and one particular set of people comes to exist. Choose the careful path and a different set exists instead. The people in the damaged future were never going to appear in the careful one at all. They owe their existence to the very choice that supposedly harmed them, and their lives, though hard, are still worth living. So they cannot say the choice left them worse off than they would otherwise have been. The feeling that we did wrong does not go away. What gives way is the usual account of why, the one that traces the wrong to harm done to particular future people.",
           "strongest_argument": "Most policies that look like harms to the future also fix which future people exist, so those people cannot coherently claim the policy left them worse off than their own alternative, and any account of our duties has to be rebuilt without that claim.",
-          "concrete_example": "A woman learns that a child conceived now would live with a painful but bearable condition, while a child conceived two months later would not. If she does not wait, the child she has cannot complain of being harmed, since its only alternative was never to exist.",
+          "concrete_example": "A woman learns that a child conceived now would live with a painful but bearable condition, while a child conceived two months later would not. If she does not wait, that child's only alternative was never to exist, so it cannot complain of being harmed.",
           "visual_svg": "<svg viewBox='0 0 400 220' xmlns='http://www.w3.org/2000/svg' fill='none'><circle cx='78' cy='110' r='30' stroke='currentColor' stroke-width='2.5'/><g stroke='currentColor' stroke-width='2' stroke-linecap='round' opacity='0.6'><line x1='108' y1='98' x2='236' y2='78'/><line x1='108' y1='122' x2='236' y2='162'/></g><g stroke='currentColor' stroke-width='2.5' stroke-linejoin='round'><rect x='238' y='52' width='112' height='50' rx='14'/><rect x='238' y='138' width='112' height='50' rx='14'/></g><g font-family='var(--font-sans), system-ui, sans-serif' text-anchor='middle'><text x='78' y='160' fill='currentColor' font-size='14' font-weight='600'>a choice</text><g fill='currentColor'><text x='294' y='74' font-size='14' font-weight='700'>people A</text><text x='294' y='92' font-size='13' opacity='0.7'>careful path</text><text x='294' y='160' font-size='14' font-weight='700'>people B</text><text x='294' y='178' font-size='13' opacity='0.7'>depleting path</text></g><text x='294' y='124' fill='var(--accent)' font-size='15' font-weight='700'>different people</text></g></svg>"
         }
       ]
@@ -118,13 +112,13 @@
     {
       "type": "where_they_clash",
       "order": 7,
-      "content": "The first fault line runs between the contractarian and everyone else, and it is about what morality is for. If duties exist only between parties who can hold each other to account, the future drops out by definition, and no amount of concern turns into obligation. If duties can be owed to people who cannot reciprocate, three of the four positions stay in play, and the argument moves to a second fault line: what grounds the duty. The impartialist locates it in welfare, summed over whoever will exist, which makes numbers decisive. The communitarian locates it in membership, which makes numbers almost beside the point, since a trust is a trust whether the heirs are many or few. The two cannot be merged: one treats future people as interchangeable bearers of welfare, the other as the next members of a particular community. And the philosopher most identified with impartial concern for the future, Derek Parfit, is also the one who raised the non-identity problem that unsettles how to ground it. None of the camps is arguing about how much to care. The argument is whether that care, once called a duty, has anyone on the other end to be owed it."
+      "content": "The first fault line runs between the contractarian and everyone else, and it is about what morality is for. If duties exist only between parties who can hold each other to account, the future drops out by definition, and no amount of concern turns into obligation. If duties can be owed to people who cannot reciprocate, three of the four positions stay in play, and the argument moves to a second fault line: what grounds the duty. The impartialist locates it in welfare, summed over whoever will exist, which makes numbers decisive. The communitarian locates it in membership, which makes numbers almost beside the point, since a trust is a trust whether the heirs are many or few. The two cannot be merged: one treats future people as interchangeable bearers of welfare, the other as the next members of a particular community. And the philosopher most identified with impartial concern for the future, Derek Parfit, is also the one who raised the non-identity problem that unsettles how to ground it. None of the camps is arguing about how much to care. They divide over whether that care is owed as a duty at all, and if it is, to whom it is owed."
     },
     {
       "type": "what_science_says",
       "order": 8,
       "content": {
-        "body": "Science cannot tell anyone whether a duty to the future exists. It can fix how much is at stake and sharpen one of the puzzles. Climate models tie present emissions to specific ranges of warming and sea-level rise centuries out, turning a vague worry into quantified bands of harm. Demographers note that if humanity persists even modestly long, the number of future people dwarfs everyone who has ever lived, the scale the impartialist argument leans on. The non-identity problem rests on a plain biological fact: which individual is conceived depends on the exact moment of conception, so any policy that reshapes ordinary life across generations changes who is born. None of this chooses a side. On the question that divides the camps, whether a duty can be owed to those who cannot reciprocate, and whether it would rest on summed welfare or on community membership, no measurement speaks. The evidence fixes the scale of the problem and the mechanics underneath it. The answer is not the kind of thing it can deliver.",
+        "body": "Science cannot tell anyone whether a duty to the future exists. It can fix how much is at stake and sharpen one of the puzzles. Climate models tie present emissions to specific ranges of warming and sea-level rise centuries out, turning a vague worry into quantified bands of harm. Demographers note that if humanity persists even modestly long, the number of future people dwarfs everyone who has ever lived, the scale the impartialist argument leans on. The non-identity problem rests on a plain biological fact: which individual is conceived depends on the exact moment of conception, so any policy that reshapes ordinary life across generations changes who is born. None of this chooses a side. On the question that divides the camps, whether a duty can be owed to those who cannot reciprocate, and whether it would rest on summed welfare or on community membership, no measurement speaks. The evidence fixes the scale of the problem and the mechanics underneath it, and the answer is not the kind of thing it can deliver.",
         "key_findings": [
           "IPCC assessments link present emissions to defined ranges of long-run warming and sea-level rise, putting numbers on harms centuries out.",
           "If humanity survives even a fraction of its potential span, projected future people outnumber all who have ever lived by a wide margin.",
@@ -138,10 +132,10 @@
       "content": {
         "intro": "Test the question against your own choices, the ones whose consequences will outlast you by centuries.",
         "prompts": [
-          "Take something you would not do to a neighbor next door, such as leaving them your debts or fouling their water. Is doing the same to someone in the year 2300 different in kind, or only in distance? Say what, if anything, the distance changes.",
+          "Take something you would not do to a neighbor next door, such as leaving them your debts or fouling their water. Is doing the same to someone in the year 2300 just as wrong, or does something about their situation change the case? Name what changes it, if anything does.",
           "If you believe we owe the future something, locate the obligation. Is it owed to the specific people who will exist, to whoever happens to exist, or to a community you belong to regardless of who later fills it?",
           "The non-identity problem says many supposed victims of our choices would never have existed under the kinder one. Does that dissolve any sense that we can wrong them, leave it standing on a new foundation, or show the sense was confused from the start?",
-          "Suppose the contractarian is right that caring for the unborn is real but not a duty they can claim. Would that change anything you do, or only the word you use for it?"
+          "Suppose the contractarian is right that caring for the unborn is real but not a duty they can claim. Does that distinction carry real weight, or leave what you would do for the future unchanged?"
         ],
         "closing_thought": "Where you locate the obligation, or whether you find one at all, will quietly decide which of those long choices you can live with."
       }
@@ -164,10 +158,10 @@
         {
           "question": "The impartial consequentialist argues that valuing a future person's welfare less purely because it comes later is best described as what?",
           "options": [
-            "A justified response to uncertainty",
-            "A requirement of economic theory",
+            "A reasonable hedge against a deeply uncertain future",
+            "A standard assumption in economic models",
             "As arbitrary as discounting by race or birthplace",
-            "Impossible to measure"
+            "Impossible to measure with any precision"
           ],
           "answer_index": 2,
           "explanation": "The view treats the timing of a life as irrelevant to the weight of its experience, so pure time-discounting of welfare counts as an arbitrary stipulation rather than a principled distinction."
@@ -176,9 +170,9 @@
           "question": "On the Burkean view, where does the obligation to the future come from?",
           "options": [
             "The summed welfare of all who will exist",
-            "Membership in a community that outlasts any single life",
+            "Membership in a community that outlasts a lifetime",
             "A contract signed by representatives of the unborn",
-            "The measurable risk of catastrophe"
+            "The calculated risk of a future catastrophe"
           ],
           "answer_index": 1,
           "explanation": "Burke casts society as a partnership across the living, the dead, and the unborn, so the duty is a custodian's duty of inheritance and belonging, not a calculation over strangers' interests."
@@ -186,10 +180,10 @@
         {
           "question": "The non-identity problem puts pressure on arguments that rely on which claim?",
           "options": [
-            "That future people will be many",
-            "That climate change is occurring",
-            "That morality requires reciprocity",
-            "That a policy harmed specific future individuals who would otherwise have been better off"
+            "That the sheer number of future people is what gives the impartial argument its force",
+            "That climate change is occurring as the models predict",
+            "That morality only binds parties who can reciprocate",
+            "That specific future people were left worse off than they otherwise would be"
           ],
           "answer_index": 3,
           "explanation": "Because large, lasting policies change who is conceived, the people in a worse future would not have existed under the better policy, so they cannot claim it left them worse off than they would otherwise have been."
@@ -197,10 +191,10 @@
         {
           "question": "How does the contractarian treat the common feeling that we should protect the environment for our descendants?",
           "options": [
-            "As a real but non-obligatory reason of prudence, love, or character",
-            "As proof of a binding duty",
-            "As an illusion with no basis",
-            "As identical to a signed contract"
+            "As a real but non-binding reason of prudence or affection",
+            "As evidence of a duty we genuinely owe to them",
+            "As an illusion with no rational basis",
+            "As identical to a contract we have signed"
           ],
           "answer_index": 0,
           "explanation": "The contractarian neither denies the feeling nor calls it irrational. The claim is only that a reason of affection is not the same as a duty owed to a rights-holder who can press it against us."
@@ -208,9 +202,9 @@
         {
           "question": "Two positions both answer yes to the question but disagree about why. Which pair, and what divides them?",
           "options": [
-            "Contractarianism and consequentialism, divided over reciprocity",
+            "Contractarianism and consequentialism, divided over whether duties require reciprocity",
             "The non-identity view and contractarianism, divided over numbers",
-            "Impartial consequentialism and Burkean communitarianism, divided over whether the duty rests on aggregate welfare or on community membership",
+            "Impartial consequentialism and communitarianism, divided over welfare versus belonging",
             "Consequentialism and the non-identity view, divided over climate data"
           ],
           "answer_index": 2,
@@ -219,10 +213,10 @@
         {
           "question": "Why does Derek Parfit occupy an unusual place in this debate?",
           "options": [
-            "He denied that future generations matter at all",
-            "He proved the contractarian position correct",
-            "He invented the concept of sustainable development",
-            "He both sharpened the case for impartial concern and raised the non-identity problem that complicates how to ground it"
+            "He argued that future generations carry no moral weight at all",
+            "He claimed to have proved the contractarian position correct",
+            "He resolved the non-identity problem he had identified",
+            "He both sharpened the case for impartial concern and raised the non-identity problem"
           ],
           "answer_index": 3,
           "explanation": "Parfit is a central voice for taking the far future seriously and also the author of the non-identity problem, so the same thinker supplies both the motivation and its deepest technical difficulty."
@@ -230,10 +224,10 @@
         {
           "question": "What does empirical science contribute to this question?",
           "options": [
-            "It determines whether we have obligations to the future",
-            "It fixes the scale of the stakes and the biological basis of the non-identity problem, without settling the moral question",
-            "It proves the consequentialist position",
-            "It shows that future people will not exist"
+            "It determines, on its own, whether we have obligations to the future at all",
+            "It quantifies the stakes and the biology of the non-identity problem, but settles nothing moral",
+            "It settles the whole debate in the consequentialist's favor",
+            "It shows the vast number of future people settles the matter"
           ],
           "answer_index": 1,
           "explanation": "Climate and demographic projections quantify how far present choices reach and how many people are at stake, and conception-dependence underlies the non-identity problem, but none of this decides what is owed."
@@ -243,7 +237,7 @@
     {
       "type": "history_of_the_question",
       "order": 11,
-      "content": "The thought is old. Its sharp form is recent. Edmund Burke, writing against the French Revolution in 1790, cast society as a partnership across the generations, the living bound to both the dead and the unborn. When social-contract theory was revived in the twentieth century, the future became a visible strain on it: John Rawls, in A Theory of Justice (1971), had to add a separate just savings principle precisely because his contracting parties had no natural reason to provide for people they would never meet. Derek Parfit then turned the worry into a technical field. Reasons and Persons (1984) laid out the non-identity problem and forced philosophers to ask not only how much future people matter but whether the usual way of speaking about harming them even holds together. From the 2000s on, climate ethics and the longtermist movement, argued most prominently by William MacAskill, carried the question out of the seminar and into public debate."
+      "content": "The thought is old. Its sharp form is recent. Edmund Burke, writing against the French Revolution in 1790, cast society as a partnership across the generations, the living bound to both the dead and the unborn. When social-contract theory was revived in the twentieth century, the future became a visible strain on it: John Rawls, in *A Theory of Justice* (1971), had to add a separate just savings principle precisely because his contracting parties had no natural reason to provide for people they would never meet. Derek Parfit then turned the worry into a technical field. *Reasons and Persons* (1984) laid out the non-identity problem and forced philosophers to ask not only how much future people matter but whether the usual way of speaking about harming them even holds together. From the 2000s on, climate ethics and the longtermist movement, argued most prominently by William MacAskill, carried the question out of the seminar and into public debate."
     },
     {
       "type": "where_the_debate_stands",

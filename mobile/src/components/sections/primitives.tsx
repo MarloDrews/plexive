@@ -5,6 +5,7 @@ import { Image } from "expo-image"
 import { colors, fonts } from "../../theme/tokens"
 import { useAccent } from "../../lib/accent"
 import { resolveImageUrl } from "../../config"
+import { unescapeDollar } from "../../lib/prose"
 import SafeSvg from "../SafeSvg"
 
 // Shared building blocks for the ported web section components. On the web
@@ -74,6 +75,16 @@ export const proseStyle: TextStyle = {
   color: colors["ink-body"],
 }
 
+// Single funnel for plain-prose body text: unescapes a literal "\$" (currency)
+// in string children so the "always write \$" content rule is safe on the
+// non-math prose paths. Element children (e.g. <MathText/>) pass through, so
+// math behavior is never touched.
+function unescapeNode(node: ReactNode): ReactNode {
+  if (typeof node === "string") return unescapeDollar(node)
+  if (Array.isArray(node)) return node.map(unescapeNode)
+  return node
+}
+
 export function Prose({
   children,
   dim,
@@ -97,7 +108,7 @@ export function Prose({
         style,
       ]}
     >
-      {children}
+      {unescapeNode(children)}
     </Text>
   )
 }
@@ -203,8 +214,8 @@ export function CaptionedImage({
         contentFit="cover"
         transition={150}
       />
-      {caption ? <Text style={[sans(12, colors["ink-muted"]), align]}>{caption}</Text> : null}
-      {attribution ? <Text style={[sans(12, colors["ink-faint"]), align]}>{attribution}</Text> : null}
+      {caption ? <Text style={[sans(12, colors["ink-muted"]), align]}>{unescapeDollar(caption)}</Text> : null}
+      {attribution ? <Text style={[sans(12, colors["ink-faint"]), align]}>{unescapeDollar(attribution)}</Text> : null}
     </View>
   )
 }

@@ -10,6 +10,7 @@ interface LifeArcContent {
 }
 
 import SvgBlock from "../SvgBlock"
+import { unescapeDollar } from "@/lib/prose"
 
 interface Props {
   content: LifeArcContent
@@ -26,8 +27,8 @@ export default function LifeArcSection({ content, isUserContent }: Props) {
       <ol className="mt-4 flex flex-col gap-2">
         {content.milestones.map((m, i) => (
           <li key={i} className="flex gap-3 items-baseline">
-            <span className="text-xs font-mono text-(--accent) shrink-0 w-10">{m.year}</span>
-            <span className="text-sm text-ink-dim">{m.label}</span>
+            <span className="text-xs font-mono text-(--accent) shrink-0 w-10">{unescapeDollar(m.year)}</span>
+            <span className="text-sm text-ink-dim">{unescapeDollar(m.label)}</span>
           </li>
         ))}
       </ol>

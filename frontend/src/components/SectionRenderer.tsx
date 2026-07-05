@@ -78,6 +78,8 @@ import LimitationsSection from "./sections/LimitationsSection"
 import ObjectionsSection from "./sections/ObjectionsSection"
 import ImplicationsSection from "./sections/ImplicationsSection"
 import ConnectionsToOtherFieldsSection from "./sections/ConnectionsToOtherFieldsSection"
+import DataOrSampleSection from "./sections/DataOrSampleSection"
+import FiguresSection from "./sections/FiguresSection"
 import AuthorsContextSection from "./sections/AuthorsContextSection"
 
 interface Props {
@@ -87,6 +89,9 @@ interface Props {
   // Post format, used for the few shared sections whose caps header is
   // per-format (e.g. voices: "In Their Own Words" for people).
   format: string
+  // Server-computed reading time (post.reading_minutes), passed down so the
+  // at_a_glance row shows the same value as the card footer and detail header.
+  readingMinutes: number
 }
 
 // Sections that are visible metadata or navigation rather than prose;
@@ -95,10 +100,11 @@ const NO_READ_SECTIONS = new Set([
   "at_a_glance",
   "quiz",
   "paper_card",
+  "figures",
   "sources",
 ])
 
-export default function SectionRenderer({ sections, isUserContent, postId, format }: Props) {
+export default function SectionRenderer({ sections, isUserContent, postId, format, readingMinutes }: Props) {
   const sorted = [...sections].sort((a, b) => a.order - b.order)
 
   return (
@@ -120,7 +126,7 @@ export default function SectionRenderer({ sections, isUserContent, postId, forma
           case "voices":
             return <VoicesSection key={i} content={c as any} label={format === "people" ? "In Their Own Words" : format === "books" ? "Voices from the Book" : undefined} />
           case "at_a_glance":
-            return <AtAGlanceSection key={i} content={c as any} />
+            return <AtAGlanceSection key={i} content={c as any} readingMinutes={readingMinutes} />
           case "why_endures":
             return <WhyEnduresSection key={i} content={c as string} />
           case "heart":
@@ -204,13 +210,13 @@ export default function SectionRenderer({ sections, isUserContent, postId, forma
           case "cold_open":
             return <ColdOpenSection key={i} content={c as string} />
           case "setting":
-            return <SettingSection key={i} content={c as any} />
+            return <SettingSection key={i} content={c as any} isUserContent={isUserContent} />
           case "chapters":
             return <ChaptersSection key={i} content={c as any} />
           case "the_turn":
             return <TheTurnSection key={i} content={c as any} />
           case "the_aftermath":
-            return <TheAftermathSection key={i} content={c as any} isUserContent={isUserContent} />
+            return <TheAftermathSection key={i} content={c as any} />
           case "what_it_means":
             return <WhatItMeansSection key={i} content={c as string} />
           case "what_we_learn":
@@ -268,7 +274,12 @@ export default function SectionRenderer({ sections, isUserContent, postId, forma
           case "implications":
             return <ImplicationsSection key={i} content={c as string} />
           case "connections_to_other_fields":
+          case "cross_field_reach":
             return <ConnectionsToOtherFieldsSection key={i} content={c as string} />
+          case "data_or_sample":
+            return <DataOrSampleSection key={i} content={c as string} />
+          case "figures":
+            return <FiguresSection key={i} content={c as any} />
           case "authors_context":
             return <AuthorsContextSection key={i} content={c as any} />
           default:

@@ -1,5 +1,6 @@
 import SectionLabel from "../SectionLabel"
 import type { MisconceptionItem } from "../../types/post"
+import MathText from "../MathText"
 
 interface Props {
   content: MisconceptionItem[]
@@ -14,11 +15,11 @@ export default function MisconceptionsSection({ content }: Props) {
           <div key={i} className="flex flex-col gap-2">
             <div className="flex items-start gap-2">
               <span className="text-bad text-xs mt-0.5 shrink-0 font-bold">✕</span>
-              <span className="text-sm text-ink-muted line-through leading-relaxed">{item.myth}</span>
+              <span className="text-sm text-ink-muted line-through leading-relaxed"><MathText text={item.myth} /></span>
             </div>
             <div className="flex items-start gap-2">
               <span className="text-good text-xs mt-0.5 shrink-0 font-bold">✓</span>
-              <span className="prose-post">{item.reality}</span>
+              <span className="prose-post"><MathText text={item.reality} /></span>
             </div>
           </div>
         ))}

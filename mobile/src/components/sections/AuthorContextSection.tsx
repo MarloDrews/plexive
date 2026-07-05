@@ -5,6 +5,7 @@ import type { AuthorContextContent } from "../../types/post"
 import { SectionBlock, Prose, sans } from "./primitives"
 import { colors } from "../../theme/tokens"
 import { useAccent } from "../../lib/accent"
+import { unescapeDollar } from "../../lib/prose"
 import { resolveImageUrl } from "../../config"
 
 // Port of frontend/src/components/sections/AuthorContextSection.tsx
@@ -23,7 +24,7 @@ export default function AuthorContextSection({ content }: { content: AuthorConte
             />
             {content.image_attribution ? (
               <Text style={[sans(11, colors["ink-faint"]), { marginTop: 4, textAlign: "center" }]}>
-                {content.image_attribution}
+                {unescapeDollar(content.image_attribution)}
               </Text>
             ) : null}
           </View>

@@ -279,17 +279,11 @@ body::before {
   }
 }
 
-/* Read-aloud tracking, painted by src/lib/readAloud via the CSS Custom
-   Highlight API. The sentence is a soft wash of the post's format accent;
-   the spoken word is a stronger step of the same accent. Browsers without
-   ::highlight() show no tracking; speech still plays. */
-::highlight(read-aloud-sentence) {
-  background-color: color-mix(in srgb, var(--accent) 18%, transparent);
-}
-::highlight(read-aloud-word) {
-  background-color: color-mix(in srgb, var(--accent) 45%, transparent);
-  color: var(--color-ink);
-}
+/* Read-aloud tracking styles (::highlight(read-aloud-sentence/-word)) are
+   injected at runtime by src/lib/readAloud/highlights.ts, not declared here:
+   Lightning CSS (the Tailwind v4 / Turbopack transformer) rejects the
+   ::highlight() pseudo-element at build time and fails the whole file. The
+   browser supports it; only the build-time parser does not. */
 
 @keyframes heart-pop {
   0%   { transform: scale(1); }

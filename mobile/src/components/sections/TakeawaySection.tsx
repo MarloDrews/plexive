@@ -3,6 +3,7 @@ import type { TakeawayContent } from "../../types/post"
 import { SectionBlock, Prose, SvgFigure } from "./primitives"
 import { fonts, radius } from "../../theme/tokens"
 import { useAccent } from "../../lib/accent"
+import { unescapeDollar } from "../../lib/prose"
 
 // Port of frontend/src/components/sections/TakeawaySection.tsx
 // framework framing: accent card; question framing: large centered accent
@@ -56,7 +57,7 @@ export default function TakeawaySection({
           textAlign: "center",
         }}
       >
-        {content.body}
+        {unescapeDollar(content.body)}
       </Text>
       {content.visual_svg ? (
         <SvgFigure

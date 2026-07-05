@@ -61,25 +61,33 @@
 // leans on it. Exactly one section carries that emphasis; no other section does.
 //
 // ─── PROSE ───────────────────────────────────────────────────────────
+// ─── ITALICS CONVENTION ──────────────────────
+// Titles of works (books, papers, paintings, films) and the names of theories, frameworks, and
+//   schools take *...* asterisk italics on mention. Asterisk is the only marker, read outside the
+//   $...$ math spans (an asterisk inside math is left untouched); avoid stray asterisk pairs.
+//   Named principles, laws, and theorems stay plain (Occam's razor, Bayes' theorem); a plain term
+//   pointed at as a term takes curly double quotes, not italics. Full borderline policy:
+//   STYLE_GUIDE_LONGFORM.md.
 // Zero em-dashes in user-facing text. Books voice: someone who has actually read
 // it and tells you why it is worth your time, slightly more evaluative about the
 // ideas than other formats, an honest verdict welcome. Avoid back-cover-blurb
-// tone. Full prose rules: STYLE_GUIDE_LONGFORM.md. Schema and rationale:
-// DEEPSCROLL_CONTENT_STRUCTURE.md. Diagrams: SVG_STANDARD.md. Sourced images
-// (covers, author portraits): IMAGE_STANDARD.md.
+// tone. Full prose rules: STYLE_GUIDE_LONGFORM.md. Reads-like-a-human rules
+// (sentence-length variance, comma and clause density, no over-closure, no
+// reflexive triplets, parallel-field variety): HUMAN_TEXTURE_STANDARD.md.
+// Schema and rationale: DEEPSCROLL_CONTENT_STRUCTURE.md. Diagrams:
+// SVG_STANDARD.md. Sourced images (covers, author portraits): IMAGE_STANDARD.md.
 
 {
   // ─── GRAPH FIELDS ───────────────────────────────────────────────────
   // Cross-format. Full rules: SKELETON_COMMENT_STANDARD.md, section 10.
   // The system assigns the integer id and slug; the generator writes only these.
-  "tags": [],         // HARD: 1-4 slugs from the fixed taxonomy ONLY, never invent
-                      // one. The first is the primary subject of the book; it is
-                      // the taxonomy expression of what feed_card.genre names in
-                      // human terms ("psychology" for genre "Psychology"). genre
-                      // is a display label, not a slug; they correspond, they need
-                      // not be the identical string. For fiction the first tag is
-                      // still a subject or theme slug from the taxonomy, even when
-                      // genre names a literary category ("Literary Fiction").
+  "tags": [],         // HARD: 1-4 slugs from the fixed taxonomy ONLY, never
+                      // invent one. tags[0] is the post's PRIMARY CATEGORY and comes
+                      // first: the single slug that best names what the post is about.
+                      // The card takes its category from tags[0], the eyebrow heading
+                      // from the slug's display name and the glyph from the slug's icon.
+                      // The remaining slugs are additional on-topic subjects, most-
+                      // relevant first; include only genuine ones, do not pad.
   "connections": [    // REQUIRED, may be empty. Every real link to another post.
                       // Books has NO person-list section, so a link to a person,
                       // the author first of all, is a normal connection here:
@@ -158,12 +166,15 @@
                                 // verdict allowed. Not a blurb, no "you won't
                                 // believe". The renderer does not transform
                                 // feed-card text, so no em-dashes here.
-    "teasers": ["", "", ""],    // HARD: exactly 3. Guideline: about 6 words each.
-                                // Claims, questions, or striking specifics from the
-                                // book, not category labels. Vary structure across
-                                // the three.
-    "post_reading_time_min": 0, // integer. Guideline: honest estimate of reading
-                                // the post, no undersell.
+    "teasers": ["", "", ""],    // HARD: exactly 3. Guideline: about 9 to 12 words
+                                // each (never a cap). Each opens a different loop the post
+                                // then closes: real curiosity that makes the reader want in,
+                                // in plain words they already have, never a term the post
+                                // will only teach, never restating the finding or spending
+                                // the payoff, never clickbait the post does not deliver. Vary
+                                // the form where it fits (a claim, a question, a second-person
+                                // line are examples, not a required one of each). No category
+                                // labels, no "you won't believe". Voice: STYLE_GUIDE A11.
     "post_difficulty": 1,       // HARD: 1, 2, or 3 (1=accessible, 2=moderate,
                                 // 3=demanding).
     "year": 0,                  // integer. Original publication year.
@@ -207,10 +218,15 @@
       "content": [
         // Guideline: 3-4 quotes in three roles, not three of the same: one thesis
         // quote, one vivid or concrete quote, one short punch quote. A 5th only
-        // when it reveals a qualitatively different facet.
+        // when it reveals a qualitatively different facet. Every quote, the thesis
+        // one included, must land for a reader who knows nothing about the book yet
+        // and pull them in, like a teaser. If the best thesis line leans on a term
+        // the post introduces later (a named system, a coined label), pick a
+        // different self-contained line instead.
         {
-          "quote": "",         // string. Exact words from the book, 1-3 sentences,
-                               // must stand alone.
+          "quote": "",         // string. Exact words from the book, 1-3 sentences.
+                               // Stands alone: comprehensible and intriguing with no
+                               // prior context, not merely grammatically complete.
           "attribution": ""    // string. Guideline: max about 5 words, minimal
                                // context, "on belief", "on the remembering self".
                                // Avoid: editorializing in the attribution.
@@ -241,7 +257,6 @@
                                      // distinct from post_difficulty.
         "best_for": "",              // string | omit. One specific reader profile
                                      // the book rewards. One line, concrete.
-        "post_reading_time_min": 0,  // integer. REQUIRED. Mirrors feed_card value.
         "post_difficulty": 1         // HARD: 1, 2, or 3. Mirrors feed_card value.
       }
     },
@@ -272,17 +287,20 @@
       "order": 5,
       // JOB: map the book's architecture part by part, so a reader who stops here
       //      sees how the book is organized before meeting the ideas.
-      // Include when: the book has a deliberate architecture that carries its
-      //   argument, parts or movements that build on each other and reward a map.
-      // Skip when: the structure is conventional or linear with nothing to map, or
-      //   (fiction) a part-by-part map would spoil the plot. Map acts or movements,
-      //   never plot beats.
+      // Include when: the book's architecture is itself a load-bearing idea, where
+      //   how it is built is part of what makes it worth reading and a reader would
+      //   miss something real without the map. This is rare, so default to skipping.
+      //   A book merely having named parts is not enough.
+      // Skip when: the parts are a conventional or linear table of contents that adds
+      //   nothing a curious reader wants, which is most books, since heart already
+      //   carries the throughline. (Fiction) a part-by-part map would spoil the plot;
+      //   map acts or movements, never plot beats.
       // Owns: the architecture, the map of how the book is organized. Not here: the
       //   ideas themselves in depth (belongs to core_ideas).
       "content": [
         // Guideline: one item per major part or movement, about 3-7 items. Vary
-        // sentence structure across items; do not open every item with "Part X" or
-        // the same verb.
+        // the sentence shape across items, not just the opening word: do not make
+        // every item the pattern "opener, embedded list, and a closing clause".
         ""   // string per item. One sentence on what that part covers.
       ]
     },
@@ -310,10 +328,12 @@
                                // the theme or thread named.
           "body": "",          // string. Guideline: 3-6 sentences. Open on a
                                // concrete example or scene before the abstraction.
-          "in_practice": "",   // string | omit. Non-fiction only. ONE direct
-                               // imperative sentence: what to do with this idea.
-                               // Begin with the action or the situation. Avoid:
-                               // "Tomorrow:" or other formula. Omit for fiction.
+          "in_practice": "",   // string | omit. Non-fiction only. One sentence:
+                               // what to do with this idea, stated so the reader
+                               // can act on it. Vary the shape across the
+                               // core_ideas set, and do not open every one with
+                               // the same imperative verb. Avoid: "Tomorrow:" or
+                               // other formula. Omit for fiction.
           "visual_svg": "",    // string | omit. A drawn diagram for THIS idea only,
                                // where it shows what prose cannot. Per
                                // SVG_STANDARD.md, accent is var(--accent). The

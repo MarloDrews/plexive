@@ -1,20 +1,39 @@
 import katex from "katex"
+import { splitItalics } from "@/lib/italics"
 
 type Segment = { type: "text"; content: string } | { type: "math"; content: string }
+
+// Finds the next "$" that is not backslash-escaped, so a literal "\$" (a
+// currency dollar) is not mistaken for an inline-math delimiter.
+function nextUnescapedDollar(text: string, from: number): number {
+  for (let j = from; j < text.length; j++) {
+    if (text[j] === "\\") {
+      j++ // skip the escaped character
+      continue
+    }
+    if (text[j] === "$") return j
+  }
+  return -1
+}
+
+// Turns an escaped "\$" back into a literal "$" for display in text segments.
+function unescapeDollar(text: string): string {
+  return text.replace(/\\\$/g, "$")
+}
 
 function parseSegments(text: string): Segment[] {
   const segments: Segment[] = []
   let i = 0
   while (i < text.length) {
-    const start = text.indexOf("$", i)
+    const start = nextUnescapedDollar(text, i)
     if (start === -1) {
-      if (i < text.length) segments.push({ type: "text", content: text.slice(i) })
+      if (i < text.length) segments.push({ type: "text", content: unescapeDollar(text.slice(i)) })
       break
     }
-    if (start > i) segments.push({ type: "text", content: text.slice(i, start) })
-    const end = text.indexOf("$", start + 1)
+    if (start > i) segments.push({ type: "text", content: unescapeDollar(text.slice(i, start)) })
+    const end = nextUnescapedDollar(text, start + 1)
     if (end === -1) {
-      segments.push({ type: "text", content: text.slice(start) })
+      segments.push({ type: "text", content: unescapeDollar(text.slice(start)) })
       break
     }
     segments.push({ type: "math", content: text.slice(start + 1, end) })
@@ -35,7 +54,14 @@ export default function MathText({ text, className }: Props) {
   return (
     <span className={className}>
       {segments.map((seg, i) => {
-        if (seg.type === "text") return <span key={i}>{seg.content}</span>
+        if (seg.type === "text")
+          return (
+            <span key={i}>
+              {splitItalics(seg.content).map((run, j) =>
+                run.italic ? <em key={j}>{run.text}</em> : <span key={j}>{run.text}</span>,
+              )}
+            </span>
+          )
         const html = (() => {
           try {
             return katex.renderToString(seg.content, { throwOnError: false, output: "html" })

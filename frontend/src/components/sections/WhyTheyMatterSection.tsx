@@ -1,4 +1,6 @@
 import SectionLabel from "../SectionLabel"
+import Prose from "../Prose"
+import MathText from "../MathText"
 interface Props {
   content: string
 }
@@ -10,7 +12,7 @@ export default function WhyTheyMatterSection({ content }: Props) {
     // facts key section (SurprisesSection) and the concepts one (HowToApplySection).
     <div className="px-6 py-8 border-l-2 border-(--accent) bg-(--accent)/[0.06]">
       <SectionLabel className="mb-3">Why They Matter</SectionLabel>
-      <p className="prose-post">{content}</p>
+      <Prose><MathText text={content} /></Prose>
     </div>
   )
 }

@@ -322,7 +322,7 @@ export default function CreateScreen() {
   const [fc, setFc] = useState({
     cover_url: "", title: "", author: "", essence: "",
     teaser1: "", teaser2: "", teaser3: "",
-    reading_time: "", difficulty: "2" as "1" | "2" | "3",
+    difficulty: "2" as "1" | "2" | "3",
     year: "", genre: "",
   })
 
@@ -337,7 +337,7 @@ export default function CreateScreen() {
   const [atAGlance, setAtAGlance] = useState({
     genre: "", year: "", country: "", pages: "",
     reading_ease: "2" as "1" | "2" | "3",
-    post_reading_time_min: "", post_difficulty: "2" as "1" | "2" | "3",
+    post_difficulty: "2" as "1" | "2" | "3",
     best_for: "",
   })
 
@@ -359,7 +359,7 @@ export default function CreateScreen() {
     era: "", location: "",
     authors_compact: "", venue: "", key_finding_one_line: "", published_year: "",
     essence: "", teaser1: "", teaser2: "", teaser3: "",
-    reading_time: "", difficulty: "2" as "1" | "2" | "3",
+    difficulty: "2" as "1" | "2" | "3",
   })
   const [genericBody, setGenericBody] = useState("")
 
@@ -479,7 +479,6 @@ export default function CreateScreen() {
         country: aag.country.trim(),
         pages: parseInt(aag.pages) || 0,
         reading_ease: parseInt(aag.reading_ease) as 1 | 2 | 3,
-        post_reading_time_min: parseInt(aag.post_reading_time_min) || 0,
         post_difficulty: parseInt(aag.post_difficulty) as 1 | 2 | 3,
         best_for: aag.best_for.trim(),
       },
@@ -556,7 +555,6 @@ export default function CreateScreen() {
     if (!fc.teaser1.trim()) errs.fc_teaser1 = "Required"
     if (!fc.teaser2.trim()) errs.fc_teaser2 = "Required"
     if (!fc.teaser3.trim()) errs.fc_teaser3 = "Required"
-    if (!fc.reading_time || parseInt(fc.reading_time) < 1) errs.fc_reading_time = "Enter a positive number"
     if (!fc.year || parseInt(fc.year) < 1000) errs.fc_year = "Enter a valid year"
     if (!fc.genre.trim()) errs.fc_genre = "Required"
 
@@ -609,7 +607,6 @@ export default function CreateScreen() {
     const teasers = [gFc.teaser1.trim(), gFc.teaser2.trim(), gFc.teaser3.trim()]
     const base = {
       teasers,
-      post_reading_time_min: parseInt(gFc.reading_time) || 0,
       post_difficulty: parseInt(gFc.difficulty),
     }
     if (format === "facts") return { ...base, field: gFc.field.trim(), headline: gFc.headline.trim(), essence: gFc.essence.trim() }
@@ -668,7 +665,6 @@ export default function CreateScreen() {
     if (!gFc.teaser1.trim()) errs.gfc_teaser1 = "Required"
     if (!gFc.teaser2.trim()) errs.gfc_teaser2 = "Required"
     if (!gFc.teaser3.trim()) errs.gfc_teaser3 = "Required"
-    if (!gFc.reading_time || parseInt(gFc.reading_time) < 1) errs.gfc_reading_time = "Enter a positive number"
     if (!genericBody.trim()) errs.generic_body = "Required"
     const validQuiz = quizItems.filter((q) => q.question.trim() && q.options.every((o) => o.trim()) && q.explanation.trim())
     if (validQuiz.length < 5) errs.s_quiz = "Need at least 5 complete questions"
@@ -737,7 +733,6 @@ export default function CreateScreen() {
           author: fc.author.trim(),
           essence: fc.essence.trim(),
           teasers: [fc.teaser1.trim(), fc.teaser2.trim(), fc.teaser3.trim()] as [string, string, string],
-          post_reading_time_min: parseInt(fc.reading_time),
           post_difficulty: parseInt(fc.difficulty) as 1 | 2 | 3,
           year: parseInt(fc.year),
           genre: fc.genre.trim(),
@@ -760,12 +755,12 @@ export default function CreateScreen() {
   }
 
   function resetForm() {
-    setGFc({ field: "", headline: "", name: "", role: "", born: "", died: "", nationality: "", concept_name: "", one_liner: "", the_question: "", framing: "empirical", era: "", location: "", authors_compact: "", venue: "", key_finding_one_line: "", published_year: "", essence: "", teaser1: "", teaser2: "", teaser3: "", reading_time: "", difficulty: "2" })
+    setGFc({ field: "", headline: "", name: "", role: "", born: "", died: "", nationality: "", concept_name: "", one_liner: "", the_question: "", framing: "empirical", era: "", location: "", authors_compact: "", venue: "", key_finding_one_line: "", published_year: "", essence: "", teaser1: "", teaser2: "", teaser3: "", difficulty: "2" })
     setGenericBody("")
     setStep(1); setSelectedFormat(null); setSearchQuery(""); setSearchResults([])
-    setFc({ cover_url: "", title: "", author: "", essence: "", teaser1: "", teaser2: "", teaser3: "", reading_time: "", difficulty: "2", year: "", genre: "" })
+    setFc({ cover_url: "", title: "", author: "", essence: "", teaser1: "", teaser2: "", teaser3: "", difficulty: "2", year: "", genre: "" })
     setSEssence(""); setSWhyEndures(""); setSHeart(""); setSWorldContext(""); setSCritique("")
-    setAtAGlance({ genre: "", year: "", country: "", pages: "", reading_ease: "2", post_reading_time_min: "", post_difficulty: "2", best_for: "" })
+    setAtAGlance({ genre: "", year: "", country: "", pages: "", reading_ease: "2", post_difficulty: "2", best_for: "" })
     setVoices([emptyVoice(), emptyVoice(), emptyVoice()])
     setStructure(["", "", ""])
     setCoreIdeas(Array.from({ length: 6 }, emptyCoreIdea))
@@ -1165,9 +1160,6 @@ export default function CreateScreen() {
               <Field value={gFc.teaser3} onChangeText={(t) => setGFcField("teaser3", t)} maxLength={80} placeholder="A third takeaway..." />
               <FieldError msg={errors.gfc_teaser3} />
 
-              <Label text="Read time (min) *" />
-              <Field value={gFc.reading_time} onChangeText={(t) => setGFcField("reading_time", t)} keyboardType="numeric" placeholder="10" />
-              <FieldError msg={errors.gfc_reading_time} />
               <Label text="Difficulty *" />
               <SegmentedSelect value={gFc.difficulty} options={DIFFICULTY_OPTIONS} onChange={(v) => setGFcField("difficulty", v)} />
             </Block>
@@ -1223,18 +1215,9 @@ export default function CreateScreen() {
               <Field value={fc.teaser3} onChangeText={(t) => setFcField("teaser3", t)} maxLength={80} placeholder="A third takeaway..." />
               <FieldError msg={errors.fc_teaser3} />
 
-              <View style={{ flexDirection: "row", gap: 12 }}>
-                <View style={{ flex: 1 }}>
-                  <Label text="Read time (min) *" />
-                  <Field value={fc.reading_time} onChangeText={(t) => setFcField("reading_time", t)} keyboardType="numeric" placeholder="15" />
-                  <FieldError msg={errors.fc_reading_time} />
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Label text="Year *" />
-                  <Field value={fc.year} onChangeText={(t) => setFcField("year", t)} keyboardType="numeric" placeholder="2011" />
-                  <FieldError msg={errors.fc_year} />
-                </View>
-              </View>
+              <Label text="Year *" />
+              <Field value={fc.year} onChangeText={(t) => setFcField("year", t)} keyboardType="numeric" placeholder="2011" />
+              <FieldError msg={errors.fc_year} />
 
               <Label text="Difficulty *" />
               <SegmentedSelect value={fc.difficulty} options={DIFFICULTY_OPTIONS} onChange={(v) => setFcField("difficulty", v)} />
@@ -1300,7 +1283,6 @@ export default function CreateScreen() {
                   { key: "year", label: "Year", placeholder: "2011", numeric: true },
                   { key: "country", label: "Country", placeholder: "United States", numeric: false },
                   { key: "pages", label: "Pages", placeholder: "499", numeric: true },
-                  { key: "post_reading_time_min", label: "Read time (min)", placeholder: "15", numeric: true },
                   { key: "best_for", label: "Best for", placeholder: "Curious minds", numeric: false },
                 ] as const).map(({ key, label, placeholder, numeric }) => (
                   <View key={key} style={{ width: "47%" }}>

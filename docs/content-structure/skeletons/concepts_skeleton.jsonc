@@ -81,6 +81,13 @@
 // across seven domains can list seven.
 //
 // ─── PROSE ───────────────────────────────────────────────────────────
+// ─── ITALICS CONVENTION ──────────────────────
+// Titles of works (books, papers, paintings, films) and the names of theories, frameworks, and
+//   schools take *...* asterisk italics on mention. Asterisk is the only marker, read outside the
+//   $...$ math spans (an asterisk inside math is left untouched); avoid stray asterisk pairs.
+//   Named principles, laws, and theorems stay plain (Occam's razor, Bayes' theorem); a plain term
+//   pointed at as a term takes curly double quotes, not italics. Full borderline policy:
+//   STYLE_GUIDE_LONGFORM.md.
 // Zero em-dashes in user-facing text. Default voice is third-person assertive;
 // "you" is reserved for how_to_apply. Full prose rules: STYLE_GUIDE_LONGFORM.md.
 // Schema and rationale: DEEPSCROLL_CONTENT_STRUCTURE.md. Diagrams: SVG_STANDARD.md.
@@ -91,7 +98,12 @@
   // Cross-format. Full rules: SKELETON_COMMENT_STANDARD.md, section 10.
   // The system assigns the integer id and slug; the generator writes only these.
   "tags": [],         // HARD: 1-4 slugs from the fixed taxonomy ONLY, never
-                      // invent one. First is primary and matches feed_card.field.
+                      // invent one. tags[0] is the post's PRIMARY CATEGORY and comes
+                      // first: the single slug that best names what the post is about.
+                      // The card takes its category from tags[0], the eyebrow heading
+                      // from the slug's display name and the glyph from the slug's icon.
+                      // The remaining slugs are additional on-topic subjects, most-
+                      // relevant first; include only genuine ones, do not pad.
   "connections": [    // REQUIRED, may be empty. Every real link to another post
                       // that is NOT a key_thinkers entry. People central to the
                       // concept live in key_thinkers, not duplicated here. Never
@@ -117,41 +129,19 @@
   //      UNDERSTANDING not information. No "the surprising idea that" framing, no
   //      rhetorical questions.
   "feed_card": {
-    "field": "",                // string. Guideline: one or two words, the
-                                // discipline the concept lives in ("Behavioral
-                                // Economics", "Statistics", "Philosophy",
-                                // "Biology"). Not an evaluative tag.
-    "concept_name": "",         // string. The concept itself, rendered large
-                                // ("Survivorship Bias", "Compound Interest", "Game
-                                // Theory"). The common name, not a reworded gloss.
-    "one_line": "",             // string. The card dek: a plain-language definition
-                                // in everyday words, what it IS, no jargon, no
-                                // hedge. This is the post's only definition; the
-                                // body opens on intuition, not a restatement of it.
-                                // No em-dashes; the renderer does not transform
-                                // feed-card text.
-    "card_visual": {            // REQUIRED. Concepts is a typographic card: a small
-                                // glyph sits at the right end of the field line.
-                                // Fill "svg" with the field glyph; omit image_url
-                                // and image_attribution for concepts (books and
-                                // people use them for a cover or portrait). The
-                                // glyph belongs to the field, not the post; later it
-                                // comes from a fixed field-to-glyph set (ROADMAP.md),
-                                // so a generator never invents one.
-      "image_url": "",          // string | omit. Not used on Concepts cards.
-      "image_attribution": "",  // string | omit. With image_url only.
-      "svg": ""                 // string. The small field glyph, compact viewBox
-                                // (e.g. 0 0 56 32), per SVG_STANDARD.md card rules.
-    },
-    "teasers": ["", "", ""],    // HARD: exactly 3. Guideline: about 6 words each.
-                                // What the reader will UNDERSTAND after reading, not
-                                // the concept name reworded. Sub-insights, not
-                                // synonyms. Example for Survivorship Bias: "Why
-                                // hospitals seem dangerous", "The pattern in WWII
-                                // bombers", "How to spot it daily". Vary structure
-                                // across the three.
-    "post_reading_time_min": 0, // integer. Guideline: honest estimate, match the
-                                // real read length, do not undersell.
+    // The card's category label and glyph both resolve from tags[0], the primary
+    // category slug, at render time: the label from the slug's display name and the
+    // glyph from frontend/src/lib/glyphs.ts. Nothing to author here; there is no
+    // feed_card field and no per-post card_visual.
+    "teasers": ["", "", ""],    // HARD: exactly 3. Guideline: about 8 to 12 words
+                                // each, shorter is fine (never a cap). Each opens a
+                                // curiosity loop the post closes, in plain words, never
+                                // a flat label or the concept name reworded, and never
+                                // restating the subtitle. Forms Concepts tends to take:
+                                // a counter-intuitive claim, a second-person line naming
+                                // the cause wrongly credited, a question about an
+                                // everyday puzzle (examples, not a required one of
+                                // each). Voice: STYLE_GUIDE A11.
     "post_difficulty": 1        // HARD: 1, 2, or 3 (1=accessible, 2=moderate,
                                 // 3=demanding). A purely intuitive bias lands at 1;
                                 // a formal game-theoretic equilibrium at 3.

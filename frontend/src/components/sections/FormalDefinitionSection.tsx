@@ -1,6 +1,8 @@
 import katex from "katex"
 import SectionLabel from "../SectionLabel"
 import MathText from "../MathText"
+import Prose from "../Prose"
+import { unescapeDollar } from "@/lib/prose"
 
 interface NotationEntry {
   symbol: string
@@ -33,9 +35,9 @@ export default function FormalDefinitionSection({ content }: Props) {
   return (
     <div className="px-6 py-8 flex flex-col gap-4">
       <SectionLabel>Formal Definition</SectionLabel>
-      <p className="prose-post text-ink-dim">
+      <Prose className="text-ink-dim">
         <MathText text={content.body} />
-      </p>
+      </Prose>
       {content.formula && (
         <div className="bg-surface-1 border border-edge rounded-card px-4 py-3">
           <DisplayMath latex={content.formula} />
@@ -47,7 +49,7 @@ export default function FormalDefinitionSection({ content }: Props) {
             <div key={i} className="flex gap-3 items-baseline">
               {/* The symbol is raw LaTeX; wrap it in $...$ so MathText renders it inline. */}
               <MathText text={`$${entry.symbol}$`} className="text-(--accent) shrink-0 min-w-[48px]" />
-              <span className="text-xs text-ink-muted leading-snug">{entry.meaning}</span>
+              <span className="text-xs text-ink-muted leading-snug">{unescapeDollar(entry.meaning)}</span>
             </div>
           ))}
         </div>

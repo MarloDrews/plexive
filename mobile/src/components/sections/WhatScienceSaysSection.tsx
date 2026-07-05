@@ -3,6 +3,7 @@ import type { WhatScienceSaysContent } from "../../types/post"
 import { SectionBlock, SectionLabel, Prose, SvgFigure, sans } from "./primitives"
 import { colors } from "../../theme/tokens"
 import { useAccent } from "../../lib/accent"
+import { unescapeDollar } from "../../lib/prose"
 
 // Port of frontend/src/components/sections/WhatScienceSaysSection.tsx
 // Body prose + arrow bullet list of key findings + optional SVG.
@@ -23,7 +24,7 @@ export default function WhatScienceSaysSection({
           {content.key_findings.map((finding, i) => (
             <View key={i} style={{ flexDirection: "row", gap: 8, alignItems: "flex-start" }}>
               <Text style={[sans(14, accent), { paddingTop: 2 }]}>{"→"}</Text>
-              <Text style={[sans(14, colors["ink-dim"], { lineHeight: 20 }), { flex: 1 }]}>{finding}</Text>
+              <Text style={[sans(14, colors["ink-dim"], { lineHeight: 20 }), { flex: 1 }]}>{unescapeDollar(finding)}</Text>
             </View>
           ))}
         </View>

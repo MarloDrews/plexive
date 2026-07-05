@@ -1,5 +1,7 @@
 import SectionLabel from "../SectionLabel"
 import SvgBlock from "../SvgBlock"
+import Prose from "../Prose"
+import MathText from "../MathText"
 
 interface HowToApplyContent {
   body: string
@@ -19,7 +21,7 @@ export default function HowToApplySection({ content, isUserContent }: Props) {
     // facts key section (SurprisesSection).
     <div className="px-6 py-8 flex flex-col gap-4 border-l-2 border-(--accent) bg-(--accent)/[0.06]">
       <SectionLabel>How to Apply It</SectionLabel>
-      <p className="prose-post text-ink-dim">{content.body}</p>
+      <Prose className="text-ink-dim"><MathText text={content.body} /></Prose>
       {content.checklist && content.checklist.length > 0 && (
         <ul className="flex flex-col gap-2">
           {content.checklist.map((item, i) => (
@@ -27,7 +29,7 @@ export default function HowToApplySection({ content, isUserContent }: Props) {
               <span className="shrink-0 w-4 h-4 rounded border border-(--accent)/40 mt-0.5 flex items-center justify-center">
                 <span className="w-2 h-2 rounded-sm bg-(--accent)/50" />
               </span>
-              <span className="text-sm text-ink-body leading-snug">{item}</span>
+              <span className="text-sm text-ink-body leading-snug"><MathText text={item} /></span>
             </li>
           ))}
         </ul>

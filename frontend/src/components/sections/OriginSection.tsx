@@ -1,5 +1,8 @@
 import SectionLabel from "../SectionLabel"
 import ContentImage from "./ContentImage"
+import Prose from "../Prose"
+import MathText from "../MathText"
+import { unescapeDollar } from "@/lib/prose"
 
 interface KeyThinker {
   name: string
@@ -27,7 +30,7 @@ export default function OriginSection({ content }: Props) {
   return (
     <div className="px-6 py-8 flex flex-col gap-4">
       <SectionLabel>Origin</SectionLabel>
-      <p className="prose-post text-ink-dim">{content.body}</p>
+      <Prose className="text-ink-dim"><MathText text={content.body} /></Prose>
 
       {content.image_url && (
         <ContentImage
@@ -57,19 +60,19 @@ export default function OriginSection({ content }: Props) {
                 )}
                 <div className="flex flex-col gap-0.5 min-w-0">
                   <div className="flex items-baseline gap-2 flex-wrap">
-                    <span className="text-sm font-semibold text-ink">{thinker.name}</span>
+                    <span className="text-sm font-semibold text-ink">{unescapeDollar(thinker.name)}</span>
                     {thinker.lifespan && (
-                      <span className="text-xs text-ink-muted">{thinker.lifespan}</span>
+                      <span className="text-xs text-ink-muted">{unescapeDollar(thinker.lifespan)}</span>
                     )}
                   </div>
-                  <p className="text-xs font-semibold tracking-widest uppercase text-(--accent)/80">{thinker.role}</p>
+                  <p className="text-xs font-semibold tracking-widest uppercase text-(--accent)/80">{unescapeDollar(thinker.role)}</p>
                   {thinker.one_line && (
-                    <p className="text-sm text-ink-dim leading-snug mt-1">{thinker.one_line}</p>
+                    <p className="text-sm text-ink-dim leading-snug mt-1"><MathText text={thinker.one_line} /></p>
                   )}
                 </div>
               </div>
               {thinker.image_url && thinker.image_attribution && (
-                <p className="text-[10px] text-ink-faint leading-snug">{thinker.image_attribution}</p>
+                <p className="text-[10px] text-ink-faint leading-snug">{unescapeDollar(thinker.image_attribution)}</p>
               )}
             </div>
           ))}

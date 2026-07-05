@@ -2,6 +2,7 @@ import { Text, View } from "react-native"
 import { SectionBlock, SectionLabel, SvgFigure, mono, sans } from "./primitives"
 import { colors } from "../../theme/tokens"
 import { useAccent } from "../../lib/accent"
+import { unescapeDollar } from "../../lib/prose"
 
 // Port of frontend/src/components/sections/LifeArcSection.tsx
 // SVG timeline + milestone list (year in accent mono).
@@ -33,8 +34,8 @@ export default function LifeArcSection({
       <View style={{ gap: 8, marginTop: 16 }}>
         {content.milestones.map((m, i) => (
           <View key={i} style={{ flexDirection: "row", gap: 12, alignItems: "flex-start" }}>
-            <Text style={[mono(12, accent), { width: 44, paddingTop: 2 }]}>{m.year}</Text>
-            <Text style={[sans(14, colors["ink-dim"], { lineHeight: 20 }), { flex: 1 }]}>{m.label}</Text>
+            <Text style={[mono(12, accent), { width: 44, paddingTop: 2 }]}>{unescapeDollar(m.year)}</Text>
+            <Text style={[sans(14, colors["ink-dim"], { lineHeight: 20 }), { flex: 1 }]}>{unescapeDollar(m.label)}</Text>
           </View>
         ))}
       </View>

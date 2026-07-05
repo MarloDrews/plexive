@@ -2,6 +2,7 @@ import { Text } from "react-native"
 import type { SeeItContent } from "../../types/post"
 import { SectionBlock, SectionLabel, SvgFigure, CaptionedImage, sans } from "./primitives"
 import { colors } from "../../theme/tokens"
+import { unescapeDollar } from "../../lib/prose"
 
 // Port of frontend/src/components/sections/SeeItSection.tsx
 export default function SeeItSection({
@@ -22,12 +23,12 @@ export default function SeeItSection({
       ) : null}
       {content.image_caption ? (
         <Text style={[sans(12, colors["ink-muted"], { lineHeight: 19 }), { textAlign: "center" }]}>
-          {content.image_caption}
+          {unescapeDollar(content.image_caption)}
         </Text>
       ) : null}
       {content.image_attribution ? (
         <Text style={[sans(10, colors["ink-faint"]), { textAlign: "center" }]}>
-          {content.image_attribution}
+          {unescapeDollar(content.image_attribution)}
         </Text>
       ) : null}
     </SectionBlock>

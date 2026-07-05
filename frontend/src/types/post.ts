@@ -9,7 +9,6 @@ export interface AtAGlanceBooksContent {
   country: string
   pages: number
   reading_ease: 1 | 2 | 3
-  post_reading_time_min: number
   post_difficulty: 1 | 2 | 3
   best_for: string
 }
@@ -21,7 +20,6 @@ export interface AtAGlancePeopleContent {
   field: string
   known_for: string
   movement_or_era?: string
-  post_reading_time_min: number
   post_difficulty: 1 | 2 | 3
 }
 
@@ -32,7 +30,6 @@ export interface PeopleFeedCard {
   lifespan: string
   essence: string
   teasers: [string, string, string]
-  post_reading_time_min: number
   post_difficulty: 1 | 2 | 3
 }
 
@@ -166,7 +163,6 @@ export interface AtAGlanceQuestionsContent {
   first_posed_by: string
   year: string | number
   still_debated: boolean
-  post_reading_time_min: number
   post_difficulty: 1 | 2 | 3
 }
 
@@ -175,7 +171,6 @@ export interface AtAGlanceStoriesContent {
   location: string
   category: string
   sources_reliability: 1 | 2 | 3
-  post_reading_time_min: number
   post_difficulty: 1 | 2 | 3
 }
 
@@ -212,6 +207,9 @@ export interface StoryChapter {
 
 export interface SettingContent {
   body: string
+  // The one rare drawn slot in Stories: a map where place genuinely needs
+  // showing (stories_skeleton VISUAL PLAN). The format is image-led, not drawn.
+  visual_svg?: string
   image_url?: string
   image_caption?: string
   image_attribution?: string
@@ -226,15 +224,22 @@ export interface TheTurnContent {
 
 export interface TheAftermathContent {
   body: string
-  visual_svg?: string
+  image_url?: string
   image_caption?: string
+  image_attribution?: string
 }
 
 export interface CastMember {
   name: string
   role: string
-  one_line: string
-  lifespan: string
+  one_line?: string
+  lifespan?: string
+  // Graph fields (birth_year/featured) are not displayed; image fields render
+  // an optional portrait + its required credit (IMAGE_STANDARD s3).
+  birth_year?: number
+  featured?: boolean
+  image_url?: string
+  image_attribution?: string
 }
 
 // Academy section types
@@ -250,13 +255,28 @@ export interface PaperCardContent {
   venue: string
   year: number
   doi?: string
+  arxiv_id?: string
+  code_url?: string
+  data_url?: string
   funding_source?: string
+  conflicts_of_interest?: string
 }
 
 export interface HeadlineFigureContent {
   visual_svg?: string
   image_url?: string
+  image_caption?: string
+  image_attribution?: string
+}
+
+// One of the paper's own multi-panel figures (the optional `figures` section).
+// Always a sourced image with attribution (IMAGE_STANDARD s3-s4); rebuilt SVGs
+// live inside the finding they support, not here.
+export interface FigureItem {
+  figure_label: string
+  image_url: string
   image_caption: string
+  image_attribution: string
 }
 
 export interface KeyPriorItem {
@@ -294,27 +314,40 @@ export interface FormalismContent {
 export interface KeyFindingItem {
   title: string
   finding: string
+  effect_size?: string
+  statistical_detail?: string
   source_in_paper?: string
   visual_svg?: string
+  image_url?: string
+  image_caption?: string
+  image_attribution?: string
 }
 
 export interface AtAGlanceAcademyContent {
   study_type: string
-  pre_registered: boolean
-  open_data: boolean
-  open_code: boolean
+  // Optional methodology signals: an absent key reads as not-applicable, so the
+  // renderer only shows the keys that are present (skeleton: omit when N/A).
+  sample_size?: string
+  pre_registered?: boolean
+  open_data?: boolean
+  open_code?: boolean
   replication_status: string
   peer_review_status: string
   result_direction: string
-  post_reading_time_min: number
   post_difficulty: 1 | 2 | 3
 }
 
 export interface AuthorsContextItem {
   name: string
   role: string
-  one_line: string
+  one_line?: string
   affiliation?: string
+  // Graph fields (birth_year/featured) are not displayed; image fields render an
+  // optional portrait + its required credit (IMAGE_STANDARD s3).
+  birth_year?: number
+  featured?: boolean
+  image_url?: string
+  image_attribution?: string
 }
 
 export interface OpenQuestionsContent {
@@ -400,6 +433,9 @@ export type SectionType =
   | "objections"
   | "implications"
   | "connections_to_other_fields"
+  | "cross_field_reach"
+  | "data_or_sample"
+  | "figures"
   | "authors_context"
 
 export interface Section {
@@ -414,7 +450,6 @@ export interface BooksFeedCard {
   author: string
   essence: string
   teasers: [string, string, string]
-  post_reading_time_min: number
   post_difficulty: 1 | 2 | 3
   year: number
   genre: string
@@ -425,7 +460,6 @@ export interface FactsFeedCard {
   headline: string
   card_visual?: CardVisual
   teasers: [string, string, string]
-  post_reading_time_min: number
   post_difficulty: 1 | 2 | 3
 }
 
@@ -462,5 +496,12 @@ export interface Post {
   is_user_content: boolean
   like_count: number
   comment_count: number
+  // Reading time computed on the server from the post's text (see backend
+  // reading_time.py); present on both list and detail responses.
+  reading_minutes: number
   interests: string[]
+  // Display name of the primary category (tags[0]), resolved on the server from
+  // the post's own interests (Interest.name) so the card eyebrow and the interest
+  // chips label the same slug identically. Null when tags[0] is absent/unmapped.
+  primary_category_name?: string | null
 }

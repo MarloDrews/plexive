@@ -2,6 +2,7 @@ import { Text, View } from "react-native"
 import { SectionBlock, SectionLabel, Prose, SvgFigure, sans } from "./primitives"
 import { colors } from "../../theme/tokens"
 import { useAccent } from "../../lib/accent"
+import { unescapeDollar } from "../../lib/prose"
 
 // Port of frontend/src/components/sections/HowToApplySection.tsx
 // Body + checkbox-styled list + optional SVG.
@@ -42,7 +43,7 @@ export default function HowToApplySection({
               >
                 <View style={{ width: 8, height: 8, borderRadius: 2, backgroundColor: accent + "80" }} />
               </View>
-              <Text style={[sans(14, colors["ink-body"], { lineHeight: 20 }), { flex: 1 }]}>{item}</Text>
+              <Text style={[sans(14, colors["ink-body"], { lineHeight: 20 }), { flex: 1 }]}>{unescapeDollar(item)}</Text>
             </View>
           ))}
         </View>

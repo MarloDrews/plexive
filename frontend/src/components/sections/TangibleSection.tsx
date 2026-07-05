@@ -1,6 +1,7 @@
 import SectionLabel from "../SectionLabel"
 import type { TangibleContent } from "../../types/post"
 import SvgBlock from "../SvgBlock"
+import MathText from "../MathText"
 
 interface Props {
   content: TangibleContent
@@ -15,7 +16,7 @@ export default function TangibleSection({ content, isUserContent }: Props) {
         {content.items.map((line, i) => (
           <li key={i} className="flex items-start gap-3">
             <span className="text-(--accent) text-sm mt-0.5 shrink-0">•</span>
-            <span className="prose-post">{line}</span>
+            <span className="prose-post"><MathText text={line} /></span>
           </li>
         ))}
       </ul>

@@ -9,7 +9,6 @@ export interface AtAGlanceBooksContent {
   country: string
   pages: number
   reading_ease: 1 | 2 | 3
-  post_reading_time_min: number
   post_difficulty: 1 | 2 | 3
   best_for: string
 }
@@ -21,7 +20,6 @@ export interface AtAGlancePeopleContent {
   field: string
   known_for: string
   movement_or_era?: string
-  post_reading_time_min: number
   post_difficulty: 1 | 2 | 3
 }
 
@@ -32,7 +30,6 @@ export interface PeopleFeedCard {
   lifespan: string
   essence: string
   teasers: [string, string, string]
-  post_reading_time_min: number
   post_difficulty: 1 | 2 | 3
 }
 
@@ -151,7 +148,6 @@ export interface AtAGlanceQuestionsContent {
   first_posed_by: string
   year: string | number
   still_debated: boolean
-  post_reading_time_min: number
   post_difficulty: 1 | 2 | 3
 }
 
@@ -160,7 +156,6 @@ export interface AtAGlanceStoriesContent {
   location: string
   category: string
   sources_reliability: 1 | 2 | 3
-  post_reading_time_min: number
   post_difficulty: 1 | 2 | 3
 }
 
@@ -288,7 +283,6 @@ export interface AtAGlanceAcademyContent {
   replication_status: string
   peer_review_status: string
   result_direction: string
-  post_reading_time_min: number
   post_difficulty: 1 | 2 | 3
 }
 
@@ -390,7 +384,6 @@ export interface BooksFeedCard {
   author: string
   essence: string
   teasers: [string, string, string]
-  post_reading_time_min: number
   post_difficulty: 1 | 2 | 3
   year: number
   genre: string
@@ -401,7 +394,6 @@ export interface FactsFeedCard {
   headline: string
   mini_visual_svg: string | null
   teasers: [string, string, string]
-  post_reading_time_min: number
   post_difficulty: 1 | 2 | 3
 }
 
@@ -438,5 +430,8 @@ export interface Post {
   is_user_content: boolean
   like_count: number
   comment_count: number
+  // Reading time computed on the server from the post's text (see backend
+  // reading_time.py); present on both list and detail responses.
+  reading_minutes: number
   interests: string[]
 }

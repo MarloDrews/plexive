@@ -1,31 +1,37 @@
 import SectionLabel from "../SectionLabel"
+import SvgBlock from "../SvgBlock"
+import ContentImage from "./ContentImage"
+import Prose from "../Prose"
+import MathText from "../MathText"
 import type { SettingContent } from "../../types/post"
 
 interface Props {
   content: SettingContent
+  isUserContent: boolean
 }
 
-export default function SettingSection({ content }: Props) {
+export default function SettingSection({ content, isUserContent }: Props) {
   return (
     <div className="px-6 py-8 flex flex-col gap-4">
-      <SectionLabel>Setting</SectionLabel>
-      <p className="prose-post">{content.body}</p>
+      <SectionLabel>Setting the Scene</SectionLabel>
+      <Prose><MathText text={content.body} /></Prose>
+      {/* The one rare drawn slot in Stories: a map where place needs showing
+          (stories_skeleton VISUAL PLAN). Sits tight to its text, SVG security
+          split handled by SvgBlock. */}
+      {content.visual_svg && (
+        <SvgBlock
+          svg={content.visual_svg}
+          isUserContent={isUserContent}
+          className="w-full max-w-[400px] mx-auto mt-1"
+        />
+      )}
       {content.image_url && (
-        <div className="flex flex-col gap-1">
-          <img
-            src={content.image_url}
-            alt=""
-            loading="lazy"
-            className="w-full rounded-lg object-cover max-h-[260px]"
-            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none" }}
-          />
-          {content.image_caption && (
-            <p className="text-xs text-ink-muted leading-snug">{content.image_caption}</p>
-          )}
-          {content.image_attribution && (
-            <p className="text-xs text-ink-faint">{content.image_attribution}</p>
-          )}
-        </div>
+        <ContentImage
+          url={content.image_url}
+          caption={content.image_caption}
+          attribution={content.image_attribution}
+          className="w-full mt-1"
+        />
       )}
     </div>
   )

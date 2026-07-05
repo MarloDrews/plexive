@@ -1,4 +1,4 @@
-# Deepscroll — Skeleton Comment Standard
+# Deepscroll: Skeleton Comment Standard
 
 How to write the `//` comments inside every `*_skeleton.jsonc` file so that a generation model can fill the skeleton correctly from the comments alone.
 
@@ -27,6 +27,8 @@ Three documents, three jobs. A comment must stay in its lane.
 **Do not duplicate the prose blacklists in section comments.** The vocabulary blacklist, the contrast-frame ban, the hedging ban: these are universal and live in one place. Restating them per field bloats the skeleton and guarantees drift the day the blacklist changes. The only prose rule inlined anywhere is the em-dash ban, stated once in the file header (see Section 6), because the model mirrors comment punctuation into its output.
 
 When a section has a prose requirement that is **specific to it** and not in the style guide (for example "open on a concrete scene, not a date"), that belongs in the comment. General prose quality does not.
+
+A format-specific axis refines the style-guide voice; it never overrides or contradicts it. A teaser axis may say which loops a format tends to open (an injustice, a turning point, a surprising number), but it stays inside A11: it never steers toward category labels, resume bullets, or restating the finding, and its EXAMPLES must exemplify the rule, not undercut it. The People teaser axis once read "lead with concrete achievements" with examples like "Discovered two new elements", which contradicts A11 and produced flat label teasers; the Books axis ("each opens a different loop the post then closes") is the model. When a comment's own example would fail the rule the comment points to, the example is the bug.
 
 ---
 
@@ -209,8 +211,9 @@ title), it never fabricates a handle. This mirrors integrity rule A2 in
 `STYLE_GUIDE_LONGFORM.md`: a made-up reference is as bad as a made-up number.
 
 **`tags` (top-level array, REQUIRED).** One to four slugs drawn ONLY from the
-fixed taxonomy (never invent a tag). The first is the primary topic and matches
-`feed_card.field`. Multiple tags are encouraged where genuinely on-topic; do not
+fixed taxonomy (never invent a tag). tags[0] is the post's primary category and
+comes first: it drives the card's eyebrow label and glyph (see `LAYOUT_STANDARD.md`
+and `SVG_STANDARD.md`). Multiple tags are encouraged where genuinely on-topic; do not
 pad. Tags drive thematic clustering in the graph.
 
 **`connections` (top-level array, REQUIRED, may be empty).** Every real link to

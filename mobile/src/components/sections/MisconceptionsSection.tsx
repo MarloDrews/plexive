@@ -2,6 +2,7 @@ import { Text, View } from "react-native"
 import type { MisconceptionItem } from "../../types/post"
 import { SectionBlock, SectionLabel, Prose, sans, sansSemiBold } from "./primitives"
 import { colors } from "../../theme/tokens"
+import { unescapeDollar } from "../../lib/prose"
 
 // Port of frontend/src/components/sections/MisconceptionsSection.tsx
 // Per item: struck-through myth with a red cross, reality with a green check.
@@ -20,7 +21,7 @@ export default function MisconceptionsSection({ content }: { content: Misconcept
                   { flex: 1, textDecorationLine: "line-through" },
                 ]}
               >
-                {item.myth}
+                {unescapeDollar(item.myth)}
               </Text>
             </View>
             <View style={{ flexDirection: "row", gap: 8, alignItems: "flex-start" }}>

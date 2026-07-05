@@ -1,6 +1,9 @@
 import SectionLabel from "../SectionLabel"
 import SvgBlock from "../SvgBlock"
 import ContentImage from "./ContentImage"
+import Prose from "../Prose"
+import MathText from "../MathText"
+import { unescapeDollar } from "@/lib/prose"
 
 interface Example {
   title: string
@@ -24,10 +27,10 @@ export default function RealWorldExamplesSection({ content, isUserContent }: Pro
       {content.map((example, i) => (
         <div key={i} className="flex flex-col gap-2">
           <div>
-            <h3 className="text-sm font-semibold text-ink leading-snug">{example.title}</h3>
-            <p className="text-xs text-(--accent)/80 font-semibold tracking-widest uppercase mt-0.5">{example.domain}</p>
+            <h3 className="text-sm font-semibold text-ink leading-snug">{unescapeDollar(example.title)}</h3>
+            <p className="text-xs text-(--accent)/80 font-semibold tracking-widest uppercase mt-0.5">{unescapeDollar(example.domain)}</p>
           </div>
-          <p className="prose-post text-ink-dim">{example.body}</p>
+          <Prose className="text-ink-dim"><MathText text={example.body} /></Prose>
           {example.image_url && (
             <ContentImage
               url={example.image_url}

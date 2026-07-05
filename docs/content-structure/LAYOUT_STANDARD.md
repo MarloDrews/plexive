@@ -18,7 +18,7 @@ built, its card and detail page follow this document.
 Which look a format uses is fixed, not per post.
 
 - **Cover formats** (books, people): the card shows a cover-shaped image beside the
-  headline, never a field glyph. People always shows a real portrait, since portraits
+  headline, never a category glyph. People always shows a real portrait, since portraits
   of notable people are reliably free to license. Books shows a cover in two tiers: a
   real cover when a genuinely free one exists (public domain, CC0, CC-BY, CC-BY-SA)
   carried with a verified rights record, and otherwise a programmatically generated
@@ -28,14 +28,14 @@ Which look a format uses is fixed, not per post.
   often has a genuine, evocative licensed image (an archival photo, the place, the
   object, a person involved). When one fits, the card carries it; this is real,
   on-subject pull, not decoration. When none fits, the card falls back to the
-  typographic look with the field glyph. The exact placement is settled when the
+  typographic look with the category glyph. The exact placement is settled when the
   stories format is built; the likely choice is a full-width image at the top
   rather than a side cover, because story headlines are long and a real photo
   fills a top band well (a thin glyph would not, which is why the typographic
   formats below carry no top band).
 - **Typographic formats** (facts, concepts, questions, academy): the subject is
   abstract, so a card photo would be decoration. The card is clean and
-  typographic: an accent bar down the left, a field line (label plus a small
+  typographic: an accent bar down the left, a category line (label plus a small
   glyph), the large serif headline, teasers, footer. The glyph is the only drawn
   mark; any data graphic for these lives in the post body.
 
@@ -47,10 +47,15 @@ where real images give the eye a rest.
 
 ## 2. Feed card, top to bottom (typographic formats)
 
-1. **Field line**: the field label small in the accent color ("BIOLOGY") at the
-   left, and a **small glyph at the right end** of the same line. If the field is
-   long it wraps to two lines and the glyph stays at the right. Accent bar runs
-   down the left edge of the card.
+1. **Category line**: the category label small in the accent color ("BIOLOGY") at the
+   left, on the same left edge as the headline and body. The glyph is not a small mark
+   on this line; it is a **large category glyph anchored to the top right of the card**,
+   filling the vertical zone from the top edge down to the top of the headline, the
+   same zone the label sits in, right-aligned. It is an overlay, taken out of the
+   layout flow, so it fills the existing space without changing the label-to-top or
+   label-to-headline spacing and never pushes the headline down. Its width follows its
+   viewBox aspect and is capped so it keeps a clear gap from the label and never runs
+   under the headline. The accent bar runs down the left edge, continuous.
 2. **Headline**, full width, large serif, the key number emphasized. The star.
 3. **Context line** (format-dependent), small and muted, directly under the
    headline: the author (books), the lifespan (people), the source citation
@@ -73,22 +78,23 @@ rule is the same across the feed: a short-title headline earns a dek; a
 full-statement headline stands alone. Keeping that consistent is what makes the
 feed read as one product rather than seven.
 
-The glyph belongs to the **field**, not the post, and is meant to come from a
-fixed field-to-glyph set (see `ROADMAP.md`). Until that set exists, an example may
-carry one glyph inline in `card_visual.svg`. Cover formats use the same parts with
-the cover or portrait beside the headline instead of a glyph.
+The category label and the glyph both come from the post's first tag, tags[0], its
+primary category: the label is that slug's display name, the glyph is that slug's
+mark from `frontend/src/lib/glyphs.ts`. There is no per-post `card_visual` and no
+separate field. Cover formats use the same parts with the cover or portrait beside
+the headline instead of a glyph.
 
 ---
 
 ## 3. Detail page header, top to bottom
 
 The detail header opens straight into the post; the headline appears exactly once.
-Continuity from the tapped card comes from the shared field line, glyph, and accent
+Continuity from the tapped card comes from the shared category line, glyph, and accent
 bar.
 
 1. **App top bar**: back, the format label with its accent dot, audio. (App frame.)
-2. **Field line**: field label (accent) with the small glyph at its right end,
-   same as the card.
+2. **Category line**: the category label (accent) at the left and the large category glyph
+   anchored top right, same as the card.
 3. **Headline**, once, large serif, accent number. The first impression; it owns
    the top of the page.
 4. **Dek** (optional), the one-line italic gloss from the feed card, directly
@@ -106,7 +112,7 @@ bar.
 6. **Quiz badge**.
 7. **Sections**, in their defined order.
 8. **Tags**, at the end, as small chips near the sources. Not in the header: the
-   field label already orients the reader, and tags are the network and filter
+   category label already orients the reader, and tags are the network and filter
    system, which belongs at the foot of the post.
 
 Cover formats (books, people) place their cover or portrait into this same flat
@@ -190,8 +196,10 @@ the page above a plain wall.
   recognizable without being bespoke): simple lists use accent dots; misconceptions
   use the struck-through myth plus an accent check on the reality; key figures use
   person cards; open questions use a "?" marker and are phrased as real questions
-  ending in a question mark. The section type chooses from the kit; sections do not
-  invent their own ornament.
+  ending in a question mark; an in_practice line inside a core idea is set off as a
+  small labeled block, an accent caps label ("In practice") above the sentence with
+  light separation, never the reserved key-section left-border. The section type
+  chooses from the kit; sections do not invent their own ornament.
 - **The key section.** Exactly one section per format is marked with an accent
   left-border (a light emphasis: a `border-l-2` accent rule plus an optional faint
   accent wash, never a full filled block), marking the post's turning point or
