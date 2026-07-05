@@ -1,0 +1,250 @@
+{
+  "tags": [
+    "geology",
+    "physics",
+    "chemistry"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Radioactive decay"
+      },
+      "featured": true
+    },
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Plate tectonics"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "About half of the 44 terawatts of heat escaping the Earth is made by radioactive decay inside it.",
+    "teasers": [
+      "What a cooling planet is still cooking inside",
+      "How to weigh a furnace you can't reach",
+      "The ghost particles pouring out of the ground"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "About half of the 44 terawatts of heat escaping the Earth is made by radioactive decay inside it."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 0 400 185' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='32' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Earth's heat, about 44 terawatts</text><rect x='42' y='80' width='141' height='40' rx='10' fill='var(--accent)' fill-opacity='0.16' stroke='var(--accent)' stroke-width='2.5'/><rect x='190' y='80' width='168' height='40' rx='10' stroke='currentColor' stroke-width='2' opacity='0.5'/><text x='112' y='150' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>radioactive decay</text><text x='112' y='170' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' font-weight='700' text-anchor='middle'>~20 TW</text><text x='274' y='150' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' text-anchor='middle' opacity='0.8'>primordial heat</text><text x='274' y='170' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' text-anchor='middle' opacity='0.7'>~24 TW</text></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "Picture the Earth the way most of us do: a ball of rock slowly cooling since it formed, radiating away the warmth of its birth. Half of that warmth is not ancient at all. It is being made right now. Deep in the rock, uranium, thorium, and potassium are quietly splitting apart. The planet is not only cooling. Part of it is a nuclear furnace, and it has been since the start."
+    },
+    {
+      "type": "tangible",
+      "order": 4,
+      "content": {
+        "items": [
+          "The 44 terawatts leaking from the Earth is more than twice the power all of humanity uses.",
+          "Yet spread over the surface it is a faint 0.09 watts per square meter, thousands of times weaker than the sunlight on the same patch.",
+          "The uranium doing the heating takes 4.5 billion years to half-decay, so it has barely dimmed since the planet formed."
+        ],
+        "visual_svg": "<svg viewBox='0 0 400 230' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='30' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Power, side by side</text><line x1='40' y1='190' x2='360' y2='190' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><rect x='90' y='45' width='80' height='145' rx='8' fill='var(--accent)' fill-opacity='0.14' stroke='var(--accent)' stroke-width='2.5'/><rect x='250' y='127' width='80' height='63' rx='8' stroke='currentColor' stroke-width='2' opacity='0.55'/><text x='130' y='36' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='15' font-weight='700' text-anchor='middle'>44 TW</text><text x='290' y='118' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='14' font-weight='700' text-anchor='middle'>~19 TW</text><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle'><text x='130' y='212'>Earth's heat</text><text x='290' y='212'>human power</text></g></svg>"
+      }
+    },
+    {
+      "type": "how_we_know",
+      "order": 5,
+      "content": "You cannot drill to the core, so the proof arrives as ghosts. Every radioactive decay in the rock throws off a neutrino, a particle so aloof it passes through the whole planet untouched. Nearly all of them slip clean through. But in a tank holding over a thousand tons of clear fluid, deep underground, one now and then strikes a proton and leaves a faint double flash. KamLAND in Japan caught the first of these earth-neutrinos in 2005, and Borexino in Italy confirmed them in 2010. Count the flashes and you count the decays below. By 2011 the tally put the nuclear share of Earth's heat near half."
+    },
+    {
+      "type": "story",
+      "order": 7,
+      "content": {
+        "body": "For a long time the Earth's heat had no known source. In the 1860s William Thomson, Lord Kelvin, treated the planet as a once-molten ball simply cooling down. From that rate of cooling he put its age at only tens of millions of years. Geologists knew that was far too short. They just could not say why he was wrong. The missing piece came in 1896, when Henri Becquerel found that uranium gives off energy on its own. Rutherford saw it at once. The rocks carry their own furnace, a heat source Kelvin's cooling ball never had. That was not the whole reason his young age was wrong, but it was real. Measuring how much heat that furnace makes waited another century, for the neutrino detectors.",
+        "key_figures": [
+          {
+            "name": "William Thomson, Lord Kelvin",
+            "role": "Calculated a young Earth from its cooling",
+            "one_line": "Assumed the planet had no internal heat source and, from its cooling rate, put its age at only tens of millions of years.",
+            "lifespan": "1824-1907",
+            "birth_year": 1824,
+            "featured": false
+          },
+          {
+            "name": "Henri Becquerel",
+            "role": "Discovered radioactivity",
+            "one_line": "Found in 1896 that uranium emits energy on its own, the first hint of the heat source hidden in the Earth's rocks.",
+            "lifespan": "1852-1908",
+            "birth_year": 1852,
+            "featured": false
+          },
+          {
+            "name": "Ernest Rutherford",
+            "role": "Tied radioactivity to Earth's heat",
+            "one_line": "Recognized that radioactive decay warms the rocks, undermining Kelvin's assumption of a planet with no furnace of its own.",
+            "lifespan": "1871-1937",
+            "birth_year": 1871,
+            "featured": true
+          }
+        ],
+        "visual_svg": "<svg viewBox='0 0 400 138' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='26' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Weighing Earth's inner furnace</text><line x1='45' y1='90' x2='355' y2='90' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><circle cx='60' cy='90' r='5' fill='currentColor'/><circle cx='150' cy='90' r='5' fill='currentColor'/><circle cx='255' cy='90' r='5' fill='currentColor'/><circle cx='345' cy='90' r='7' fill='var(--accent)'/><g font-family='var(--font-mono), ui-monospace, monospace' font-size='13' font-weight='700' text-anchor='middle'><text x='60' y='68' fill='currentColor'>1862</text><text x='150' y='68' fill='currentColor'>1896</text><text x='255' y='68' fill='currentColor'>2005</text><text x='345' y='68' fill='var(--accent)'>2011</text></g><g font-family='var(--font-sans), system-ui, sans-serif' font-size='13' text-anchor='middle'><text x='60' y='116' fill='currentColor' opacity='0.8'>Kelvin</text><text x='150' y='116' fill='currentColor' opacity='0.8'>radioactivity</text><text x='255' y='116' fill='currentColor' opacity='0.8'>first caught</text><text x='345' y='116' fill='var(--accent)' font-weight='600'>about half</text></g></svg>"
+      }
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "Three clocks, still ticking from Earth's birth",
+          "body": "Three isotopes do almost all the heating. Uranium-238 and thorium-232 supply the bulk, roughly 8 terawatts each, and potassium-40 adds about 4 more. What makes them last is how slowly they go: uranium-238 sheds half its atoms every 4.5 billion years, thorium-232 every 14 billion. They were forged in dying stars before the Sun existed, seeded into the rock as the Earth formed, and they have been ticking down ever since. The furnace is running low, just very slowly.",
+          "visual_svg": "<svg viewBox='0 0 400 195' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='28' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>The radiogenic heat, by isotope</text><g stroke='currentColor' stroke-width='2' opacity='0.55'><rect x='130' y='50' width='170' height='22' rx='6'/><rect x='130' y='90' width='170' height='22' rx='6'/><rect x='130' y='130' width='85' height='22' rx='6'/></g><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='end'><text x='122' y='66'>U-238</text><text x='122' y='106'>Th-232</text><text x='122' y='146'>K-40</text></g><g fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' text-anchor='start'><text x='308' y='66'>8 TW</text><text x='308' y='106'>8 TW</text><text x='223' y='146'>4 TW</text></g><text x='200' y='180' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='14' font-weight='700' text-anchor='middle'>together, about 20 TW</text></svg>"
+        },
+        {
+          "title": "The leftover heat runs the planet's engine",
+          "body": "This heat is not just leaking away; it is doing work on the way out. The slow churn of the mantle it drives carries the continents, lifts mountains, and feeds volcanoes. A colder planet is a still one. Deeper down, heat escaping the core keeps its liquid iron stirring, and that motion runs the magnetic field that deflects the solar wind. Mars, smaller and quicker to cool, lost that churn and most of its field long ago, and its thin air bled into space."
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "So the ground under everything is powered, in part, by a slow nuclear burn set going before the Sun formed. It is a big reason the Earth stayed geologically alive for billions of years while smaller worlds froze solid. But a furnace running on decay only fades. The isotopes will not be replenished, and over the coming billions of years the churn will weaken, the plates will slow, and the field will thin. For now the fire is still lit, and it is half of what keeps the planet's engine turning."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "Roughly how much of the Earth's outgoing heat comes from radioactive decay?",
+          "options": [
+            "Almost all of it",
+            "About half",
+            "About a tenth",
+            "None; the heat is entirely leftover from formation"
+          ],
+          "answer_index": 1,
+          "explanation": "The geoneutrino measurements place the nuclear share near half of the roughly 44 terawatts leaving the planet. The rest is heat left over from when the Earth formed."
+        },
+        {
+          "question": "If decay supplies about half, where does the rest of the heat come from?",
+          "options": [
+            "Sunlight soaking into the crust",
+            "Friction from the ocean tides",
+            "Primordial heat left over from the planet's formation",
+            "Chemical reactions in the deep oceans"
+          ],
+          "answer_index": 2,
+          "explanation": "The Earth started out molten and has been shedding that original heat ever since. Half the outflow today is this primordial warmth, the other half fresh from decay."
+        },
+        {
+          "question": "How did physicists measure the nuclear share of Earth's heat?",
+          "options": [
+            "By drilling into the mantle and taking its temperature",
+            "By detecting neutrinos produced by decays inside the Earth",
+            "By weighing the uranium in surface rocks",
+            "By modeling the Sun's energy output"
+          ],
+          "answer_index": 1,
+          "explanation": "Each decay releases a neutrino that streams out of the planet. Catching a few of them in huge underground detectors reveals how many decays are happening below, and so how much heat they make."
+        },
+        {
+          "question": "Why is the radioactive heating still going strong after 4.5 billion years?",
+          "options": [
+            "New uranium keeps forming in the core",
+            "The decay speeds up as the Earth cools",
+            "Sunlight recharges the isotopes",
+            "The main isotopes have half-lives of billions of years"
+          ],
+          "answer_index": 3,
+          "explanation": "Uranium-238 takes about 4.5 billion years to lose half its atoms, roughly the age of the Earth. Such slow clocks have barely wound down, so the heat has faded only a little."
+        },
+        {
+          "question": "What does this internal heat make possible at the surface?",
+          "options": [
+            "The ocean tides",
+            "The changing seasons",
+            "Plate tectonics and the planet's magnetic field",
+            "The length of the day"
+          ],
+          "answer_index": 2,
+          "explanation": "The escaping heat drives the mantle to churn, which moves the plates, and stirs the molten core, which generates the magnetic field. A world that cools too far loses both, as Mars did."
+        },
+        {
+          "question": "Kelvin calculated a young Earth from its cooling rate. What did his calculation leave out?",
+          "options": [
+            "That the Earth has an internal heat source and a churning mantle",
+            "That the Sun is much older than the Earth",
+            "That the oceans store a great deal of heat",
+            "That the Earth is not a perfect sphere"
+          ],
+          "answer_index": 0,
+          "explanation": "Kelvin assumed a rigid Earth with no heat of its own. Radioactivity supplied the missing heat source, and a slowly churning mantle, understood later, was the deeper flaw in his model."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "The Earth's heat is just leftover warmth from when it formed.",
+          "reality": "Only about half is. The rest is generated continuously, as uranium, thorium, and potassium in the rock decay today."
+        },
+        {
+          "myth": "There must be a natural nuclear reactor running at the Earth's core.",
+          "reality": "The heat comes from ordinary radioactive decay spread through the mantle and crust, not a chain reaction. Individual atoms split on their own schedule, and nothing sustains a runaway reaction the way a reactor does."
+        },
+        {
+          "myth": "Radioactivity is what proved Kelvin wrong about the age of the Earth.",
+          "reality": "It revealed a heat source he had ignored, but that was not his main error. His model assumed a rigid Earth, and a mantle that slowly churns, worked out later, is the bigger reason his clock failed. The true age comes from radiometric dating, not from the heat."
+        }
+      ]
+    },
+    {
+      "type": "open_questions",
+      "order": 12,
+      "content": {
+        "body": "The rough split is firm; the details are not. The detectors cannot see potassium-40 at all, so its four terawatts are inferred, not caught. How uranium and thorium are shared between the crust and the deep mantle is still argued, and that changes what the totals mean. A few physicists even wonder whether a natural reactor once ran near the core. The evidence for that is thin.",
+        "items": [
+          "How much of the radioactive load sits in the mantle versus the crust?",
+          "Can a detector ever catch the potassium-40 neutrinos directly?",
+          "Is the primordial half truly primordial, or partly something else?"
+        ]
+      }
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "The KamLAND Collaboration. Partial radiogenic heat model for Earth revealed by geoneutrino measurements. Nature Geoscience 2011;4:647-651",
+          "url": "https://www.nature.com/articles/ngeo1205",
+          "type": "paper"
+        },
+        {
+          "label": "Berkeley Lab News Center: What Keeps the Earth Cooking?",
+          "url": "https://newscenter.lbl.gov/2011/07/17/kamland-geoneutrinos/",
+          "type": "article"
+        },
+        {
+          "label": "Araki T, et al. Experimental investigation of geologically produced antineutrinos with KamLAND (first geoneutrino detection). Nature 2005;436:499-503",
+          "url": "https://www.nature.com/articles/nature03980",
+          "type": "paper"
+        },
+        {
+          "label": "Geoneutrino",
+          "url": "https://en.wikipedia.org/wiki/Geoneutrino",
+          "type": "wikipedia"
+        }
+      ]
+    }
+  ]
+}
