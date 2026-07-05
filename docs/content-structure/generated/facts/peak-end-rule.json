@@ -1,0 +1,231 @@
+{
+  "tags": [
+    "cognitive-biases",
+    "psychology",
+    "behavioral-economics",
+    "decision-making"
+  ],
+  "connections": [
+    {
+      "format": "books",
+      "ref": {
+        "title": "Thinking, Fast and Slow",
+        "author": "Daniel Kahneman"
+      },
+      "featured": true
+    },
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Duration neglect"
+      },
+      "featured": true
+    },
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Affective forecasting"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "People recall a painful procedure as less bad when it ends gently, even when the gentle version lasts longer and hurts more overall.",
+    "teasers": [
+      "Why the last minute rewrites the whole hour",
+      "The patients who chose more pain",
+      "Two selves, and only one is heard"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "People recall a painful procedure as less bad when it ends gently, even when the gentle version lasts longer and hurts more overall."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='26' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='700' text-anchor='middle'>Two colonoscopies, remembered</text><g stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'><line x1='52' y1='84' x2='52' y2='248'/><line x1='52' y1='248' x2='366' y2='248'/></g><line x1='52' y1='118' x2='366' y2='118' stroke='currentColor' stroke-width='1.5' opacity='0.25' stroke-dasharray='6 6'/><text x='58' y='112' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.55' text-anchor='start'>same peak</text><polyline points='55,248 82,172 110,130 136,118 156,134' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/><circle cx='156' cy='134' r='4' fill='currentColor'/><polyline points='55,248 98,170 140,124 168,118 218,154 268,188 318,216 356,232' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/><circle cx='356' cy='232' r='4' fill='var(--accent)'/><text x='170' y='150' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='start'>A</text><text x='348' y='222' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='end'>B</text><g fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' opacity='0.6' text-anchor='middle'><text x='55' y='266'>0</text><text x='156' y='266'>8</text><text x='356' y='266'>24 min</text></g><text x='200' y='288' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle'>B hurt more, yet feels easier to recall</text></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "Think of the most painful thing that happened to you years ago. Notice what your mind hands back: the worst moment, and how it ended. Almost never the length. Looking back on pain, we do not tally it minute by minute. We keep the peak and the final stretch and drop the rest. So a long, steady ache can leave a lighter memory than a short ordeal that ends on a spike. Duration barely leaves a mark."
+    },
+    {
+      "type": "story",
+      "order": 7,
+      "content": {
+        "body": "In a lab in the early 1990s, people were asked to hold a hand in painfully cold water. One trial ran 60 seconds at 14°C. A second ran the same 60 seconds, then kept the hand in 30 seconds longer while the water was nudged up to a slightly less brutal 15°C. More cold, more total pain. Yet when subjects were told they had to repeat one trial, most picked the longer one. The psychologist Daniel Kahneman and the physician Donald Redelmeier had found that a gentler ending could overwrite a worse experience. A few years later they took the idea to real patients. Recording pain minute by minute through colonoscopies, they found the same thing: remembered pain tracked the peak and the end, while the length barely counted. They called that blind spot duration neglect.",
+        "key_figures": [
+          {
+            "name": "Daniel Kahneman",
+            "role": "Mapped how memory judges pain",
+            "one_line": "With Redelmeier, he showed that people rate an ordeal by its worst moment and its end, not its length.",
+            "lifespan": "1934-2024",
+            "birth_year": 1934,
+            "featured": true
+          },
+          {
+            "name": "Donald Redelmeier",
+            "role": "Ran the experiments on patients",
+            "one_line": "The physician who recorded real-time pain through colonoscopies and turned the peak-end pattern into a bedside finding."
+          }
+        ],
+        "visual_svg": "<svg viewBox='0 0 400 270' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='26' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='700' text-anchor='middle'>The two cold-water trials</text><text x='52' y='121' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' text-anchor='end'>Short</text><rect x='60' y='104' width='180' height='28' rx='6' stroke='currentColor' stroke-width='2' fill='currentColor' fill-opacity='0.08'/><text x='150' y='122' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' text-anchor='middle'>14°C, 60s</text><text x='52' y='191' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' text-anchor='end'>Long</text><rect x='60' y='174' width='180' height='28' rx='6' stroke='currentColor' stroke-width='2' fill='currentColor' fill-opacity='0.08'/><text x='150' y='192' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' text-anchor='middle'>14°C</text><rect x='240' y='174' width='92' height='28' rx='6' stroke='var(--accent)' stroke-width='2.5' fill='var(--accent)' fill-opacity='0.15'/><text x='286' y='192' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' font-weight='700' text-anchor='middle'>15°C</text><text x='286' y='166' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle'>+30s, warmer</text><g fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' opacity='0.6' text-anchor='middle'><text x='60' y='222'>0</text><text x='240' y='222'>60s</text><text x='332' y='222'>90s</text></g><text x='200' y='250' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle'>Most chose to repeat the longer trial</text></svg>"
+      }
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "Doctors used the rule on purpose",
+          "body": "If the ending is what sticks, you can engineer it. In a 2003 trial, 682 colonoscopy patients were split at random. For half, the doctor left the scope resting in place for an extra minute or two at the very end, a dull pressure that hurt less than the procedure itself. Nothing was taken away. Time was only added at the gentle end. That group rated the whole ordeal as less unpleasant, 4.4 against 4.9, and years later were more likely to come back for the next one. A worse experience, softened at the finish, became the easier one to face again."
+        },
+        {
+          "title": "The self that remembers overrules the self that felt it",
+          "body": "Kahneman split the mind into two characters. The experiencing self lives each moment as it comes and then lets it go. The remembering self keeps score, and it files each episode under two numbers: how bad the worst part was, and how it ended. When you choose your next vacation or judge your last one, it is the remembering self doing the choosing. So we will trade a genuinely better time for a better story about it.",
+          "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='26' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='700' text-anchor='middle'>What memory keeps</text><g stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'><line x1='50' y1='84' x2='50' y2='250'/><line x1='50' y1='250' x2='362' y2='250'/></g><text x='42' y='90' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='end' transform='rotate(-90 42 90)'>pain</text><text x='356' y='268' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='end'>time</text><polyline points='60,232 100,150 140,110 172,96 210,158 250,196 296,176 336,214' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' opacity='0.5'/><circle cx='172' cy='96' r='6' fill='var(--accent)'/><circle cx='336' cy='214' r='6' fill='var(--accent)'/><text x='172' y='84' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>peak</text><text x='336' y='234' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>end</text><text x='200' y='288' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>the rest, and the length, fade</text></svg>"
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "This is not a bug you can debug. The mind was built to summarize, and summaries are what it acts on. So your future turns on the memory of an experience, a compressed thing weighted toward its sharpest moment and its last. A year of decent days can lose to a single bad ending. We spend our hours as the experiencing self but plan our lives as the remembering one, and the two do not always want the same things. Ask which self you are living for. The answer is rarely the one having the time."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "According to the peak-end rule, what most shapes how you remember a painful experience?",
+          "options": [
+            "The most intense moment and the final moments",
+            "Its total duration",
+            "How the experience began",
+            "The average pain across the whole thing"
+          ],
+          "answer_index": 0,
+          "explanation": "Memory builds its verdict from two data points: the worst instant and the last one. The long middle, and the total length, count for surprisingly little."
+        },
+        {
+          "question": "In the cold-water experiment, why did most people choose to repeat the longer trial?",
+          "options": [
+            "It was genuinely less painful overall",
+            "It ended on a slightly less painful note, so it was remembered as better",
+            "They had forgotten doing the shorter one",
+            "The longer trial was warm the whole way through"
+          ],
+          "answer_index": 1,
+          "explanation": "The longer trial added 30 seconds of slightly warmer water at the end. That gentler finish, not the extra total pain, is what the remembering self held onto."
+        },
+        {
+          "question": "A longer colonoscopy that ends gently is often recalled as less bad than a shorter one that ends at peak pain. Why?",
+          "options": [
+            "The longer procedure actually caused less total pain",
+            "Longer procedures are done by more skilled doctors",
+            "Memory weights the ending heavily and mostly ignores how long it lasted",
+            "The patient was more sedated during the longer one"
+          ],
+          "answer_index": 2,
+          "explanation": "The ending is doing the heavy lifting. Because duration barely registers, a soft finish can beat a shorter run that stops at its worst."
+        },
+        {
+          "question": "Two operations reach the same peak pain and the same ending, but one takes twice as long. How are they most likely remembered?",
+          "options": [
+            "The longer one as clearly worse",
+            "About the same, since memory largely ignores duration",
+            "The shorter one as clearly worse",
+            "It is impossible to predict"
+          ],
+          "answer_index": 1,
+          "explanation": "With the peak and the end matched, the only difference is length, and length is the thing memory discounts. This is duration neglect in action."
+        },
+        {
+          "question": "In the 2003 colonoscopy trial, what did adding a gentler ending achieve?",
+          "options": [
+            "It shortened the whole procedure",
+            "It removed the most painful moment",
+            "It had no measurable effect on patients",
+            "It made patients remember the ordeal as less unpleasant and return more readily"
+          ],
+          "answer_index": 3,
+          "explanation": "Nothing painful was removed; a calmer stretch was added at the end. That was enough to lower the remembered unpleasantness and raise the odds patients came back for the next screening."
+        },
+        {
+          "question": "The split between the experiencing self and the remembering self implies that our choices are guided by what?",
+          "options": [
+            "Remembered experience, which can differ from what we actually lived through",
+            "A perfectly accurate recording of every moment",
+            "Only whatever is happening in the present instant",
+            "Mostly the beginnings of our experiences"
+          ],
+          "answer_index": 0,
+          "explanation": "We plan and choose from memories, and memory is a compression, not a recording. So we can pick the option that felt worse but summarizes better."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "The peak-end rule means only the ending matters.",
+          "reality": "The peak matters just as much. A memory is built from the single most intense moment together with the final one, so a brutal peak can sink an experience however softly it closes."
+        },
+        {
+          "myth": "A longer painful experience is always remembered as worse.",
+          "reality": "Not so. Because duration barely registers, a long ordeal that fades out gently can be recalled as milder than a short one that ends at its worst."
+        },
+        {
+          "myth": "This is just people misremembering, a flaw to be corrected.",
+          "reality": "It is how everyone's memory works, including yours right now. The remembering self is doing exactly its job, compressing a long experience into a form it can use later."
+        }
+      ]
+    },
+    {
+      "type": "open_questions",
+      "order": 12,
+      "content": {
+        "body": "The core finding is robust. The edges are still argued. Does the rule hold as strongly for pleasure as for pain, or do good and bad experiences get summarized differently? How large is the effect out in the wild, away from a lab or a clinic, where experiences blur together and expectations shift? And how far can an ending be shaped before people notice they are being managed?",
+        "items": [
+          "Does the peak-end pattern govern happy experiences as reliably as painful ones?",
+          "How much does the effect shrink for experiences spread over days or years rather than minutes?",
+          "Is it ethical to add real discomfort to an experience just to improve the memory of it?"
+        ]
+      }
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Redelmeier DA, Kahneman D. Patients' memories of painful medical treatments: real-time and retrospective evaluations of two minimally invasive procedures. Pain 1996;66:3-8",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/8857625/",
+          "type": "paper"
+        },
+        {
+          "label": "Kahneman D, Fredrickson BL, Schreiber CA, Redelmeier DA. When More Pain Is Preferred to Less: Adding a Better End. Psychological Science 1993;4:401-405",
+          "url": "https://www.ius.uzh.ch/dam/jcr:9ac245ec-ce2c-46a6-a620-77bf34f05d61/Kahneman%20et%20al.%20When%20More%20Pain%20is%20Preferred%20to%20Less.pdf",
+          "type": "paper"
+        },
+        {
+          "label": "Redelmeier DA, Katz J, Kahneman D. Memories of colonoscopy: a randomized trial. Pain 2003;104:187-194 (682 patients)",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/12855328/",
+          "type": "paper"
+        },
+        {
+          "label": "Peak-end rule",
+          "url": "https://en.wikipedia.org/wiki/Peak%E2%80%93end_rule",
+          "type": "wikipedia"
+        }
+      ]
+    }
+  ]
+}
