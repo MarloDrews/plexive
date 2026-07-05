@@ -98,7 +98,7 @@
       "content": [
         {
           "title": "The medieval classroom taught the sphere",
-          "body": "The sphere was standard curriculum. Around 1230, Sacrobosco's *On the Sphere of the World* opened by stating the Earth is a globe, and it stayed required reading in European universities for 400 years. Dante wrote a round Earth into the *Divine Comedy*. And the roundness was old news even then. Around 240 BC, Eratosthenes had read the Earth's whole circumference off the 7-degree angle of a shadow between two Egyptian cities. A student in 1300 no more doubted the sphere than a student today does.",
+          "body": "The sphere was standard curriculum. Around 1230, Sacrobosco's *On the Sphere of the World* opened by stating the Earth is a globe, and it stayed required reading in European universities for 400 years. Dante wrote a round Earth into the *Divine Comedy*. And the roundness was old news even then. Around 240 BC, Eratosthenes had read the Earth's whole circumference off the 7.2-degree angle of a shadow between two Egyptian cities. A student in 1300 no more doubted the sphere than a student today does.",
           "visual_svg": "<svg viewBox='0 45 400 200' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='208' y='60' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.75' text-anchor='start'>sun's rays</text><path d='M80 199 Q200 170 320 199' stroke='currentColor' stroke-width='2.5' opacity='0.6' fill='none'/><line x1='256' y1='146' x2='268' y2='64' stroke='currentColor' stroke-width='2' opacity='0.7' stroke-linecap='round'/><line x1='156' y1='64' x2='138' y2='187' stroke='currentColor' stroke-width='2' opacity='0.7' stroke-linecap='round'/><line x1='150' y1='187' x2='144' y2='146' stroke='currentColor' stroke-width='2.5' stroke-linecap='round'/><line x1='250' y1='187' x2='256' y2='146' stroke='currentColor' stroke-width='2.5' stroke-linecap='round'/><line x1='150' y1='187' x2='138' y2='187' stroke='currentColor' stroke-width='3' stroke-linecap='round' opacity='0.9'/><path d='M146.3 161.8 Q144 166 141.7 161.8' stroke='var(--accent)' stroke-width='2' fill='none'/><text x='160' y='160' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='14' font-weight='700' text-anchor='start'>7.2°</text><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle'><text x='142' y='212'>Alexandria</text><text x='253' y='212'>Syene</text></g><text x='200' y='236' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.75' text-anchor='middle'>one shadow gives the whole circumference</text></svg>"
         },
         {
@@ -126,7 +126,7 @@
             "Because the round-Earth idea only appeared after his death"
           ],
           "answer_index": 1,
-          "explanation": "Sphericity had been standard among educated Europeans for centuries. Columbus could not prove what everyone schooled already accepted; the live question was how far away Asia was."
+          "explanation": "Sphericity had been standard among educated Europeans for centuries. Columbus could not prove what everyone schooled already accepted. The live question was how far away Asia was."
         },
         {
           "question": "The dispute over Columbus's plan was really about which of these?",
