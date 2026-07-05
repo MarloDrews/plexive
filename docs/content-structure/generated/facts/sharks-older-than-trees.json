@@ -1,0 +1,240 @@
+{
+  "tags": [
+    "paleontology",
+    "animals",
+    "evolution"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Deep time"
+      },
+      "featured": true
+    },
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Mass extinction"
+      },
+      "featured": true
+    },
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Living fossils"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "Sharks have been swimming for 450 million years, about 65 million years longer than trees have existed.",
+    "teasers": [
+      "What the land looked like before trees",
+      "Five mass extinctions could not finish them",
+      "How we date a fish that barely fossilizes"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "Sharks have been swimming for 450 million years, about 65 million years longer than trees have existed."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 0 400 240' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='28' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>How long each has existed (million years)</text><rect x='124' y='50' width='252' height='30' rx='8' fill='var(--accent)' fill-opacity='0.16' stroke='var(--accent)' stroke-width='2.5'/><rect x='124' y='98' width='216' height='30' rx='8' stroke='currentColor' stroke-width='2' opacity='0.6'/><rect x='124' y='146' width='92' height='30' rx='8' stroke='currentColor' stroke-width='2' opacity='0.6'/><rect x='124' y='194' width='4' height='30' rx='2' stroke='currentColor' stroke-width='2' opacity='0.6'/><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='end'><text x='118' y='70'>Sharks</text><text x='118' y='118'>Trees</text><text x='118' y='166'>Dinosaurs</text><text x='118' y='214'>Humans</text></g><text x='368' y='70' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='14' font-weight='700' text-anchor='end'>450</text><g fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' opacity='0.75'><text x='348' y='118' text-anchor='start'>385</text><text x='224' y='166' text-anchor='start'>165</text><text x='136' y='214' text-anchor='start'>0.3</text></g></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "We tend to picture the deep past as one long green age of forests. Wind the clock back to the first sharks. The land is nearly empty. Moss, a few centimetres high, is the tallest thing growing on it. There is no wood anywhere on Earth, no bark, no deep roots. Sharks were already fast, jawed hunters in the sea. On land, nothing yet grew past your ankle."
+    },
+    {
+      "type": "tangible",
+      "order": 4,
+      "content": {
+        "items": [
+          "Fold those 450 million years into a single calendar year: the first tree sprouts around 22 February, the dinosaurs arrive in late June, and humans turn up in the last few hours of 31 December.",
+          "The first sharks came more than 200 million years before the first dinosaur, and unlike the dinosaurs, they are still here.",
+          "The oceans the earliest sharks swam were not today's oceans: the Atlantic would not begin to open for another 270 million years."
+        ],
+        "visual_svg": "<svg viewBox='0 0 400 210' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='30' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>All 450 million years as one calendar year</text><rect x='40' y='92' width='330' height='24' rx='12' stroke='currentColor' stroke-width='2' opacity='0.4'/><rect x='40' y='92' width='330' height='24' rx='12' fill='var(--accent)' fill-opacity='0.10'/><g stroke='currentColor' stroke-width='2' opacity='0.7' stroke-linecap='round'><line x1='88' y1='84' x2='88' y2='124'/><line x1='194' y1='84' x2='194' y2='124'/><line x1='370' y1='84' x2='370' y2='124'/></g><line x1='40' y1='80' x2='40' y2='128' stroke='var(--accent)' stroke-width='3' stroke-linecap='round'/><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600'><text x='88' y='74' text-anchor='middle'>Trees</text><text x='194' y='74' text-anchor='middle'>Dinosaurs</text><text x='366' y='74' text-anchor='end'>Humans</text></g><g fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' opacity='0.7'><text x='88' y='146' text-anchor='middle'>Feb 22</text><text x='194' y='146' text-anchor='middle'>late Jun</text><text x='366' y='146' text-anchor='end'>Dec 31</text></g><text x='200' y='176' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>Sharks are here the whole year</text></svg>"
+      }
+    },
+    {
+      "type": "how_we_know",
+      "order": 5,
+      "content": "A shark is mostly cartilage, which rots long before it can turn to stone. Whole shark fossils are rare. What lasts is the hard stuff: thousands of teeth, and the tiny tooth-shaped scales, called “denticles”, that roughen a shark's skin. The oldest denticles, pulled from rock in Colorado and Mongolia, date to 450 million years ago. Trees leave a firmer record: wood mineralizes well, and the oldest known stumps sit in 385-million-year-old ground at Gilboa, New York. Every date here is read from the rock itself, whose age is set by the steady decay of radioactive elements inside it."
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "They swam through all five mass extinctions",
+          "body": "Five times, life on Earth has nearly collapsed. The worst, about 252 million years ago, killed most species in the sea. Sharks are wide-ranging, generalist hunters, and each time some populations came through. During that worst extinction, a few small sharks seem to have escaped the poisoned coastal water by heading into the deep ocean, where they waited out the crisis. The group has now outlasted the dinosaurs, the trilobites, and nearly everything else that once shared its water.",
+          "visual_svg": "<svg viewBox='0 0 400 220' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='30' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Five mass extinctions, one unbroken line</text><g stroke='currentColor' stroke-width='7' opacity='0.16' stroke-linecap='round'><line x1='44' y1='80' x2='44' y2='170'/><line x1='98' y1='80' x2='98' y2='170'/><line x1='186' y1='80' x2='186' y2='170'/><line x1='224' y1='80' x2='224' y2='170'/><line x1='323' y1='80' x2='323' y2='170'/></g><line x1='34' y1='125' x2='378' y2='125' stroke='var(--accent)' stroke-width='3' stroke-linecap='round'/><circle cx='34' cy='125' r='5' fill='var(--accent)'/><text x='34' y='150' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' font-weight='700' text-anchor='start'>450 Ma</text><text x='378' y='150' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='end'>today</text><g fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' opacity='0.6' text-anchor='middle'><text x='44' y='72'>1</text><text x='98' y='72'>2</text><text x='186' y='72'>3</text><text x='224' y='72'>4</text><text x='323' y='72'>5</text></g><text x='200' y='200' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.65' text-anchor='middle'>the shark lineage, straight through all five</text></svg>"
+        },
+        {
+          "title": "A tree is a late, hard-won invention",
+          "body": "Plants had crept onto land long before sharks, but they stayed low. Height is a hard engineering problem. A plant that means to stand tall needs stiff wood to hold itself up, roots to grip against the wind, and plumbing to lift water many metres. Solving all three at once took plants tens of millions of years, most of the sharks' head start. When they finally managed it, the first true trees appeared, like the 8-metre Wattieza. Their forests pulled down so much carbon dioxide that the planet cooled."
+        },
+        {
+          "title": "Whole sharks almost never turn to stone",
+          "body": "Because cartilage decays, a complete fossil shark is a small miracle. The finest come from black shale near Cleveland, Ohio. There, roughly 360-million-year-old Cladoselache fossils preserved the body outline, the muscle fibres, even the animal's last meal still in its gut. Cladoselache already looked unmistakably like a shark: streamlined and fast, with a mouth of sharp teeth. It shared its water with armoured fish the size of a bus, and it swam much the way a shark swims now.",
+          "image_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Cladoselache_fyleri_(fossil_shark)_(Cleveland_Shale_Member,_Ohio_Shale,_Upper_Devonian;_Brooklyn,_Ohio,_USA)_2_(33699470716).jpg",
+          "image_caption": "A Cladoselache from the Cleveland Shale of Ohio, one of the oldest near-complete shark fossils known, preserved down to skin and muscle.",
+          "image_attribution": "James St. John, “Cladoselache fyleri (fossil shark)”, CC BY 2.0 (Wikimedia Commons)"
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "Sharks are often called primitive, as if being old meant being unfinished. The opposite is closer to the truth. The shark body plan arrived early and kept working, while the world rebuilt itself around it many times over. Forests rose, dinosaurs came and went, and the continents slid apart and back together. Through all of it, a fast cartilage hunter kept being a good answer to the same problem. Most of what we call ancient on land is young beside the shark."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "When the first sharks appeared, what was the tallest life on land?",
+          "options": [
+            "Fern forests several metres high",
+            "Moss and other low, rootless plants",
+            "The first trees, just a few metres tall",
+            "Nothing at all; the land was bare rock"
+          ],
+          "answer_index": 1,
+          "explanation": "Plants had already colonized land, but they were small and rootless, mosses and their kin only a few centimetres high. Nothing had the wood or deep roots needed to grow tall for tens of millions of years more."
+        },
+        {
+          "question": "A shark is built mostly of cartilage. Why does that make its early history hard to read?",
+          "options": [
+            "Cartilage rots before it can fossilize, so early sharks survive mostly as teeth and scales",
+            "Cartilage cannot be dated by radioactive decay",
+            "Early sharks lived only in deep water, where no rock ever formed",
+            "Fossil cartilage looks identical to fish bone, so it cannot be told apart"
+          ],
+          "answer_index": 0,
+          "explanation": "Cartilage decays instead of turning to stone, so a whole fossil shark is rare. The record is carried by the hard parts, shed teeth and the tiny denticles that cover the skin."
+        },
+        {
+          "question": "Land plants existed well before the first tree. Why did trees take another 65 million years to appear?",
+          "options": [
+            "The climate stayed too cold for large plants until the Devonian",
+            "Plant-eating animals ate anything that tried to grow tall",
+            "Standing tall needed wood, deep roots, and water-lifting plumbing to evolve together",
+            "There was not enough oxygen in the air for large plants"
+          ],
+          "answer_index": 2,
+          "explanation": "Height is an engineering problem. A tall plant has to hold itself up, anchor against the wind, and pump water upward, and those solutions took tens of millions of years to arrive at once."
+        },
+        {
+          "question": "What best explains how sharks lived through extinctions that killed most ocean species?",
+          "options": [
+            "Their cartilage skeleton is immune to whatever causes extinctions",
+            "Each time, they evolved into a single hardy species and waited",
+            "They were unaffected because they lived only in rivers",
+            "As widespread, generalist hunters, some populations always found refuge, such as deeper water"
+          ],
+          "answer_index": 3,
+          "explanation": "No single trait made sharks bulletproof. Being spread across many habitats and not fussy about prey meant some populations survived each crisis, and during the worst one some seem to have retreated to the deep ocean."
+        },
+        {
+          "question": "The shark lineage is 450 million years old. What does that say about a modern great white?",
+          "options": [
+            "It is essentially unchanged from its Devonian ancestors",
+            "It is a modern animal; the great age belongs to the lineage, not to any living species",
+            "It has stopped evolving because its design is already perfect",
+            "It is more primitive than other fish alive today"
+          ],
+          "answer_index": 1,
+          "explanation": "The 450 million years describes the group, which has produced and lost hundreds of forms. Today's great white is a thoroughly modern animal, not a survivor frozen from the deep past."
+        },
+        {
+          "question": "Suppose the 450-million-year-old scales turn out not to be true sharks. Why would the headline still hold?",
+          "options": [
+            "Because trees are actually far younger than 385 million years",
+            "Because those scales were re-dated to 500 million years",
+            "Because unmistakable shark teeth still appear about 25 million years before the first tree",
+            "Because sharks and the first trees appeared at the same time"
+          ],
+          "answer_index": 2,
+          "explanation": "Even setting the debated scales aside, clear shark teeth show up by about 410 million years ago. That is still ahead of the first tree at 385 million years, so sharks come first either way."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "Sharks have not changed in 450 million years.",
+          "reality": "The shape endured, but the animals kept changing. The group has produced and lost hundreds of forms across that span, and today's great white is a thoroughly modern animal, not a “living fossil”. The 450 million years belongs to the lineage as a whole."
+        },
+        {
+          "myth": "The 450-million-year date is rock solid.",
+          "reality": "It rests on scales alone, and some researchers doubt those earliest denticles came from true sharks. But even the cautious reading holds: unmistakable shark teeth appear by about 410 million years ago, still 25 million years before the first tree."
+        },
+        {
+          "myth": "The first tree was also the first plant on land.",
+          "reality": "Land had been green for tens of millions of years before any tree, carpeted in mosses, liverworts, and low branching plants. Trees were not the start of life on land. They were the moment it finally stood up."
+        }
+      ]
+    },
+    {
+      "type": "open_questions",
+      "order": 12,
+      "content": {
+        "body": "The pattern is clear; the causes are not. We can date the first sharks and the first trees precisely. Saying why the shark body plan was so hard to kill, when the same disasters erased almost everything around it, is a different matter. The opening chapter is blurry too, written in loose scales rather than skeletons.",
+        "items": [
+          "Were the 450-million-year-old denticles shed by true sharks, or by close relatives on the way to becoming sharks?",
+          "What let sharks survive mass extinctions that wiped out most of the ocean, again and again?",
+          "How did the earliest sharks live and hunt, when almost nothing but their scales has survived?"
+        ]
+      }
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Natural History Museum. Shark evolution: a 450 million year timeline",
+          "url": "https://www.nhm.ac.uk/discover/shark-evolution-a-450-million-year-timeline.html",
+          "type": "article"
+        },
+        {
+          "label": "Cladoselache",
+          "url": "https://en.wikipedia.org/wiki/Cladoselache",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Wattieza",
+          "url": "https://en.wikipedia.org/wiki/Wattieza",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Stein WE et al. Giant cladoxylopsid trees resolve the enigma of the Earth's earliest forest stumps at Gilboa. Nature 2007;446:904-907",
+          "url": "https://www.nature.com/articles/nature05705",
+          "type": "paper"
+        },
+        {
+          "label": "Permian-Triassic extinction event",
+          "url": "https://en.wikipedia.org/wiki/Permian%E2%80%93Triassic_extinction_event",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Evolutionary history of plants",
+          "url": "https://en.wikipedia.org/wiki/Evolutionary_history_of_plants",
+          "type": "wikipedia"
+        }
+      ]
+    }
+  ]
+}
