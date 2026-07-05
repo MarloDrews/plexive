@@ -9,8 +9,8 @@ See CROSS_POST_VARIANCE.md for the format.
 ## Move tally
 
 ### Reframe opener
-- longer-sentence reversal (belief carried into a long sentence) - 3
-- mid-scene concrete open (lead on the fact, no flat belief-then-punch) - 4
+- longer-sentence reversal (belief carried into a long sentence) - 4
+- mid-scene concrete open (lead on the fact, no flat belief-then-punch) - 5
 - flat declarative on the headline fact/number (gold-style, no reversal or imperative) - 1
 - staccato reversal punch (flat belief, then a 3-6 word negation) - 3
 - number-first mismatch (lead on the number gap) - 1
@@ -18,8 +18,10 @@ See CROSS_POST_VARIANCE.md for the format.
 - object-in-hand imperative - 3
 - accounting "start with" reframe - 2
 - threshold-fact / boundary-value opener - 1
-- flat paradox / two-true-claims statement - 1
+- flat paradox / two-true-claims statement - 2
 - concede-then-pivot ("[X] is not, by itself, [Y]") - 1
+- flat claim, thesis up front ("The danger was documented early.") - 1
+- imperative scene, watch-it-happen ("Watch an octopus escape.") - 1
 
 ### Closing line
 - deep-time / long-duration aphorism - 2
@@ -32,28 +34,37 @@ See CROSS_POST_VARIANCE.md for the format.
 - measured causal present-day (tied to the cause) - 3
 - present-day, mildly urgent (loss outpacing knowledge) - 1
 - flat trade-off / cost statement - 1
-- blunt principle / rule statement - 2
+- blunt principle / rule statement - 3
 - practical how-to imperative - 1
 - flat observation on why a belief persisted - 1
+- flattened / de-landed close (ends plain, no landing) - 4
 
 ### Story pivot
 - "the explanation waited until [year], when [role] [Name]" - 1
 - subject-first, "[Name] [verb]ed in [year]" - 1
 - long dormancy, "then in [year] the [role] went looking" - 2
-- single-episode experiment, doubt beat, no why-pivot - 1
+- single-episode experiment, doubt beat, no why-pivot - 2
 - evidence settles it (no fresh dated scientist) - 1
 - relay across several actors (answer arrives from elsewhere) - 1
 - discoverer + confirmer, replication holds - 2
 - old prediction, dated confirmation ("the case broke open on [date]") - 2
 - process/recovery narrative (get the sample, then read it) - 1
-- heresy then vindication (defended for years, then proof) - 2
+- heresy then vindication (defended for years, then proof) - 3
 - eureka scene, discoverer's reaction, no vindication arc - 1
 - found, then lost, then re-established - 1
 - finding resisted / ignored after proof (inverse vindication) - 1
 - untested/invented claim -> century of repetition -> modern debunk - 2
 - worry investigated, then dismissed (analyst finds no effect) - 1
+- naming chain, delayed understanding (no lone hero, no vindication) - 1
 
 ## Recent batches
+
+### 2026-07-05-b
+- sharks-older-than-trees: opener mid-scene concrete (moss the tallest thing on land, empty pre-tree world) / close flattened to a plain design statement (de-landed from "young beside the shark") / pivot none (no story section); archetype scale-number
+- vitamin-d-is-a-hormone: opener flat paradox / two-true-claims / close flattened to plain (de-landed from the names-outlast-knowledge maxim) / pivot naming chain, delayed understanding (Mellanby, McCollum names it, Steenbock links UV; no lone hero); archetype myth-corrected
+- lead-paint-harm-suppressed: opener flat claim, thesis up front ("The danger was documented early.") / close moral/principle aphorism ("Knowing that something is harmful has never been enough... to stop it.", BATCH KEEPER, the one earned crafted close) / pivot heresy then vindication (Needleman attacked then accepted; Byers, Kehoe named) / broke a within-post "the same ___" cluster to none; archetype suppressed-harm (manufactured doubt)
+- placebos-work-without-deception: opener "We tend to assume" belief-reverse (kept off sharks) / close flattened to plain (de-landed from "the ritual and the honest hope") / pivot single-episode experiment, doubt beat (Kaptchuk doubts, 2010 trial confirms; 1978 naloxone clue) / thinned a 4x antithesis press to none; archetype myth-corrected
+- octopus-heart-stops-when-it-swims: opener imperative scene ("Watch an octopus escape.") / close flattened to plain ("the price of that body plan", de-landed from the not-a-flaw/seam contrast frame) / pivot none (no story section); archetype mechanism
 
 ### 2026-07-05-a
 - simpsons: opener flat paradox statement ("Two claims sat in the same file, and both were true.") / close blunt epistemic principle ("Neither view is automatically the real one.", batch keeper) / pivot worry investigated then dismissed (Bickel finds no bias; Yule 1903, Simpson 1951 named earlier)
