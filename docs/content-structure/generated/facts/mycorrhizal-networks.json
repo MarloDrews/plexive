@@ -64,7 +64,7 @@
         "items": [
           "Add up the mapped threads across the planet's topsoils and they run to about 110 quadrillion kilometres, enough for more than 300 million round trips to the Sun.",
           "The web is densest not under rainforests but under wild grasslands, which hold roughly 40% of it.",
-          "Each year the world's plants channel about 13 billion tonnes of CO2-equivalent carbon into these fungi, close to a third of what fossil fuels release."
+          "Each year the world's plants channel about 13 billion tonnes of CO2 equivalent into these fungi, close to a third of what fossil fuels release."
         ],
         "visual_svg": "<svg viewBox='0 0 400 230' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='30' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.8' text-anchor='middle'>Carbon into fungi vs fossil fuels</text><rect x='132' y='70' width='79' height='34' rx='8' fill='var(--accent)' fill-opacity='0.22' stroke='var(--accent)' stroke-width='2'/><text x='124' y='92' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='end'>into fungi</text><text x='221' y='93' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='15' font-weight='700' text-anchor='start'>13</text><rect x='132' y='140' width='230' height='34' rx='8' stroke='currentColor' stroke-width='2' opacity='0.5'/><text x='124' y='162' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='end' opacity='0.85'>fossil fuels</text><text x='372' y='163' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='15' font-weight='700' text-anchor='start' opacity='0.85'>37</text><text x='200' y='210' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>gigatonnes CO2e per year</text></svg>"
       }
@@ -153,7 +153,7 @@
           "explanation": "Phosphorus barely moves and roots quickly strip the soil right around them. A thread a few thousandths of a millimetre wide reaches into pores roots are too thick to enter, and forages far past that dead zone."
         },
         {
-          "question": "The 2011 experiment on reciprocal rewards showed the trade stays fair because...",
+          "question": "The experiment on reciprocal rewards showed the trade stays fair because...",
           "options": [
             "a dominant tree polices the network and punishes cheats",
             "the fungus is genetically identical to the plant, so their aims match",
