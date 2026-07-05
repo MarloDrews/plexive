@@ -52,13 +52,13 @@
     {
       "type": "surprises",
       "order": 3,
-      "content": "A placebo is not, by itself, a deception. We tend to assume the trick is the whole point, that a sugar pill only works because the patient thinks it is real medicine. In 2010 a Harvard team tested that assumption directly. They gave patients with irritable bowel syndrome a bottle labeled “placebo”, and told them plainly the pills were inert, mere sugar. The patients improved anyway, and clearly more than those given nothing. Whatever is doing the work, it survives being told the truth."
+      "content": "We tend to assume the trick is the whole point, that a sugar pill only works because the patient thinks it is real medicine. In 2010 a Harvard team tested that assumption directly. They gave patients with irritable bowel syndrome a bottle labeled “placebo”, and told them plainly the pills were inert, mere sugar. The patients improved anyway, and clearly more than those given nothing."
     },
     {
       "type": "story",
       "order": 7,
       "content": {
-        "body": "For most of the twentieth century, the placebo was medicine's embarrassment: the response you had to subtract to prove a drug worked. It was assumed to run on belief, and therefore on deception. Ted Kaptchuk, who ran Harvard's placebo research, doubted that last step. His 2010 trial handed patients a pill bottle marked “placebo” and a short, honest speech: these are sugar pills, they have helped others through mind-body effects, take them faithfully. The patients got better. There was already a clue that the effect was physical. Back in 1978, researchers had shown that naloxone, a drug that blocks the body's own opioids, also blocks placebo pain relief. The pill was inert, but the response it triggered was not.",
+        "body": "For most of the twentieth century, the placebo was medicine's embarrassment: the response you had to subtract to prove a drug worked. It was assumed to run on belief, and therefore on deception. Ted Kaptchuk, who ran Harvard's placebo research, doubted that last step. His 2010 trial handed patients a pill bottle marked “placebo” and a short, honest speech: these are sugar pills, they have helped others through mind-body effects, take them faithfully. The patients got better. There was already a clue that the effect was physical. Back in 1978, researchers had shown that naloxone, a drug that blocks the body's own opioids, also blocks placebo pain relief.",
         "key_figures": [
           {
             "name": "Ted Kaptchuk",
@@ -78,12 +78,12 @@
       "content": [
         {
           "title": "Placebos ease symptoms without touching the disease",
-          "body": "Here is the sharp limit. A placebo can change how a symptom feels, but it does not cure the thing underneath. In a 2011 asthma trial, a placebo inhaler made patients feel about as improved as a real drug, roughly 45% against 50%. But when the doctors measured the airways, only the real drug opened them; the placebo left lung function no better than no treatment. Placebos work on the felt world of pain, nausea, and fatigue. They do not shrink a tumor or clear an infection.",
+          "body": "Here is the sharp limit. A placebo can change how a symptom feels, but it does not cure the thing underneath. Placebos work on the felt world of pain, nausea, and fatigue, not the tumor or the infection beneath. In a 2011 asthma trial, a placebo inhaler made patients feel about as improved as a real drug, roughly 45% against 50%. But when the doctors measured the airways, only the real drug opened them. The placebo left lung function no better than no treatment.",
           "visual_svg": "<svg viewBox='0 0 400 185' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='24' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Real drug vs placebo inhaler in asthma</text><text x='104' y='48' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.7' text-anchor='start'>How patients felt (%)</text><rect x='104' y='56' width='233' height='18' rx='6' stroke='currentColor' stroke-width='2' opacity='0.6'/><rect x='104' y='80' width='209' height='18' rx='6' fill='var(--accent)' fill-opacity='0.16' stroke='var(--accent)' stroke-width='2.5'/><text x='104' y='112' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.7' text-anchor='start'>Lung function, FEV1 (%)</text><rect x='104' y='120' width='93' height='18' rx='6' stroke='currentColor' stroke-width='2' opacity='0.6'/><rect x='104' y='144' width='33' height='18' rx='6' fill='var(--accent)' fill-opacity='0.16' stroke='var(--accent)' stroke-width='2.5'/><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.8' text-anchor='end'><text x='99' y='69'>drug</text><text x='99' y='93'>placebo</text><text x='99' y='133'>drug</text><text x='99' y='157'>placebo</text></g><g fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' font-weight='700' text-anchor='start'><text x='343' y='69'>50</text><text x='319' y='93' fill='var(--accent)'>45</text><text x='203' y='133'>20</text><text x='143' y='157' fill='var(--accent)'>7</text></g></svg>"
         },
         {
           "title": "The relief runs on the brain's own drugs",
-          "body": "Expectation is more than a mood. It is a physical signal. Anticipating relief prompts the brain to release its own painkillers, the endogenous opioids. The clearest proof is old: in 1978, Jon Levine and colleagues gave people naloxone, the drug that reverses a heroin overdose by blocking opioid receptors, and it made placebo pain relief fade. Block the body's own opioids, and you block the placebo. The pharmacy was inside the patient all along."
+          "body": "Expectation is more than a mood. It is a physical signal. Anticipating relief prompts the brain to release its own painkillers, the endogenous opioids. The clearest proof is old: in 1978, Jon Levine and colleagues gave people naloxone, the drug that reverses a heroin overdose by blocking opioid receptors, and it made placebo pain relief fade. Block the body's own opioids, and you block the placebo."
         },
         {
           "title": "The ritual is part of the medicine",
@@ -94,7 +94,7 @@
     {
       "type": "bigger_picture",
       "order": 9,
-      "content": "The placebo effect is not nothing pretending to be something. It is the measurable result of expectation, attention, and the ritual of being cared for, and it runs on the brain chemistry a real drug would borrow. That reframes the “inactive” control at the heart of every drug trial. It was never inactive; it was the effect of meaning, quietly at work in every patient, including the ones on the real drug. The open-label result hints that we may not need the lie to keep it. What we need is the ritual, and the honest hope that comes with it."
+      "content": "The placebo effect is the measurable result of expectation, attention, and the ritual of being cared for, and it runs on the brain chemistry a real drug would borrow. That reframes the “inactive” control in every drug trial. It was never truly inactive. It was the effect of meaning quietly at work in every patient, including the ones on the real drug. The open-label result hints the effect may not need the lie, only the ritual and a plausible, honest reason to expect relief."
     },
     {
       "type": "quiz",
