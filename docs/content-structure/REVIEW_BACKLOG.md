@@ -233,3 +233,27 @@ sources. Each entry stays `open` until a researcher confirms or resolves it.
 - finding: story key_figure William B. F. Ryan is not featured and omits birth_year. The person-list base shape permits omitting birth_year only if genuinely unknown; Ryan's birth year is on record, so the person-edge match key could be supplied.
 - needs: a source check to find and verify William B. F. Ryan's birth_year (a small new sourced fact). Deferred because supplying it requires fresh research; not changed in the post to avoid inventing a date.
 - added: 2026-07-05, 2026-07-05-a
+
+### vitamin-d-is-a-hormone
+- status: open
+- finding: the story features Elmer McCollum (and Mellanby, Steenbock) with no portrait, and the post carries no sourced image at all. A freely licensed portrait of an early-20th-century scientist (McCollum is featured) could rest the eye. Optional; the post already has 4 solid SVGs, so none is an acceptable outcome (correctness review vitd-1).
+- needs: fresh research to locate, license-verify, and attribute a public-domain/CC portrait genuinely of McCollum or Mellanby (do not invent a URL). Deferred because it requires a new sourced asset, not a mechanical edit.
+- added: 2026-07-05, 2026-07-05-b
+
+### lead-paint-harm-suppressed
+- status: open
+- finding: the post carries no sourced image (subject is concrete and central: lead house paint). A cleanly licensed archival image plausibly exists (a pre-1929 US lead-paint advertisement, public domain, or a verified portrait of Needleman or Gibson). Fair should-improve, not a required gap (correctness review lead-2).
+- needs: fresh research to locate, license-verify, and attribute a real archival image (period advertisement or figure portrait) per IMAGE_STANDARD (do not invent a URL). Deferred because it requires a new sourced asset, not a mechanical edit.
+- added: 2026-07-05, 2026-07-05-b
+
+### lead-paint-harm-suppressed
+- status: open
+- finding: story key_figure Randolph Byers has no birth_year/lifespan. The schema says omit birth_year only if genuinely unknown, never guess; Byers' dates are reportedly findable (approx. 1896-1988). Byers is featured=false, so no person edge is lost, but the field could be completed (correctness review lead-3).
+- needs: a source check to find and verify Randolph Byers' birth_year and lifespan (a small new sourced fact). Deferred because supplying it requires fresh research; not changed in the post to avoid inventing a date.
+- added: 2026-07-05, 2026-07-05-b
+
+### octopus-heart-stops-when-it-swims
+- status: open
+- finding: sources cite Wells MJ 1980 (JEB 85:111-128) for the heart-stopping physiology. The specific mechanism (mantle pressure blocking venous return during jet swimming) is most directly documented in Wells, Duthie, Houlihan, O'Dor & Smith (JEB 1987). The claim wording is fine; source precision could improve (correctness review octo-2).
+- needs: a source check to confirm and add the Wells et al. 1987 (JEB) citation alongside the existing Wells 1980 reference. Deferred because adding a new source requires research, not a mechanical edit; the post is unchanged.
+- added: 2026-07-05, 2026-07-05-b
