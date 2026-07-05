@@ -1,0 +1,237 @@
+{
+  "tags": [
+    "medicine",
+    "neuroscience",
+    "philosophy-of-mind"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Consciousness"
+      },
+      "featured": true
+    }
+  ],
+  "feed_card": {
+    "headline": "General anesthesia has switched consciousness off and on for 180 years, and no one can fully say how it works.",
+    "teasers": [
+      "A dentist, a glass globe, the first painless surgery",
+      "Why a chemically inert gas can switch you off",
+      "An off-switch surgeons trust but cannot explain"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "General anesthesia has switched consciousness off and on for 180 years, and no one can fully say how it works."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><g stroke='currentColor' stroke-width='2' opacity='0.55'><rect x='22' y='46' width='118' height='32' rx='12'/><rect x='22' y='92' width='118' height='32' rx='12'/><rect x='22' y='138' width='118' height='32' rx='12'/><rect x='22' y='184' width='118' height='32' rx='12'/></g><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle'><text x='81' y='66'>Xenon</text><text x='81' y='112'>Nitrous oxide</text><text x='81' y='158'>Ether</text><text x='81' y='204'>Propofol</text></g><g stroke='currentColor' stroke-width='1.8' opacity='0.4' stroke-linecap='round'><path d='M140 62 L242 145'/><path d='M140 108 L242 150'/><path d='M140 154 L242 155'/><path d='M140 200 L242 165'/></g><text x='192' y='128' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='20' font-weight='700' opacity='0.55' text-anchor='middle'>?</text><rect x='250' y='120' width='124' height='66' rx='16' stroke='var(--accent)' stroke-width='2.5' fill='var(--accent)' fill-opacity='0.09'/><text x='312' y='149' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='700' text-anchor='middle'>unconscious</text><text x='312' y='170' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='12' text-anchor='middle'>every time</text></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "It is one of the most reliable tricks in medicine. A dose of gas, or a push of a drug, and awareness switches off like a light. Hours later it switches back, the surgery a blank. Anesthetists do this hundreds of thousands of times a day, almost always without a hitch. It is routine. Yet ask exactly how the drug erases the mind, and the honest answer is that nobody knows. The off-switch works every time, but no one can point to it."
+    },
+    {
+      "type": "tangible",
+      "order": 4,
+      "content": {
+        "items": [
+          "Ether reached the operating room in 1846, two decades before surgeons began sterilizing their tools, and before anyone knew germs cause infection.",
+          "Today anesthesia is given for well over 200 million operations a year, on the order of seven every second somewhere in the world.",
+          "In all that time, and all those patients, no one has been able to write down exactly how the drugs switch awareness off."
+        ],
+        "visual_svg": "<svg viewBox='0 0 400 150' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='30' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Used every day since 1846</text><rect x='45' y='64' width='310' height='26' rx='13' stroke='currentColor' stroke-width='2' opacity='0.5'/><text x='200' y='81' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' text-anchor='middle' opacity='0.85'>180 years, in daily use</text><text x='48' y='112' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' text-anchor='start' opacity='0.7'>1846</text><text x='352' y='112' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' text-anchor='end' opacity='0.7'>2026</text><text x='200' y='132' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>still no agreed explanation</text></svg>"
+      }
+    },
+    {
+      "type": "how_we_know",
+      "order": 5,
+      "content": "None of this is guesswork on the anesthetist's part. Each drug has a measured potency, the dose at which half of patients stop responding to a cut, so the amount needed is known to a fine margin. During the operation the brain's electrical activity is watched, and deep anesthesia leaves a clear signature: the fast chatter of waking thought gives way to slow, sweeping waves. The state is real, gradable, and repeatable. What is missing is the layer below, the chain from molecule to blankness."
+    },
+    {
+      "type": "story",
+      "order": 7,
+      "content": {
+        "body": "On October 16, 1846, a Boston dentist named William Morton stood in a surgical theater at Massachusetts General Hospital. A year earlier, in the same room, a demonstration of nitrous oxide had failed, and the crowd had jeered “Humbug”. Morton had his patient breathe ether from a glass globe until the man slumped, unconscious. The surgeon, John Collins Warren, cut a tumor from his neck while he lay still and silent. Warren turned to the stunned room: “Gentlemen, this is no humbug.” Surgery changed that afternoon. The mystery it opened did not close. Nearly 180 years on, the drug that made painless surgery possible still has no agreed explanation.",
+        "key_figures": [
+          {
+            "name": "William T. G. Morton",
+            "role": "First to publicly demonstrate ether anesthesia",
+            "one_line": "The Boston dentist who, in 1846, put a patient to sleep with ether before a surgical crowd and launched modern anesthesia.",
+            "lifespan": "1819-1868",
+            "birth_year": 1819,
+            "featured": true
+          },
+          {
+            "name": "John Collins Warren",
+            "role": "Operated at the first ether demonstration",
+            "one_line": "The surgeon who removed a tumor from an anesthetized patient and told the room, “this is no humbug”.",
+            "lifespan": "1778-1856",
+            "birth_year": 1778,
+            "featured": false
+          }
+        ],
+        "image_url": "https://commons.wikimedia.org/wiki/Special:FilePath/The_First_Operation_Under_Ether_-_Robert_Hinckley.jpg",
+        "image_caption": "Robert Hinckley's later painting of the 1846 demonstration, with Morton giving ether and Warren about to operate.",
+        "image_attribution": "Robert C. Hinckley, “The First Operation Under Ether”, public domain (Wikimedia Commons)"
+      }
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "A century-old clue that never paid off",
+          "body": "In 1899 Hans Meyer noticed something clean. The better a substance dissolves in oil, the more potent it is as an anesthetic. The rule holds across a hundred-thousand-fold range of potency, from feeble gases to drugs far stronger, every one on the same line. For decades it looked like proof: anesthetics melt into the fatty membranes of nerve cells. Then, in 1984, two researchers showed the drugs also dim a firefly's glow, a reaction run by an enzyme with no membrane at all. So they grab proteins, not fat. The clean line turned into a deeper puzzle.",
+          "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><g stroke='currentColor' stroke-width='2' opacity='0.5' stroke-linecap='round'><line x1='60' y1='250' x2='360' y2='250'/><line x1='60' y1='250' x2='60' y2='50'/></g><line x1='85' y1='232' x2='335' y2='72' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><g fill='currentColor'><circle cx='95' cy='226' r='4'/><circle cx='160' cy='188' r='4'/><circle cx='225' cy='150' r='4'/><circle cx='290' cy='110' r='4'/><circle cx='330' cy='76' r='4'/></g><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='12' opacity='0.75'><text x='103' y='243' text-anchor='start'>weak gases</text><text x='326' y='64' text-anchor='end'>potent drugs</text></g><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7'><text x='215' y='283' text-anchor='middle'>dissolves in fat</text><text x='26' y='150' text-anchor='middle' transform='rotate(-90 26 150)'>anesthetic potency</text></g></svg>"
+        },
+        {
+          "title": "A gas that reacts with nothing still puts you under",
+          "body": "Xenon makes the puzzle sharper. It is a noble gas, so inert it forms almost no chemical bonds, the last element you would expect to touch a brain. Breathe enough of it, though, and you go under as surely as with any drug. A few countries use it in surgery. Xenon and propofol could hardly be more different, an inert atom versus a designed molecule, and they act on different receptors. Both still end in the same blank unconsciousness."
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "The gap is bigger than a missing detail. To switch consciousness off cleanly, on schedule, and back on again is to hold the thing in your hand, and still we cannot say what we are holding. That is really a statement about consciousness itself. We have a reliable dial for it and no theory of what the dial turns. Some researchers now run the process backward, watching the brain reassemble awareness as the drug clears, hoping the way out shows the machinery the way in hid. For now the oldest tool in the operating room is also one of its deepest unsolved problems."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "What is unusual about general anesthesia after nearly 180 years of use?",
+          "options": [
+            "It only works on some patients",
+            "It has become far less safe over time",
+            "Doctors still cannot fully explain how it abolishes consciousness",
+            "It was only recently approved for surgery"
+          ],
+          "answer_index": 2,
+          "explanation": "Anesthesia is administered with great precision and reliability, yet the deep question of how the drugs actually switch off awareness remains unsettled."
+        },
+        {
+          "question": "The post calls anesthesia real, gradable, and repeatable. What is still missing?",
+          "options": [
+            "A way to measure how deep the anesthesia is",
+            "The step-by-step link from the drug to the loss of consciousness",
+            "Proof that patients are actually unconscious",
+            "Any agreement that the drugs work"
+          ],
+          "answer_index": 1,
+          "explanation": "Potency and depth are measured well, and the effect is repeatable. What has no settled account is the chain of events from the molecule to the blank mind."
+        },
+        {
+          "question": "What did the Meyer-Overton correlation originally seem to show?",
+          "options": [
+            "That anesthetics dissolve into the fatty membranes of nerve cells",
+            "That anesthetics work only in the cold",
+            "That every anesthetic shares one receptor",
+            "That potency has nothing to do with chemistry"
+          ],
+          "answer_index": 0,
+          "explanation": "Potency tracked how well a drug dissolves in fat, which suggested anesthetics simply melt into cell membranes. Later work showed they act on proteins instead."
+        },
+        {
+          "question": "Why did it matter that anesthetics dim a firefly's light-making enzyme?",
+          "options": [
+            "It proved anesthetics are toxic",
+            "The enzyme has no membrane, so the drugs must be acting on proteins",
+            "It showed that fireflies feel pain",
+            "It revealed the exact mechanism at last"
+          ],
+          "answer_index": 1,
+          "explanation": "A pure enzyme in a test tube has no fatty membrane to melt into. If anesthetics still block it, they must be binding proteins directly, upending the membrane picture."
+        },
+        {
+          "question": "Why does xenon deepen the mystery of how anesthesia works?",
+          "options": [
+            "It is the most dangerous anesthetic known",
+            "It works only when mixed with other drugs",
+            "It is a chemically inert gas that still causes unconsciousness",
+            "It has no effect on the brain at all"
+          ],
+          "answer_index": 2,
+          "explanation": "A noble gas barely reacts with anything, yet breathing it produces full anesthesia. That a nearly inert atom and a complex drug reach the same end resists any single explanation."
+        },
+        {
+          "question": "What broader point does the post draw from anesthesia?",
+          "options": [
+            "Consciousness is now fully understood",
+            "Surgery would be safer without anesthesia",
+            "Only gases can affect consciousness",
+            "We can switch consciousness off reliably without understanding it"
+          ],
+          "answer_index": 3,
+          "explanation": "Anesthesia gives medicine a dependable control over consciousness while offering no theory of what that control acts on, which makes it a tool for probing the mind itself."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "Anesthesia just puts the brain to sleep, so of course we understand it.",
+          "reality": "Anesthesia is not sleep. The brain's activity under it looks nothing like natural sleep, and a sleeping person wakes to a shout while an anesthetized one does not."
+        },
+        {
+          "myth": "There is one anesthetic and one way it works.",
+          "reality": "The drugs range from a noble gas to synthetic molecules, and they act on several different receptors. No single target accounts for all of them."
+        },
+        {
+          "myth": "If the mechanism is unknown, anesthesia must be unsafe or unpredictable.",
+          "reality": "Potency and depth are measured closely, and serious problems are rare. A tool can be used reliably long before it is understood, and anesthesia is a clear case."
+        }
+      ]
+    },
+    {
+      "type": "open_questions",
+      "order": 12,
+      "content": {
+        "body": "The open question is not whether anesthesia works, but where and how it takes consciousness apart. The leading idea is that the drugs jam the crosstalk between brain regions, so the parts can no longer combine into one experience. Which circuits are essential is unclear. So is whether every anesthetic converges on the same last step. The best way to find out may be to watch a mind switch back on.",
+        "items": [
+          "Do all anesthetics disable consciousness through one common bottleneck?",
+          "Which brain networks must go quiet for awareness to vanish?",
+          "Does consciousness fade gradually, or collapse past a threshold?"
+        ]
+      }
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Brown EN, Lydic R, Schiff ND. General anesthesia, sleep, and coma. New England Journal of Medicine 2010;363:2638-2650",
+          "url": "https://www.nejm.org/doi/full/10.1056/NEJMra0808281",
+          "type": "paper"
+        },
+        {
+          "label": "Weiser TG, et al. An estimation of the global volume of surgery: a modelling strategy based on available data. Lancet 2008;372:139-144",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/18582931/",
+          "type": "paper"
+        },
+        {
+          "label": "Franks NP, Lieb WR. Do general anaesthetics act by competitive binding to specific receptors? Nature 1984;310:599-601",
+          "url": "https://www.nature.com/articles/310599a0",
+          "type": "paper"
+        },
+        {
+          "label": "Ether Dome (the 1846 first public demonstration of ether anesthesia)",
+          "url": "https://en.wikipedia.org/wiki/Ether_Dome",
+          "type": "wikipedia"
+        }
+      ]
+    }
+  ]
+}
