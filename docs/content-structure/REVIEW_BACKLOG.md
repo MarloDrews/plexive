@@ -191,3 +191,45 @@ sources. Each entry stays `open` until a researcher confirms or resolves it.
 - finding: the 90-Ma landscape cannot be photographed and the Nature core photos are copyrighted, so zero images is defensible. A CC photo of the icebreaker Polarstern (named in the story) exists but is only tangential to the fact itself. Marginal, not required.
 - needs: fresh research to locate, license-verify, and attribute a freely licensed Polarstern photo if a fitting one is wanted (do not invent a URL). Deferred because it requires a new sourced asset, not a mechanical edit.
 - added: 2026-07-04, 2026-07-04-c
+
+### gps-needs-relativity
+- status: open
+- finding: story key_figure Albert Einstein is featured:true with no image_url, and the post carries no sourced image at all. Abundant public-domain Einstein portraits exist on Wikimedia; a portrait would give the abstract subject a human anchor per IMAGE_STANDARD. (Distinct from the 2026-07-03-d NTS-2 satellite-image item.)
+- needs: fresh research to locate, license-verify, and attribute a public-domain portrait genuinely of Einstein (do not invent a URL). Deferred because it requires a new sourced asset, not a mechanical edit.
+- added: 2026-07-05, 2026-07-05-a
+
+### mycorrhizal-networks
+- status: open
+- finding: story.body says "The cover of Nature that carried her result called it the wood wide web." The 1997 Simard paper and the "wood wide web" coinage are real, but whether the phrase literally appeared on the printed cover (vs the accompanying News & Views / coverage) is unverified.
+- needs: a source check confirming the phrase was on the actual Nature cover; if unconfirmed, soften to "the Nature issue." Deferred because verifying cover placement requires a live source lookup, not a mechanical edit; the post is unchanged.
+- added: 2026-07-05, 2026-07-05-a
+
+### peak-end-rule
+- status: open
+- finding: story key_figure Daniel Kahneman is featured:true with no image_url. A CC BY-SA portrait plausibly exists on Wikimedia (acceptable license per IMAGE_STANDARD) and would give the abstract subject a human anchor.
+- needs: fresh research to locate, license-verify, and attribute a freely licensed portrait genuinely of Kahneman (do not invent a URL). Deferred because it requires a new sourced asset, not a mechanical edit.
+- added: 2026-07-05, 2026-07-05-a
+
+### scurvy-reopens-old-wounds
+- status: open
+- finding: story key_figure Albert Szent-Gyorgyi is featured:true with no image_url (James Lind in the same list carries a verified Wellcome portrait). He died in 1986, so a cleanly PD/CC portrait may genuinely not exist (Nobel Foundation photos are copyrighted). Low priority. (Distinct from the 2026-07-04-c citrus-image item.)
+- needs: fresh research to locate, license-verify, and attribute a freely licensed portrait genuinely of Szent-Gyorgyi, if one exists (do not invent a URL). Deferred because it requires a new sourced asset, not a mechanical edit.
+- added: 2026-07-05, 2026-07-05-a
+
+### spiders-balloon-on-the-electric-field
+- status: open
+- finding: story key_figure Charles Darwin (1809-1882) is featured:true with no image_url. Abundant PD portraits exist on Wikimedia; one would anchor the story section. (Distinct from the 2026-07-04-c ballooning-spider photo item.)
+- needs: fresh research to locate, license-verify, and attribute a public-domain portrait genuinely of Darwin (do not invent a URL). Deferred because it requires a new sourced asset, not a mechanical edit.
+- added: 2026-07-05, 2026-07-05-a
+
+### trees-grow-from-air
+- status: open
+- finding: story key_figure Nicolas-Theodore de Saussure (1767-1845) is featured:true with no image_url (Van Helmont in the same list carries a verified Wellcome portrait). A PD portrait or engraving plausibly exists on Wikimedia.
+- needs: fresh research to locate, license-verify, and attribute a public-domain portrait genuinely of de Saussure (do not invent a URL). Deferred because it requires a new sourced asset, not a mechanical edit.
+- added: 2026-07-05, 2026-07-05-a
+
+### when-the-mediterranean-dried-up
+- status: open
+- finding: story key_figure William B. F. Ryan is not featured and omits birth_year. The person-list base shape permits omitting birth_year only if genuinely unknown; Ryan's birth year is on record, so the person-edge match key could be supplied.
+- needs: a source check to find and verify William B. F. Ryan's birth_year (a small new sourced fact). Deferred because supplying it requires fresh research; not changed in the post to avoid inventing a date.
+- added: 2026-07-05, 2026-07-05-a
