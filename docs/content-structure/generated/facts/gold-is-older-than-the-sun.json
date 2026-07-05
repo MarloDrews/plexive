@@ -94,7 +94,7 @@
         },
         {
           "title": "The alchemists were chasing a real reaction",
-          "body": "The alchemists were not entirely wrong. Turning one element into another is real, and gold and mercury are next-door neighbors on the periodic table. Fire a neutron at the right mercury isotope and it decays into ordinary, stable gold, the transformation they spent lifetimes hunting. The catch is the ledger. Making gold this way runs to something like a trillion times what the metal sells for. The dream came true and stayed useless."
+          "body": "The alchemists were not entirely wrong. Turning one element into another is real, and gold and mercury are next-door neighbors on the periodic table. Fire a neutron at the right mercury isotope and it decays into ordinary, stable gold, the transformation they spent lifetimes hunting. The catch is the ledger. Making gold this way costs vastly more than the metal is ever worth. The dream came true and stayed useless."
         }
       ]
     },
@@ -166,7 +166,7 @@
           "question": "A friend says the gold in their ring was made in the Sun. What is the best correction?",
           "options": [
             "The Sun is far too young to have made it",
-            "No star fuses gold; it takes an r-process cataclysm, and this gold predates the Sun",
+            "No star fuses gold. It takes an r-process cataclysm, and this gold predates the Sun",
             "The Sun makes only silver, never gold",
             "Gold is not made by stars at all, only deep inside planets"
           ],
