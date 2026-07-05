@@ -24,7 +24,7 @@
     "headline": "Vitamin D is a hormone your body makes from sunlight. The “vitamin” label is a century-old naming accident.",
     "teasers": [
       "Why it ended up with the wrong name",
-      "Why almost no food actually contains it",
+      "Almost no food actually contains it",
       "It works the way estrogen and cortisol do"
     ],
     "post_difficulty": 2
@@ -45,7 +45,7 @@
     {
       "type": "surprises",
       "order": 3,
-      "content": "Here are two true sentences. Vitamin D is a vitamin. Vitamin D is a hormone. A vitamin is something your body cannot build and so has to eat. Your skin builds vitamin D whenever sunlight hits it, no diet required. And once built, it does what hormones do: it travels in the blood and switches genes on and off in tissues far from where it was made. By any honest definition, it is a hormone that ended up filed under vitamins."
+      "content": "Here are two true sentences. Vitamin D is a vitamin. Vitamin D is a hormone. A vitamin is something your body cannot build and so has to eat. Your skin builds vitamin D whenever sunlight hits it, no diet required. And once built, it does what hormones do: it travels in the blood and switches genes on and off in tissues far from where it was made."
     },
     {
       "type": "tangible",
@@ -68,7 +68,7 @@
       "type": "story",
       "order": 7,
       "content": {
-        "body": "In 1919 the English researcher Edward Mellanby gave dogs rickets on a controlled diet, then cured them with cod liver oil. Something in the oil was building healthy bone. Three years later in Baltimore, Elmer McCollum and Marguerite Davis heated and aerated the oil until its known vitamin A was destroyed, yet it still cured rickets. Whatever was left had to be new. A, B, and C were already taken, so the new factor became vitamin D. Nobody yet knew the body could make it, or that it acted as a hormone. Within a few years Harry Steenbock showed that ultraviolet light on skin or food produced the same factor, the first sign that sunlight, not supper, was the real source. The full hormone story came together decades later. By then the name had set.",
+        "body": "In 1919 the English researcher Edward Mellanby gave dogs rickets on a controlled diet, then cured them with cod liver oil. Something in the oil was building healthy bone. Three years later in Baltimore, Elmer McCollum and Marguerite Davis heated and aerated the oil until its known vitamin A was destroyed, yet it still cured rickets. Whatever was left had to be new. A, B, and C were already taken, so the new factor became vitamin D. Nobody yet knew the body could make it, or that it acted as a hormone. Within a few years Harry Steenbock showed that ultraviolet light on skin or food produced the same factor, the first sign that sunlight, not supper, was the real source. The full hormone story came together decades later, long after the name had set.",
         "key_figures": [
           {
             "name": "Edward Mellanby",
@@ -104,7 +104,7 @@
       "content": [
         {
           "title": "It is chemically a steroid, kin to your sex hormones",
-          "body": "Strip vitamin D down to its chemistry and you find a steroid. It sits on the same four-ring cholesterol skeleton as cortisol, estrogen, and testosterone, with one ring snapped open. That broken ring is what the “seco” in secosteroid means. So the capsule sold beside the vitamin C is, in structure, a close cousin of the hormones behind puberty and the stress response. The body builds both from one raw material. That material is cholesterol, in your skin."
+          "body": "Strip vitamin D down to its chemistry and you find a steroid. It sits on the same four-ring cholesterol skeleton as cortisol, estrogen, and testosterone, with one ring snapped open. That broken ring is what the “seco” in secosteroid means. So the capsule sold beside the vitamin C is, in structure, a close cousin of the hormones behind puberty and the stress response. The body builds both from one raw material: cholesterol, in your skin."
         },
         {
           "title": "Almost no food naturally carries it",
@@ -113,14 +113,14 @@
         },
         {
           "title": "The wrong word still steers how we use it",
-          "body": "The label shapes the response. Because it is a “vitamin”, the reflex is to swallow more, and the shelves are full of high-dose pills. But a hormone is not something the body hoards more of to feel better. Past a point, extra vitamin D pushes blood calcium too high and starts doing harm. For most healthy people, a short spell of sun and ordinary fortified food already covers the need. Treating a hormone like a nutrient is how a deficiency fix turned into an over-supplement habit."
+          "body": "The label shapes the response. Because it is a “vitamin”, the reflex is to swallow more, and the shelves are full of high-dose pills. But a hormone is not something the body hoards more of to feel better. Past a point, extra vitamin D pushes blood calcium too high and starts doing harm. For most healthy people, a short spell of sun and ordinary fortified food already covers the need."
         }
       ]
     },
     {
       "type": "bigger_picture",
       "order": 9,
-      "content": "The mislabel is more than a curiosity. Vitamin D is the visible tip of an endocrine system that runs on sunlight, one the body evolved long before anyone thought to name it. Science met it as a cure for rickets and filed it with the nutrients, and the label stuck even after the biology turned out to be something else. That is the ordinary way of it: a name records what was known when it was coined, and it tends to last. The vitamin D system was doing hormone work long before we understood it, and it still carries the old name."
+      "content": "The mislabel is more than a curiosity. Vitamin D is the visible tip of an endocrine system that runs on sunlight, one the body evolved long before anyone thought to name it. Science met it as a cure for rickets and filed it with the nutrients, and the label stuck even after the biology turned out to be something else."
     },
     {
       "type": "quiz",
