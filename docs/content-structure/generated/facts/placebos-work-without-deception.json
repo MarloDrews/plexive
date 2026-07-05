@@ -1,0 +1,233 @@
+{
+  "tags": [
+    "psychology",
+    "medicine",
+    "neuroscience"
+  ],
+  "connections": [
+    {
+      "format": "questions",
+      "ref": {
+        "title": "Should doctors be allowed to prescribe placebos?"
+      },
+      "featured": true
+    },
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Classical conditioning"
+      },
+      "featured": false
+    },
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "The nocebo effect"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "Patients told their pills were placebos still improved, and by clearly more than patients given nothing at all.",
+    "teasers": [
+      "What happens when you tell patients the truth",
+      "The real painkiller hidden in a sugar pill",
+      "Why it soothes symptoms it cannot cure"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "Patients told their pills were placebos still improved, and by clearly more than patients given nothing at all."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 0 400 220' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='28' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Adequate relief in the 2010 IBS trial</text><line x1='60' y1='180' x2='355' y2='180' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><rect x='100' y='79' width='90' height='101' rx='8' fill='var(--accent)' fill-opacity='0.16' stroke='var(--accent)' stroke-width='2.5'/><rect x='230' y='120' width='90' height='60' rx='8' stroke='currentColor' stroke-width='2' opacity='0.6'/><text x='145' y='70' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='16' font-weight='700' text-anchor='middle'>59%</text><text x='275' y='111' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='15' font-weight='700' text-anchor='middle'>35%</text><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle'><text x='145' y='200'>Open-label placebo</text><text x='275' y='200'>No treatment</text></g></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "A placebo is not, by itself, a deception. We tend to assume the trick is the whole point, that a sugar pill only works because the patient thinks it is real medicine. In 2010 a Harvard team tested that assumption directly. They gave patients with irritable bowel syndrome a bottle labeled “placebo”, and told them plainly the pills were inert, mere sugar. The patients improved anyway, and clearly more than those given nothing. Whatever is doing the work, it survives being told the truth."
+    },
+    {
+      "type": "story",
+      "order": 7,
+      "content": {
+        "body": "For most of the twentieth century, the placebo was medicine's embarrassment: the response you had to subtract to prove a drug worked. It was assumed to run on belief, and therefore on deception. Ted Kaptchuk, who ran Harvard's placebo research, doubted that last step. His 2010 trial handed patients a pill bottle marked “placebo” and a short, honest speech: these are sugar pills, they have helped others through mind-body effects, take them faithfully. The patients got better. There was already a clue that the effect was physical. Back in 1978, researchers had shown that naloxone, a drug that blocks the body's own opioids, also blocks placebo pain relief. The pill was inert, but the response it triggered was not.",
+        "key_figures": [
+          {
+            "name": "Ted Kaptchuk",
+            "role": "Ran the open-label placebo trial",
+            "one_line": "His 2010 study gave patients pills openly labeled as placebos, and found they still worked.",
+            "lifespan": "born 1947",
+            "birth_year": 1947,
+            "featured": true
+          }
+        ],
+        "visual_svg": "<svg viewBox='0 0 400 180' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='28' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>How the placebo earned scientific respect</text><line x1='55' y1='100' x2='360' y2='100' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><path d='M360 100 l-12 -6 m12 6 l-12 6' stroke='currentColor' stroke-width='2' opacity='0.5' stroke-linecap='round' stroke-linejoin='round'/><line x1='95' y1='92' x2='95' y2='108' stroke='currentColor' stroke-width='2' opacity='0.6' stroke-linecap='round'/><line x1='250' y1='92' x2='250' y2='108' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><circle cx='95' cy='100' r='4.5' fill='currentColor'/><circle cx='250' cy='100' r='5.5' fill='var(--accent)'/><text x='95' y='84' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle'>brain's own opioids</text><text x='250' y='84' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>no deception needed</text><text x='95' y='126' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' opacity='0.75' text-anchor='middle'>1978</text><text x='250' y='126' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' font-weight='700' text-anchor='middle'>2010</text><text x='356' y='126' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='end'>and since</text></svg>"
+      }
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "Placebos ease symptoms without touching the disease",
+          "body": "Here is the sharp limit. A placebo can change how a symptom feels, but it does not cure the thing underneath. In a 2011 asthma trial, a placebo inhaler made patients feel about as improved as a real drug, roughly 45% against 50%. But when the doctors measured the airways, only the real drug opened them; the placebo left lung function no better than no treatment. Placebos work on the felt world of pain, nausea, and fatigue. They do not shrink a tumor or clear an infection.",
+          "visual_svg": "<svg viewBox='0 0 400 185' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='24' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Real drug vs placebo inhaler in asthma</text><text x='104' y='48' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.7' text-anchor='start'>How patients felt (%)</text><rect x='104' y='56' width='233' height='18' rx='6' stroke='currentColor' stroke-width='2' opacity='0.6'/><rect x='104' y='80' width='209' height='18' rx='6' fill='var(--accent)' fill-opacity='0.16' stroke='var(--accent)' stroke-width='2.5'/><text x='104' y='112' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.7' text-anchor='start'>Lung function, FEV1 (%)</text><rect x='104' y='120' width='93' height='18' rx='6' stroke='currentColor' stroke-width='2' opacity='0.6'/><rect x='104' y='144' width='33' height='18' rx='6' fill='var(--accent)' fill-opacity='0.16' stroke='var(--accent)' stroke-width='2.5'/><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.8' text-anchor='end'><text x='99' y='69'>drug</text><text x='99' y='93'>placebo</text><text x='99' y='133'>drug</text><text x='99' y='157'>placebo</text></g><g fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' font-weight='700' text-anchor='start'><text x='343' y='69'>50</text><text x='319' y='93' fill='var(--accent)'>45</text><text x='203' y='133'>20</text><text x='143' y='157' fill='var(--accent)'>7</text></g></svg>"
+        },
+        {
+          "title": "The relief runs on the brain's own drugs",
+          "body": "Expectation is more than a mood. It is a physical signal. Anticipating relief prompts the brain to release its own painkillers, the endogenous opioids. The clearest proof is old: in 1978, Jon Levine and colleagues gave people naloxone, the drug that reverses a heroin overdose by blocking opioid receptors, and it made placebo pain relief fade. Block the body's own opioids, and you block the placebo. The pharmacy was inside the patient all along."
+        },
+        {
+          "title": "The ritual is part of the medicine",
+          "body": "The effect scales with the theater around it. A pill helps more than nothing, an injection more than a pill, and a warm, confident doctor more than a curt one. It runs in reverse, too. Warn someone that a treatment may cause nausea and more of them will feel sick, a real effect with its own name, the “nocebo”. Even the open-label pills came with a ritual: a labeled bottle, an explanation, and the instruction to take them faithfully."
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "The placebo effect is not nothing pretending to be something. It is the measurable result of expectation, attention, and the ritual of being cared for, and it runs on the brain chemistry a real drug would borrow. That reframes the “inactive” control at the heart of every drug trial. It was never inactive; it was the effect of meaning, quietly at work in every patient, including the ones on the real drug. The open-label result hints that we may not need the lie to keep it. What we need is the ritual, and the honest hope that comes with it."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "What did Kaptchuk's 2010 trial show by giving patients pills openly labeled as placebos?",
+          "options": [
+            "The patients were not really sick to begin with",
+            "Patients still improved more than those given no treatment, without being deceived",
+            "The pills secretly contained a small dose of an active drug",
+            "Deception is required for a placebo to work at all"
+          ],
+          "answer_index": 1,
+          "explanation": "The patients knew the pills were inert and improved anyway, more than a matched no-treatment group. That is the point: the effect did not depend on believing the pill was real medicine."
+        },
+        {
+          "question": "What did the 1978 naloxone experiment reveal about placebo pain relief?",
+          "options": [
+            "It is purely imaginary and leaves no physical trace",
+            "It works only in people who already trust doctors",
+            "It depends on the body's own opioids, which naloxone can block",
+            "It is more powerful than morphine"
+          ],
+          "answer_index": 2,
+          "explanation": "Naloxone blocks opioid receptors, and it made placebo relief fade. That showed the relief was carried by the body's own opioids, not simply imagined."
+        },
+        {
+          "question": "In the asthma study, how did a placebo inhaler compare with a real drug?",
+          "options": [
+            "It matched the drug on both symptoms and lung function",
+            "It did nothing at all, even to how patients felt",
+            "It opened the airways but did not ease symptoms",
+            "Patients felt about as improved, but only the real drug opened the airways"
+          ],
+          "answer_index": 3,
+          "explanation": "The placebo changed how patients felt as much as the drug did, yet only the drug improved measured lung function. Placebos move the felt symptom, not always the underlying disease."
+        },
+        {
+          "question": "Based on how placebos work, which of these is a placebo LEAST likely to help?",
+          "options": [
+            "The pain of an injury",
+            "Nausea during chemotherapy",
+            "A bacterial infection that needs antibiotics",
+            "Ongoing fatigue"
+          ],
+          "answer_index": 2,
+          "explanation": "Placebos act on felt symptoms like pain, nausea, and fatigue. They cannot kill the bacteria behind an infection, so relying on one there is dangerous."
+        },
+        {
+          "question": "Why do warnings that a drug may cause nausea sometimes make more patients feel sick?",
+          "options": [
+            "Negative expectation can produce real symptoms, the nocebo effect",
+            "The warning proves the drug is actually dangerous",
+            "The patients are pretending to be ill",
+            "The drug always causes nausea regardless of expectation"
+          ],
+          "answer_index": 0,
+          "explanation": "Expectation cuts both ways. Anticipating harm can trigger genuine symptoms, the flip side of the placebo known as the nocebo effect."
+        },
+        {
+          "question": "What does the placebo effect imply about the inactive control group in a drug trial?",
+          "options": [
+            "It has no real effect and can be ignored",
+            "It is secretly receiving an active drug",
+            "It always improves more than the treatment group",
+            "Its improvement reflects a real effect of expectation and care"
+          ],
+          "answer_index": 3,
+          "explanation": "The control group is not doing nothing. Expectation and the ritual of care produce real, measurable improvement, which is exactly why trials have to measure against it."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "A placebo response means the person was never really sick.",
+          "reality": "The improvements are real and often physical. Placebos shift measured pain, nausea, and stress hormones, and brain scans show real activity behind the relief. The sickness was genuine, and so is the effect."
+        },
+        {
+          "myth": "Placebos can cure real diseases.",
+          "reality": "They treat symptoms, not their causes. A placebo can ease the pain of cancer or the breathlessness of asthma, but it will not shrink a tumor or open a blocked airway. Mistaking one for the other is how people get hurt by delaying real treatment."
+        },
+        {
+          "myth": "If you know it is a placebo, the effect disappears.",
+          "reality": "That is the assumption the 2010 trial broke. Told outright the pills were inert, patients still improved more than those given nothing. Knowing seems to weaken the effect far less than expected, as long as the ritual and a plausible reason remain."
+        }
+      ]
+    },
+    {
+      "type": "open_questions",
+      "order": 12,
+      "content": {
+        "body": "Open-label placebos work, but nobody fully knows why. If the patient is not fooled, what exactly does the ritual switch on, and how? The responses also vary widely from person to person, and researchers are still sorting out who responds and whether it can be predicted. And there is the practical question of how, or whether, to build honest placebos into ordinary care.",
+        "items": [
+          "If deception is gone, what does an open-label placebo actually switch on in the brain?",
+          "Why do some people respond strongly to placebos and others barely at all?",
+          "Can honest placebos be used in real clinics without eroding trust in medicine?"
+        ]
+      }
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Kaptchuk TJ et al. Placebos without Deception: A Randomized Controlled Trial in Irritable Bowel Syndrome. PLoS ONE 2010;5(12):e15591",
+          "url": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0015591",
+          "type": "paper"
+        },
+        {
+          "label": "Wechsler ME et al. Active Albuterol or Placebo, Sham Acupuncture, or No Intervention in Asthma. NEJM 2011;365:119-126",
+          "url": "https://www.nejm.org/doi/full/10.1056/NEJMoa1103319",
+          "type": "paper"
+        },
+        {
+          "label": "Levine JD, Gordon NC, Fields HL. The mechanism of placebo analgesia. Lancet 1978;2(8091):654-657",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/80579/",
+          "type": "paper"
+        },
+        {
+          "label": "Placebo (concept overview)",
+          "url": "https://en.wikipedia.org/wiki/Placebo",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Harvard Program in Placebo Studies and the Therapeutic Encounter",
+          "url": "https://programinplacebostudies.org/",
+          "type": "article"
+        }
+      ]
+    }
+  ]
+}
