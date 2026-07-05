@@ -25,7 +25,7 @@
     "headline": "The crust on a seared steak is flavor, not a seal: seared meat loses as much moisture as unseared, or more.",
     "teasers": [
       "What that sizzle in the pan really is",
-      "The kitchen rule nobody tested for 175 years",
+      "The kitchen rule nobody thought to test for generations",
       "Why the crust is worth it anyway"
     ],
     "post_difficulty": 1
@@ -95,7 +95,7 @@
     {
       "type": "bigger_picture",
       "order": 9,
-      "content": "A bad theory can survive for a long time when it gives good advice by accident. Searing does make a better steak, just not for the reason Liebig gave. The crust tastes wonderful, so every cook who seared and enjoyed the result took it as proof the juices had been locked in. The method worked. The explanation was wrong, and nobody checked for 175 years. Sear your steak. Do it for the flavor, and keep it juicy some other way."
+      "content": "A bad theory can survive for a long time when it gives good advice by accident. Searing does make a better steak, just not for the reason Liebig gave. The crust tastes wonderful, so every cook who seared and enjoyed the result took it as proof the juices had been locked in. The method worked. The explanation was wrong, and it went unchecked in kitchens for generations. Sear your steak. Do it for the flavor, and keep it juicy some other way."
     },
     {
       "type": "quiz",
@@ -199,7 +199,7 @@
         {
           "label": "McGee H. On Food and Cooking: The Science and Lore of the Kitchen (1984)",
           "url": "https://en.wikipedia.org/wiki/On_Food_and_Cooking",
-          "type": "book"
+          "type": "wikipedia"
         },
         {
           "label": "Justus von Liebig (the 1847 origin of the searing-seals-juices idea)",
