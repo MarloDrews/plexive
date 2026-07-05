@@ -133,7 +133,7 @@
           "question": "You hear a slow beating on a fifth from a well-tuned piano. What does it mean?",
           "options": [
             "The piano needs repair",
-            "The tuning is working as intended; the fifth is deliberately a touch flat",
+            "The tuning is working as intended, and the fifth is deliberately a touch flat",
             "Two strings for that note are broken",
             "Humidity in the room is bending the pitch"
           ],
@@ -208,7 +208,7 @@
           "type": "wikipedia"
         },
         {
-          "label": "Kyle Gann, An Introduction to Historical Tunings",
+          "label": "Kyle Gann, Just Intonation Explained",
           "url": "https://www.kylegann.com/tuning.html",
           "type": "article"
         },
