@@ -64,7 +64,7 @@
       "type": "story",
       "order": 7,
       "content": {
-        "body": "Ted Kaptchuk came to placebos from an odd direction. Trained in Chinese medicine rather than conventional medicine, he ran an acupuncture clinic for years before Harvard brought him in to study sham treatments. The received wisdom was firm. A placebo without deception was a contradiction, so no one had really tested it. Kaptchuk did. The 2010 result was strong enough that other groups took up the question. Open-label pills were tried against back pain, cancer fatigue, hay fever, and even depression. By 2021 a review of eleven trials found the effect holding up across the lot, medium to large.",
+        "body": "Ted Kaptchuk came to placebos from an odd direction. Trained in Chinese medicine rather than conventional medicine, he ran an acupuncture clinic for years before Harvard brought him in to study sham treatments. The received wisdom was firm. A placebo without deception was a contradiction, so no one had really tested it. Kaptchuk did. The 2010 result was strong enough that other groups took up the question.",
         "key_figures": [
           {
             "name": "Ted Kaptchuk",
@@ -84,12 +84,12 @@
       "content": [
         {
           "title": "The effect reaches well past IBS",
-          "body": "IBS was only the start. Open-label placebos have since been tested against chronic back pain, cancer-related fatigue, allergic rhinitis, and depression. Each trial kept a no-treatment group for comparison. In 2021 a review pooled eleven such trials. The combined effect was medium to large, the kind of size a real drug would be pleased with. Whatever this is, it is not a quirk of one gut condition.",
+          "body": "IBS was only the start. Open-label placebos have since been tested against chronic back pain, cancer-related fatigue, allergic rhinitis, and depression. Each trial kept a no-treatment group for comparison. In 2021 a review pooled eleven such trials. The combined effect was medium to large, the kind of size a real drug would be pleased with. One gut condition no longer explained it.",
           "visual_svg": "<svg viewBox='0 0 400 165' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='30' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Pooled effect across 11 trials</text><line x1='40' y1='120' x2='360' y2='120' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><g stroke='currentColor' stroke-width='1.5' opacity='0.5'><line x1='93' y1='113' x2='93' y2='127'/><line x1='173' y1='113' x2='173' y2='127'/><line x1='253' y1='113' x2='253' y2='127'/></g><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'><text x='93' y='146'>small</text><text x='173' y='146'>medium</text><text x='253' y='146'>large</text></g><rect x='210' y='108' width='43' height='24' rx='8' fill='var(--accent)' fill-opacity='0.22' stroke='var(--accent)' stroke-width='2'/><text x='232' y='97' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='15' font-weight='700' text-anchor='middle'>about 0.7</text></svg>"
         },
         {
           "title": "It only moves what a mind can move",
-          "body": "Read the outcomes closely and a limit shows. Every symptom that responds is one a person feels and reports: pain, fatigue, nausea, gut discomfort. None of them is a tumor. Open placebos do not shrink cancers, clear infections, or move a cholesterol number. They act on the felt side of illness and leave the disease itself untouched. That is also why the honesty stays safe: no one is steered off real medicine.",
+          "body": "Read the outcomes closely and a limit shows. Every symptom that responds is one a person feels and reports: pain, fatigue, nausea, gut discomfort. None of them is a tumor. Open placebos do not shrink cancers, clear infections, or move a cholesterol number. They act on the felt side of illness and leave the disease itself untouched.",
           "visual_svg": "<svg viewBox='0 0 400 230' xmlns='http://www.w3.org/2000/svg' fill='none'><line x1='200' y1='38' x2='200' y2='205' stroke='currentColor' stroke-width='1.5' opacity='0.3' stroke-dasharray='6 6'/><text x='105' y='44' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='700' text-anchor='middle'>Responds</text><text x='300' y='44' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='700' opacity='0.85' text-anchor='middle'>Untouched</text><g fill='var(--accent)'><circle cx='55' cy='80' r='4'/><circle cx='55' cy='114' r='4'/><circle cx='55' cy='148' r='4'/><circle cx='55' cy='182' r='4'/></g><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' text-anchor='start'><text x='70' y='85'>pain</text><text x='70' y='119'>fatigue</text><text x='70' y='153'>nausea</text><text x='70' y='187'>discomfort</text></g><g stroke='currentColor' stroke-width='2' opacity='0.5' stroke-linecap='round'><line x1='248' y1='96' x2='260' y2='96'/><line x1='248' y1='140' x2='260' y2='140'/><line x1='248' y1='184' x2='260' y2='184'/></g><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' opacity='0.7' text-anchor='start'><text x='270' y='101'>tumors</text><text x='270' y='145'>infections</text><text x='270' y='189'>cholesterol</text></g></svg>"
         }
       ]
@@ -177,7 +177,7 @@
       "content": [
         {
           "myth": "The placebo effect just means the patient was never really sick.",
-          "reality": "These patients had real, diagnosed symptoms, and a matched group with the same illness improved far less. Something changed; it was not imaginary sickness."
+          "reality": "These patients had real, diagnosed symptoms, and a matched group with the same illness improved far less. Their illness was genuine, and something about it measurably changed."
         },
         {
           "myth": "If you know it is a placebo, it cannot possibly work.",
@@ -193,7 +193,7 @@
       "type": "open_questions",
       "order": 12,
       "content": {
-        "body": "Nobody is sure why an honest placebo works. Two ideas compete. One says the body learns, like Pavlov's dogs, to answer the ritual of a pill after a lifetime of pills that did carry drugs. The other says a flicker of expectation survives being told the truth. Being cared for still signals that help is near. The trials catch the effect cleanly but cannot yet see the gears turning.",
+        "body": "Nobody is sure why an honest placebo works. Two ideas compete. One says the body learns, like Pavlov's dogs, to answer the ritual of a pill after a lifetime of pills that did carry drugs. The other says a flicker of expectation survives being told the truth. Being cared for still signals that help is near. The trials pin down the effect but not yet the mechanism behind it.",
         "items": [
           "Is it conditioning from a lifetime of real pills, or leftover expectation?",
           "How long does the benefit last, and does it fade with repetition?",
