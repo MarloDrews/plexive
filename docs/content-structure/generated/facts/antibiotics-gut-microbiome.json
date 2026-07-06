@@ -131,7 +131,7 @@
             "The survivors carry resistance genes and swap DNA with neighboring bacteria, enriching the gut's resistome",
             "Antibiotics create brand-new bacteria",
             "Resistance genes are destroyed by the drug",
-            "It cannot; resistance stays only in the target bacteria"
+            "It cannot. Resistance stays only in the target bacteria"
           ],
           "answer_index": 0,
           "explanation": "The bacteria left standing are the resistant ones. As the gut regrows it carries more resistance genes, and because gut microbes trade DNA freely, those genes spread to their neighbors."
