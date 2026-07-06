@@ -24,7 +24,7 @@
     "headline": "Lactic acid clears within an hour of exercise, yet the soreness it gets blamed for peaks 1 to 3 days later.",
     "teasers": [
       "Why the ache shows up a day too late",
-      "The half of every lift that actually hurts you",
+      "The half of every lift that hurts you",
       "Your body makes lactic acid even at rest"
     ],
     "post_difficulty": 2
@@ -45,7 +45,7 @@
     {
       "type": "surprises",
       "order": 3,
-      "content": "Lactic acid clears out of your muscles fast. Within about an hour of your last rep, blood lactate is back to its resting level. The soreness that has you wincing on the stairs shows up a full day later and peaks somewhere between 24 and 72 hours out. By the time it hurts, the lactic acid has been gone for a day or more. Whatever is making you sore, it cannot be a chemical that left before the pain arrived."
+      "content": "The soreness that has you wincing on the stairs turns up a full day after a hard workout, long after the lactic acid it gets blamed on has drained out of your muscles. Blood lactate is back to its resting level within about an hour of your last rep. The soreness peaks somewhere between 24 and 72 hours out. By the time it hurts, the lactic acid has been gone for a day or more. Whatever is making you sore, it cannot be a chemical that left before the pain arrived."
     },
     {
       "type": "how_we_know",
@@ -82,17 +82,17 @@
       "order": 8,
       "content": [
         {
-          "title": "The lowering is what wrecks you, not the lifting",
+          "title": "The lowering is what wrecks you",
           "body": "The damage that makes you sore comes mostly from one kind of work: contracting a muscle while it is being stretched. Lowering a heavy weight, running downhill, walking down stairs, each forces the muscle to act as a brake. Braking tears tiny gaps in the fibers. Over the next day or two the immune system moves in to clean up and rebuild, and that repair, not the workout itself, is what you feel. The delay is how long the repair takes."
         },
         {
-          "title": "Lactate is a fuel, not a waste product",
-          "body": "Lactate earned its bad name as the ash of hard exercise, the residue when muscles run short of oxygen. That picture is wrong. Your body makes lactate all the time, at rest and in motion, and then burns it. Working muscles pour it into the blood, and the heart, other muscles, and even the brain take it up for energy. George Brooks named this traffic the lactate shuttle. What people were told to flush out is one of the body's steadiest fuels.",
+          "title": "Lactate is a fuel, and the body runs on it",
+          "body": "Lactate earned its bad name as the ash of hard exercise, the residue when muscles run short of oxygen. That picture is wrong. Your body makes lactate all the time, at rest and in motion, and then burns it. Working muscles pour it into the blood, and the heart and other tissues take it up for energy. George Brooks named this traffic the lactate shuttle. What people were told to flush out is one of the body's steadiest fuels.",
           "visual_svg": "<svg viewBox='0 108 400 84' xmlns='http://www.w3.org/2000/svg' fill='none'><g stroke='currentColor' stroke-width='2.5'><rect x='16' y='120' width='104' height='54' rx='14'/><rect x='280' y='120' width='104' height='54' rx='14'/></g><rect x='148' y='120' width='104' height='54' rx='14' stroke='var(--accent)' stroke-width='2.5'/><g stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' opacity='0.55'><path d='M120 147 h28'/><path d='M148 147 l-12 -6 m12 6 l-12 6'/><path d='M252 147 h28'/><path d='M280 147 l-12 -6 m12 6 l-12 6'/></g><g font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' text-anchor='middle'><text x='68' y='152' fill='currentColor'>Muscle</text><text x='200' y='152' fill='var(--accent)'>Lactate</text><text x='332' y='152' fill='currentColor'>Heart, brain</text></g></svg>"
         },
         {
           "title": "Do it again and you barely feel it",
-          "body": "Here is a neat proof that soreness is damage, not a chemical. Do the same unfamiliar workout again a week later. You will be far less sore, sometimes hardly at all. This is the repeated-bout effect: the first session injures the muscle, and the repair leaves it tougher and better defended against the same stress. Lactate draining away within an hour could not build that kind of memory."
+          "body": "Here is a neat sign that the soreness comes from damage. Do the same unfamiliar workout again a week later. You will be far less sore, sometimes hardly at all. This is the repeated-bout effect: the first session injures the muscle, and the repair leaves it tougher and better defended against the same stress. Lactate draining away within an hour could not build that kind of memory."
         }
       ]
     },
@@ -187,7 +187,7 @@
         },
         {
           "myth": "Lactic acid is a useless waste product of tired muscles.",
-          "reality": "Lactate is a fuel. Muscles, the heart, and the brain burn it for energy around the clock, and it is made even at rest, not only when oxygen runs short."
+          "reality": "Lactate is a fuel. Tissues all over the body burn it for energy around the clock, and it is made even at rest, not only when oxygen runs short."
         }
       ]
     },
