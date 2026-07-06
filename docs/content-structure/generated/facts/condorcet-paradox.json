@@ -1,0 +1,240 @@
+{
+  "tags": [
+    "mathematics",
+    "decision-making",
+    "political-philosophy"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Arrow's impossibility theorem"
+      },
+      "featured": false
+    },
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Social choice theory"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "With 3 voters and 3 options, a majority can prefer A to B, B to C, and C to A, all at once.",
+    "teasers": [
+      "How the order of votes can choose the winner",
+      "Each voter is consistent. Why isn't the group?",
+      "The four dice with no best one"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "With 3 voters and 3 options, a majority can prefer A to B, B to C, and C to A, all at once."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 24 400 246' xmlns='http://www.w3.org/2000/svg' fill='none'><g stroke='currentColor' stroke-width='2.5'><circle cx='200' cy='70' r='42'/><circle cx='110' cy='215' r='42'/><circle cx='290' cy='215' r='42'/></g><g stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M168 108 Q120 140 96 178'/><path d='M96 178 l-3 -14 m3 14 l13 -6'/><path d='M152 230 Q200 250 248 230'/><path d='M248 230 l-13 -5 m13 5 l-2 14'/><path d='M304 178 Q280 140 232 108'/><path d='M232 108 l14 2 m-14 -2 l5 13'/></g><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='24' font-weight='700' text-anchor='middle'><text x='200' y='79'>A</text><text x='110' y='224'>B</text><text x='290' y='224'>C</text></g><g fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' font-weight='600' text-anchor='middle' opacity='0.85'><text x='120' y='140'>2-1</text><text x='200' y='266'>2-1</text><text x='280' y='140'>2-1</text></g></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "Give three people a ballot ranking three options, and let each rank them however they like, so long as they stay consistent. No one contradicts themselves. Then read off what the majority prefers. It can prefer A to B, prefer B to C, and prefer C to A. Both hold at once: every voter is coherent, and the group they sum to is not. The contradiction lives nowhere in particular. It appears only when you add them up."
+    },
+    {
+      "type": "how_we_know",
+      "order": 5,
+      "content": "You do not need data for this. Write down the three ballots and count the head-to-head races. A beats B on two ballots of the three, B beats C on two of the three, and C beats A on two of the three. No measurement enters, and no sampling error. The cycle is a fact of arithmetic. Condorcet proved it more than two centuries ago."
+    },
+    {
+      "type": "story",
+      "order": 7,
+      "content": {
+        "body": "Condorcet was a mathematician and a revolutionary, and in 1785 he set out to design a fair way for an assembly to vote. Working through the arithmetic, he hit the cycle: majorities that ran in a loop and crowned no winner. He published it, and for most of two centuries it sat as a curiosity, a quirk of one voting method that a cleverer method could surely dodge. Then in 1951 the economist Kenneth Arrow asked the harder question. Take any rule that turns a set of individual rankings into one group ranking, and ask it to meet only a few obviously fair conditions. Arrow proved no such rule exists. The cycle comes from the act of combining rankings, and every method inherits it, however it is designed.",
+        "key_figures": [
+          {
+            "name": "Nicolas de Condorcet",
+            "role": "First to find the cycle",
+            "one_line": "In 1785, while designing fair voting rules for an assembly, he showed that majority preferences can run in a loop with no winner.",
+            "lifespan": "1743-1794",
+            "birth_year": 1743,
+            "featured": true,
+            "image_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Nicolas_de_Condorcet.PNG",
+            "image_attribution": "Unknown artist, “Portrait of Nicolas de Condorcet”, public domain (Wikimedia Commons)"
+          },
+          {
+            "name": "Kenneth Arrow",
+            "role": "Proved it was unavoidable",
+            "one_line": "His 1951 impossibility theorem showed that no fair rule for combining rankings can escape the cycle Condorcet found.",
+            "lifespan": "1921-2017",
+            "birth_year": 1921,
+            "featured": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "Whoever sets the voting order can pick the winner",
+          "body": "The cycle hands real power to whoever sets the voting order. Suppose a committee decides by a series of pairwise votes, and one person controls the matchups. To make C win, pit A against B first, then send the winner against C. To make A win, start with B against C, then run A against the survivor. The order chose the winner. The voters never moved. Bodies with real amendment procedures run into exactly this.",
+          "visual_svg": "<svg viewBox='0 14 400 226' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='30' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Same votes, chosen order</text><line x1='200' y1='52' x2='200' y2='236' stroke='currentColor' stroke-width='1.5' opacity='0.3' stroke-dasharray='6 6'/><g font-family='var(--font-sans), system-ui, sans-serif' text-anchor='middle'><text x='104' y='66' fill='currentColor' font-size='14' font-weight='700'>Order 1</text><text x='296' y='66' fill='currentColor' font-size='14' font-weight='700'>Order 2</text></g><g stroke='currentColor' stroke-width='2'><rect x='54' y='78' width='100' height='36' rx='12'/><rect x='54' y='142' width='100' height='36' rx='12'/><rect x='246' y='78' width='100' height='36' rx='12'/><rect x='246' y='142' width='100' height='36' rx='12'/></g><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' text-anchor='middle'><text x='104' y='101'>A vs B</text><text x='104' y='165'>A vs C</text><text x='296' y='101'>B vs C</text><text x='296' y='165'>B vs A</text></g><g stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' opacity='0.55'><path d='M104 114 v18'/><path d='M104 132 l-5 -6 m5 6 l5 -6'/><path d='M296 114 v18'/><path d='M296 132 l-5 -6 m5 6 l5 -6'/></g><g font-family='var(--font-sans), system-ui, sans-serif' font-size='20' font-weight='700' text-anchor='middle' fill='var(--accent)'><text x='104' y='218'>C wins</text><text x='296' y='218'>A wins</text></g></svg>"
+        },
+        {
+          "title": "The same knot fits in a set of dice",
+          "body": "The same knot turns up in a set of four dice you can hold in your hand. Brad Efron built them in 1970: label them A, B, C, D and give their faces unusual numbers. A beats B about two rolls in three. B beats C two in three, C beats D two in three, and D beats A two in three. There is no best die. Let a friend pick first, and whatever they choose, you can pick one that beats it. Two rolls in three, every time."
+        },
+        {
+          "title": "It is not a vanishing edge case",
+          "body": "How likely a cycle is depends on how many options are in play. With 3 candidates and random preferences, a large electorate cycles about 8.8% of the time. Add candidates and the chance climbs fast. By 5 candidates it is roughly one in four, and by 10 it is near half. That is common enough to matter. A cycle is a live possibility in any real vote with more than two options.",
+          "visual_svg": "<svg viewBox='0 12 400 284' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='26' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Chance of a cycle, 25 voters</text><line x1='40' y1='240' x2='366' y2='240' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><rect x='68' y='208' width='44' height='32' rx='6' fill='currentColor' opacity='0.5'/><rect x='148' y='149' width='44' height='91' rx='6' fill='currentColor' opacity='0.5'/><rect x='228' y='106' width='44' height='134' rx='6' fill='currentColor' opacity='0.5'/><rect x='308' y='62' width='44' height='178' rx='6' fill='var(--accent)'/><g font-family='var(--font-mono), ui-monospace, monospace' font-size='13' font-weight='700' text-anchor='middle'><text x='90' y='200' fill='currentColor'>8%</text><text x='170' y='141' fill='currentColor'>24%</text><text x='250' y='98' fill='currentColor'>36%</text><text x='330' y='54' fill='var(--accent)'>48%</text></g><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle'><text x='90' y='262'>3</text><text x='170' y='262'>5</text><text x='250' y='262'>7</text><text x='330' y='262'>10</text></g><text x='200' y='286' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.65' text-anchor='middle'>number of candidates</text></svg>"
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "None of this means voting fails, or that majorities do not matter. It means there is not always a fact of the matter about what the group prefers. Sometimes it has to be built. When individual rankings clash in the cyclic pattern, no single group order stays faithful to all of them, and each method settles the tie by a rule of its own. So a fair election's winner is partly a product of the counting rule. Change the rule and the winner can change, though not one voter moved."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "What is the heart of Condorcet's paradox?",
+          "options": [
+            "Individual voters hold contradictory preferences",
+            "The group's majority preference can cycle even when every voter's own ranking is consistent",
+            "Majority rule always ends in a tie",
+            "Adding more voters removes any clear winner"
+          ],
+          "answer_index": 1,
+          "explanation": "Each voter is perfectly transitive. It is the majority, formed by adding them up, that can run in a loop, preferring A to B, B to C, and C to A."
+        },
+        {
+          "question": "Why can whoever schedules a series of pairwise votes often decide the winner?",
+          "options": [
+            "They can add extra votes for their favorite",
+            "They can bar candidates they dislike",
+            "With a cyclic majority, different orders eliminate different options, so the running order sets the outcome",
+            "Voters change their minds between rounds"
+          ],
+          "answer_index": 2,
+          "explanation": "In a cycle each option beats one rival and loses to another. Pit two options early and the survivor loses to the one held back, so the agenda-setter can steer the result without changing a single vote."
+        },
+        {
+          "question": "What did Arrow's 1951 theorem establish beyond Condorcet's single example?",
+          "options": [
+            "No voting rule turning individual rankings into a group ranking can meet a few basic fairness conditions at once",
+            "Majority rule is the only fair system",
+            "The paradox disappears once there are enough candidates",
+            "Ranked voting is always better than approval voting"
+          ],
+          "answer_index": 0,
+          "explanation": "Condorcet found the cycle in one method. Arrow showed the trouble is general: every rule that combines rankings must break at least one reasonable fairness condition, so no method fully escapes it."
+        },
+        {
+          "question": "A Condorcet winner beats every other option head-to-head. When does one fail to exist?",
+          "options": [
+            "Whenever there are more than two voters",
+            "Whenever the voters are perfectly rational",
+            "Only in elections that end in a tie",
+            "When the majority preferences form a cycle, so no option beats all the others"
+          ],
+          "answer_index": 3,
+          "explanation": "Often a candidate does beat all rivals one-on-one, and that is a strong result. But when the majorities cycle, every option loses to some other, so no Condorcet winner exists."
+        },
+        {
+          "question": "How do the intransitive dice, where A beats B beats C beats D beats A, relate to the paradox?",
+          "options": [
+            "They prove that dice are unfair",
+            "They show a beats relation need not be transitive, the same structure as cyclic majorities",
+            "They are unrelated, since dice are pure chance",
+            "They show the first player always wins"
+          ],
+          "answer_index": 1,
+          "explanation": "Beating something is not like being taller: it need not carry through a chain. The dice make the cyclic beats pattern physical, which is exactly what majority preferences can do."
+        },
+        {
+          "question": "If changing only the counting rule can change the winner while no voter changes their mind, what does that imply?",
+          "options": [
+            "The election was rigged",
+            "The voters were irrational",
+            "The group's preference is partly produced by the rule, not read straight off the voters",
+            "Majority rule can never produce a winner"
+          ],
+          "answer_index": 2,
+          "explanation": "When preferences cycle, no single group ranking honors everyone, so the rule has to settle it. The outcome then depends on the method as well as the ballots, with no dishonesty involved."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "The paradox shows that voters are irrational.",
+          "reality": "Every voter in it is perfectly consistent. The incoherence lives in the sum, so it is a feature of majority rule, not a fault in the people."
+        },
+        {
+          "myth": "There is always a candidate who beats each rival one-on-one.",
+          "reality": "Often there is, and that Condorcet winner is a clean outcome. When the majorities cycle, though, every option loses to another, and none exists."
+        },
+        {
+          "myth": "Cyclic majorities are a vanishing edge case.",
+          "reality": "With 3 candidates and random preferences the chance is already several percent, and it climbs steeply as options are added, passing 40% by around 10 candidates."
+        }
+      ]
+    },
+    {
+      "type": "open_questions",
+      "order": 12,
+      "content": {
+        "body": "Nobody knows how often real elections actually cycle. It depends entirely on how a population's preferences happen to be distributed, and there is still no agreed model for that. A purely random model gives a few percent for three candidates. Real electorates, whose preferences line up along shared dimensions, probably cycle much less. After Arrow, the sharper question is which imperfect rule is least bad.",
+        "items": [
+          "How common are cyclic majorities in real elections, once preferences are correlated rather than random?",
+          "Given that no rule can be perfect, which fairness conditions are worth giving up, and for which?"
+        ]
+      }
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Condorcet paradox",
+          "url": "https://en.wikipedia.org/wiki/Condorcet_paradox",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Marquis de Condorcet",
+          "url": "https://en.wikipedia.org/wiki/Marquis_de_Condorcet",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Arrow's Theorem (Stanford Encyclopedia of Philosophy)",
+          "url": "https://plato.stanford.edu/entries/arrows-theorem/",
+          "type": "article"
+        },
+        {
+          "label": "Intransitive dice (Efron's dice)",
+          "url": "https://en.wikipedia.org/wiki/Intransitive_dice",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Condorcet's Paradox, Atlas of Public Management",
+          "url": "https://www.atlas101.ca/pm/concepts/condorcets-paradox/",
+          "type": "article"
+        }
+      ]
+    }
+  ]
+}
