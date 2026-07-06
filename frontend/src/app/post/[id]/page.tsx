@@ -96,16 +96,30 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
   const isClosingRef       = useRef(false)
 
   useEffect(() => {
+    // Reset per-id so a client-side post-to-post navigation (Read Next uses
+    // next/link now) shows the loading state for the new post rather than the
+    // previous one, and a slow response for the old id can never overwrite the
+    // new post: the stale flag discards it. usePostLike/useComments re-key on
+    // Number(id) and reset themselves.
+    let stale = false
+    setPost(null)
+    setNotFound(false)
     apiFetch(`/api/posts/${id}`)
       .then((r) => (r.ok ? r.json() : null))
       .then((data: Post | null) => {
+        if (stale) return
         if (!data) {
           setNotFound(true)
           return
         }
         setPost(data)
       })
-      .catch(() => setNotFound(true))
+      .catch(() => {
+        if (!stale) setNotFound(true)
+      })
+    return () => {
+      stale = true
+    }
   }, [id])
 
   const { status: readStatus, start: startReading, stop: stopReading, toggle: toggleReading } =
