@@ -85,12 +85,12 @@
       "content": [
         {
           "title": "Whoever sets the voting order can pick the winner",
-          "body": "The cycle hands real power to whoever sets the voting order. Suppose a committee decides by a series of pairwise votes, and one person controls the matchups. To make C win, pit A against B first, then send the winner against C. To make A win, start with B against C, then run A against the survivor. The order chose the winner. The voters never moved. Bodies with real amendment procedures run into exactly this.",
+          "body": "The cycle hands real power to whoever sets the voting order. Suppose a committee decides by a series of pairwise votes, and one person controls the matchups. To make C win, pit A against B first, then send the winner against C. To make A win, start with B against C, then run A against the survivor. Not a single vote changed between the two runs. The schedule alone picked the winner. Bodies with real amendment procedures run into exactly this.",
           "visual_svg": "<svg viewBox='0 14 400 226' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='30' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Same votes, chosen order</text><line x1='200' y1='52' x2='200' y2='236' stroke='currentColor' stroke-width='1.5' opacity='0.3' stroke-dasharray='6 6'/><g font-family='var(--font-sans), system-ui, sans-serif' text-anchor='middle'><text x='104' y='66' fill='currentColor' font-size='14' font-weight='700'>Order 1</text><text x='296' y='66' fill='currentColor' font-size='14' font-weight='700'>Order 2</text></g><g stroke='currentColor' stroke-width='2'><rect x='54' y='78' width='100' height='36' rx='12'/><rect x='54' y='142' width='100' height='36' rx='12'/><rect x='246' y='78' width='100' height='36' rx='12'/><rect x='246' y='142' width='100' height='36' rx='12'/></g><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' text-anchor='middle'><text x='104' y='101'>A vs B</text><text x='104' y='165'>A vs C</text><text x='296' y='101'>B vs C</text><text x='296' y='165'>B vs A</text></g><g stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' opacity='0.55'><path d='M104 114 v18'/><path d='M104 132 l-5 -6 m5 6 l5 -6'/><path d='M296 114 v18'/><path d='M296 132 l-5 -6 m5 6 l5 -6'/></g><g font-family='var(--font-sans), system-ui, sans-serif' font-size='20' font-weight='700' text-anchor='middle' fill='var(--accent)'><text x='104' y='218'>C wins</text><text x='296' y='218'>A wins</text></g></svg>"
         },
         {
           "title": "The same knot fits in a set of dice",
-          "body": "The same knot turns up in a set of four dice you can hold in your hand. Brad Efron built them in 1970: label them A, B, C, D and give their faces unusual numbers. A beats B about two rolls in three. B beats C two in three, C beats D two in three, and D beats A two in three. There is no best die. Let a friend pick first, and whatever they choose, you can pick one that beats it. Two rolls in three, every time."
+          "body": "It shows up again in a set of four dice you can hold in your hand. Brad Efron built them in 1970: label them A, B, C, D and give their faces unusual numbers. A beats B about two rolls in three. B beats C two in three, C beats D two in three, and D beats A two in three. There is no best die. Let a friend pick first, and whatever they choose, you can pick one that beats it."
         },
         {
           "title": "It is not a vanishing edge case",
@@ -102,7 +102,7 @@
     {
       "type": "bigger_picture",
       "order": 9,
-      "content": "None of this means voting fails, or that majorities do not matter. It means there is not always a fact of the matter about what the group prefers. Sometimes it has to be built. When individual rankings clash in the cyclic pattern, no single group order stays faithful to all of them, and each method settles the tie by a rule of its own. So a fair election's winner is partly a product of the counting rule. Change the rule and the winner can change, though not one voter moved."
+      "content": "None of this means voting fails, or that majorities do not matter. It means there is not always a fact of the matter about what the group prefers. Sometimes it has to be built. When individual rankings clash in the cyclic pattern, no single group order stays faithful to all of them, and each method settles the tie by a rule of its own. So a fair election's winner is partly a product of the counting rule. Change the rule and, with the very same ballots, the winner can change."
     },
     {
       "type": "quiz",
