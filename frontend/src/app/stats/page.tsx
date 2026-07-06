@@ -134,10 +134,8 @@ interface MyStats {
   my_streak: { current_days: number; best_days: number }
   my_milestones: { label: string; achieved: boolean; achieved_at: string | null }[]
   my_likes_given_by_format: { format: string; count: number }[]
-  my_elo: {
-    global_rating: number | null
-    formats: Record<string, { rating: number; answered_count: number }>
-  }
+  // One unified rating; the backend no longer sends a per-format breakdown.
+  my_elo: { global_rating: number | null }
   my_quiz: { answered: number; correct: number; accuracy: number }
 }
 
@@ -1485,9 +1483,7 @@ function MyStatsTab({
     </div>
   )
 
-  // 1b. Knowledge score (Elo)
-  const eloFormats = Object.entries(data.my_elo.formats)
-  const eloMax = Math.max(1600, ...eloFormats.map(([, d]) => d.rating))
+  // 1b. Knowledge score (Elo) — one unified rating, no per-format bars.
   const knowledgeBlock = (
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-3 gap-3">
@@ -1495,31 +1491,9 @@ function MyStatsTab({
         <StatCard label="Answered" value={data.my_quiz.answered} />
         <StatCard label="Accuracy" value={`${data.my_quiz.accuracy}%`} />
       </div>
-      {eloFormats.length === 0 ? (
-        <p className="text-ink-muted text-xs">
-          Answer post quizzes to build your score. Correct answers raise it, wrong answers lower it.
-        </p>
-      ) : (
-        <div className="flex flex-col gap-2">
-          {eloFormats.map(([fmt, d]) => (
-            <div key={fmt} className="flex items-center gap-3">
-              <span className="w-20 shrink-0 text-xs text-ink-dim capitalize">{fmt}</span>
-              <div className="flex-1 h-2 bg-white/[0.08] rounded-full overflow-hidden">
-                <div
-                  className="h-full rounded-full"
-                  style={{
-                    width: `${Math.min(100, (d.rating / eloMax) * 100)}%`,
-                    backgroundColor: FORMAT_COLORS[fmt] ?? DEFAULT_COLOR,
-                  }}
-                />
-              </div>
-              <span className="w-12 shrink-0 text-right text-xs text-ink-body font-semibold">
-                {Math.round(d.rating)}
-              </span>
-            </div>
-          ))}
-        </div>
-      )}
+      <p className="text-ink-muted text-xs">
+        Answer post quizzes to build your score. Correct answers raise it, wrong answers lower it.
+      </p>
     </div>
   )
 
@@ -2173,11 +2147,12 @@ function MyStatsTab({
 
 // --- FriendsTab ---
 
+// One unified rating per user; the backend no longer sends a per-format
+// breakdown, so the comparison sections built on it are gone too.
 interface FriendStats {
   username: string
   is_verified: number
   global_rating: number | null
-  formats: Record<string, { rating: number; answered_count: number }>
   post_count: number
   follower_count: number
   following_count: number
@@ -2201,7 +2176,7 @@ function FriendsTab({ username, verifiedLevel }: { username: string; verifiedLev
       try {
         const [followingData, myEloData, myProfileData]: [
           { username: string; is_verified: number }[],
-          { global_rating: number | null; formats: Record<string, { rating: number; answered_count: number }> },
+          { global_rating: number | null },
           { post_count: number; follower_count: number; following_count: number },
         ] = await Promise.all([
           apiFetch(`/api/users/${username}/following`).then(r => r.json()),
@@ -2219,7 +2194,6 @@ function FriendsTab({ username, verifiedLevel }: { username: string; verifiedLev
           username,
           is_verified: verifiedLevel,
           global_rating: myEloData.global_rating,
-          formats: myEloData.formats,
           post_count: myProfileData.post_count,
           follower_count: myProfileData.follower_count,
           following_count: myProfileData.following_count,
@@ -2230,7 +2204,7 @@ function FriendsTab({ username, verifiedLevel }: { username: string; verifiedLev
             followingData.slice(0, 12).map(async (u) => {
               try {
                 const [eloData, profileData]: [
-                  { global_rating: number | null; formats: Record<string, { rating: number; answered_count: number }> },
+                  { global_rating: number | null },
                   { post_count: number; follower_count: number; following_count: number },
                 ] = await Promise.all([
                   apiFetch(`/api/users/${u.username}/elo`).then(r => r.json()),
@@ -2240,7 +2214,6 @@ function FriendsTab({ username, verifiedLevel }: { username: string; verifiedLev
                   username: u.username,
                   is_verified: u.is_verified,
                   global_rating: eloData.global_rating,
-                  formats: eloData.formats,
                   post_count: profileData.post_count,
                   follower_count: profileData.follower_count,
                   following_count: profileData.following_count,
@@ -2389,242 +2362,11 @@ function FriendsTab({ username, verifiedLevel }: { username: string; verifiedLev
     </ResponsiveContainer>
   )
 
-  // ------- 2. Per-format Elo -------
+  // Sections 2-5 (Per-format Elo, Quiz Activity, Elo Efficiency, Knowledge
+  // Breadth) were removed with the per-format elo contract: they computed
+  // entirely from the always-empty formats dict the backend no longer sends.
 
-  const radarData = FORMAT_IDS.map(fmt => {
-    const myRating = me?.formats[fmt]?.rating ?? 0
-    const friendRatings = friends.map(f => f.formats[fmt]?.rating ?? 0).filter(r => r > 0)
-    const friendAvg = friendRatings.length > 0 ? Math.round(friendRatings.reduce((a, b) => a + b, 0) / friendRatings.length) : 0
-    return { subject: fmt, me: Math.round(myRating), friends_avg: friendAvg }
-  }).filter(d => d.me > 0 || d.friends_avg > 0)
-
-  const radarChart = radarData.length === 0 ? <NoData /> : (
-    <ResponsiveContainer width="100%" height={240}>
-      <RadarChart data={radarData}>
-        <PolarGrid stroke="rgba(200,200,200,0.07)" />
-        <PolarAngleAxis dataKey="subject" tick={{ fill: "#8a8a8a", fontSize: 11 }} />
-        <PolarRadiusAxis tick={{ fill: "#8a8a8a", fontSize: 9 }} />
-        <Radar dataKey="me" name="You" stroke="#7c6fff" fill="#7c6fff" fillOpacity={0.3} />
-        <Radar dataKey="friends_avg" name="Friends avg" stroke={DEFAULT_COLOR} fill={DEFAULT_COLOR} fillOpacity={0.15} />
-        <Legend wrapperStyle={{ fontSize: 11, color: "#8a8a8a" }} />
-        <Tooltip {...TT} />
-      </RadarChart>
-    </ResponsiveContainer>
-  )
-
-  const perFormatGroupedBarData = FORMAT_IDS.map(fmt => {
-    const myRating = me?.formats[fmt]?.rating ?? 0
-    const friendRatings = friends.map(f => f.formats[fmt]?.rating ?? 0).filter(r => r > 0)
-    const friendAvg = friendRatings.length > 0 ? Math.round(friendRatings.reduce((a, b) => a + b, 0) / friendRatings.length) : 0
-    return { format: fmt, you: Math.round(myRating), friends_avg: friendAvg }
-  }).filter(d => d.you > 0 || d.friends_avg > 0)
-
-  const perFormatGroupedBar = perFormatGroupedBarData.length === 0 ? <NoData /> : (
-    <ResponsiveContainer width="100%" height={240}>
-      <BarChart data={perFormatGroupedBarData} margin={{ bottom: 20 }}>
-        <CartesianGrid {...GRID} />
-        <XAxis dataKey="format" tick={{ ...AXIS, angle: -30, textAnchor: "end" }} interval={0} />
-        <YAxis tick={AXIS} />
-        <Tooltip {...TT} />
-        <Legend wrapperStyle={{ fontSize: 11, color: "#8a8a8a" }} />
-        <Bar dataKey="you" name="You" fill="#7c6fff" radius={[2, 2, 0, 0]} />
-        <Bar dataKey="friends_avg" name="Friends avg" fill={DEFAULT_COLOR} radius={[2, 2, 0, 0]} />
-      </BarChart>
-    </ResponsiveContainer>
-  )
-
-  const formatLeadershipGrid = (
-    <div className="grid grid-cols-2 gap-3">
-      {FORMAT_IDS.map(fmt => {
-        const inFmt = participants.filter(p => (p.formats[fmt]?.rating ?? 0) > 0).sort((a, b) => (b.formats[fmt]?.rating ?? 0) - (a.formats[fmt]?.rating ?? 0))
-        if (inFmt.length === 0) return null
-        const top = inFmt[0]
-        return (
-          <div key={fmt} className="bg-white/[0.04] rounded-xl p-3">
-            <div className="text-[10px] font-semibold mb-2" style={{ color: FORMAT_COLORS[fmt] }}>{fmt}</div>
-            {inFmt.slice(0, 3).map((p, i) => (
-              <div key={p.username} className="flex items-center gap-1.5 mb-1">
-                <div className="h-1.5 rounded-sm shrink-0" style={{ width: `${Math.max(((p.formats[fmt]?.rating ?? 0) / (top.formats[fmt]?.rating || 1)) * 56, 4)}px`, backgroundColor: p.username === username ? "#7c6fff" : FORMAT_COLORS[fmt], opacity: 1 - i * 0.25 }} />
-                <span className={`text-[9px] truncate ${p.username === username ? "text-lamp font-semibold" : "text-ink-dim"}`}>{shortName(p.username, username)}</span>
-                <span className="text-ink-muted text-[9px] ml-auto">{Math.round(p.formats[fmt]?.rating ?? 0)}</span>
-              </div>
-            ))}
-          </div>
-        )
-      }).filter(Boolean)}
-    </div>
-  )
-
-  // ------- 3. Quiz Activity (answered counts) -------
-
-  const totalAnswers = (p: FriendStats) => Object.values(p.formats).reduce((s, f) => s + (f.answered_count ?? 0), 0)
-
-  const quizSorted = sorted(totalAnswers)
-
-  const quizHorizBar = (
-    <ResponsiveContainer width="100%" height={Math.max(200, quizSorted.length * 36)}>
-      <BarChart data={quizSorted.map(p => ({ name: shortName(p.username, username), answers: totalAnswers(p), fill: p.username === username ? "#7c6fff" : DEFAULT_COLOR }))} layout="vertical" margin={{ left: 72 }}>
-        <CartesianGrid {...GRID} horizontal={false} />
-        <XAxis type="number" tick={AXIS} />
-        <YAxis dataKey="name" type="category" tick={AXIS} width={68} />
-        <Tooltip {...TT} formatter={(v: unknown) => [String(v), "Answers"]} />
-        <Bar dataKey="answers" radius={[0, 3, 3, 0]}>
-          {quizSorted.map((p, i) => <Cell key={i} fill={p.username === username ? "#7c6fff" : DEFAULT_COLOR} />)}
-        </Bar>
-      </BarChart>
-    </ResponsiveContainer>
-  )
-
-  const quizByFormatGrouped = FORMAT_IDS.map(fmt => {
-    const myCount = me?.formats[fmt]?.answered_count ?? 0
-    const friendAvg = (() => {
-      const counts = friends.map(f => f.formats[fmt]?.answered_count ?? 0).filter(c => c > 0)
-      return counts.length > 0 ? Math.round(counts.reduce((a, b) => a + b, 0) / counts.length) : 0
-    })()
-    return { format: fmt, you: myCount, friends_avg: friendAvg }
-  }).filter(d => d.you > 0 || d.friends_avg > 0)
-
-  const quizByFormatBar = quizByFormatGrouped.length === 0 ? <NoData /> : (
-    <ResponsiveContainer width="100%" height={240}>
-      <BarChart data={quizByFormatGrouped} margin={{ bottom: 20 }}>
-        <CartesianGrid {...GRID} />
-        <XAxis dataKey="format" tick={{ ...AXIS, angle: -30, textAnchor: "end" }} interval={0} />
-        <YAxis tick={AXIS} />
-        <Tooltip {...TT} formatter={(v: unknown) => [String(v), "Answers"]} />
-        <Legend wrapperStyle={{ fontSize: 11, color: "#8a8a8a" }} />
-        <Bar dataKey="you" name="You" fill="#7c6fff" radius={[2, 2, 0, 0]} />
-        <Bar dataKey="friends_avg" name="Friends avg" fill={DEFAULT_COLOR} radius={[2, 2, 0, 0]} />
-      </BarChart>
-    </ResponsiveContainer>
-  )
-
-  const quizRadar = (() => {
-    const data = FORMAT_IDS.map(fmt => {
-      const myCount = me?.formats[fmt]?.answered_count ?? 0
-      const friendAvg = (() => {
-        const counts = friends.map(f => f.formats[fmt]?.answered_count ?? 0).filter(c => c > 0)
-        return counts.length > 0 ? Math.round(counts.reduce((a, b) => a + b, 0) / counts.length) : 0
-      })()
-      return { subject: fmt, you: myCount, friends_avg: friendAvg }
-    }).filter(d => d.you > 0 || d.friends_avg > 0)
-    if (data.length === 0) return <NoData />
-    return (
-      <ResponsiveContainer width="100%" height={240}>
-        <RadarChart data={data}>
-          <PolarGrid stroke="rgba(200,200,200,0.07)" />
-          <PolarAngleAxis dataKey="subject" tick={{ fill: "#8a8a8a", fontSize: 11 }} />
-          <PolarRadiusAxis tick={{ fill: "#8a8a8a", fontSize: 9 }} />
-          <Radar dataKey="you" name="You" stroke="#7c6fff" fill="#7c6fff" fillOpacity={0.3} />
-          <Radar dataKey="friends_avg" name="Friends avg" stroke={DEFAULT_COLOR} fill={DEFAULT_COLOR} fillOpacity={0.15} />
-          <Legend wrapperStyle={{ fontSize: 11, color: "#8a8a8a" }} />
-          <Tooltip {...TT} />
-        </RadarChart>
-      </ResponsiveContainer>
-    )
-  })()
-
-  // ------- 4. Elo Efficiency (Elo per answer — measures how much value each quiz gives) -------
-
-  const eloEfficiency = (p: FriendStats): number => {
-    const total = totalAnswers(p)
-    return total > 0 && p.global_rating !== null ? Math.round((p.global_rating / total) * 10) / 10 : 0
-  }
-
-  const effSorted = sorted(eloEfficiency)
-
-  const effHorizBar = (
-    <ResponsiveContainer width="100%" height={Math.max(200, effSorted.length * 36)}>
-      <BarChart data={effSorted.map(p => ({ name: shortName(p.username, username), eff: eloEfficiency(p), fill: p.username === username ? "#7c6fff" : DEFAULT_COLOR }))} layout="vertical" margin={{ left: 72 }}>
-        <CartesianGrid {...GRID} horizontal={false} />
-        <XAxis type="number" tick={AXIS} />
-        <YAxis dataKey="name" type="category" tick={AXIS} width={68} />
-        <Tooltip {...TT} formatter={(v: unknown) => [String(v), "Elo / answer"]} />
-        <Bar dataKey="eff" radius={[0, 3, 3, 0]}>
-          {effSorted.map((p, i) => <Cell key={i} fill={p.username === username ? "#7c6fff" : DEFAULT_COLOR} />)}
-        </Bar>
-      </BarChart>
-    </ResponsiveContainer>
-  )
-
-  const effTable = (
-    <div className="overflow-x-auto overscroll-x-contain">
-      <table className="w-full text-xs">
-        <thead>
-          <tr className="text-ink-muted border-b border-edge">
-            <th className="text-left pb-2 pr-3">#</th>
-            <th className="text-left pb-2 pr-3">User</th>
-            <th className="text-right pb-2 pr-3">Global Elo</th>
-            <th className="text-right pb-2 pr-3">Answers</th>
-            <th className="text-right pb-2">Elo/ans</th>
-          </tr>
-        </thead>
-        <tbody>
-          {effSorted.map((p, i) => (
-            <tr key={p.username} className="border-b border-edge">
-              <td className="py-2 pr-3 text-ink-muted">{i + 1}</td>
-              <td className="py-2 pr-3">
-                <span className={p.username === username ? "text-lamp font-semibold" : "text-ink"}>{shortName(p.username, username)}</span>
-              </td>
-              <td className="py-2 pr-3 text-right text-ink-body font-mono">{p.global_rating !== null ? Math.round(p.global_rating) : "—"}</td>
-              <td className="py-2 pr-3 text-right text-ink-body font-mono">{totalAnswers(p)}</td>
-              <td className="py-2 text-right font-mono" style={{ color: p.username === username ? "#7c6fff" : "#c4c8e0" }}>{eloEfficiency(p)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  )
-
-  // ------- 5. Knowledge Breadth (how many formats each person has answered) -------
-
-  const breadth = (p: FriendStats) => Object.values(p.formats).filter(f => (f.answered_count ?? 0) > 0).length
-
-  const breadthSorted = sorted(breadth)
-
-  const breadthBars = (
-    <div className="flex flex-col gap-3">
-      {breadthSorted.map(p => (
-        <div key={p.username} className="flex items-center gap-3">
-          <span className={`w-20 shrink-0 text-xs truncate ${p.username === username ? "text-lamp font-semibold" : "text-ink-dim"}`}>{shortName(p.username, username)}</span>
-          <div className="flex gap-0.5">
-            {FORMAT_IDS.map(fmt => {
-              const hasAnswers = (p.formats[fmt]?.answered_count ?? 0) > 0
-              return (
-                <div key={fmt} className="w-5 h-5 rounded-sm flex items-center justify-center" style={{ backgroundColor: hasAnswers ? FORMAT_COLORS[fmt] + "55" : "#1a1a1a", border: `1px solid ${hasAnswers ? FORMAT_COLORS[fmt] + "80" : "#222222"}` }} title={fmt}>
-                  {hasAnswers && <span className="text-[7px] font-bold" style={{ color: FORMAT_COLORS[fmt] }}>{fmt[0].toUpperCase()}</span>}
-                </div>
-              )
-            })}
-          </div>
-          <span className="ml-auto text-xs text-ink-body font-mono">{breadth(p)}/{FORMAT_IDS.length}</span>
-        </div>
-      ))}
-    </div>
-  )
-
-  const breadthDonut = (() => {
-    const data = [
-      { name: "You", value: breadth(me), fill: "#7c6fff" },
-      { name: "Friends avg", value: friends.length > 0 ? Math.round(friends.reduce((s, f) => s + breadth(f), 0) / friends.length) : 0, fill: DEFAULT_COLOR },
-    ].filter(d => d.value > 0)
-    if (data.length === 0) return <NoData />
-    return (
-      <div className="flex flex-col items-center gap-3">
-        <ResponsiveContainer width="100%" height={180}>
-          <PieChart>
-            <Pie data={data} dataKey="value" nameKey="name" innerRadius="45%" outerRadius="70%" paddingAngle={3} startAngle={90} endAngle={-270}>
-              {data.map(d => <Cell key={d.name} fill={d.fill} />)}
-            </Pie>
-            <Tooltip {...TT} />
-            <Legend formatter={(v: string) => <span style={{ color: "#8a8a8a", fontSize: 11 }}>{v}</span>} />
-          </PieChart>
-        </ResponsiveContainer>
-        <p className="text-ink-muted text-xs text-center">Formats explored (out of {FORMAT_IDS.length})</p>
-      </div>
-    )
-  })()
-
-  // ------- 6. Content (post count) -------
+  // ------- 2. Content (post count) -------
 
   const postSorted = sorted(p => p.post_count)
 
@@ -2680,7 +2422,7 @@ function FriendsTab({ username, verifiedLevel }: { username: string; verifiedLev
     </div>
   )
 
-  // ------- 7. Social graph (followers) -------
+  // ------- 3. Social graph (followers) -------
 
   const followerSorted = sorted(p => p.follower_count)
 
@@ -2712,25 +2454,20 @@ function FriendsTab({ username, verifiedLevel }: { username: string; verifiedLev
     </ResponsiveContainer>
   )
 
-  // ------- 8. Overview mini-cards -------
+  // ------- 4. Overview mini-cards -------
 
   const overviewCards = (() => {
     const myEloVal = me?.global_rating
-    const myAnswers = totalAnswers(me)
     const friendElos = friends.map(f => f.global_rating).filter((r): r is number => r !== null)
     const friendAvgElo = friendElos.length > 0 ? Math.round(friendElos.reduce((a, b) => a + b, 0) / friendElos.length) : null
-    const friendAvgAnswers = friends.length > 0 ? Math.round(friends.reduce((s, f) => s + totalAnswers(f), 0) / friends.length) : 0
     const friendAvgPosts = friends.length > 0 ? Math.round(friends.reduce((s, f) => s + f.post_count, 0) / friends.length) : 0
     return (
       <div className="grid grid-cols-2 gap-3">
         <StatCard label="Your Global Elo" value={myEloVal !== null ? Math.round(myEloVal ?? 0) : "—"} />
         <StatCard label="Friends Avg Elo" value={friendAvgElo !== null ? friendAvgElo : "—"} />
-        <StatCard label="Your Quiz Answers" value={myAnswers} />
-        <StatCard label="Friends Avg Answers" value={friendAvgAnswers} />
         <StatCard label="Your Posts" value={me?.post_count ?? 0} />
         <StatCard label="Friends Avg Posts" value={friendAvgPosts} />
         <StatCard label="Friends Following" value={friends.length} />
-        <StatCard label="Your Breadth" value={`${breadth(me)}/${FORMAT_IDS.length}`} />
       </div>
     )
   })()
@@ -2751,44 +2488,6 @@ function FriendsTab({ username, verifiedLevel }: { username: string; verifiedLev
           { label: "Horizontal bar", component: eloHorizBar },
           { label: "Table", component: eloTable },
           { label: "Scatter", component: eloScatter },
-        ]}
-      />
-
-      {/* Per-format Elo */}
-      <CategorySection
-        title="Per-format Elo"
-        charts={[
-          { label: "Radar", component: radarChart },
-          { label: "Grouped bar", component: perFormatGroupedBar },
-          { label: "Format leaders", component: formatLeadershipGrid },
-        ]}
-      />
-
-      {/* Quiz Activity */}
-      <CategorySection
-        title="Quiz Activity"
-        charts={[
-          { label: "Total answers", component: quizHorizBar },
-          { label: "By format (bar)", component: quizByFormatBar },
-          { label: "By format (radar)", component: quizRadar },
-        ]}
-      />
-
-      {/* Elo Efficiency */}
-      <CategorySection
-        title="Knowledge Efficiency (Elo per Answer)"
-        charts={[
-          { label: "Horizontal bar", component: effHorizBar },
-          { label: "Table", component: effTable },
-        ]}
-      />
-
-      {/* Knowledge Breadth */}
-      <CategorySection
-        title="Knowledge Breadth (Formats Explored)"
-        charts={[
-          { label: "Format grid", component: breadthBars },
-          { label: "Donut", component: breadthDonut },
         ]}
       />
 

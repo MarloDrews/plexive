@@ -10,11 +10,11 @@ import BottomNav from "@/components/BottomNav"
 import VerifiedBadge from "@/components/VerifiedBadge"
 import Avatar from "@/components/Avatar"
 import FollowListSheet, { type ListUser } from "@/components/FollowListSheet"
-import { formatStyle } from "@/lib/formats"
 
+// The knowledge score is one unified rating; the backend no longer sends a
+// per-format breakdown.
 interface EloData {
   global_rating: number | null
-  formats: Record<string, { rating: number; answered_count: number }>
 }
 
 export default function ProfilePage() {
@@ -334,18 +334,6 @@ export default function ProfilePage() {
               {elo?.global_rating ?? "—"}
             </p>
           </div>
-          {elo && Object.keys(elo.formats).length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-3">
-              {Object.entries(elo.formats).map(([fmt, data]) => {
-                const style = formatStyle(fmt)
-                return (
-                  <span key={fmt} className={`text-xs rounded-full px-2.5 py-1 bg-white/[0.06] ${style.text}`}>
-                    {style.label} {Math.round(data.rating)}
-                  </span>
-                )
-              })}
-            </div>
-          )}
         </div>
 
         {/* My content */}
