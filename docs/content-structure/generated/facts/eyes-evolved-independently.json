@@ -124,7 +124,7 @@
     {
       "type": "bigger_picture",
       "order": 9,
-      "content": "This turns the eye from a lucky accident into something nearer to an inevitability. Light is everywhere. Any lineage with cells that react to it sits at the foot of a slope that runs uphill toward an eye, and natural selection climbs that slope whenever the climb pays off. Different lineages take different routes up. An octopus and a human reach the same camera, each wired back to front from the other. Image-forming eyes reach only about four of the roughly 33 animal phyla. But three of them (the molluscs, the arthropods, and the chordates that include us) hold some 96% of all animal species. The animals that took over the living world are the ones that learned to see."
+      "content": "This turns the eye from a lucky accident into something nearer to an inevitability. Light is everywhere. Any lineage with cells that react to it sits at the foot of a slope that runs uphill toward an eye, and natural selection climbs that slope whenever the climb pays off. Different lineages take different routes up. An octopus and a human reach the same camera, each wired back to front from the other. Image-forming eyes reach only six of the roughly 33 animal phyla. But three of them (the molluscs, the arthropods, and the chordates that include us) hold some 96% of all animal species. The animals that took over the living world are the ones that learned to see."
     },
     {
       "type": "quiz",
@@ -175,7 +175,7 @@
           "explanation": "The half-eye objection assumes the in-between stages are useless. They are not: a light patch, a cup, and a pinhole each see better than the last, so every step is favored and the whole climb is short."
         },
         {
-          "question": "Image-forming eyes occur in only about four animal phyla, yet three of those hold roughly 96% of animal species. What does that pattern suggest?",
+          "question": "Image-forming eyes occur in only six animal phyla, yet three of those hold roughly 96% of animal species. What does that pattern suggest?",
           "options": [
             "Eyes are a rare curiosity with little consequence",
             "About 96% of animal species are molluscs",
