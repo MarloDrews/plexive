@@ -1,6 +1,7 @@
+import hashlib
 import random
 from datetime import datetime, timedelta
-from typing import List, Optional
+from typing import List, Optional, Sequence, Set, Tuple
 
 from sqlalchemy import case, func
 from sqlalchemy.orm import Session
@@ -15,19 +16,43 @@ from .models import Event, Post
 #   most-engaged format receives 3.0 and all others scale proportionally.
 # Posts that have been viewed before lose 1.0 per recorded view event (last 30 days), with a
 #   floor of 0 so the score never goes negative.
-# The final score is multiplied by random.uniform(0.85, 1.15) to keep the feed from being
-#   perfectly deterministic on every load.
+# The final score is multiplied by a jitter in [0.85, 1.15]: deterministic per
+#   (session seed, post id) when the caller passes a seed, so the order stays
+#   stable while a user pages through the feed within one session; random per
+#   request without a seed, so a new session still gets a fresh shuffle.
 
 
-def score_posts(
-    posts: List[Post],
+def _jitter(seed: Optional[str], post_id: int) -> float:
+    """Score jitter factor in [0.85, 1.15].
+
+    With a session seed the factor is a deterministic hash of (seed, post_id):
+    the same seed reproduces the same feed order on every page request, which
+    keyset paging requires. Without a seed it stays random per request.
+    """
+    if seed is None:
+        return random.uniform(0.85, 1.15)
+    digest = hashlib.blake2b(f"{seed}:{post_id}".encode("utf-8"), digest_size=8).digest()
+    return 0.85 + 0.30 * (int.from_bytes(digest, "big") / 2**64)
+
+
+def rank_post_ids(
+    records: Sequence[Tuple[int, str, Set[str]]],
     interest_slugs: List[str],
     db: Session,
     tier_map: Optional[dict] = None,
-) -> List[Post]:
-    # tier_map: post_id -> tier (1 = direct match, 2 = related, 3 = fallback)
-    # Tier 1 gets full interest bonus, Tier 2 gets half, Tier 3 gets none.
-    # TODO: once user authentication exists, pass user_id here and filter
+    seed: Optional[str] = None,
+) -> List[int]:
+    """Order post ids by score, best first (ties broken by id, newest first).
+
+    records are lightweight (post_id, format, interest-slug set) tuples so the
+    whole corpus can be ranked without hydrating full rows; the caller fetches
+    complete rows only for the page it actually returns.
+
+    tier_map: post_id -> tier (1 = direct match, 2 = related, 3 = fallback).
+    Tier 1 gets full interest bonus, Tier 2 gets half, Tier 3 gets none.
+    seed: session seed for the jitter (see _jitter); None = fresh per request.
+    """
+    # TODO: once per-user engagement matters, pass user_id here and filter
     # events to that user so bonuses reflect individual rather than global engagement.
 
     cutoff = datetime.utcnow() - timedelta(days=30)
@@ -72,27 +97,30 @@ def score_posts(
 
     interest_set = set(interest_slugs)
 
-    def compute_score(post: Post) -> float:
+    def compute_score(post_id: int, post_format: str, slugs: Set[str]) -> float:
         score = 1.0
 
-        # Interest match: post.interests is already eager-loaded by the caller.
-        # Multiply bonus by 1.0 (Tier 1), 0.5 (Tier 2), or 0.0 (Tier 3).
-        tier = tier_map.get(post.id, 1) if tier_map else 1
+        # Interest match, multiplied by 1.0 (Tier 1), 0.5 (Tier 2), 0.0 (Tier 3).
+        tier = tier_map.get(post_id, 1) if tier_map else 1
         interest_multiplier = {1: 1.0, 2: 0.5, 3: 0.0}.get(tier, 1.0)
-        for interest in post.interests:
-            if interest.slug in interest_set:
+        for slug in slugs:
+            if slug in interest_set:
                 score += 2.0 * interest_multiplier
 
         # Format engagement bonus.
-        score += format_bonus.get(post.format, 0.0)
+        score += format_bonus.get(post_format, 0.0)
 
         # Repeat penalty.
-        score -= post_view_counts.get(post.id, 0) * 1.0
+        score -= post_view_counts.get(post_id, 0) * 1.0
         score = max(score, 0.0)
 
-        # Small random jitter keeps the feed fresh across loads.
-        score *= random.uniform(0.85, 1.15)
+        # Jitter keeps the feed fresh across sessions (see _jitter).
+        score *= _jitter(seed, post_id)
 
         return score
 
-    return sorted(posts, key=compute_score, reverse=True)
+    scored = [(compute_score(pid, fmt, slugs), pid) for pid, fmt, slugs in records]
+    # Deterministic tiebreak on id so equal scores cannot reorder between the
+    # page requests of one session.
+    scored.sort(key=lambda pair: (-pair[0], -pair[1]))
+    return [pid for _, pid in scored]
