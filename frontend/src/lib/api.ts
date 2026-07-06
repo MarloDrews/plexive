@@ -6,7 +6,10 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL
 // when a token is present in localStorage. Use this for any API call that
 // may require authentication.
 export async function apiFetch(path: string, options: RequestInit = {}): Promise<Response> {
-  const token = localStorage.getItem(TOKEN_KEY)
+  // Guard the localStorage read so this module is safe to import outside the
+  // browser (a server component or a test runner): localStorage is undefined
+  // in Node and a bare read throws a ReferenceError.
+  const token = typeof window !== "undefined" ? localStorage.getItem(TOKEN_KEY) : null
   const headers: Record<string, string> = {
     ...(options.headers as Record<string, string> ?? {}),
   }
