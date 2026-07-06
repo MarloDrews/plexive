@@ -11,7 +11,7 @@ import SectionRenderer from "@/components/SectionRenderer"
 import SectionLabel from "@/components/SectionLabel"
 import HeadlineSection from "@/components/sections/HeadlineSection"
 import RelatedPostsSection from "@/components/sections/RelatedPostsSection"
-import CommentsSection, { type Comment } from "@/app/components/CommentsSection"
+import CommentsSection from "@/app/components/CommentsSection"
 import { SlabAccent, SlabGlow } from "@/app/components/PostCard"
 import Avatar from "@/components/Avatar"
 import BookCover from "@/components/BookCover"
@@ -24,6 +24,7 @@ import { consumeAutoRead } from "@/lib/readAloud/autostart"
 import { useAuth } from "@/app/lib/auth"
 import { apiFetch } from "@/app/lib/api"
 import { usePostLike } from "@/lib/usePostLike"
+import { useComments } from "@/app/lib/useComments"
 import { updatePostInFeedCaches } from "@/app/lib/swr"
 
 // Large category glyph anchored to the TOP RIGHT of the detail header, filling the
@@ -100,26 +101,21 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
   const [post, setPost] = useState<Post | null>(null)
   const [notFound, setNotFound] = useState(false)
   const [closing, setClosing] = useState(false)
-  const [comments, setComments] = useState<Comment[]>([])
-  const [deletingId, setDeletingId] = useState<number | null>(null)
   const [stickyDraft, setStickyDraft] = useState("")
-  const [posting, setPosting] = useState(false)
 
   const { liked, likesCount, toggleLike } = usePostLike(Number(id), post?.like_count ?? null)
+  // Feed lists are cached for the session; write the comment count through to
+  // them whenever it changes here (add, delete, initial load).
+  const { comments, posting, deletingId, postComment, deleteComment } = useComments(
+    Number(id),
+    (count) => updatePostInFeedCaches(Number(id), { comment_count: count })
+  )
 
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const readableRef        = useRef<HTMLDivElement>(null)
   const commentsTopRef     = useRef<HTMLDivElement>(null)
   const stickyInputRef     = useRef<HTMLInputElement>(null)
   const isClosingRef       = useRef(false)
-  const commentsLoadedRef  = useRef(false)
-
-  // Feed lists are cached for the session; keep the cached comment_count in
-  // sync whenever the comment list changes here (add, delete, initial load).
-  useEffect(() => {
-    if (!commentsLoadedRef.current) return
-    updatePostInFeedCaches(Number(id), { comment_count: comments.length })
-  }, [comments.length, id])
 
   useEffect(() => {
     apiFetch(`/api/posts/${id}`)
@@ -132,13 +128,6 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
         setPost(data)
       })
       .catch(() => setNotFound(true))
-    apiFetch(`/api/posts/${id}/comments`)
-      .then((r) => r.json())
-      .then((data: Comment[]) => {
-        setComments(data)
-        commentsLoadedRef.current = true
-      })
-      .catch(() => {})
   }, [id])
 
   const { status: readStatus, start: startReading, stop: stopReading, toggle: toggleReading } =
@@ -189,43 +178,18 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
     toggleLike()
   }
 
-  async function handleDelete(commentId: number) {
-    if (deletingId !== null) return
-    setDeletingId(commentId)
-    try {
-      const r = await apiFetch(`/api/comments/${commentId}`, { method: "DELETE" })
-      if (r.ok) setComments((prev) => prev.filter((c) => c.id !== commentId))
-    } finally {
-      setDeletingId(null)
-    }
-  }
-
-  async function handlePostComment(body: string) {
-    if (posting) return
-    setPosting(true)
-    try {
-      const r = await apiFetch(`/api/posts/${id}/comments`, {
-        method: "POST",
-        body: JSON.stringify({ body }),
-      })
-      if (!r.ok) return
-      const created: Comment = await r.json()
-      setComments((prev) => [created, ...prev])
-      // Scroll the comments heading into view so the user sees their new comment.
-      setTimeout(() => {
-        commentsTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
-      }, 50)
-    } finally {
-      setPosting(false)
-    }
-  }
-
   async function handleStickySubmit(e: React.FormEvent) {
     e.preventDefault()
     const body = stickyDraft.trim()
     if (!body) return
     setStickyDraft("")
-    await handlePostComment(body)
+    const created = await postComment(body)
+    if (created) {
+      // Scroll the comments heading into view so the user sees their new comment.
+      setTimeout(() => {
+        commentsTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
+      }, 50)
+    }
   }
 
   const style = post ? formatStyle(post.format) : null
@@ -694,7 +658,7 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                   <CommentsSection
                     comments={comments}
                     currentUsername={user?.username}
-                    onDelete={handleDelete}
+                    onDelete={deleteComment}
                     deletingId={deletingId}
                   />
                 </div>
