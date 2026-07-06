@@ -21,7 +21,7 @@ interface Props {
 
 export default function CommentsBottomSheet({ postId, onClose, onCountChange }: Props) {
   const { user } = useAuth()
-  const { comments, posting, deletingId, postComment, deleteComment } = useComments(postId, onCountChange)
+  const { comments, error, posting, deletingId, postComment, deleteComment } = useComments(postId, onCountChange)
   const [draft, setDraft] = useState("")
   const [expanded, setExpanded] = useState(false)
   // Positive value = sheet dragged downward (visual feedback only)
@@ -97,9 +97,13 @@ export default function CommentsBottomSheet({ postId, onClose, onCountChange }: 
           {/* Pill */}
           <div className="w-10 h-1 bg-edge-strong rounded-full mx-auto mb-2" />
 
-          {/* Comment count */}
+          {/* Comment count (blank until the list loads so it never asserts 0) */}
           <p className="text-sm text-ink-dim text-center">
-            {comments.length === 1 ? "1 comment" : `${comments.length} comments`}
+            {comments === null
+              ? " "
+              : comments.length === 1
+                ? "1 comment"
+                : `${comments.length} comments`}
           </p>
 
           {/* Close button */}
@@ -117,10 +121,19 @@ export default function CommentsBottomSheet({ postId, onClose, onCountChange }: 
 
         {/* Comment list — chat-style rows */}
         <div className="flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden [scrollbar-width:none] px-4 py-3">
-          {comments.length === 0 ? (
+          {comments === null && !error ? (
+            // Loading: pulsing rows where the comments will appear.
+            <div className="flex flex-col gap-2 py-2">
+              <div className="stage-pulse h-10 w-3/4 rounded-2xl bg-white/[0.04]" />
+              <div className="stage-pulse h-10 w-2/3 rounded-2xl bg-white/[0.04]" />
+              <div className="stage-pulse h-10 w-4/5 rounded-2xl bg-white/[0.04]" />
+            </div>
+          ) : error ? (
+            <p className="text-sm text-ink-faint text-center py-6">Could not load comments.</p>
+          ) : comments!.length === 0 ? (
             <p className="text-sm text-ink-faint text-center py-6">No comments yet</p>
           ) : (
-            comments.map((comment) => (
+            comments!.map((comment) => (
               <CommentRow
                 key={comment.id}
                 comment={comment}

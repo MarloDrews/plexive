@@ -84,7 +84,7 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
   const { liked, likesCount, toggleLike, reconcile } = usePostLike(Number(id), post?.like_count ?? null)
   // Feed lists are cached for the session; write the comment count through to
   // them whenever it changes here (add, delete, initial load).
-  const { comments, posting, deletingId, postComment, deleteComment } = useComments(
+  const { comments, error: commentsError, posting, deletingId, postComment, deleteComment } = useComments(
     Number(id),
     (count) => updatePostInFeedCaches(Number(id), { comment_count: count })
   )
@@ -655,6 +655,7 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                 <div ref={commentsTopRef} className="px-6">
                   <CommentsSection
                     comments={comments}
+                    error={commentsError}
                     currentUsername={user?.username}
                     onDelete={deleteComment}
                     deletingId={deletingId}

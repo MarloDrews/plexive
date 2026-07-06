@@ -13,25 +13,35 @@ export interface Comment {
 }
 
 interface Props {
-  comments: Comment[]
+  // null while the first fetch is in flight; error true on a failed fetch.
+  comments: Comment[] | null
+  error?: boolean
   currentUsername?: string
   onDelete: (id: number) => void
   deletingId: number | null
 }
 
 // Detail-page comments list — chat-bubble rows matching the comments sheet.
-export default function CommentsSection({ comments, currentUsername, onDelete, deletingId }: Props) {
+export default function CommentsSection({ comments, error, currentUsername, onDelete, deletingId }: Props) {
   return (
     <section className="pt-8">
       <div className="flex items-baseline gap-2 mb-4">
         <h2 className="font-serif text-lg text-ink">Comments</h2>
-        <span className="text-xs font-mono text-ink-muted">{comments.length}</span>
+        {comments !== null && <span className="text-xs font-mono text-ink-muted">{comments.length}</span>}
       </div>
 
-      {comments.length === 0 ? (
+      {comments === null && !error ? (
+        // Loading: pulsing rows where the comments will appear.
+        <div className="flex flex-col gap-2">
+          <div className="stage-pulse h-10 w-3/4 rounded-2xl bg-white/[0.04]" />
+          <div className="stage-pulse h-10 w-2/3 rounded-2xl bg-white/[0.04]" />
+        </div>
+      ) : error ? (
+        <p className="text-sm text-ink-faint">Could not load comments.</p>
+      ) : comments!.length === 0 ? (
         <p className="text-sm text-ink-faint">No comments yet</p>
       ) : (
-        comments.map((comment) => (
+        comments!.map((comment) => (
           <CommentRow
             key={comment.id}
             comment={comment}
