@@ -115,6 +115,10 @@ export default function SearchPage() {
   const [userResults, setUserResults] = useState<UserResult[] | null>(null)
   const [loading, setLoading] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+  // Monotonic counter so a slow response for an earlier query can never
+  // overwrite the results of a later one (the debounce only cancels the timer,
+  // not an in-flight request).
+  const searchSeq = useRef(0)
 
   // Posts/Accounts is no longer a pre-search mode: one search fetches both,
   // and this swipeable switcher just flips which fetched list is visible.
@@ -135,6 +139,7 @@ export default function SearchPage() {
     }
 
     setLoading(true)
+    const seq = ++searchSeq.current
     const timer = setTimeout(async () => {
       try {
         // Both endpoints in parallel — the backend has no combined search,
@@ -145,10 +150,16 @@ export default function SearchPage() {
           apiFetch(`/api/search?${params}`),
           apiFetch(`/api/search/users?${new URLSearchParams({ q: trimmed })}`),
         ])
-        setResults((await postsRes.json()) as Post[])
-        setUserResults((await usersRes.json()) as UserResult[])
+        const postsData = (await postsRes.json()) as Post[]
+        const usersData = (await usersRes.json()) as UserResult[]
+        // Drop the response if a newer search has since started.
+        if (seq !== searchSeq.current) return
+        setResults(postsData)
+        setUserResults(usersData)
+      } catch {
+        // Network/parse failure: swallow so it is not an unhandled rejection.
       } finally {
-        setLoading(false)
+        if (seq === searchSeq.current) setLoading(false)
       }
     }, 300)
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import useSWR from "swr"
@@ -43,6 +43,8 @@ function NewChatOverlay({ onClose, onCreated }: { onClose: () => void; onCreated
   const [groupName, setGroupName] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
+  // Guards against a slow response for an earlier query landing after a later one.
+  const searchSeq = useRef(0)
 
   useEffect(() => {
     const trimmed = query.trim()
@@ -50,9 +52,16 @@ function NewChatOverlay({ onClose, onCreated }: { onClose: () => void; onCreated
       setResults([])
       return
     }
+    const seq = ++searchSeq.current
     const timer = setTimeout(async () => {
-      const r = await apiFetch(`/api/search/users?${new URLSearchParams({ q: trimmed })}`)
-      if (r.ok) setResults(((await r.json()) as UserResult[]).filter((u) => !u.is_self))
+      try {
+        const r = await apiFetch(`/api/search/users?${new URLSearchParams({ q: trimmed })}`)
+        if (!r.ok) return
+        const data = ((await r.json()) as UserResult[]).filter((u) => !u.is_self)
+        if (seq === searchSeq.current) setResults(data)
+      } catch {
+        // Swallow so a failed lookup is not an unhandled rejection.
+      }
     }, 300)
     return () => clearTimeout(timer)
   }, [query])

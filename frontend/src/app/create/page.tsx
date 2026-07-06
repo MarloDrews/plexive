@@ -126,12 +126,16 @@ export default function CreatePage() {
   const [serverError, setServerError] = useState("")
 
   const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  // Guards against a slow response for an earlier query landing after a later one.
+  const searchSeq = useRef(0)
 
   useEffect(() => {
     if (step !== 2) return
     const trimmed = searchQuery.trim()
-    if (!trimmed) { setSearchResults([]); return }
+    // Clearing the query must also clear the spinner, or it stays on forever.
+    if (!trimmed) { setSearchResults([]); setSearchLoading(false); return }
     setSearchLoading(true)
+    const seq = ++searchSeq.current
     if (searchTimerRef.current) clearTimeout(searchTimerRef.current)
     searchTimerRef.current = setTimeout(async () => {
       try {
@@ -139,9 +143,11 @@ export default function CreatePage() {
         if (selectedFormat) params.set("format", selectedFormat)
         const res = await apiFetch(`/api/search?${params}`)
         const data: Post[] = await res.json()
-        setSearchResults(data.slice(0, 5))
+        if (seq === searchSeq.current) setSearchResults(data.slice(0, 5))
+      } catch {
+        // Swallow so a failed duplicate check is not an unhandled rejection.
       } finally {
-        setSearchLoading(false)
+        if (seq === searchSeq.current) setSearchLoading(false)
       }
     }, 300)
     return () => { if (searchTimerRef.current) clearTimeout(searchTimerRef.current) }
