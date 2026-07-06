@@ -5,10 +5,11 @@ one implementation to maintain. Behavior is intentionally identical to the
 inline copies these replaced.
 """
 
-from typing import Optional
+from typing import List, Optional
 
 from fastapi import HTTPException, status
-from sqlalchemy.orm import Session, selectinload
+from sqlalchemy.orm import Session, defer, selectinload
+from sqlalchemy.orm.attributes import set_committed_value
 
 from ..models import Post, User
 
@@ -16,6 +17,22 @@ from ..models import Post, User
 # PostOut.interests and the author_* properties would otherwise lazy-load per
 # post, an N+1 against the remote DB. Use as `.options(*POST_EAGER)`.
 POST_EAGER = (selectinload(Post.interests), selectinload(Post.author))
+
+# List-endpoint variant: sections is by far the largest column and no list view
+# renders it (PostListOut serializes sections as []), so list queries skip it
+# at the DB. MUST be paired with blank_sections() on the loaded rows.
+POST_LIST_EAGER = (*POST_EAGER, defer(Post.sections))
+
+
+def blank_sections(posts: List[Post]) -> List[Post]:
+    """Populate the deferred sections attribute with [] so serialization never
+    touches the DB: Pydantic getattrs .sections even though PostListOut drops
+    it, which would otherwise fire one lazy SELECT per post.
+    set_committed_value writes the loaded state directly -- no dirty flag, no
+    autoflush, nothing to accidentally persist."""
+    for p in posts:
+        set_committed_value(p, "sections", [])
+    return posts
 
 
 def get_target_user(username: str, db: Session, detail: str = "User not found.") -> User:

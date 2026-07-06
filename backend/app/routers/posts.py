@@ -12,8 +12,8 @@ from ..post_counts import attach_counts, attach_counts_one
 from ..rate_limit import check_rate_limit
 from ..reading_time import compute_reading_minutes
 from ..sanitize import sanitize_svg_text
-from ..schemas import PostCreate, PostOut
-from ._shared import POST_EAGER
+from ..schemas import PostCreate, PostListOut, PostOut
+from ._shared import POST_EAGER, POST_LIST_EAGER, blank_sections
 
 router = APIRouter()
 
@@ -43,7 +43,7 @@ def _sanitize_sections_svgs(sections: list) -> list:
 
 # IMPORTANT: /posts/mine must be registered before /posts/{post_id} so FastAPI
 # does not treat the literal string "mine" as an integer post_id.
-@router.get("/posts/mine", response_model=List[PostOut])
+@router.get("/posts/mine", response_model=List[PostListOut])
 def get_my_posts(
     before_id: Optional[int] = None,
     limit: int = 50,
@@ -52,15 +52,17 @@ def get_my_posts(
 ):
     # Keyset pagination on the id (before_id = id of the last post the client
     # already has); id-desc matches the old created_at-desc insert order.
+    # PostListOut with deferred+blanked sections: the my-posts page renders
+    # only row-level fields, never section bodies.
     limit = max(1, min(limit, 100))
     query = (
         db.query(Post)
-        .options(*POST_EAGER)
+        .options(*POST_LIST_EAGER)
         .filter(Post.author_id == current_user.id)
     )
     if before_id is not None:
         query = query.filter(Post.id < before_id)
-    posts = query.order_by(Post.id.desc()).limit(limit).all()
+    posts = blank_sections(query.order_by(Post.id.desc()).limit(limit).all())
     return attach_counts(posts, db)
 
 

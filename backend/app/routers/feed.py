@@ -10,23 +10,24 @@ from ..post_counts import attach_counts
 from ..rate_limit import check_rate_limit
 from ..schemas import PostListOut
 from ..scoring import rank_post_ids
-from ._shared import POST_EAGER, get_target_user
+from ._shared import POST_LIST_EAGER, blank_sections, get_target_user
 
 router = APIRouter()
 
 
 def _fetch_posts(ids: List[int], db: Session) -> List[Post]:
-    """Full rows (eager interests + author) for a ranked page of ids, returned
-    in the given order (IN gives no ordering guarantee)."""
+    """Rows for a ranked page of ids (eager interests + author, sections
+    deferred and blanked -- these are list responses), returned in the given
+    order (IN gives no ordering guarantee)."""
     if not ids:
         return []
     rows = (
         db.query(Post)
-        .options(*POST_EAGER)
+        .options(*POST_LIST_EAGER)
         .filter(Post.id.in_(ids))
         .all()
     )
-    by_id = {p.id: p for p in rows}
+    by_id = {p.id: p for p in blank_sections(rows)}
     return [by_id[i] for i in ids if i in by_id]
 
 
@@ -37,15 +38,16 @@ def _recent_published_posts(
     keyset-paginated (before_id = id of the last post the client already has;
     ids follow insert order, so id-desc matches the old created_at-desc order
     while making the cursor exact). Shared by the following-feed and
-    single-user-feed endpoints, which differ only in that filter."""
+    single-user-feed endpoints, which differ only in that filter. Sections are
+    deferred and blanked -- these are list responses."""
     query = (
         db.query(Post)
-        .options(*POST_EAGER)
+        .options(*POST_LIST_EAGER)
         .filter(author_filter, Post.status == "published")
     )
     if before_id is not None:
         query = query.filter(Post.id < before_id)
-    return query.order_by(Post.id.desc()).limit(limit).all()
+    return blank_sections(query.order_by(Post.id.desc()).limit(limit).all())
 
 
 @router.get("/feed", response_model=List[PostListOut])
