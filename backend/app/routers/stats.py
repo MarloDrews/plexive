@@ -563,11 +563,7 @@ def get_my_stats(
     ]
 
     # --- My knowledge score (Elo) ---
-    my_global_rating, my_format_ratings = elo_summary(db, uid)
-    my_elo = {
-        "global_rating": my_global_rating,
-        "formats": my_format_ratings,
-    }
+    my_elo = {"global_rating": elo_summary(db, uid)}
     quiz_row = db.query(
         func.count(QuizAnswer.id).label("answered"),
         func.coalesce(func.sum(case((QuizAnswer.is_correct == True, 1), else_=0)), 0).label("correct"),

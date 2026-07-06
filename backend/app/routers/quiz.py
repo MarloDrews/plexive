@@ -30,7 +30,7 @@ def _get_quiz_items(post: Post) -> list[dict]:
 def _elo_payload(db: Session, user_id: int, fmt: str, delta: float) -> dict:
     # The score is now a single unified rating, so `rating` and `global_rating`
     # are the same number; `format` is kept for response-shape compatibility.
-    global_rating, _ = elo_summary(db, user_id)
+    global_rating = elo_summary(db, user_id)
     return {
         "format": fmt,
         "rating": global_rating,
@@ -139,8 +139,4 @@ def get_quiz_state(
 @router.get("/users/{username}/elo")
 def get_user_elo(username: str, db: Session = Depends(get_db)):
     user = get_target_user(username, db)
-    global_rating, formats = elo_summary(db, user.id)
-    return {
-        "global_rating": global_rating,
-        "formats": formats,
-    }
+    return {"global_rating": elo_summary(db, user.id)}

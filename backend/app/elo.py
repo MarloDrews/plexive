@@ -82,14 +82,14 @@ def apply_answer_timed(db: Session, user: User, difficulty, correct: bool, answe
     return _update(user, difficulty, correct, time_bonus=bonus)
 
 
-def elo_summary(db: Session, user_id: int) -> tuple[int | None, dict[str, dict]]:
-    """The user's single knowledge rating, plus an empty per-format dict.
+def elo_summary(db: Session, user_id: int) -> int | None:
+    """The user's single knowledge rating, rounded, or None before the first
+    scored answer.
 
-    The per-format breakdown was removed when the score was unified onto the user
-    row; the empty dict keeps the response shape stable for existing API callers
-    (they all guard `formats` and read `global_rating`).
+    The per-format breakdown died with the move to the unified score on the
+    user row; responses no longer carry a formats dict (the always-empty
+    compatibility dict is gone from the contract).
     """
     user = db.query(User).filter(User.id == user_id).first()
     rating = user.knowledge_rating if user else None
-    global_rating = round(rating) if rating is not None else None
-    return global_rating, {}
+    return round(rating) if rating is not None else None

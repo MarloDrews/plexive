@@ -41,7 +41,7 @@ def answer_train_question(
     )
     db.commit()
 
-    global_rating, _ = elo_summary(db, current_user.id)
+    global_rating = elo_summary(db, current_user.id)
     return {
         "rating": global_rating,
         "delta": round(delta, 1),
