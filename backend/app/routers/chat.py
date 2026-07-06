@@ -12,7 +12,6 @@ from ..auth import decode_access_token, get_current_user
 from ..database import SessionLocal, get_db
 from ..models import Conversation, ConversationParticipant, Follow, Message, User
 from ..rate_limit import check_rate_limit
-from ._shared import get_target_user
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
@@ -32,17 +31,24 @@ WS_CLOSE_INSECURE = 4403
 # Shared helpers
 # ---------------------------------------------------------------------------
 
-def _can_message(db: Session, viewer_id: int, target_id: int) -> bool:
-    """A conversation may be started only between users connected by an
-    accepted follow in either direction. Private accounts approve follows,
-    so they are unreachable until they accept one."""
-    return db.query(Follow).filter(
+def _messageable_ids(db: Session, viewer_id: int, target_ids: List[int]) -> set:
+    """The subset of target_ids the viewer may message: a conversation may be
+    started only between users connected by an accepted follow in either
+    direction. Private accounts approve follows, so they are unreachable until
+    they accept one. One batched query for all targets instead of one each."""
+    if not target_ids:
+        return set()
+    rows = db.query(Follow.follower_id, Follow.following_id).filter(
         Follow.status == "accepted",
         or_(
-            and_(Follow.follower_id == viewer_id, Follow.following_id == target_id),
-            and_(Follow.follower_id == target_id, Follow.following_id == viewer_id),
+            and_(Follow.follower_id == viewer_id, Follow.following_id.in_(target_ids)),
+            and_(Follow.follower_id.in_(target_ids), Follow.following_id == viewer_id),
         ),
-    ).first() is not None
+    ).all()
+    return {
+        following_id if follower_id == viewer_id else follower_id
+        for follower_id, following_id in rows
+    }
 
 
 def _get_participant(db: Session, conversation_id: int, user_id: int) -> Optional[ConversationParticipant]:
@@ -165,10 +171,23 @@ def create_conversation(
 ):
     check_rate_limit(current_user.id, "chat_create", 20, 3600)
 
+    # One IN query for all requested usernames instead of one lookup each; the
+    # first unknown username in request order is still the one reported.
+    found = {
+        u.username: u
+        for u in db.query(User).filter(
+            User.username.in_(body.usernames), User.is_active == True
+        ).all()
+    }
     targets: List[User] = []
     seen_ids = {current_user.id}
     for username in body.usernames:
-        user = get_target_user(username, db, detail=f"User not found: {username}")
+        user = found.get(username)
+        if user is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"User not found: {username}",
+            )
         if user.id in seen_ids:
             continue
         seen_ids.add(user.id)
@@ -176,8 +195,11 @@ def create_conversation(
     if not targets:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No valid recipients.")
 
+    # One batched follow query for all targets; the first non-messageable
+    # target in request order is still the one reported.
+    messageable = _messageable_ids(db, current_user.id, [t.id for t in targets])
     for target in targets:
-        if not _can_message(db, current_user.id, target.id):
+        if target.id not in messageable:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail=f"You can only message people you follow or who follow you: {target.username}",
