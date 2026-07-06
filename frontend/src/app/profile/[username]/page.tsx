@@ -8,6 +8,7 @@ import { useAuth } from "@/lib/auth"
 import { apiFetch } from "@/lib/api"
 import { getSavedPostIds } from "@/lib/savedPosts"
 import { getLikedPostIds } from "@/lib/likedPosts"
+import { fetchPostsByIds } from "@/lib/fetchPosts"
 import { useSwipeTabs } from "@/lib/useSwipeTabs"
 import BottomNav from "@/components/BottomNav"
 import SegmentedTabs from "@/components/SegmentedTabs"
@@ -116,18 +117,14 @@ export default function PublicProfilePage() {
     if (!isOwnProfile || activeTab !== "saved" || savedPosts !== null) return
     const ids = getSavedPostIds()
     if (ids.length === 0) { setSavedPosts([]); return }
-    Promise.all(ids.map((id) => apiFetch(`/api/posts/${id}`).then((r) => (r.ok ? r.json() : null))))
-      .then((results) => setSavedPosts(results.filter(Boolean) as Post[]))
-      .catch(() => setSavedPosts([]))
+    fetchPostsByIds<Post>(ids).then((results) => setSavedPosts(results.filter(Boolean) as Post[]))
   }, [isOwnProfile, activeTab, savedPosts])
 
   useEffect(() => {
     if (!isOwnProfile || activeTab !== "liked" || likedPosts !== null) return
     const ids = getLikedPostIds()
     if (ids.length === 0) { setLikedPosts([]); return }
-    Promise.all(ids.map((id) => apiFetch(`/api/posts/${id}`).then((r) => (r.ok ? r.json() : null))))
-      .then((results) => setLikedPosts(results.filter(Boolean) as Post[]))
-      .catch(() => setLikedPosts([]))
+    fetchPostsByIds<Post>(ids).then((results) => setLikedPosts(results.filter(Boolean) as Post[]))
   }, [isOwnProfile, activeTab, likedPosts])
 
   async function handleFollow() {
