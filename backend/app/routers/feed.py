@@ -9,7 +9,7 @@ from ..models import Follow, Post, User
 from ..post_counts import attach_counts
 from ..schemas import PostListOut
 from ..scoring import score_posts
-from ._shared import POST_EAGER
+from ._shared import POST_EAGER, get_target_user
 
 router = APIRouter()
 
@@ -103,9 +103,7 @@ def get_user_feed(
     _current_user: Optional[User] = Depends(get_optional_user),
     db: Session = Depends(get_db),
 ):
-    target = db.query(User).filter(User.username == username, User.is_active == True).first()
-    if not target:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found.")
+    target = get_target_user(username, db)
     posts = (
         db.query(Post)
         .options(*POST_EAGER)

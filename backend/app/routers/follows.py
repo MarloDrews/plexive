@@ -9,6 +9,7 @@ from ..auth import get_current_user, get_optional_user
 from ..database import get_db
 from ..models import Follow, User
 from ..rate_limit import check_rate_limit
+from ._shared import get_target_user
 
 router = APIRouter(prefix="/users", tags=["follows"])
 
@@ -34,13 +35,6 @@ class ProfileOut(BaseModel):
     follow_status: Optional[str]
 
 
-def _get_target(username: str, db: Session) -> User:
-    user = db.query(User).filter(User.username == username, User.is_active == True).first()
-    if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found.")
-    return user
-
-
 def _is_following(viewer_id: int, target_id: int, db: Session) -> bool:
     return db.query(Follow).filter(
         Follow.follower_id == viewer_id,
@@ -56,7 +50,7 @@ def follow_user(
     db: Session = Depends(get_db),
 ):
     check_rate_limit(current_user.id, "follow", 60, 3600)
-    target = _get_target(username, db)
+    target = get_target_user(username, db)
 
     if target.id == current_user.id:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Cannot follow yourself.")
@@ -81,7 +75,7 @@ def unfollow_user(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    target = _get_target(username, db)
+    target = get_target_user(username, db)
     follow = db.query(Follow).filter(
         Follow.follower_id == current_user.id,
         Follow.following_id == target.id,
@@ -100,7 +94,7 @@ def accept_follow_request(
     db: Session = Depends(get_db),
 ):
     # current_user is the target; {username} is the requester
-    requester = _get_target(username, db)
+    requester = get_target_user(username, db)
     follow = db.query(Follow).filter(
         Follow.follower_id == requester.id,
         Follow.following_id == current_user.id,
@@ -120,7 +114,7 @@ def reject_follow_request(
     db: Session = Depends(get_db),
 ):
     # current_user is the target; {username} is the requester
-    requester = _get_target(username, db)
+    requester = get_target_user(username, db)
     follow = db.query(Follow).filter(
         Follow.follower_id == requester.id,
         Follow.following_id == current_user.id,
@@ -139,7 +133,7 @@ def get_followers(
     current_user: Optional[User] = Depends(get_optional_user),
     db: Session = Depends(get_db),
 ):
-    target = _get_target(username, db)
+    target = get_target_user(username, db)
 
     if target.is_private:
         is_self = current_user is not None and current_user.id == target.id
@@ -159,7 +153,7 @@ def get_following(
     current_user: Optional[User] = Depends(get_optional_user),
     db: Session = Depends(get_db),
 ):
-    target = _get_target(username, db)
+    target = get_target_user(username, db)
 
     if target.is_private:
         is_self = current_user is not None and current_user.id == target.id
@@ -203,7 +197,7 @@ def get_profile(
     current_user: Optional[User] = Depends(get_optional_user),
     db: Session = Depends(get_db),
 ):
-    target = _get_target(username, db)
+    target = get_target_user(username, db)
 
     # One round trip instead of three count queries: the DB is remote, so
     # every query costs a full network round trip regardless of data size.

@@ -9,6 +9,7 @@ from ..database import get_db
 from ..elo import apply_answer, elo_summary
 from ..models import Post, QuizAnswer, User
 from ..rate_limit import check_rate_limit
+from ._shared import get_target_user
 
 router = APIRouter(tags=["quiz"])
 
@@ -143,9 +144,7 @@ def get_quiz_state(
 
 @router.get("/users/{username}/elo")
 def get_user_elo(username: str, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.username == username, User.is_active == True).first()
-    if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found.")
+    user = get_target_user(username, db)
     global_rating, formats = elo_summary(db, user.id)
     return {
         "global_rating": global_rating,

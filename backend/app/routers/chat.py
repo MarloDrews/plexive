@@ -12,6 +12,7 @@ from ..auth import decode_access_token, get_current_user
 from ..database import SessionLocal, get_db
 from ..models import Conversation, ConversationParticipant, Follow, Message, User
 from ..rate_limit import check_rate_limit
+from ._shared import get_target_user
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
@@ -167,9 +168,7 @@ def create_conversation(
     targets: List[User] = []
     seen_ids = {current_user.id}
     for username in body.usernames:
-        user = db.query(User).filter(User.username == username, User.is_active == True).first()
-        if not user:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User not found: {username}")
+        user = get_target_user(username, db, detail=f"User not found: {username}")
         if user.id in seen_ids:
             continue
         seen_ids.add(user.id)
