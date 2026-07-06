@@ -1,0 +1,259 @@
+{
+  "tags": [
+    "nutrition",
+    "medicine",
+    "biology"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "The endocrine system"
+      },
+      "featured": true
+    },
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Steroid hormones"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "Vitamin D is a hormone your body makes from sunlight. The “vitamin” label is a century-old naming accident.",
+    "teasers": [
+      "Why it ended up with the wrong name",
+      "Almost no food actually contains it",
+      "It works the way estrogen and cortisol do"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "Vitamin D is a hormone your body makes from sunlight. The “vitamin” label is a century-old naming accident."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 0 400 162' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='30' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>How the body makes the hormone</text><g stroke='currentColor' stroke-width='2.5'><rect x='12' y='62' width='76' height='58' rx='14'/><rect x='112' y='62' width='76' height='58' rx='14'/><rect x='212' y='62' width='76' height='58' rx='14'/></g><rect x='312' y='62' width='76' height='58' rx='14' stroke='var(--accent)' stroke-width='2.5' fill='var(--accent)' fill-opacity='0.12'/><g stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' opacity='0.55'><path d='M88 91 h24'/><path d='M112 91 l-11 -6 m11 6 l-11 6'/><path d='M188 91 h24'/><path d='M212 91 l-11 -6 m11 6 l-11 6'/><path d='M288 91 h24'/><path d='M312 91 l-11 -6 m11 6 l-11 6'/></g><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'><text x='50' y='96'>Skin</text><text x='150' y='96'>Liver</text><text x='250' y='96'>Kidney</text></g><text x='350' y='96' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>Hormone</text><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'><text x='50' y='142'>sunlight</text><text x='150' y='142'>stored</text><text x='250' y='142'>switched on</text><text x='350' y='142'>acts on cells</text></g></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "Here are two true sentences. Vitamin D is a vitamin. Vitamin D is a hormone. A vitamin is something your body cannot build and so has to eat. Your skin builds vitamin D whenever sunlight hits it, no diet required. And once built, it does what hormones do: it travels in the blood and switches genes on and off in tissues far from where it was made."
+    },
+    {
+      "type": "tangible",
+      "order": 4,
+      "content": {
+        "items": [
+          "In the blood, the active form is measured in picograms, trillionths of a gram per millilitre.",
+          "The storage form runs about a thousand times higher, and it is the number a “vitamin D” blood test reports.",
+          "Working at those tiny concentrations is exactly what steroid hormones like cortisol and estrogen do."
+        ],
+        "visual_svg": "<svg viewBox='0 0 400 200' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='32' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>How much is in your blood</text><line x1='50' y1='120' x2='360' y2='120' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><circle cx='104' cy='120' r='7' fill='var(--accent)'/><text x='104' y='100' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>active hormone</text><text x='104' y='146' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' opacity='0.75' text-anchor='middle'>~40 pg/mL</text><circle cx='312' cy='120' r='7' fill='currentColor' opacity='0.6'/><text x='312' y='100' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.85' text-anchor='middle'>storage form</text><text x='312' y='146' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' opacity='0.75' text-anchor='middle'>~40 ng/mL</text><path d='M104 168 H312' stroke='currentColor' stroke-width='1.5' opacity='0.5' stroke-linecap='round'/><path d='M104 168 v-8 M312 168 v-8' stroke='currentColor' stroke-width='1.5' opacity='0.5' stroke-linecap='round'/><text x='208' y='188' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>about 1000x apart</text></svg>"
+      }
+    },
+    {
+      "type": "how_we_know",
+      "order": 5,
+      "content": "Calling it a hormone is not loose talk. It fits the textbook definition point for point. A hormone is made in the body, carried in the blood, and acts on distant tissues through its own receptor. Vitamin D is assembled in the skin, finished in the liver and kidney, and sent everywhere. Its active form is a “secosteroid”, cut from the same cholesterol scaffold as cortisol and the sex hormones. In a target cell it docks onto the vitamin D receptor, a switch that sits on the DNA, and turns genes up or down. That is the same machinery estrogen and testosterone use."
+    },
+    {
+      "type": "story",
+      "order": 7,
+      "content": {
+        "body": "In 1919 the English researcher Edward Mellanby gave dogs rickets on a controlled diet, then cured them with cod liver oil. Something in the oil was building healthy bone. Three years later in Baltimore, Elmer McCollum and Marguerite Davis heated and aerated the oil until its known vitamin A was destroyed, yet it still cured rickets. Whatever was left had to be new. A, B, and C were already taken, so the new factor became vitamin D. Nobody yet knew the body could make it, or that it acted as a hormone. Within a few years Harry Steenbock showed that ultraviolet light on skin or food produced the same factor, the first sign that sunlight, not supper, was the real source. The full hormone story came together decades later, long after the name had set.",
+        "key_figures": [
+          {
+            "name": "Edward Mellanby",
+            "role": "Traced rickets to a missing factor",
+            "one_line": "In 1919 his dog experiments proved a hidden factor in cod liver oil built healthy bone.",
+            "lifespan": "1884-1955",
+            "birth_year": 1884,
+            "featured": false
+          },
+          {
+            "name": "Elmer McCollum",
+            "role": "Named vitamin D",
+            "one_line": "In 1922 he showed the anti-rickets factor was separate from vitamin A and, as the fourth vitamin found, called it D.",
+            "lifespan": "1879-1967",
+            "birth_year": 1879,
+            "featured": true
+          },
+          {
+            "name": "Harry Steenbock",
+            "role": "Linked it to ultraviolet light",
+            "one_line": "In the mid-1920s he showed that ultraviolet light on food or skin produces vitamin D, pointing to sunlight as the source.",
+            "lifespan": "1886-1967",
+            "birth_year": 1886,
+            "featured": false
+          }
+        ],
+        "visual_svg": "<svg viewBox='0 0 400 210' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='30' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Named a vitamin, later found a hormone</text><path d='M90 96 H330' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><path d='M90 96 v10 M330 96 v10' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><text x='210' y='86' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>about 50 years</text><line x1='50' y1='140' x2='360' y2='140' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><g stroke='currentColor' stroke-width='2' opacity='0.6' stroke-linecap='round'><line x1='90' y1='132' x2='90' y2='148'/><line x1='330' y1='132' x2='330' y2='148'/></g><circle cx='90' cy='140' r='5' fill='currentColor'/><circle cx='330' cy='140' r='5' fill='currentColor'/><g fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' font-weight='700' text-anchor='middle'><text x='90' y='166'>1922</text><text x='330' y='166'>1971</text></g><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.75' text-anchor='middle'><text x='90' y='188'>named a vitamin</text><text x='330' y='188'>shown a hormone</text></g></svg>"
+      }
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "It is chemically a steroid, kin to your sex hormones",
+          "body": "Strip vitamin D down to its chemistry and you find a steroid. It sits on the same four-ring cholesterol skeleton as cortisol, estrogen, and testosterone, with one ring snapped open. That broken ring is what the “seco” in secosteroid means. So the capsule sold beside the vitamin C is, in structure, a close cousin of the hormones behind puberty and the stress response. The body builds both from one raw material: cholesterol, in your skin."
+        },
+        {
+          "title": "Almost no food naturally carries it",
+          "body": "This is why the sun matters so much. Very few foods carry meaningful vitamin D on their own: oily fish like salmon, a little in egg yolk, and the cod liver oil that started the whole story. An egg has about 40 international units. A teaspoon of cod liver oil has over 400. To reach a daily target of 600 from food alone, you would eat several servings of fatty fish a day. That is why countries fortify milk and cereal, and why a bright afternoon outdoors can do more for your level than your plate.",
+          "visual_svg": "<svg viewBox='0 0 400 210' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='28' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Vitamin D in food vs a day's need (IU)</text><rect x='120' y='50' width='16' height='26' rx='6' stroke='currentColor' stroke-width='2' opacity='0.6'/><rect x='120' y='92' width='48' height='26' rx='6' stroke='currentColor' stroke-width='2' opacity='0.6'/><rect x='120' y='134' width='228' height='26' rx='6' stroke='currentColor' stroke-width='2' opacity='0.6'/><line x1='360' y1='40' x2='360' y2='176' stroke='var(--accent)' stroke-width='2.5' stroke-dasharray='6 6' stroke-linecap='round'/><text x='356' y='196' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='end'>600 IU/day</text><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='end'><text x='114' y='69'>Egg</text><text x='114' y='111'>Milk, glass</text><text x='114' y='153'>Salmon</text></g><g fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' opacity='0.75'><text x='142' y='69' text-anchor='start'>40</text><text x='174' y='111' text-anchor='start'>120</text><text x='342' y='153' text-anchor='end'>570</text></g></svg>"
+        },
+        {
+          "title": "The wrong word still steers how we use it",
+          "body": "The label shapes the response. Because it is a “vitamin”, the reflex is to swallow more, and the shelves are full of high-dose pills. But a hormone is not something the body hoards more of to feel better. Past a point, extra vitamin D pushes blood calcium too high and starts doing harm. For most healthy people, a short spell of sun and ordinary fortified food already covers the need."
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "The mislabel is more than a curiosity. Vitamin D is the visible tip of an endocrine system that runs on sunlight, one the body evolved long before anyone thought to name it. Science met it as a cure for rickets and filed it with the nutrients, and the label stuck even after the biology turned out to be something else."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "Why do scientists say vitamin D is not really a vitamin?",
+          "options": [
+            "Because it contains no carbon, unlike true vitamins",
+            "Because the body can make it from sunlight, so it is not something you must eat",
+            "Because it is found only in animal foods",
+            "Because it was discovered after vitamins A, B, and C"
+          ],
+          "answer_index": 1,
+          "explanation": "A vitamin is defined as something the body cannot make in sufficient amounts and so must get from food. Skin makes vitamin D from sunlight, which breaks that definition."
+        },
+        {
+          "question": "What feature makes vitamin D behave like a hormone rather than a nutrient?",
+          "options": [
+            "It is stored in body fat",
+            "It is fat-soluble",
+            "It is made in one part of the body and acts on distant tissues through a receptor",
+            "It is needed only in small amounts"
+          ],
+          "answer_index": 2,
+          "explanation": "That is the textbook definition of a hormone: produced in the body, carried in the blood, and acting on far-off tissues through a dedicated receptor, here the vitamin D receptor."
+        },
+        {
+          "question": "Vitamin D's active form is a secosteroid. What does that tell you about it?",
+          "options": [
+            "It is chemically related to steroids like cortisol and estrogen",
+            "It is a kind of protein",
+            "It is a simple sugar",
+            "It cannot dissolve in fat"
+          ],
+          "answer_index": 0,
+          "explanation": "A secosteroid is a steroid with one ring broken open. Vitamin D shares the cholesterol skeleton of cortisol and the sex hormones, which is why it can act through the same receptor machinery."
+        },
+        {
+          "question": "Why does sunlight matter so much for maintaining vitamin D?",
+          "options": [
+            "Sunlight destroys the vitamin D in food, so you must eat more",
+            "Vitamin D only works while sunlight is on your skin",
+            "Light entering the eyes is how the body absorbs it",
+            "Very little natural food contains it, so skin production is the main supply"
+          ],
+          "answer_index": 3,
+          "explanation": "Outside oily fish and fortified products, food holds very little vitamin D. For most people the bulk of their supply is made in the skin under ultraviolet light."
+        },
+        {
+          "question": "Why is taking very large doses of vitamin D risky?",
+          "options": [
+            "Large doses block the body from making its own",
+            "Extra vitamin D is converted into vitamin A",
+            "It is a hormone, and too much pushes blood calcium dangerously high",
+            "The body cannot store any excess, so it is all wasted"
+          ],
+          "answer_index": 2,
+          "explanation": "Hormones act at tiny doses and have ceilings. Flooding the body with vitamin D raises blood calcium to harmful levels, which is why upper limits exist rather than more being better."
+        },
+        {
+          "question": "A blood test reports the storage form in ng/mL, while the active hormone sits near 40 pg/mL. What does that roughly 1000-fold gap show?",
+          "options": [
+            "The blood test is measuring the wrong molecule",
+            "Most vitamin D is destroyed in the blood",
+            "The storage form is more powerful than the active hormone",
+            "The active hormone works at the tiny concentrations typical of hormones"
+          ],
+          "answer_index": 3,
+          "explanation": "The active hormone is potent, so it acts at picogram levels, thousandths of the storage form's concentration. Working at such tiny amounts is a hallmark of hormones."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "If some vitamin D is good, more must be better.",
+          "reality": "It is a hormone, and hormones have ceilings. Very high doses drive blood calcium up and can damage the kidneys. For adults the usual daily upper limit is around 4,000 international units, well under what many megadose pills contain."
+        },
+        {
+          "myth": "A healthy diet gives you all the vitamin D you need.",
+          "reality": "For most people it cannot. Outside oily fish and fortified products, ordinary food carries very little, and that is why so much of it is fortified. The main supply is skin in sunlight, with food a distant second."
+        },
+        {
+          "myth": "A summer tan means your vitamin D is topped up.",
+          "reality": "Tanning and vitamin D both come from UVB light, but they are not the same process. Age, sunscreen, and the season all change how much you actually make, so a tan can deepen while your stored level stays low."
+        }
+      ]
+    },
+    {
+      "type": "open_questions",
+      "order": 12,
+      "content": {
+        "body": "The bone story is settled. The rest is still argued. Vitamin D receptors turn up in tissues far beyond bone, from immune cells to muscle. That fed hopes that supplements might prevent infections, cancer, or heart disease. Big trials have mostly disappointed, and no one agrees on the healthy level.",
+        "items": [
+          "Do vitamin D supplements help anything beyond bone, or does the body's own supply already cover it?",
+          "What blood level counts as “sufficient”, and why do expert panels keep setting it differently?",
+          "Why does a calcium hormone act on immune cells, muscle, and so many tissues with nothing to do with bone?"
+        ]
+      }
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Bikle DD. Vitamin D: Production, Metabolism and Mechanisms of Action. Endotext (NCBI Bookshelf)",
+          "url": "https://www.ncbi.nlm.nih.gov/books/NBK278935/",
+          "type": "book"
+        },
+        {
+          "label": "Vitamin D",
+          "url": "https://en.wikipedia.org/wiki/Vitamin_D",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Vitamin D receptor",
+          "url": "https://en.wikipedia.org/wiki/Vitamin_D_receptor",
+          "type": "wikipedia"
+        },
+        {
+          "label": "NIH Office of Dietary Supplements. Vitamin D: Fact Sheet for Health Professionals",
+          "url": "https://ods.od.nih.gov/factsheets/VitaminD-HealthProfessional/",
+          "type": "article"
+        },
+        {
+          "label": "Holick MF. The One-Hundred-Year Anniversary of the Discovery of the Sunshine Vitamin D3. PMC9919777",
+          "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9919777/",
+          "type": "paper"
+        }
+      ]
+    }
+  ]
+}

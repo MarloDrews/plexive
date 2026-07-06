@@ -1,0 +1,218 @@
+{
+  "tags": [
+    "biology",
+    "animals",
+    "neuroscience"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Convergent evolution"
+      },
+      "featured": true
+    },
+    {
+      "format": "facts",
+      "ref": {
+        "title": "Octopuses have nine brains"
+      },
+      "featured": false
+    },
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Jet propulsion"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "An octopus has three hearts, and the one that feeds its body stops the moment it starts to swim.",
+    "teasers": [
+      "The tradeoff that keeps an octopus on the seafloor",
+      "Why blue blood needs three separate pumps",
+      "The fastest escape is also the costliest"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "An octopus has three hearts, and the one that feeds its body stops the moment it starts to swim."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 0 400 230' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='28' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Three hearts, one job each</text><text x='200' y='52' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>systemic heart</text><g stroke='currentColor' stroke-width='2.5'><circle cx='88' cy='104' r='28'/><circle cx='312' cy='104' r='28'/></g><circle cx='200' cy='104' r='36' stroke='var(--accent)' stroke-width='2.5' fill='var(--accent)' fill-opacity='0.10'/><g stroke='currentColor' stroke-width='2' opacity='0.55' stroke-linecap='round' stroke-linejoin='round'><path d='M118 104 h42'/><path d='M160 104 l-12 -6 m12 6 l-12 6'/><path d='M282 104 h-42'/><path d='M240 104 l12 -6 m-12 6 l12 6'/></g><path d='M200 140 v30' stroke='currentColor' stroke-width='2' opacity='0.55' stroke-linecap='round'/><path d='M200 170 l-6 -12 m6 12 l6 -12' stroke='currentColor' stroke-width='2' opacity='0.55' stroke-linecap='round' stroke-linejoin='round'/><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle'><text x='88' y='152'>gill heart</text><text x='312' y='152'>gill heart</text><text x='200' y='188'>to the body</text></g><text x='200' y='214' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>stops when the octopus swims</text></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "Watch an octopus escape. It fires a jet of water from its body and rockets backward, the fastest thing it can do. At that exact moment, the heart that carries oxygen to its muscles stops beating. The hard squeeze of the mantle that powers the jet also clamps down on the vessels feeding that heart, so it has nothing to pump. The animal's top speed and its oxygen supply cannot run at the same time."
+    },
+    {
+      "type": "how_we_know",
+      "order": 5,
+      "content": "You can watch it happen. Physiologists have placed fine sensors on octopuses and recorded the systemic heart as the animal moves. While it crawls, all three hearts beat steadily. When it jets, the trace from the systemic heart flattens, then picks up again once the animal stops. Recovery is slow. After a hard swim, the octopus has to repay the oxygen it went without."
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "The jet stalls the heart that powers it",
+          "body": "The mechanism is a plumbing problem. To jet, the octopus fills its mantle with water and squeezes, forcing a stream out through the funnel. That squeeze raises the pressure inside the mantle so high that blood can no longer flow back into the systemic heart. With nothing returning to it, the heart cannot fill, and it cannot pump.",
+          "visual_svg": "<svg viewBox='0 0 400 200' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='26' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Why a jet stops the heart</text><line x1='200' y1='48' x2='200' y2='180' stroke='currentColor' stroke-width='1.5' opacity='0.3' stroke-dasharray='6 6'/><text x='100' y='70' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>crawl</text><circle cx='118' cy='120' r='26' stroke='currentColor' stroke-width='2.5'/><path d='M40 120 h48' stroke='currentColor' stroke-width='2.5' stroke-linecap='round'/><path d='M92 120 l-12 -6 m12 6 l-12 6' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/><text x='118' y='124' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' text-anchor='middle'>heart</text><text x='64' y='162' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.75' text-anchor='middle'>blood in</text><text x='300' y='70' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>jet</text><circle cx='300' cy='120' r='26' stroke='var(--accent)' stroke-width='2.5'/><path d='M362 120 h-22' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' opacity='0.5'/><line x1='338' y1='104' x2='338' y2='136' stroke='var(--accent)' stroke-width='3.5' stroke-linecap='round'/><text x='300' y='124' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' text-anchor='middle'>stopped</text><text x='322' y='162' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>return blocked</text></svg>"
+        },
+        {
+          "title": "Blue blood explains the extra pumps",
+          "body": "The blood itself is part of the reason there are three hearts. It is blue. Octopuses carry oxygen on hemocyanin, a copper-based protein, rather than the iron-based hemoglobin that makes our blood red. Hemocyanin is a weaker carrier in warm water, but it holds an edge in the cold, oxygen-poor depths where many octopuses live. To push enough of it around, the octopus needs the two gill hearts driving blood through the gills under pressure."
+        },
+        {
+          "title": "A walker that can sprint, but only briefly",
+          "body": "Put together, the parts describe a crawler. The octopus spends almost all its time walking over rock and sand on its arms, tasting as it goes, with every heart beating. It trades sustained speed for a life spent close to the bottom. Jetting is the emergency gear: a fast, costly burst to escape a predator, often behind a cloud of ink, good for a few metres before the oxygen runs short. A squid, built to jet for a living, does this very differently.",
+          "image_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Octopus_vulgaris_02.JPG",
+          "image_caption": "The common octopus, Octopus vulgaris. Most octopuses spend their lives crawling over the seafloor rather than swimming.",
+          "image_attribution": "H. Zell, “Octopus vulgaris 02”, CC BY-SA 3.0 (Wikimedia Commons)"
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "The stalling heart is one cost of how differently an octopus is built. It is a mollusk. Nearer kin to a snail than to a fish, it grew large and clever along a path all its own. Blue blood, three hearts, a nervous system spread through its arms: none of it is the vertebrate solution, and all of it works. The heart that quits mid-jet is simply the price of that body plan."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "Why does an octopus's systemic heart stop when it swims?",
+          "options": [
+            "Swimming uses so much oxygen that the heart overheats",
+            "The mantle squeeze that powers the jet blocks blood from returning to the heart",
+            "The gill hearts take over and switch the systemic heart off",
+            "Cold water slows the heart until it stops"
+          ],
+          "answer_index": 1,
+          "explanation": "To jet, the octopus squeezes its mantle hard. That raises the internal pressure enough to stop blood flowing back to the systemic heart, so with nothing to pump, it goes still."
+        },
+        {
+          "question": "Given how its hearts work, why do octopuses mostly crawl?",
+          "options": [
+            "Crawling is actually faster than jetting",
+            "Their arms cannot grip well enough to swim",
+            "Jetting starves the body of oxygen and tires them fast, so crawling is more sustainable",
+            "They cannot see well enough to move through open water"
+          ],
+          "answer_index": 2,
+          "explanation": "Every jet stops the systemic heart and cuts off oxygen to the body, and recovery is slow. Crawling keeps all three hearts beating, so it is the cheaper way to get around."
+        },
+        {
+          "question": "How does the octopus's blue blood relate to its having three hearts?",
+          "options": [
+            "Hemocyanin is a weaker oxygen carrier, so extra pumping helps move enough oxygen",
+            "The blue color comes from having extra hearts",
+            "Three hearts are needed to keep the blood blue",
+            "The blood is too thick for a single heart to move"
+          ],
+          "answer_index": 0,
+          "explanation": "Copper-based hemocyanin carries less oxygen than our hemoglobin in ordinary conditions. The two gill hearts add the extra pumping needed to move enough oxygen with it."
+        },
+        {
+          "question": "How does an octopus differ from a squid in the water?",
+          "options": [
+            "Octopuses jet constantly, while squid rarely do",
+            "Both are built to jet over long distances",
+            "Neither can jet at all",
+            "Squid jet for a living, while the octopus can only jet in short bursts"
+          ],
+          "answer_index": 3,
+          "explanation": "Squid are streamlined jet specialists that power through open water. The octopus shares the jet, but its stalling heart makes it good only for a brief escape."
+        },
+        {
+          "question": "Why might hemocyanin suit many octopuses despite carrying less oxygen than hemoglobin?",
+          "options": [
+            "It is cheaper for the body to build",
+            "It works better in the cold, oxygen-poor water where they live",
+            "It turns the blood red, which helps them hide",
+            "It lets them breathe air at the surface"
+          ],
+          "answer_index": 1,
+          "explanation": "Hemocyanin holds an edge in cold, low-oxygen water, the conditions many octopuses live in. It is not a better carrier everywhere, just a better fit for that environment."
+        },
+        {
+          "question": "What does the stalling heart best illustrate about the octopus?",
+          "options": [
+            "It is a poorly evolved, failing animal",
+            "It is essentially a fish with an odd heart",
+            "Its hearts work just like a vertebrate's",
+            "It is a different body plan that trades swimming for a life of crawling"
+          ],
+          "answer_index": 3,
+          "explanation": "The octopus is a mollusk that became large and active on its own evolutionary path. The three-heart system works well for a crawler, and the stall is the cost of that design."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "Three hearts must make the octopus a stronger swimmer.",
+          "reality": "It is the other way round. The design moves blood well while the octopus is still, yet the main heart stalls under the effort of a jet. It is a body tuned for walking the seafloor."
+        },
+        {
+          "myth": "Octopuses and squid swim the same way.",
+          "reality": "Squid are the jet specialists, streamlined for powering through open water. The octopus can jet too, but only in short bursts before its heart and oxygen give out."
+        },
+        {
+          "myth": "Blue blood means octopus blood is better than ours.",
+          "reality": "Neither blood is better; each fits its own water. Hemocyanin carries less oxygen than our hemoglobin in warm, oxygen-rich conditions, and wins mainly in the cold and dark where many octopuses live."
+        }
+      ]
+    },
+    {
+      "type": "open_questions",
+      "order": 12,
+      "content": {
+        "body": "The basic fact is settled; the fine control is not. It is unclear how far this limit has shaped octopus life, keeping most species near the bottom and off the long migrations squid make. How the octopus stops and restarts the systemic heart so precisely, timing it to each jet, nobody fully knows.",
+        "items": [
+          "How does an octopus stop and restart its main heart so precisely, on the beat of each jet?",
+          "How much has this limit kept octopuses tied to the seafloor?",
+          "Why did cephalopod circulation come to rely on three hearts and copper-based blood at all?"
+        ]
+      }
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Wells MJ. Nervous Control of the Heartbeat in Octopus. Journal of Experimental Biology 1980;85:111-128",
+          "url": "https://journals.biologists.com/jeb/article/85/1/111/22767/Nervous-Control-of-the-Heartbeat-in-Octopus",
+          "type": "paper"
+        },
+        {
+          "label": "Octopus",
+          "url": "https://en.wikipedia.org/wiki/Octopus",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Hemocyanin",
+          "url": "https://en.wikipedia.org/wiki/Hemocyanin",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Natural History Museum. Octopuses keep surprising us: here are eight examples how",
+          "url": "https://www.nhm.ac.uk/discover/octopuses-keep-surprising-us-here-are-eight-examples-how.html",
+          "type": "article"
+        }
+      ]
+    }
+  ]
+}
