@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
 import { clearApiCache } from "./swr"
+import { TOKEN_KEY } from "@/lib/storage"
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
@@ -45,7 +46,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // On mount, check if there is a stored token and restore the session.
   // If the token is expired or invalid, clear it silently.
   useEffect(() => {
-    const token = localStorage.getItem("deepscroll_token")
+    const token = localStorage.getItem(TOKEN_KEY)
     if (!token) {
       setLoading(false)
       return
@@ -58,7 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return r.json() as Promise<AuthUser>
       })
       .then((data) => setUser(data))
-      .catch(() => localStorage.removeItem("deepscroll_token"))
+      .catch(() => localStorage.removeItem(TOKEN_KEY))
       .finally(() => setLoading(false))
   }, [])
 
@@ -72,7 +73,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!r.ok) throw new Error(detailToMessage(data.detail, "Login failed."))
     // Drop all cached API data so nothing from a previous account survives.
     clearApiCache()
-    localStorage.setItem("deepscroll_token", data.access_token)
+    localStorage.setItem(TOKEN_KEY, data.access_token)
     setUser(data.user as AuthUser)
   }
 
@@ -85,13 +86,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const data = await r.json()
     if (!r.ok) throw new Error(detailToMessage(data.detail, "Registration failed."))
     clearApiCache()
-    localStorage.setItem("deepscroll_token", data.access_token)
+    localStorage.setItem(TOKEN_KEY, data.access_token)
     setUser(data.user as AuthUser)
   }
 
   function logout(): void {
     clearApiCache()
-    localStorage.removeItem("deepscroll_token")
+    localStorage.removeItem(TOKEN_KEY)
     setUser(null)
   }
 

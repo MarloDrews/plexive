@@ -1,8 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL
+import { TOKEN_KEY, wsUrl } from "@/lib/storage"
 
 export interface ChatMessage {
   id: number
@@ -32,12 +31,6 @@ export const MESSAGE_MAX_CHARS = 2000
 
 type SocketStatus = "connecting" | "open" | "closed"
 
-// http -> ws, https -> wss. The backend rejects plain ws outside local dev,
-// so production deployments must serve the API over https.
-function chatWsUrl(): string {
-  return (API_URL ?? "").replace(/^http/, "ws") + "/api/chat/ws"
-}
-
 // Opens one authenticated socket for the lifetime of the calling component.
 // Auth is a first frame ({type:"auth", token}) so the JWT never appears in a URL.
 export function useChatSocket(onMessage: (m: ChatMessage) => void) {
@@ -48,7 +41,7 @@ export function useChatSocket(onMessage: (m: ChatMessage) => void) {
   onMessageRef.current = onMessage
 
   useEffect(() => {
-    const token = localStorage.getItem("deepscroll_token")
+    const token = localStorage.getItem(TOKEN_KEY)
     if (!token) {
       setStatus("closed")
       return
@@ -57,7 +50,7 @@ export function useChatSocket(onMessage: (m: ChatMessage) => void) {
     let retryTimer: ReturnType<typeof setTimeout>
 
     function connect() {
-      const ws = new WebSocket(chatWsUrl())
+      const ws = new WebSocket(wsUrl("/api/chat/ws"))
       wsRef.current = ws
       setStatus("connecting")
       ws.onopen = () => ws.send(JSON.stringify({ type: "auth", token }))

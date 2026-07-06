@@ -1,10 +1,12 @@
+import { TOKEN_KEY } from "@/lib/storage"
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
 // Wrapper around fetch that automatically attaches the Authorization header
 // when a token is present in localStorage. Use this for any API call that
 // may require authentication.
 export async function apiFetch(path: string, options: RequestInit = {}): Promise<Response> {
-  const token = localStorage.getItem("deepscroll_token")
+  const token = localStorage.getItem(TOKEN_KEY)
   const headers: Record<string, string> = {
     ...(options.headers as Record<string, string> ?? {}),
   }

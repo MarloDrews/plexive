@@ -1,8 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL
+import { TOKEN_KEY, wsUrl } from "@/lib/storage"
 
 // Battle WebSocket hook for web, modeled on chatSocket.ts and the mobile
 // battleSocket (mobile/src/lib/battle/battleSocket.ts). Like chat it pairs by
@@ -24,12 +23,6 @@ export type BattleInbound =
 
 type SocketStatus = "connecting" | "open" | "closed"
 
-// http -> ws, https -> wss. The backend rejects plain ws outside local dev,
-// so production deployments must serve the API over https.
-function battleWsUrl(): string {
-  return (API_URL ?? "").replace(/^http/, "ws") + "/api/battle/ws"
-}
-
 // Opens one battle socket for the signed-in user and keeps it alive for the
 // lifetime of the calling component. `loggedIn` gates the connection (and
 // reconnects it if the user logs in after mount); guests get a closed socket.
@@ -40,7 +33,7 @@ export function useBattleSocket(loggedIn: boolean, onEvent: (e: BattleInbound) =
   onEventRef.current = onEvent
 
   useEffect(() => {
-    const token = typeof window !== "undefined" ? localStorage.getItem("deepscroll_token") : null
+    const token = typeof window !== "undefined" ? localStorage.getItem(TOKEN_KEY) : null
     if (!loggedIn || !token) {
       setStatus("closed")
       return
@@ -49,7 +42,7 @@ export function useBattleSocket(loggedIn: boolean, onEvent: (e: BattleInbound) =
     let retryTimer: ReturnType<typeof setTimeout>
 
     function connect() {
-      const ws = new WebSocket(battleWsUrl())
+      const ws = new WebSocket(wsUrl("/api/battle/ws"))
       wsRef.current = ws
       setStatus("connecting")
       ws.onopen = () => ws.send(JSON.stringify({ type: "auth", token }))

@@ -1,3 +1,5 @@
+import { TOKEN_KEY } from "@/lib/storage"
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
 interface QueuedEvent {
@@ -18,7 +20,7 @@ function flush() {
   const batch = queue.splice(0)
   // Attach the auth token so the backend can attribute likes/views to the user
   // (enables per-user like dedup and the liked flag on GET /likes).
-  const token = localStorage.getItem("deepscroll_token")
+  const token = localStorage.getItem(TOKEN_KEY)
   const headers: Record<string, string> = { "Content-Type": "application/json" }
   if (token) headers["Authorization"] = `Bearer ${token}`
   fetch(`${API_URL}/api/events`, {
