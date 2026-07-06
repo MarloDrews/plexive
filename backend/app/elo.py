@@ -82,14 +82,14 @@ def apply_answer_timed(db: Session, user: User, difficulty, correct: bool, answe
     return _update(user, difficulty, correct, time_bonus=bonus)
 
 
-def elo_summary(db: Session, user_id: int) -> int | None:
+def elo_summary(user: User) -> int | None:
     """The user's single knowledge rating, rounded, or None before the first
     scored answer.
 
-    The per-format breakdown died with the move to the unified score on the
-    user row; responses no longer carry a formats dict (the always-empty
-    compatibility dict is gone from the contract).
+    Takes the already-loaded User row: every caller holds one, so the old
+    by-id variant paid a redundant SELECT per scored answer / elo view. The
+    per-format breakdown died with the move to the unified score on the user
+    row; responses no longer carry a formats dict.
     """
-    user = db.query(User).filter(User.id == user_id).first()
-    rating = user.knowledge_rating if user else None
+    rating = user.knowledge_rating
     return round(rating) if rating is not None else None

@@ -27,10 +27,10 @@ def _get_quiz_items(post: Post) -> list[dict]:
     return []
 
 
-def _elo_payload(db: Session, user_id: int, fmt: str, delta: float) -> dict:
+def _elo_payload(user: User, fmt: str, delta: float) -> dict:
     # The score is now a single unified rating, so `rating` and `global_rating`
     # are the same number; `format` is kept for response-shape compatibility.
-    global_rating = elo_summary(db, user_id)
+    global_rating = elo_summary(user)
     return {
         "format": fmt,
         "rating": global_rating,
@@ -82,7 +82,7 @@ def answer_quiz_question(
         result["correct"] = existing.is_correct
         result["already_answered"] = True
         result["scored"] = existing.rating_delta != 0.0
-        result["elo"] = _elo_payload(db, current_user.id, post.format, 0.0)
+        result["elo"] = _elo_payload(current_user, post.format, 0.0)
         return result
 
     # Authors know their own answers, so their own posts never move their Elo.
@@ -103,7 +103,7 @@ def answer_quiz_question(
     ))
     db.commit()
 
-    result["elo"] = _elo_payload(db, current_user.id, post.format, delta)
+    result["elo"] = _elo_payload(current_user, post.format, delta)
     return result
 
 
@@ -139,4 +139,4 @@ def get_quiz_state(
 @router.get("/users/{username}/elo")
 def get_user_elo(username: str, db: Session = Depends(get_db)):
     user = get_target_user(username, db)
-    return {"global_rating": elo_summary(db, user.id)}
+    return {"global_rating": elo_summary(user)}
