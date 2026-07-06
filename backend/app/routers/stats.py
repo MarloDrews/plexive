@@ -63,6 +63,16 @@ def _fill_months(rows: list, n: int = 12) -> List[dict]:
     return [{"period": m, "count": lookup.get(m, 0)} for m in _last_n_months(n)]
 
 
+def _series_cutoff(n: int = 12) -> datetime:
+    """First day of the earliest month in the last-n-months window. The over-time
+    series only keep these months anyway (via _fill_months); bounding the query
+    on created_at lets the created_at indexes prune instead of scanning all time,
+    with an identical result."""
+    earliest = _last_n_months(n)[0]  # "YYYY-MM"
+    year, month = earliest.split("-")
+    return datetime(int(year), int(month), 1)
+
+
 def _milestone_date(dt) -> str | None:
     if dt is None:
         return None
@@ -196,12 +206,16 @@ def get_global_stats(db: Session = Depends(get_db)):
     ]
 
     # --- Over-time series ---
+    # Bounded to the last 12 months so the created_at indexes prune instead of
+    # scanning all-time data; _fill_months keeps only those months regardless.
+    series_cutoff = _series_cutoff(12)
     posts_over_time = _fill_months([
         {"period": r.period, "count": r.cnt}
         for r in db.query(
             _month(Post.created_at).label("period"),
             func.count(Post.id).label("cnt"),
         )
+        .filter(Post.created_at >= series_cutoff)
         .group_by(_month(Post.created_at))
         .all()
     ])
@@ -212,6 +226,7 @@ def get_global_stats(db: Session = Depends(get_db)):
             _month(User.created_at).label("period"),
             func.count(User.id).label("cnt"),
         )
+        .filter(User.created_at >= series_cutoff)
         .group_by(_month(User.created_at))
         .all()
     ])
@@ -222,6 +237,7 @@ def get_global_stats(db: Session = Depends(get_db)):
             _month(Comment.created_at).label("period"),
             func.count(Comment.id).label("cnt"),
         )
+        .filter(Comment.created_at >= series_cutoff)
         .group_by(_month(Comment.created_at))
         .all()
     ])
@@ -232,7 +248,7 @@ def get_global_stats(db: Session = Depends(get_db)):
             _month(Event.created_at).label("period"),
             func.count(Event.id).label("cnt"),
         )
-        .filter(Event.event_type == "like")
+        .filter(Event.event_type == "like", Event.created_at >= series_cutoff)
         .group_by(_month(Event.created_at))
         .all()
     ])
@@ -260,7 +276,9 @@ def get_global_stats(db: Session = Depends(get_db)):
 
     # --- Activity heatmap (7 x 24 = 168 entries) ---
     # The weekday and hour series below are marginals of this one query,
-    # so they are derived in Python instead of re-querying.
+    # so they are derived in Python instead of re-querying. Left all-time on
+    # purpose: the heatmap answers "when do people post, ever", so a date bound
+    # would change its meaning (unlike the monthly series above).
     hm_lookup = {
         (int(r.wd), int(r.hr)): r.cnt
         for r in db.query(
@@ -296,7 +314,9 @@ def get_global_stats(db: Session = Depends(get_db)):
     activity_by_hour = [{"hour": h, "count": hr_lookup.get(h, 0)} for h in range(24)]
 
     # --- Post quality over time ---
-    # One query: likes grouped by the creation month of the liked post
+    # One query: likes grouped by the creation month of the liked post. Bounded
+    # to the last 12 months (post_quality_over_time only reads those, from
+    # posts_over_time) so the scan prunes on the post created_at index.
     _likes_by_post_month = {
         r.period: r.cnt
         for r in db.query(
@@ -304,6 +324,7 @@ def get_global_stats(db: Session = Depends(get_db)):
             func.count(Event.id).label("cnt"),
         )
         .join(Event, and_(Event.post_id == Post.id, Event.event_type == "like"))
+        .filter(Post.created_at >= series_cutoff)
         .group_by(_month(Post.created_at))
         .all()
     }
