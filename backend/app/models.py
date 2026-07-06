@@ -146,7 +146,7 @@ class Follow(Base):
         Index("ix_follows_following_id_status", "following_id", "status"),
     )
 
-    id           = Column(Integer, primary_key=True, index=True)
+    id           = Column(Integer, primary_key=True)
     follower_id  = Column(Integer, ForeignKey("users.id"), nullable=False)
     following_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     status       = Column(String, default="accepted", nullable=False)
@@ -168,7 +168,7 @@ class QuizAnswer(Base):
     )
 
     id             = Column(Integer, primary_key=True)
-    user_id        = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    user_id        = Column(Integer, ForeignKey("users.id"), nullable=False)
     post_id        = Column(Integer, ForeignKey("posts.id"), nullable=False, index=True)
     question_index = Column(Integer, nullable=False)
     chosen_index   = Column(Integer, nullable=False)
@@ -197,7 +197,7 @@ class ConversationParticipant(Base):
     )
 
     id              = Column(Integer, primary_key=True)
-    conversation_id = Column(Integer, ForeignKey("conversations.id"), nullable=False, index=True)
+    conversation_id = Column(Integer, ForeignKey("conversations.id"), nullable=False)
     user_id         = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     joined_at       = Column(DateTime, default=datetime.utcnow)
 
