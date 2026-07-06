@@ -1,3 +1,4 @@
+import Link from "next/link"
 import type { ReadNextItem } from "../../types/post"
 
 interface Props {
@@ -28,7 +29,7 @@ function RelatedCard({ item }: { item: ReadNextItem }) {
   )
 
   if (hasLink) {
-    return <a href={`/post/${item.target_post_id}`}>{inner}</a>
+    return <Link href={`/post/${item.target_post_id}`}>{inner}</Link>
   }
 
   return (
