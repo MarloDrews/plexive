@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, Request
-from sqlalchemy.orm import Session, selectinload
+from sqlalchemy.orm import Session
 
 from ..auth import get_optional_user
 from ..database import get_db
@@ -9,6 +9,7 @@ from ..models import Follow, Post, User
 from ..post_counts import attach_counts
 from ..rate_limit import check_rate_limit
 from ..schemas import PostListOut
+from ._shared import POST_EAGER
 
 router = APIRouter()
 
@@ -69,7 +70,7 @@ def search_posts(
 
     query = (
         db.query(Post)
-        .options(selectinload(Post.interests), selectinload(Post.author))
+        .options(*POST_EAGER)
         .filter(Post.status == "published")
     )
     if format:

@@ -1,7 +1,7 @@
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session, selectinload
+from sqlalchemy.orm import Session
 
 from ..auth import get_current_user, get_optional_user
 from ..database import get_db
@@ -12,6 +12,7 @@ from ..post_counts import attach_counts, attach_counts_one
 from ..rate_limit import check_rate_limit
 from ..sanitize import sanitize_svg_text
 from ..schemas import PostCreate, PostOut
+from ._shared import POST_EAGER
 
 router = APIRouter()
 
@@ -48,7 +49,7 @@ def get_my_posts(
 ):
     posts = (
         db.query(Post)
-        .options(selectinload(Post.interests), selectinload(Post.author))
+        .options(*POST_EAGER)
         .filter(Post.author_id == current_user.id)
         .order_by(Post.created_at.desc())
         .all()
@@ -107,7 +108,7 @@ def create_post(
 
     post = (
         db.query(Post)
-        .options(selectinload(Post.interests), selectinload(Post.author))
+        .options(*POST_EAGER)
         .filter(Post.id == post_id)
         .first()
     )
@@ -122,7 +123,7 @@ def get_post(
 ):
     post = (
         db.query(Post)
-        .options(selectinload(Post.interests), selectinload(Post.author))
+        .options(*POST_EAGER)
         .filter(Post.id == post_id)
         .first()
     )

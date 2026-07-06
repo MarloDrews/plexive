@@ -1,7 +1,7 @@
 from typing import List, Optional, Set
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session, selectinload
+from sqlalchemy.orm import Session
 
 from ..auth import get_current_user, get_optional_user
 from ..database import get_db
@@ -9,6 +9,7 @@ from ..models import Follow, Post, User
 from ..post_counts import attach_counts
 from ..schemas import PostListOut
 from ..scoring import score_posts
+from ._shared import POST_EAGER
 
 router = APIRouter()
 
@@ -18,7 +19,7 @@ def _fetch_posts(ids: Set[int], db: Session) -> List[Post]:
         return []
     return (
         db.query(Post)
-        .options(selectinload(Post.interests), selectinload(Post.author))
+        .options(*POST_EAGER)
         .filter(Post.id.in_(ids))
         .all()
     )
@@ -87,7 +88,7 @@ def get_following_feed(
         return []
     posts = (
         db.query(Post)
-        .options(selectinload(Post.interests), selectinload(Post.author))
+        .options(*POST_EAGER)
         .filter(Post.author_id.in_(following_ids), Post.status == "published")
         .order_by(Post.created_at.desc())
         .limit(50)
@@ -107,7 +108,7 @@ def get_user_feed(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found.")
     posts = (
         db.query(Post)
-        .options(selectinload(Post.interests), selectinload(Post.author))
+        .options(*POST_EAGER)
         .filter(Post.author_id == target.id, Post.status == "published")
         .order_by(Post.created_at.desc())
         .limit(50)
