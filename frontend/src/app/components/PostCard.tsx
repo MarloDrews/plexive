@@ -11,12 +11,11 @@ import { usePostLike } from "@/lib/usePostLike"
 import { updatePostInFeedCaches } from "@/app/lib/swr"
 import { fcNum, fcStr, type Post } from "@/types/post"
 import { formatStyle } from "@/lib/formats"
-import { FIELD_GLYPHS } from "@/lib/glyphs"
 import { unescapeDollar } from "@/lib/prose"
 import Avatar from "@/components/Avatar"
 import BookCover from "@/components/BookCover"
 import DotScale from "@/components/DotScale"
-import SvgBlock from "@/components/SvgBlock"
+import FieldGlyph from "@/components/FieldGlyph"
 import VerifiedBadge from "@/components/VerifiedBadge"
 import { BookmarkIcon, CommentIcon, HeartIcon, SendIcon, SpeakerIcon } from "./icons"
 
@@ -40,32 +39,6 @@ function Teasers({ items }: { items: string[] }) {
         </div>
       ))}
     </div>
-  )
-}
-
-// Large category glyph for the typographic formats: a bold accent mark anchored
-// to the TOP RIGHT of the card, filling the field-line zone from the label's top
-// down to the headline (LAYOUT_STANDARD s2, SVG_STANDARD s6). It is an absolute
-// OVERLAY: taken out of the flow, it occupies no layout space and so never moves
-// the label or the headline — the field-line row keeps its height (min-h-7) and
-// the label stays put. The glyph height is the row height plus `reach` (a negative
-// bottom inset that bleeds down to the headline top; the amount is the format's
-// field-line-to-headline gap, passed by the caller so the glyph never overlaps the
-// headline). Width follows the glyph's own viewBox aspect (landscape ~56x32) and
-// is capped (max-w) so it keeps a clear gap from the label and never runs under it.
-// The glyph belongs to the post's primary category, its first tag (tags[0]), from
-// the app-owned FIELD_GLYPHS set (ROADMAP.md); trusted content, so the official SVG
-// path (isUserContent=false). The accent bar (SlabAccent) is a separate element and
-// stays continuous.
-function FieldGlyph({ slug, reach = "bottom-0" }: { slug: string | undefined; reach?: string }) {
-  const svg = slug ? FIELD_GLYPHS[slug] : undefined
-  if (!svg) return null
-  return (
-    <SvgBlock
-      svg={svg}
-      isUserContent={false}
-      className={`pointer-events-none absolute top-0 right-0 ${reach} flex items-center justify-end max-w-[45%] [&_svg]:h-full [&_svg]:w-auto [&_img]:h-full [&_img]:w-auto`}
-    />
   )
 }
 

@@ -1,5 +1,6 @@
 import katex from "katex"
 import { splitItalics } from "@/lib/italics"
+import { unescapeDollar } from "@/lib/prose"
 
 type Segment = { type: "text"; content: string } | { type: "math"; content: string }
 
@@ -14,11 +15,6 @@ function nextUnescapedDollar(text: string, from: number): number {
     if (text[j] === "$") return j
   }
   return -1
-}
-
-// Turns an escaped "\$" back into a literal "$" for display in text segments.
-function unescapeDollar(text: string): string {
-  return text.replace(/\\\$/g, "$")
 }
 
 function parseSegments(text: string): Segment[] {

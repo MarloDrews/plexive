@@ -12,6 +12,7 @@
 
 import { useState } from "react"
 import { resolveBookCover, generatedCoverStyle, bakedCoverSvg } from "@/lib/bookCover"
+import { toBase64Utf8 } from "@/lib/svg"
 import { fcStr } from "@/types/post"
 import GeneratedBookCover from "./GeneratedBookCover"
 
@@ -24,11 +25,6 @@ interface Props {
   showCredit?: boolean
   // The post's content origin, for the SVG security split on the baked cover.
   isUserContent?: boolean
-}
-
-// btoa alone throws on non-ASCII; round-trip through UTF-8 bytes (same as SvgBlock).
-function toBase64Utf8(svg: string): string {
-  return btoa(unescape(encodeURIComponent(svg)))
 }
 
 // Render the baked cover SVG with the SVG security split, and without the legacy

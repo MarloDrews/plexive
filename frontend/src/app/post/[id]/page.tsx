@@ -6,7 +6,6 @@ import Link from "next/link"
 import { formatStyle } from "@/lib/formats"
 import { unescapeDollar } from "@/lib/prose"
 import { fcNum, fcStr, type Post } from "@/types/post"
-import { FIELD_GLYPHS } from "@/lib/glyphs"
 import SectionRenderer from "@/components/SectionRenderer"
 import SectionLabel from "@/components/SectionLabel"
 import HeadlineSection from "@/components/sections/HeadlineSection"
@@ -16,7 +15,7 @@ import { SlabAccent, SlabGlow } from "@/app/components/PostCard"
 import Avatar from "@/components/Avatar"
 import BookCover from "@/components/BookCover"
 import DotScale from "@/components/DotScale"
-import SvgBlock from "@/components/SvgBlock"
+import FieldGlyph from "@/components/FieldGlyph"
 import VerifiedBadge from "@/components/VerifiedBadge"
 import { ArrowUpIcon, HeartIcon, PauseIcon, SpeakerIcon, StopIcon } from "@/app/components/icons"
 import { useReadAloud } from "@/lib/readAloud/useReadAloud"
@@ -26,27 +25,6 @@ import { apiFetch } from "@/app/lib/api"
 import { usePostLike } from "@/lib/usePostLike"
 import { useComments } from "@/app/lib/useComments"
 import { updatePostInFeedCaches } from "@/app/lib/swr"
-
-// Large category glyph anchored to the TOP RIGHT of the detail header, filling the
-// field-line zone from the label's top down to the headline, mirroring the feed
-// card (LAYOUT_STANDARD s3, SVG_STANDARD s6). An absolute OVERLAY: out of the flow,
-// it occupies no layout space, so the label and headline do not move — the
-// field-line row keeps its height (min-h-7). `reach` is a negative bottom inset
-// bleeding the glyph down to the headline top (here the HeadlineSection pt-3), so it
-// never overlaps the headline. Width follows the viewBox aspect (landscape ~56x32),
-// capped (max-w) to clear the label. From FIELD_GLYPHS[tags[0]] (ROADMAP.md);
-// trusted content, official SVG path (isUserContent=false).
-function FieldGlyph({ slug, reach = "bottom-0" }: { slug: string | undefined; reach?: string }) {
-  const svg = slug ? FIELD_GLYPHS[slug] : undefined
-  if (!svg) return null
-  return (
-    <SvgBlock
-      svg={svg}
-      isUserContent={false}
-      className={`pointer-events-none absolute top-0 right-0 ${reach} flex items-center justify-end max-w-[45%] [&_svg]:h-full [&_svg]:w-auto [&_img]:h-full [&_img]:w-auto`}
-    />
-  )
-}
 
 // Shared flat-header meta row: avatar + creator, then the derived quiz-question
 // count, difficulty and reading time. Used by every flat header (facts,

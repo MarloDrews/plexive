@@ -6,6 +6,7 @@
 // dangerouslySetInnerHTML. Never relax this rule.
 
 import { LEGACY_SVG_ACCENT_MAP } from "@/lib/formats"
+import { toBase64Utf8 } from "@/lib/svg"
 
 interface Props {
   svg: string
@@ -14,11 +15,6 @@ interface Props {
   className?: string
   // currentColor for stroke-based seed SVGs.
   color?: string
-}
-
-// btoa alone throws on non-ASCII characters; round-trip through UTF-8 bytes.
-function toBase64Utf8(svg: string): string {
-  return btoa(unescape(encodeURIComponent(svg)))
 }
 
 // Seed SVGs were authored against the pre-redesign accent hexes. Rewrite
