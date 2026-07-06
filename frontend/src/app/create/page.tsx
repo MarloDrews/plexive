@@ -11,6 +11,20 @@ import { fcStr, type Post } from "@/types/post"
 import { CATEGORIES } from "@/lib/interests"
 import BottomNav from "@/app/components/BottomNav"
 import Spinner from "@/components/Spinner"
+import {
+  Accordion,
+  FieldError,
+  inputCls,
+  labelCls,
+  emptyQuizItem,
+  emptySource,
+  type Interest,
+  type QuizItem,
+  type Source,
+} from "./formUi"
+import QuizEditor from "./QuizEditor"
+import SourcesEditor from "./SourcesEditor"
+import InterestPickerBlock from "./InterestPickerBlock"
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
@@ -31,63 +45,13 @@ const FORMATS = FORMAT_IDS.map((id) => ({
   description: FORMAT_DESCRIPTIONS[id],
 }))
 
-interface Interest { id: number; name: string; slug: string }
-
-const inputCls =
-  "field text-sm py-3"
-const labelCls = "label-caps mb-2 mt-4 block"
-
-function FieldError({ msg }: { msg: string | undefined }) {
-  if (!msg) return null
-  return <p className="text-bad text-xs mt-1">{msg}</p>
-}
-
-function Accordion({
-  title, required, children, defaultOpen,
-}: {
-  title: string; required?: boolean; children: React.ReactNode; defaultOpen?: boolean
-}) {
-  const [open, setOpen] = useState(defaultOpen ?? false)
-  return (
-    <div className="card overflow-hidden mb-3">
-      <button
-        onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center justify-between px-4 py-3 text-left cursor-pointer"
-      >
-        <span className="text-sm font-medium text-ink">{title}</span>
-        <div className="flex items-center gap-2">
-          {required && (
-            <span className="text-xs text-lamp bg-lamp/15 rounded-full px-2 py-0.5">
-              Required
-            </span>
-          )}
-          {!required && (
-            <span className="text-xs text-ink-muted bg-white/[0.06] rounded-full px-2 py-0.5">
-              Optional
-            </span>
-          )}
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" className={`text-ink-dim transition-transform ${open ? "rotate-180" : ""}`}>
-            <path d="M6 9l6 6 6-6" />
-          </svg>
-        </div>
-      </button>
-      {open && <div className="px-4 pb-4 pt-3 bg-surface-0/40">{children}</div>}
-    </div>
-  )
-}
-
-// Default state shapes
+// Default state shapes local to the wizard (the shared quiz/source shapes live
+// in ./formUi)
 const emptyVoice = () => ({ quote: "", attribution: "" })
 const emptyCoreIdea = () => ({ title: "", body: "", in_practice: "", visual_svg: "", image_url: "", quote: "" })
-const emptyQuizItem = () => ({ question: "", options: ["", "", "", ""] as [string, string, string, string], answer_index: "0" as "0"|"1"|"2"|"3", explanation: "" })
-const emptySource = () => ({ label: "", url: "", type: "article" as string })
 
 type Voice = ReturnType<typeof emptyVoice>
 type CoreIdea = ReturnType<typeof emptyCoreIdea>
-type QuizItem = ReturnType<typeof emptyQuizItem>
-type Source = ReturnType<typeof emptySource>
-
-const SOURCE_TYPES = ["wikipedia", "paper", "book", "article", "database"]
 
 export default function CreatePage() {
   const router = useRouter()
@@ -801,29 +765,12 @@ export default function CreatePage() {
                 </div>
 
                 {/* Interests */}
-                <div className="card px-4 pb-4 pt-3 mb-3">
-                  <div className="flex items-center justify-between mb-2">
-                    <p className="label-caps text-lamp">Interests *</p>
-                    <span className="text-ink-muted text-xs font-mono">{selectedInterests.length}/5</span>
-                  </div>
-                  <FieldError msg={errors.interests} />
-                  {interestSections.map((sec) => (
-                    <div key={sec.label} className="mb-3">
-                      <p className="text-ink-faint text-xs mb-1.5">{sec.label}</p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {sec.items.map((interest) => {
-                          const isSelected = selectedInterests.includes(interest.slug)
-                          return (
-                            <button key={interest.slug} onClick={() => toggleInterest(interest.slug)}
-                              className={`rounded-full px-2.5 py-1 text-xs font-medium cursor-pointer transition-colors duration-150 ${isSelected ? "bg-white/[0.12] text-ink" : "bg-white/[0.04] text-ink-dim"}`}>
-                              {interest.name}
-                            </button>
-                          )
-                        })}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                <InterestPickerBlock
+                  sections={interestSections}
+                  selected={selectedInterests}
+                  onToggle={toggleInterest}
+                  error={errors.interests}
+                />
 
                 {/* Sections */}
                 <p className="label-caps mb-3 mt-5">Sections</p>
@@ -834,48 +781,9 @@ export default function CreatePage() {
                   <FieldError msg={errors.generic_body} />
                 </Accordion>
 
-                <Accordion title="Quiz (5–10 questions)" required defaultOpen>
-                  <FieldError msg={errors.s_quiz} />
-                  {quizItems.map((q, i) => (
-                    <div key={i} className="mb-4 bg-white/[0.04] rounded-2xl p-3">
-                      <p className="text-ink-muted text-xs mb-2">Question {i + 1}</p>
-                      <label className="text-ink-faint text-xs mb-1 block">Question text *</label>
-                      <textarea value={q.question} onChange={e => { const n = [...quizItems]; n[i] = { ...n[i], question: e.target.value }; setQuizItems(n) }} rows={2} className={`${inputCls} resize-none mb-2`} />
-                      {(["A", "B", "C", "D"] as const).map((opt, j) => (
-                        <div key={j} className="flex items-center gap-2 mb-1.5">
-                          <input type="radio" name={`gquiz_answer_${i}`} checked={q.answer_index === String(j) as "0"|"1"|"2"|"3"} onChange={() => { const n = [...quizItems]; n[i] = { ...n[i], answer_index: String(j) as "0"|"1"|"2"|"3" }; setQuizItems(n) }} className="shrink-0 accent-lamp" />
-                          <input type="text" value={q.options[j]} onChange={e => { const n = [...quizItems]; const opts = [...n[i].options] as [string,string,string,string]; opts[j] = e.target.value; n[i] = { ...n[i], options: opts }; setQuizItems(n) }} placeholder={`Option ${opt}`} className={`${inputCls} flex-1`} />
-                        </div>
-                      ))}
-                      <label className="text-ink-faint text-xs mb-1 block mt-2">Explanation *</label>
-                      <textarea value={q.explanation} onChange={e => { const n = [...quizItems]; n[i] = { ...n[i], explanation: e.target.value }; setQuizItems(n) }} rows={2} placeholder="Why this is the correct answer..." className={`${inputCls} resize-none`} />
-                    </div>
-                  ))}
-                  <div className="flex gap-3">
-                    {quizItems.length < 10 && <button onClick={() => setQuizItems([...quizItems, emptyQuizItem()])} className="btn btn-quiet text-lamp text-xs px-1.5 py-1">+ Add question</button>}
-                    {quizItems.length > 5 && <button onClick={() => setQuizItems(quizItems.slice(0, -1))} className="btn btn-quiet text-xs px-1.5 py-1">Remove last</button>}
-                  </div>
-                </Accordion>
+                <QuizEditor items={quizItems} onChange={setQuizItems} radioNamePrefix="gquiz_answer_" error={errors.s_quiz} />
 
-                <Accordion title="Sources (1–10)" required defaultOpen>
-                  <FieldError msg={errors.s_sources} />
-                  {sources.map((s, i) => (
-                    <div key={i} className="mb-3 bg-white/[0.04] rounded-2xl p-3">
-                      <label className="text-ink-faint text-xs mb-1 block">Label *</label>
-                      <input type="text" value={s.label} onChange={e => { const n = [...sources]; n[i] = { ...n[i], label: e.target.value }; setSources(n) }} placeholder="Source name..." className={`${inputCls} mb-2`} />
-                      <label className="text-ink-faint text-xs mb-1 block">URL *</label>
-                      <input type="url" value={s.url} onChange={e => { const n = [...sources]; n[i] = { ...n[i], url: e.target.value }; setSources(n) }} placeholder="https://..." className={`${inputCls} mb-2`} />
-                      <label className="text-ink-faint text-xs mb-1 block">Type</label>
-                      <select value={s.type} onChange={e => { const n = [...sources]; n[i] = { ...n[i], type: e.target.value }; setSources(n) }} className={inputCls}>
-                        {SOURCE_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-                      </select>
-                    </div>
-                  ))}
-                  <div className="flex gap-3">
-                    {sources.length < 10 && <button onClick={() => setSources([...sources, emptySource()])} className="btn btn-quiet text-lamp text-xs px-1.5 py-1">+ Add source</button>}
-                    {sources.length > 1 && <button onClick={() => setSources(sources.slice(0, -1))} className="btn btn-quiet text-xs px-1.5 py-1">Remove last</button>}
-                  </div>
-                </Accordion>
+                <SourcesEditor items={sources} onChange={setSources} labelPlaceholder="Source name..." error={errors.s_sources} />
 
                 {serverError && <p className="text-bad text-sm mb-3">{serverError}</p>}
                 <button onClick={handleSubmit} disabled={submitting} className="btn btn-primary h-12 w-full mt-4">
@@ -952,32 +860,12 @@ export default function CreatePage() {
               </div>
 
               {/* Interests */}
-              <div className="card px-4 pb-4 pt-3 mb-3">
-                <div className="flex items-center justify-between mb-2">
-                  <p className="label-caps text-lamp">Interests *</p>
-                  <span className="text-ink-muted text-xs font-mono">{selectedInterests.length}/5</span>
-                </div>
-                <FieldError msg={errors.interests} />
-                {interestSections.map((sec) => (
-                  <div key={sec.label} className="mb-3">
-                    <p className="text-ink-faint text-xs mb-1.5">{sec.label}</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {sec.items.map((interest) => {
-                        const isSelected = selectedInterests.includes(interest.slug)
-                        return (
-                          <button
-                            key={interest.slug}
-                            onClick={() => toggleInterest(interest.slug)}
-                            className={`rounded-full px-2.5 py-1 text-xs font-medium cursor-pointer transition-colors duration-150 ${isSelected ? "bg-white/[0.12] text-ink" : "bg-white/[0.04] text-ink-dim"}`}
-                          >
-                            {interest.name}
-                          </button>
-                        )
-                      })}
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <InterestPickerBlock
+                sections={interestSections}
+                selected={selectedInterests}
+                onToggle={toggleInterest}
+                error={errors.interests}
+              />
 
               {/* Section accordions */}
               <p className="label-caps mb-3 mt-5">Sections</p>
@@ -1077,68 +965,9 @@ export default function CreatePage() {
                 <textarea value={takeaway.body} onChange={(e) => { setTakeaway({ ...takeaway, body: e.target.value }); clearError("s_takeaway") }} rows={3} placeholder="The key thing to take away..." className={`${inputCls} resize-none`} />
               </Accordion>
 
-              <Accordion title="Quiz (5–10 questions)" required defaultOpen>
-                <FieldError msg={errors.s_quiz} />
-                {quizItems.map((q, i) => (
-                  <div key={i} className="mb-4 bg-white/[0.04] rounded-2xl p-3">
-                    <p className="text-ink-muted text-xs mb-2">Question {i + 1}</p>
-                    <label className="text-ink-faint text-xs mb-1 block">Question text *</label>
-                    <textarea value={q.question} onChange={(e) => { const n = [...quizItems]; n[i] = { ...n[i], question: e.target.value }; setQuizItems(n) }} rows={2} className={`${inputCls} resize-none mb-2`} />
-                    {(["A", "B", "C", "D"] as const).map((opt, j) => (
-                      <div key={j} className="flex items-center gap-2 mb-1.5">
-                        <input
-                          type="radio"
-                          name={`quiz_answer_${i}`}
-                          checked={q.answer_index === String(j) as "0"|"1"|"2"|"3"}
-                          onChange={() => { const n = [...quizItems]; n[i] = { ...n[i], answer_index: String(j) as "0"|"1"|"2"|"3" }; setQuizItems(n) }}
-                          className="shrink-0 accent-lamp"
-                        />
-                        <input
-                          type="text"
-                          value={q.options[j]}
-                          onChange={(e) => { const n = [...quizItems]; const opts = [...n[i].options] as [string,string,string,string]; opts[j] = e.target.value; n[i] = { ...n[i], options: opts }; setQuizItems(n) }}
-                          placeholder={`Option ${opt}`}
-                          className={`${inputCls} flex-1`}
-                        />
-                      </div>
-                    ))}
-                    <label className="text-ink-faint text-xs mb-1 block mt-2">Explanation *</label>
-                    <textarea value={q.explanation} onChange={(e) => { const n = [...quizItems]; n[i] = { ...n[i], explanation: e.target.value }; setQuizItems(n) }} rows={2} placeholder="Why this is the correct answer..." className={`${inputCls} resize-none`} />
-                  </div>
-                ))}
-                <div className="flex gap-3">
-                  {quizItems.length < 10 && (
-                    <button onClick={() => setQuizItems([...quizItems, emptyQuizItem()])} className="btn btn-quiet text-lamp text-xs px-1.5 py-1">+ Add question</button>
-                  )}
-                  {quizItems.length > 5 && (
-                    <button onClick={() => setQuizItems(quizItems.slice(0, -1))} className="btn btn-quiet text-xs px-1.5 py-1">Remove last</button>
-                  )}
-                </div>
-              </Accordion>
+              <QuizEditor items={quizItems} onChange={setQuizItems} radioNamePrefix="quiz_answer_" error={errors.s_quiz} />
 
-              <Accordion title="Sources (1–10)" required defaultOpen>
-                <FieldError msg={errors.s_sources} />
-                {sources.map((s, i) => (
-                  <div key={i} className="mb-3 bg-white/[0.04] rounded-2xl p-3">
-                    <label className="text-ink-faint text-xs mb-1 block">Label *</label>
-                    <input type="text" value={s.label} onChange={(e) => { const n = [...sources]; n[i] = { ...n[i], label: e.target.value }; setSources(n) }} placeholder="Book title, article name..." className={`${inputCls} mb-2`} />
-                    <label className="text-ink-faint text-xs mb-1 block">URL *</label>
-                    <input type="url" value={s.url} onChange={(e) => { const n = [...sources]; n[i] = { ...n[i], url: e.target.value }; setSources(n) }} placeholder="https://..." className={`${inputCls} mb-2`} />
-                    <label className="text-ink-faint text-xs mb-1 block">Type</label>
-                    <select value={s.type} onChange={(e) => { const n = [...sources]; n[i] = { ...n[i], type: e.target.value }; setSources(n) }} className={inputCls}>
-                      {SOURCE_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
-                    </select>
-                  </div>
-                ))}
-                <div className="flex gap-3">
-                  {sources.length < 10 && (
-                    <button onClick={() => setSources([...sources, emptySource()])} className="btn btn-quiet text-lamp text-xs px-1.5 py-1">+ Add source</button>
-                  )}
-                  {sources.length > 1 && (
-                    <button onClick={() => setSources(sources.slice(0, -1))} className="btn btn-quiet text-xs px-1.5 py-1">Remove last</button>
-                  )}
-                </div>
-              </Accordion>
+              <SourcesEditor items={sources} onChange={setSources} labelPlaceholder="Book title, article name..." error={errors.s_sources} />
 
               {/* Optional sections */}
               <Accordion title="Why It Endures">
