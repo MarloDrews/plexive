@@ -61,6 +61,10 @@ def get_current_user(
     db: Session = Depends(get_db),
 ) -> User:
     user_id = decode_access_token(credentials.credentials)
+    # Deliberately one users lookup per authenticated request (not cached): it is
+    # what keeps is_active revocation immediate -- a soft-deleted user is locked
+    # out on their very next request. A short-TTL id->User cache would trade that
+    # for bounded latency; not worth the revocation delay at current scale.
     user = db.query(User).filter(User.id == user_id, User.is_active == True).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
