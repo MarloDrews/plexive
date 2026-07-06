@@ -1,6 +1,6 @@
 "use client"
 
-import CommentRow from "@/app/components/CommentRow"
+import CommentRow from "@/components/CommentRow"
 
 export interface Comment {
   id: number

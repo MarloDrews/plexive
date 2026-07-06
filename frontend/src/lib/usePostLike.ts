@@ -1,8 +1,8 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
-import { apiFetch } from "@/app/lib/api"
-import { queueEvent, hasPendingLike, cancelPendingLike } from "@/app/lib/eventQueue"
+import { apiFetch } from "@/lib/api"
+import { queueEvent, hasPendingLike, cancelPendingLike } from "@/lib/eventQueue"
 import {
   likePost,
   unlikePost,
@@ -12,7 +12,7 @@ import {
   isLikeSent,
   markLikeSent,
   unmarkLikeSent,
-} from "@/app/lib/likedPosts"
+} from "@/lib/likedPosts"
 
 export type LikeToggleResult = "liked" | "unliked" | null
 

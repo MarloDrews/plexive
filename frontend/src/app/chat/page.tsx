@@ -4,13 +4,13 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import useSWR from "swr"
-import BottomNav from "@/app/components/BottomNav"
+import BottomNav from "@/components/BottomNav"
 import Avatar from "@/components/Avatar"
 import VerifiedBadge from "@/components/VerifiedBadge"
-import { apiFetch } from "@/app/lib/api"
-import { useAuth } from "@/app/lib/auth"
-import { relativeTime } from "@/app/lib/relativeTime"
-import type { ChatParticipant, Conversation } from "@/app/lib/chatSocket"
+import { apiFetch } from "@/lib/api"
+import { useAuth } from "@/lib/auth"
+import { relativeTime } from "@/lib/relativeTime"
+import type { ChatParticipant, Conversation } from "@/lib/chatSocket"
 
 interface UserResult {
   username: string

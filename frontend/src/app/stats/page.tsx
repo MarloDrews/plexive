@@ -14,12 +14,12 @@ import {
 } from "recharts"
 import Link from "next/link"
 import useSWR from "swr"
-import { useAuth } from "../lib/auth"
-import { apiFetch } from "../lib/api"
-import { getSavedPostIds } from "../lib/savedPosts"
-import { useSwipeTabs } from "../lib/useSwipeTabs"
-import BottomNav from "../components/BottomNav"
-import SegmentedTabs from "../components/SegmentedTabs"
+import { useAuth } from "@/lib/auth"
+import { apiFetch } from "@/lib/api"
+import { getSavedPostIds } from "@/lib/savedPosts"
+import { useSwipeTabs } from "@/lib/useSwipeTabs"
+import BottomNav from "@/components/BottomNav"
+import SegmentedTabs from "@/components/SegmentedTabs"
 import { FORMAT_IDS, FORMAT_STYLES } from "@/lib/formats"
 
 // --- Error boundary ---

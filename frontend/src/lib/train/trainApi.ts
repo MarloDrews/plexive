@@ -1,7 +1,7 @@
 import type { AnswerResult, Difficulty, MarathonQuestion } from "@/types/train"
 import { mockQuestions } from "./mockQuestions"
 import { applyDelta, computeDelta, DIFFICULTY_RATING, pickDifficulty } from "./elo"
-import { apiFetch } from "@/app/lib/api"
+import { apiFetch } from "@/lib/api"
 
 // THE SEAM (ported from mobile/src/lib/train/trainApi.ts). Question SELECTION
 // still runs against the local mock pool (there is no server question bank yet).

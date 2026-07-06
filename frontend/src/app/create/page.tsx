@@ -3,13 +3,13 @@
 import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import useSWR from "swr"
-import { useAuth } from "@/app/lib/auth"
-import { apiFetch } from "@/app/lib/api"
-import { invalidateFeedCaches } from "@/app/lib/swr"
+import { useAuth } from "@/lib/auth"
+import { apiFetch } from "@/lib/api"
+import { invalidateFeedCaches } from "@/lib/swr"
 import { FORMAT_IDS, FORMAT_STYLES, type FormatId } from "@/lib/formats"
 import { fcStr, type Post } from "@/types/post"
 import { CATEGORIES } from "@/lib/interests"
-import BottomNav from "@/app/components/BottomNav"
+import BottomNav from "@/components/BottomNav"
 import Spinner from "@/components/Spinner"
 import {
   Accordion,

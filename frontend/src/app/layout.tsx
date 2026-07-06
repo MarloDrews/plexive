@@ -12,7 +12,7 @@ import {
 } from "next/font/google";
 import "./globals.css";
 import "katex/dist/katex.min.css";
-import Providers from "./components/Providers";
+import Providers from "@/components/Providers";
 
 // "Lamplight" type system (docs/DESIGN.md): Newsreader is the serif voice of
 // the content, Source Sans 3 is quiet UI chrome, Geist Mono renders data.

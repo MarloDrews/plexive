@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { useAuth } from "@/app/lib/auth"
+import { useAuth } from "@/lib/auth"
 
 // "search" stays in the union for the search page, which now lives behind the
 // top-right button on the feed and highlights nothing down here.

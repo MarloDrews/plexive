@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 import Link from "next/link"
-import { useAuth } from "@/app/lib/auth"
-import { apiFetch } from "@/app/lib/api"
+import { useAuth } from "@/lib/auth"
+import { apiFetch } from "@/lib/api"
 import { fetchNextQuestion, submitAnswer } from "@/lib/train/trainApi"
 import { mockQuestions } from "@/lib/train/mockQuestions"
 import { SLOW_MS, START_ELO } from "@/lib/train/elo"

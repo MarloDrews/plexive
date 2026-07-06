@@ -2,9 +2,9 @@
 
 import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
-import { useAuth } from "@/app/lib/auth"
-import { apiFetch } from "@/app/lib/api"
-import { useBattleSocket, type BattleInbound } from "@/app/lib/battleSocket"
+import { useAuth } from "@/lib/auth"
+import { apiFetch } from "@/lib/api"
+import { useBattleSocket, type BattleInbound } from "@/lib/battleSocket"
 import { buildSequence } from "@/lib/battle/seededQuestions"
 import type { MarathonQuestion } from "@/types/train"
 import NumberSlider from "./NumberSlider"
@@ -18,7 +18,7 @@ import VerifiedBadge from "@/components/VerifiedBadge"
 // solo Elo climb, two accounts race through the SAME questions and a winner is
 // declared. You find an opponent with the user search (the same
 // /api/search/users the search screen uses), click Battle, and both clients play
-// in lockstep over a WebSocket (app/lib/battleSocket.ts) that only agrees a
+// in lockstep over a WebSocket (lib/battleSocket.ts) that only agrees a
 // shared seed -- both clients derive the identical question sequence locally
 // (mock phase, see @/types/train). Battle needs an account (the socket
 // authenticates by JWT like chat), so guests see a login prompt.

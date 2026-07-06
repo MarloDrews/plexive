@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import PostCard, { type Post } from "@/app/components/PostCard"
-import { getSavedPostIds } from "@/app/lib/savedPosts"
-import { apiFetch } from "@/app/lib/api"
-import BottomNav from "@/app/components/BottomNav"
-import { BookmarkIcon } from "@/app/components/icons"
+import PostCard, { type Post } from "@/components/PostCard"
+import { getSavedPostIds } from "@/lib/savedPosts"
+import { apiFetch } from "@/lib/api"
+import BottomNav from "@/components/BottomNav"
+import { BookmarkIcon } from "@/components/icons"
 
 export default function SavedPostsPage() {
   const router = useRouter()

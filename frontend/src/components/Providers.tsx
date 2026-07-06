@@ -4,8 +4,8 @@
 // AuthProvider (which uses React context) can be imported from layout.tsx,
 // which is a Server Component and cannot import client code directly.
 import { SWRConfig } from "swr"
-import { AuthProvider } from "@/app/lib/auth"
-import { jsonFetcher } from "@/app/lib/swr"
+import { AuthProvider } from "@/lib/auth"
+import { jsonFetcher } from "@/lib/swr"
 
 // revalidateOnFocus/Reconnect are off: no such refetch existed before the
 // cache layer, and keeping request patterns identical is a hard requirement.

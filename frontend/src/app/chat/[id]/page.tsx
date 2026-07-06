@@ -4,14 +4,14 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import Avatar from "@/components/Avatar"
-import { apiFetch } from "@/app/lib/api"
-import { useAuth } from "@/app/lib/auth"
+import { apiFetch } from "@/lib/api"
+import { useAuth } from "@/lib/auth"
 import {
   MESSAGE_MAX_CHARS,
   useChatSocket,
   type ChatMessage,
   type Conversation,
-} from "@/app/lib/chatSocket"
+} from "@/lib/chatSocket"
 
 export default function ConversationPage() {
   const router = useRouter()

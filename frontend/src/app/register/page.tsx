@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { useAuth } from "@/app/lib/auth"
+import { useAuth } from "@/lib/auth"
 
 export default function RegisterPage() {
   const { user, loading, register } = useAuth()

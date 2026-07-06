@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { useAuth } from "@/app/lib/auth"
-import { apiFetch } from "@/app/lib/api"
+import { useAuth } from "@/lib/auth"
+import { apiFetch } from "@/lib/api"
 import { FORMAT_STYLES, type FormatId } from "@/lib/formats"
-import BottomNav from "@/app/components/BottomNav"
+import BottomNav from "@/components/BottomNav"
 import BookCover from "@/components/BookCover"
-import { relativeTime } from "@/app/lib/relativeTime"
+import { relativeTime } from "@/lib/relativeTime"
 import { fcStr, type Post } from "@/types/post"
 
 export default function MyPostsPage() {

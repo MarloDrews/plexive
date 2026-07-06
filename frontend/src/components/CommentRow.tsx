@@ -5,8 +5,8 @@
 
 import Avatar from "@/components/Avatar"
 import VerifiedBadge from "@/components/VerifiedBadge"
-import { relativeTime } from "@/app/lib/relativeTime"
-import type { Comment } from "@/app/components/CommentsSection"
+import { relativeTime } from "@/lib/relativeTime"
+import type { Comment } from "@/components/CommentsSection"
 
 interface CommentRowProps {
   comment: Comment

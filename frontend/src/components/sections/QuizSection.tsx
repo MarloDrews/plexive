@@ -1,8 +1,8 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { useAuth } from "@/app/lib/auth"
-import { apiFetch } from "@/app/lib/api"
+import { useAuth } from "@/lib/auth"
+import { apiFetch } from "@/lib/api"
 import type { QuizItem } from "../../types/post"
 import MathText from "../MathText"
 
