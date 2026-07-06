@@ -1,3 +1,4 @@
+import threading
 import time
 from datetime import datetime, timedelta
 from typing import List
@@ -88,6 +89,10 @@ def _milestone_date(dt) -> str | None:
 # without a lock.
 _GLOBAL_STATS_TTL_SECONDS = 60
 _global_stats_cache: tuple | None = None  # (monotonic_timestamp, payload)
+# Serializes the rebuild so a cache expiry does not run the pipeline in every
+# waiting thread at once. Per-process (like the cache itself); see ARCH-013 /
+# the M138 single-process-state inventory.
+_global_stats_lock = threading.Lock()
 
 
 @router.get("/stats/global")
@@ -97,6 +102,18 @@ def get_global_stats(db: Session = Depends(get_db)):
     if cached is not None and time.monotonic() - cached[0] < _GLOBAL_STATS_TTL_SECONDS:
         return cached[1]
 
+    # On expiry, one thread rebuilds under the lock while the rest wait and then
+    # re-check and read the fresh snapshot (no ~18-query stampede).
+    with _global_stats_lock:
+        cached = _global_stats_cache
+        if cached is not None and time.monotonic() - cached[0] < _GLOBAL_STATS_TTL_SECONDS:
+            return cached[1]
+        payload = _compute_global_stats(db)
+        _global_stats_cache = (time.monotonic(), payload)
+        return payload
+
+
+def _compute_global_stats(db: Session) -> dict:
     # --- Overview ---
     # One round trip instead of four scalar queries: the DB is remote, so
     # every query costs a full network round trip regardless of data size.
@@ -133,6 +150,7 @@ def get_global_stats(db: Session = Depends(get_db)):
         for r in db.query(User.username, User.is_verified, func.count(Event.id).label("cnt"))
         .join(Post, Post.author_id == User.id)
         .join(Event, and_(Event.post_id == Post.id, Event.event_type == "like"))
+        .filter(Post.status == "published")
         .group_by(User.id)
         .order_by(func.count(Event.id).desc())
         .limit(10)
@@ -145,6 +163,7 @@ def get_global_stats(db: Session = Depends(get_db)):
         for r in db.query(User.username, User.is_verified, func.count(Comment.id).label("cnt"))
         .join(Post, Post.author_id == User.id)
         .join(Comment, Comment.post_id == Post.id)
+        .filter(Post.status == "published")
         .group_by(User.id)
         .order_by(func.count(Comment.id).desc())
         .limit(10)
@@ -161,7 +180,7 @@ def get_global_stats(db: Session = Depends(get_db)):
         for r in db.query(User.username, User.is_verified, func.avg(Event.duration_ms).label("avg_ms"))
         .join(Post, Post.author_id == User.id)
         .join(Event, and_(Event.post_id == Post.id, Event.event_type == "view"))
-        .filter(Event.duration_ms.isnot(None))
+        .filter(Event.duration_ms.isnot(None), Post.status == "published")
         .group_by(User.id)
         .order_by(func.avg(Event.duration_ms).desc())
         .limit(10)
@@ -388,7 +407,6 @@ def get_global_stats(db: Session = Depends(get_db)):
         "pending_vs_published": {"published": published_count, "pending": pending_count},
         "comment_activity_by_user": comment_activity_by_user,
     }
-    _global_stats_cache = (time.monotonic(), payload)
     return payload
 
 
