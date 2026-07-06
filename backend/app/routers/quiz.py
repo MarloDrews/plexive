@@ -86,9 +86,13 @@ def answer_quiz_question(
         return result
 
     # Authors know their own answers, so their own posts never move their Elo.
+    # A stored item without a valid answer_index (broken/legacy content) is
+    # unanswerable -- every choice would be "wrong" -- so it never scores
+    # either; the attempt is still recorded with delta 0.
     is_own_post = post.author_id == current_user.id
+    is_scorable = correct_index in (0, 1, 2, 3)
     delta = 0.0
-    if not is_own_post:
+    if not is_own_post and is_scorable:
         difficulty = (post.feed_card or {}).get("post_difficulty")
         delta = apply_answer(db, current_user, difficulty, correct)
         result["scored"] = True
