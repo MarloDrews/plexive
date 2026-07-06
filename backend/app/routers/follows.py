@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from ..auth import get_current_user, get_optional_user
 from ..database import get_db
-from ..models import Follow, Post, User
+from ..models import Follow, User
 from ..rate_limit import check_rate_limit
 
 router = APIRouter(prefix="/users", tags=["follows"])
