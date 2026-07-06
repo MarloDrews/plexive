@@ -306,7 +306,14 @@ class PostCreate(BaseModel):
         return v
 
     @model_validator(mode="after")
-    def validate_books_sections(self) -> "PostCreate":
+    def validate_sections(self) -> "PostCreate":
+        # No format allows two sections of the same type: consumers read the
+        # first match (quiz answering, search), so questions in a duplicate
+        # section would render but never be answerable.
+        types = [s.type for s in self.sections]
+        duplicates = sorted({t for t in types if types.count(t) > 1})
+        if duplicates:
+            raise ValueError(f"duplicate section type(s): {', '.join(duplicates)}")
         if self.format != "books":
             return self
         # Validate feed card shape for books
