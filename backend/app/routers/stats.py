@@ -1,5 +1,6 @@
 import threading
 import time
+from bisect import bisect_right
 from datetime import datetime, timedelta
 from typing import List
 
@@ -43,6 +44,13 @@ def _hour(col):
     if _IS_SQLITE:
         return func.strftime("%H", col)
     return func.extract("hour", col)
+
+
+def _day(col):
+    # "YYYY-MM-DD" string on both dialects (for distinct-date streak queries).
+    if _IS_SQLITE:
+        return func.strftime("%Y-%m-%d", col)
+    return func.to_char(col, "YYYY-MM-DD")
 
 
 def _last_n_months(n: int) -> List[str]:
@@ -410,6 +418,72 @@ def _compute_global_stats(db: Session) -> dict:
     return payload
 
 
+# The ranking distributions, user count and max engagement score in /stats/me
+# depend on every user, not the caller, so they are cached in-process (short TTL,
+# like /stats/global) and only the caller's rank/score are derived per request.
+_ME_GLOBALS_TTL_SECONDS = 60
+_me_globals_cache: tuple | None = None  # (monotonic_timestamp, snapshot)
+_me_globals_lock = threading.Lock()
+
+
+def _compute_me_globals(db: Session) -> dict:
+    total_users = db.query(func.count(User.id)).scalar() or 0
+    # Per-author published-post counts and received-like counts, ascending, so a
+    # caller's rank is a bisect against the distribution instead of a per-request
+    # grouped ranking subquery.
+    post_counts = sorted(
+        row.cnt
+        for row in db.query(func.count(Post.id).label("cnt"))
+        .filter(Post.status == "published", Post.author_id.isnot(None))
+        .group_by(Post.author_id)
+        .all()
+    )
+    like_counts = sorted(
+        row.cnt
+        for row in db.query(func.count(Event.id).label("cnt"))
+        .join(Post, Post.id == Event.post_id)
+        .filter(Event.event_type == "like", Post.author_id.isnot(None))
+        .group_by(Post.author_id)
+        .all()
+    )
+    max_engagement_score = db.execute(
+        text(
+            "SELECT MAX(score) FROM ("
+            "  SELECT u.id,"
+            "    (COALESCE(lc.cnt,0)*3 + COALESCE(cc.cnt,0)*2 + COALESCE(pc.cnt,0)*5) AS score"
+            "  FROM users u"
+            "  LEFT JOIN (SELECT p.author_id, COUNT(e.id) AS cnt FROM events e"
+            "    JOIN posts p ON p.id=e.post_id WHERE e.event_type='like'"
+            "    GROUP BY p.author_id) lc ON lc.author_id=u.id"
+            "  LEFT JOIN (SELECT p.author_id, COUNT(c.id) AS cnt FROM comments c"
+            "    JOIN posts p ON p.id=c.post_id GROUP BY p.author_id) cc ON cc.author_id=u.id"
+            "  LEFT JOIN (SELECT author_id, COUNT(id) AS cnt FROM posts"
+            "    WHERE status='published' GROUP BY author_id) pc ON pc.author_id=u.id"
+            ") AS ms"
+        )
+    ).scalar() or 0
+    return {
+        "total_users": total_users,
+        "max_engagement_score": max_engagement_score,
+        "post_counts": post_counts,
+        "like_counts": like_counts,
+    }
+
+
+def _me_globals(db: Session) -> dict:
+    global _me_globals_cache
+    cached = _me_globals_cache
+    if cached is not None and time.monotonic() - cached[0] < _ME_GLOBALS_TTL_SECONDS:
+        return cached[1]
+    with _me_globals_lock:
+        cached = _me_globals_cache
+        if cached is not None and time.monotonic() - cached[0] < _ME_GLOBALS_TTL_SECONDS:
+            return cached[1]
+        snapshot = _compute_me_globals(db)
+        _me_globals_cache = (time.monotonic(), snapshot)
+        return snapshot
+
+
 @router.get("/stats/me")
 def get_my_stats(
     current_user: User = Depends(get_current_user),
@@ -625,66 +699,58 @@ def get_my_stats(
         .all()
     ]
 
-    # --- My ranking, engagement ceiling and first-interaction milestones ---
-    # One round trip instead of six scalar queries (ranks, user count, max
-    # engagement score, first like, first comment): the DB is remote, so
-    # every query costs a full network round trip regardless of data size.
-    extras_row = db.execute(
+    # --- My ranking and engagement ceiling (from the cached global snapshot) ---
+    # The ranking distributions, user count and max engagement score are
+    # caller-independent, so they come from the short-TTL cache; my rank is a
+    # bisect (count of authors strictly above me, matching the old HAVING
+    # COUNT > :mine), matching the previous ranked_above_by_* semantics exactly.
+    me_globals = _me_globals(db)
+    total_users_count = me_globals["total_users"]
+    post_counts = me_globals["post_counts"]
+    like_counts = me_globals["like_counts"]
+    rank_by_posts = 1 + (len(post_counts) - bisect_right(post_counts, posts_published))
+    rank_by_likes = 1 + (len(like_counts) - bisect_right(like_counts, likes_received))
+
+    # First-interaction timestamps are genuinely per-user, so they stay a small
+    # live query (one round trip, two scalar subselects).
+    firsts_row = db.execute(
         text(
             "SELECT"
-            " (SELECT COUNT(*) FROM ("
-            "    SELECT author_id FROM posts"
-            "    WHERE status='published' AND author_id IS NOT NULL"
-            "    GROUP BY author_id HAVING COUNT(*) > :my_posts"
-            " ) AS rp) AS ranked_above_by_posts,"
-            " (SELECT COUNT(*) FROM ("
-            "    SELECT p.author_id FROM events e JOIN posts p ON p.id = e.post_id"
-            "    WHERE e.event_type='like' AND p.author_id IS NOT NULL"
-            "    GROUP BY p.author_id HAVING COUNT(e.id) > :my_likes"
-            " ) AS rl) AS ranked_above_by_likes,"
-            " (SELECT COUNT(*) FROM users) AS total_users,"
-            " (SELECT MAX(score) FROM ("
-            "    SELECT u.id,"
-            "      (COALESCE(lc.cnt,0)*3 + COALESCE(cc.cnt,0)*2 + COALESCE(pc.cnt,0)*5) AS score"
-            "    FROM users u"
-            "    LEFT JOIN (SELECT p.author_id, COUNT(e.id) AS cnt FROM events e"
-            "      JOIN posts p ON p.id=e.post_id WHERE e.event_type='like'"
-            "      GROUP BY p.author_id) lc ON lc.author_id=u.id"
-            "    LEFT JOIN (SELECT p.author_id, COUNT(c.id) AS cnt FROM comments c"
-            "      JOIN posts p ON p.id=c.post_id GROUP BY p.author_id) cc ON cc.author_id=u.id"
-            "    LEFT JOIN (SELECT author_id, COUNT(id) AS cnt FROM posts"
-            "      WHERE status='published' GROUP BY author_id) pc ON pc.author_id=u.id"
-            " ) AS ms) AS max_engagement_score,"
             " (SELECT MIN(e.created_at) FROM events e JOIN posts p ON p.id=e.post_id"
             "   WHERE e.event_type='like' AND p.author_id=:uid) AS first_like_at,"
             " (SELECT MIN(c.created_at) FROM comments c JOIN posts p ON p.id=c.post_id"
             "   WHERE p.author_id=:uid) AS first_comment_at"
         ),
-        {"my_posts": posts_published, "my_likes": likes_received, "uid": uid},
+        {"uid": uid},
     ).one()
-    rank_by_posts = (extras_row.ranked_above_by_posts or 0) + 1
-    rank_by_likes = (extras_row.ranked_above_by_likes or 0) + 1
-    total_users_count = extras_row.total_users or 0
 
     # --- Engagement score: (likes*3 + comments*2 + posts*5), normalized 0-100 ---
     my_raw = (likes_received * 3) + (comments_received * 2) + (posts_published * 5)
-    max_score = extras_row.max_engagement_score or 0
+    max_score = me_globals["max_engagement_score"] or 0
     my_engagement_score = (
         round(min((my_raw / max_score) * 100, 100.0), 1) if max_score > 0 else 0.0
     )
 
-    # --- My published-post dates (feeds both the streak and the milestones) ---
-    pub_dates = (
-        db.query(Post.created_at)
+    # --- My published-post dates, without loading the whole history ---
+    # Streak needs only distinct days; milestones need only the first 50 posts
+    # (the largest ordinal), so both queries stay bounded for prolific authors.
+    date_list = sorted(
+        row[0]
+        for row in db.query(_day(Post.created_at))
         .filter(Post.author_id == uid, Post.status == "published")
-        .order_by(Post.created_at)
+        .distinct()
         .all()
     )
-    pub_list = [r.created_at for r in pub_dates]
+    milestone_dates = [
+        row.created_at
+        for row in db.query(Post.created_at)
+        .filter(Post.author_id == uid, Post.status == "published")
+        .order_by(Post.created_at)
+        .limit(50)
+        .all()
+    ]
 
-    # --- My streak (distinct post dates derived in Python from pub_list,
-    # which used to be a separate round trip) ---
-    date_list = sorted({dt.strftime("%Y-%m-%d") for dt in pub_list})
+    # --- My streak (consecutive distinct post dates) ---
     current_streak = 0
     best_streak = 0
 
@@ -710,41 +776,43 @@ def get_my_stats(
                     break
 
     # --- My milestones ---
+    # posts_published is the true total (the achieved flags); milestone_dates
+    # carries the ordinal timestamps up to the 50-post milestone.
     milestones = [
         {
             "label": "First Post",
-            "achieved": len(pub_list) >= 1,
-            "achieved_at": _milestone_date(pub_list[0]) if len(pub_list) >= 1 else None,
+            "achieved": posts_published >= 1,
+            "achieved_at": _milestone_date(milestone_dates[0]) if posts_published >= 1 else None,
         },
         {
             "label": "5 Posts",
-            "achieved": len(pub_list) >= 5,
-            "achieved_at": _milestone_date(pub_list[4]) if len(pub_list) >= 5 else None,
+            "achieved": posts_published >= 5,
+            "achieved_at": _milestone_date(milestone_dates[4]) if posts_published >= 5 else None,
         },
         {
             "label": "10 Posts",
-            "achieved": len(pub_list) >= 10,
-            "achieved_at": _milestone_date(pub_list[9]) if len(pub_list) >= 10 else None,
+            "achieved": posts_published >= 10,
+            "achieved_at": _milestone_date(milestone_dates[9]) if posts_published >= 10 else None,
         },
         {
             "label": "25 Posts",
-            "achieved": len(pub_list) >= 25,
-            "achieved_at": _milestone_date(pub_list[24]) if len(pub_list) >= 25 else None,
+            "achieved": posts_published >= 25,
+            "achieved_at": _milestone_date(milestone_dates[24]) if posts_published >= 25 else None,
         },
         {
             "label": "50 Posts",
-            "achieved": len(pub_list) >= 50,
-            "achieved_at": _milestone_date(pub_list[49]) if len(pub_list) >= 50 else None,
+            "achieved": posts_published >= 50,
+            "achieved_at": _milestone_date(milestone_dates[49]) if posts_published >= 50 else None,
         },
         {
             "label": "First Like Received",
-            "achieved": extras_row.first_like_at is not None,
-            "achieved_at": _milestone_date(extras_row.first_like_at),
+            "achieved": firsts_row.first_like_at is not None,
+            "achieved_at": _milestone_date(firsts_row.first_like_at),
         },
         {
             "label": "First Comment Received",
-            "achieved": extras_row.first_comment_at is not None,
-            "achieved_at": _milestone_date(extras_row.first_comment_at),
+            "achieved": firsts_row.first_comment_at is not None,
+            "achieved_at": _milestone_date(firsts_row.first_comment_at),
         },
         {
             "label": "Verified",
