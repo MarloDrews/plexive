@@ -53,7 +53,7 @@
     {
       "type": "surprises",
       "order": 3,
-      "content": "Put a number on it, and the ratio comes out near 2.25. A loss feels about 2.25 times as sharp as a gain of the very same size, and that lopsided weighting quietly bends choices you think you are making on the merits. We assume the mental books balance, a dollar won against a dollar lost. On paper they do. In the mind they never quite do."
+      "content": "A gain and an equal loss look like they should cancel, and on the page they do. In the experiments they do not: a loss feels about 2.25 times as sharp as a matching gain, and that lopsided weighting quietly bends choices you think you are making on the merits. The mental books never quite balance, a dollar won against a dollar lost."
     },
     {
       "type": "how_we_know",
@@ -69,7 +69,7 @@
           {
             "name": "Daniel Kahneman",
             "role": "Co-created prospect theory",
-            "one_line": "With Tversky he built prospect theory and later put the loss-to-gain weight near 2.25; he won the 2002 Nobel in economics.",
+            "one_line": "With Tversky he built *prospect theory* and later put the loss-to-gain weight near 2.25. He won the 2002 Nobel in economics.",
             "lifespan": "1934-2024",
             "birth_year": 1934,
             "featured": true,
@@ -92,8 +92,8 @@
       "order": 8,
       "content": [
         {
-          "title": "The same tilt flips how you gamble",
-          "body": "Loss aversion does more than make people cautious. It flips how they gamble: safe when protecting a gain, bold when facing a loss. That is why investors sell winning stocks early to bank the gain, then hold losing ones far too long, hoping to climb back to even. Across 10,000 accounts, Terrance Odean found the winners people sold beat the losers they kept by about 3.4 points over the next year. Not facing the loss cost them the gap.",
+          "title": "The tilt flips how you gamble",
+          "body": "Loss aversion does more than make people cautious. It flips how they gamble: safe when protecting a gain, bold when facing a loss. That is why investors sell winning stocks early to bank the gain, then hold losing ones far too long, hoping to climb back to even. Across 10,000 accounts, Terrance Odean found the winners people sold beat the losers they kept by about 3.4 points over the next year.",
           "visual_svg": "<svg viewBox='0 50 400 202' xmlns='http://www.w3.org/2000/svg' fill='none'><line x1='44' y1='150' x2='356' y2='150' stroke='currentColor' stroke-width='1.5' opacity='0.4' stroke-linecap='round'/><line x1='200' y1='58' x2='200' y2='246' stroke='currentColor' stroke-width='1.5' opacity='0.4' stroke-linecap='round'/><path d='M200 150 C 250 122 300 110 352 105' stroke='currentColor' stroke-width='2.5' stroke-linecap='round'/><path d='M200 150 C 164 196 112 232 50 243' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><g font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle'><text x='300' y='142' fill='currentColor' opacity='0.7'>Gains</text><text x='100' y='142' fill='currentColor' opacity='0.7'>Losses</text><text x='206' y='72' fill='currentColor' opacity='0.7' text-anchor='start'>value felt</text></g><text x='118' y='224' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>falls ~2x steeper</text></svg>"
         },
         {
@@ -102,7 +102,7 @@
         },
         {
           "title": "It makes reform hard to pass",
-          "body": "The same asymmetry shapes politics. Every reform makes winners and losers, and because a loss outweighs an equal gain, those who stand to lose fight harder than those who stand to gain cheer. Whatever people already have becomes the reference point, so a change is felt as loss before it is felt as gain. A subsidy that would help millions a little can be blocked by the few it would cost a lot."
+          "body": "The asymmetry reaches into politics too. Every reform makes winners and losers, and because a loss outweighs an equal gain, those who stand to lose fight harder than those who stand to gain cheer. Whatever people already have becomes the reference point, so a change is felt as loss before it is felt as gain. A subsidy that would help millions a little can be blocked by the few it would cost a lot."
         }
       ]
     },
@@ -193,7 +193,7 @@
         },
         {
           "myth": "Losses always hurt exactly 2.25 times as much as gains.",
-          "reality": "2.25 is an average from one landmark study. The real ratio shifts with the person, the size of the stakes, and the setting, and some situations show little loss aversion at all."
+          "reality": "2.25 is an average from one landmark study. The real ratio depends on who is choosing and what is at stake, and some situations show little loss aversion at all."
         },
         {
           "myth": "It just means people are timid about money.",
