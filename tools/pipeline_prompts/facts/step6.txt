@@ -14,7 +14,7 @@ names. You did not write the review; act on the report as written.
 - Apply the batch-level cross_post findings as a COORDINATED set, not just per-post flags
   (CROSS_POST_VARIANCE.md). Where the report flags a shared move across posts (the reframe opener, the
   closing line, the story pivot), decide which post keeps a given shape and recast the others so the
-  batch genuinely varies at those positions. This is prose-only recasting and stays within the
+  batch genuinely varies at those positions. This applies to any memorable position the report lists, the section openers (how_we_know, open_questions) and closes as much as the reframe opener and the closing line, not only those three: keep one earned instance of a form and recast the rest. This is prose-only recasting and stays within the
   boundary below; leave format-inheritance (skeleton, myth/reality pairs, quiz, figure pairings) alone.
 - Apply the typographic italics fixes: wrap an existing work or theory name in the asterisk marker,
   or remove a marker wrongly placed on a named principle, law, effect, model, or ism. This changes

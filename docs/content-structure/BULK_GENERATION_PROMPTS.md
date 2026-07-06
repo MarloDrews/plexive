@@ -545,7 +545,7 @@ The posts under docs/content-structure/generated/{{FORMAT}}/ (the branch diff ag
    reframe opener; the closing "why it matters" line (watch hardest for the cosmic-zoom-then-aphorism-
    on-the-body gesture and for every post ending on a crafted quotable turn); the story arc (lone-figure
    vindicated after N years); the teaser triad (same three roles in the same order); and the two phrasing
-   molds ("X is not the same as Y", "the same ___"). Quote the parallel spots side by side and rate how
+   molds ("X is not the same as Y", "the same ___"). Beyond these named molds, apply the same check to EVERY memorable position, the opener and the close of each core section (surprises, how_we_know, open_questions, bigger_picture) and the story pivot: at each, count how many posts use the same form and hand step 6 the over-represented ones, exactly as for the closing metronome. Watch especially the how_we_know opener (a doubt-denial or "you can see it") and the open_questions opener (the "settled X / unsettled Y" antithesis), which sit at fixed positions interleaving cannot hide. Quote the parallel spots side by side and rate how
    strongly each would register on a reader. Do not flag format-inheritance (the section skeleton,
    myth/reality pairs, the quiz, figure pairings); that is expected shared structure. {{SPECIAL_HUMANSOUND}}
 </method>
@@ -553,7 +553,7 @@ The posts under docs/content-structure/generated/{{FORMAT}}/ (the branch diff ag
 <output>
 Write docs/content-structure/generated/{{FORMAT}}/_batches/{{BATCH}}/humansound_report.json:
 per post, the tells found (each accept / clear / flag with reasoning and the section), and a
-batch-level section for cross-post sameness. For the closing metronome, report it as a position: give a per-post count of landing units and an explicit list of the specific units the prose-only step should de-land, so step 6 acts on positions rather than on a style label. For each flag, say whether the prose-only step can
+batch-level section for cross-post sameness. For the closing metronome, report it as a position: give a per-post count of landing units and an explicit list of the specific units the prose-only step should de-land, so step 6 acts on positions rather than on a style label. Do the same per-position count and de-land-or-vary list for the other memorable positions the standard names, not only the closing metronome. For each flag, say whether the prose-only step can
 fix it within its boundary (recast, resplit, reword, or apply an italic marker) or whether it
 would need a factual or structural change (then it is out of scope for prose-only and you say
 so). Change no files.
@@ -588,7 +588,7 @@ posts it names. You did not write the review; act on the report as written.
 - Apply the batch-level cross_post findings as a COORDINATED set, not just per-post flags
   (CROSS_POST_VARIANCE.md). Where the report flags a shared move across posts (the reframe opener,
   the closing line, the story pivot), decide which post keeps a given shape and recast the others so
-  the batch genuinely varies at those positions. This is prose-only recasting within the boundary
+  the batch genuinely varies at those positions. This applies to any memorable position the report lists, the section openers (how_we_know, open_questions) and closes as much as the reframe opener and the closing line, not only those three: keep one earned instance of a form and recast the rest. This is prose-only recasting within the boundary
   below; leave format-inheritance (skeleton, myth/reality pairs, quiz, figure pairings) alone.
 - Apply the typographic italics fixes: wrap an existing work or theory name in the asterisk
   marker, or remove a marker wrongly placed on a named principle, law, effect, model, or ism.

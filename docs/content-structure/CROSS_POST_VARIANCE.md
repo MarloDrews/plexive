@@ -16,7 +16,7 @@ machine-made. This was measured on the first Facts batch and confirmed by an ind
 
 Vary the memorable moves across a batch. The moves themselves are good; banning them would flatten
 the best part of the format. A deviation dropped in on a schedule reads as machine too. The goal is
-genuine range across posts, not a new required shape.
+genuine range across posts, not a new required shape. The memorable positions are the opener and the close of each core section (surprises, how_we_know, open_questions, bigger_picture) plus the story pivot. The rule is the same at each: no single form may dominate that position across a batch. The molds listed below are the instances seen so far, not an exhaustive list; apply the same variance to any position where one form recurs, including positions not named here.
 
 ## The templates to break (vary these across every batch)
 
@@ -45,6 +45,14 @@ genuine range across posts, not a new required shape.
 5. Two phrasing molds to avoid as a reflex: the antithesis "X is not the same as Y" landing in closing
    slots, and a "the same ___" bridge at the pivot of nearly every post. Used once where earned they are
    fine; as a batch-wide habit they read as a mold.
+6. Section openers beyond the reframe opener, and the surprises close. The how_we_know section tends to
+   open on a negation-of-doubt or a "you can see it" reassurance ("The number is not a guess.", "None of
+   this is guesswork.", "You can watch it happen."). The open_questions section tends to open on a
+   "settled X / unsettled Y" antithesis ("The pattern is clear; its cause is not."). Both sit at a fixed
+   position a reader hits in every post, so interleaving cannot hide them. Vary them: let some how_we_know
+   open straight on the method or the study, and some open_questions open on a concrete unknown or a
+   specific number rather than the balanced seesaw. Also vary the surprises section's closing turn, which
+   reaches for a "Whatever X, [truth] did not Y" restatement.
 
 Milder, watch but do not force: the headline built as reversal-plus-number, and the bigger_picture
 opener built on a time-span phrase ("For most of a century...", "For as long as she lives...") or on a
