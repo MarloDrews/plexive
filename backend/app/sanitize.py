@@ -118,11 +118,15 @@ def validate_image(file) -> tuple[bytes, str]:
     return out.getvalue(), save_type
 
 
-async def sanitize_svg(file) -> str:
+def sanitize_svg(file) -> str:
+    # Sync on purpose: the upload endpoint is sync `def`, so this chunked read
+    # and the CPU-bound lxml sanitization run in the threadpool instead of
+    # blocking the event loop (mirrors validate_image). file.file is the
+    # underlying SpooledTemporaryFile with a sync read().
     chunk_size = 8192
     total = 0
     chunks: list[bytes] = []
-    while chunk := await file.read(chunk_size):
+    while chunk := file.file.read(chunk_size):
         total += len(chunk)
         if total > MAX_SVG_SIZE_BYTES:
             raise ValueError("File too large")
