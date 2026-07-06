@@ -40,15 +40,17 @@ def upload_image(
 
 
 @router.post("/upload/svg", response_model=SvgUploadResponse, status_code=201)
-async def upload_svg(
+def upload_svg(
     file: UploadFile = File(...),
     current_user=Depends(get_current_user),
 ):
+    # Sync def: the chunked read and lxml sanitization run in the threadpool,
+    # matching upload_image, so SVG parsing never blocks the event loop.
     check_rate_limit(current_user.id, "upload_svg", 10, 3600)
     if file.content_type != "image/svg+xml":
         raise HTTPException(status_code=400, detail="Only SVG files are accepted")
     try:
-        svg_content = await sanitize_svg(file)
+        svg_content = sanitize_svg(file)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
 

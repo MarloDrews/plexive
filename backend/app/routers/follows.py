@@ -3,7 +3,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy import text
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 
 from ..auth import get_current_user, get_optional_user
 from ..database import get_db
@@ -177,7 +177,7 @@ def get_followers(
         return []
 
     follows = _page_of_follows(
-        db.query(Follow).filter(
+        db.query(Follow).options(selectinload(Follow.follower)).filter(
             Follow.following_id == target.id,
             Follow.status == "accepted",
         ),
@@ -201,7 +201,7 @@ def get_following(
         return []
 
     follows = _page_of_follows(
-        db.query(Follow).filter(
+        db.query(Follow).options(selectinload(Follow.following)).filter(
             Follow.follower_id == target.id,
             Follow.status == "accepted",
         ),
@@ -223,7 +223,7 @@ def get_follow_requests(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied.")
 
     follows = _page_of_follows(
-        db.query(Follow).filter(
+        db.query(Follow).options(selectinload(Follow.follower)).filter(
             Follow.following_id == current_user.id,
             Follow.status == "pending",
         ),

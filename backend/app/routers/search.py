@@ -1,6 +1,7 @@
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, Request
+from sqlalchemy import Text, cast, or_
 from sqlalchemy.orm import Session
 
 from ..auth import get_optional_user
@@ -22,12 +23,31 @@ def _limit_search(request: Request, user: Optional[User], key: str) -> None:
     check_rate_limit(identity, key, 60, 60)
 
 
+def _sql_prefilter_ok(q_lower: str) -> bool:
+    """Whether the coarse SQL pre-filter below is a faithful superset for this
+    query. The pre-filter matches the JSON columns as raw text, so it is only
+    safe when the query text survives JSON serialization and SQL lowercasing
+    identically to the Python matcher: ASCII only (SQLite lower() is ASCII-only),
+    and no characters JSON escapes ("/backslash). Otherwise we scan as before --
+    correctness never depends on the pre-filter, only row count does.
+    """
+    return q_lower.isascii() and '"' not in q_lower and "\\" not in q_lower
+
+
+def _like_pattern(q_lower: str) -> str:
+    """A contains-pattern with LIKE wildcards in the query escaped so they match
+    literally (paired with escape='\\' on the ilike calls)."""
+    escaped = q_lower.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+    return f"%{escaped}%"
+
+
 def _post_matches(post: Post, q_lower: str) -> bool:
     """
-    Python-side search across the JSON schema: all published posts are
-    fetched and matched in Python. Acceptable at current small scale;
-    revisit with PostgreSQL full-text search or JSON-path filters once the
-    post count makes the full fetch noticeable.
+    Python-side exact match across the JSON schema. The SQL pre-filter in
+    search_posts narrows the candidate rows (a superset); this is the exact
+    re-check that removes its false positives, so the matched semantics are
+    unchanged. Revisit with PostgreSQL full-text search once even the narrowed
+    scan makes the post count noticeable.
     """
     if q_lower in post.title.lower():
         return True
@@ -77,6 +97,22 @@ def search_posts(
     )
     if format:
         query = query.filter(Post.format == format)
+
+    # Coarse SQL pre-filter: fetch only rows whose title or (JSON-as-text)
+    # feed_card/sections contain the query, instead of hydrating the whole
+    # published corpus. It is a superset of the exact matcher (feed_card text
+    # carries essence/author; sections text carries heart/core_ideas), so
+    # _post_matches below still decides the final set. Skipped for queries the
+    # pre-filter cannot faithfully bound (see _sql_prefilter_ok).
+    if _sql_prefilter_ok(q_lower):
+        pattern = _like_pattern(q_lower)
+        query = query.filter(
+            or_(
+                Post.title.ilike(pattern, escape="\\"),
+                cast(Post.feed_card, Text).ilike(pattern, escape="\\"),
+                cast(Post.sections, Text).ilike(pattern, escape="\\"),
+            )
+        )
 
     candidates = query.order_by(Post.created_at.desc()).all()
 

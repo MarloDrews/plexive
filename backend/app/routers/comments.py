@@ -2,6 +2,7 @@ from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from pydantic import BaseModel, field_validator, model_validator
+from sqlalchemy import func
 from sqlalchemy.orm import Session, selectinload
 
 from ..auth import get_current_user, get_optional_user
@@ -65,7 +66,13 @@ def list_comments(
 ):
     get_visible_post(post_id, db, current_user)
     if count:
-        n = db.query(Comment).filter(Comment.post_id == post_id).count()
+        # Direct aggregate: .count() would wrap the row query in a subquery
+        # (SELECT count(*) FROM (SELECT comments.* ...)).
+        n = (
+            db.query(func.count(Comment.id))
+            .filter(Comment.post_id == post_id)
+            .scalar()
+        )
         return {"count": n}
     # Keyset pagination (chat's before_id pattern): before_id = id of the
     # oldest comment the client already has; id-desc matches the old
