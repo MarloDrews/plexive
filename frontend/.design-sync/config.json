@@ -11,7 +11,6 @@
   "dtsPropsFor": {
     "Avatar": "username: string; avatarUrl?: string | null; /** diameter in px */ size: number; verified?: number; className?: string",
     "Spinner": "size?: \"sm\" | \"md\"",
-    "EmptyState": "format: string; accentColor: string",
     "VerifiedBadge": "size?: number; level?: number; variant?: \"official\"",
     "SectionLabel": "children: React.ReactNode; color?: string; className?: string",
     "MathText": "/** prose text that may contain inline $...$ LaTeX */ text: string; className?: string",
@@ -45,7 +44,6 @@
     "CoreIdeasSection": "src/components/sections/CoreIdeasSection.tsx",
     "CritiqueSection": "src/components/sections/CritiqueSection.tsx",
     "DefiningMomentsSection": "src/components/sections/DefiningMomentsSection.tsx",
-    "EmptyState": "src/components/EmptyState.tsx",
     "EssenceSection": "src/components/sections/EssenceSection.tsx",
     "FieldContextSection": "src/components/sections/FieldContextSection.tsx",
     "FormalDefinitionSection": "src/components/sections/FormalDefinitionSection.tsx",
