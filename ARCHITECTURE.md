@@ -59,6 +59,8 @@ backend/
 
 user_uploads/                 gitignored; no longer used — images uploaded to Supabase Storage bucket "uploads"
 
+tools/                        Facts generation pipeline: per-step prompts (pipeline_prompts/facts/step1-6.txt), runners (run_pipeline.ps1/.sh), and texture_check.py
+
 frontend/
   next.config.ts                devIndicators disabled (the floating dev badge covered the comment send button at phone width); turbopack resolveAlias fs → readAloud/nodeStub.ts for vits-web's browser bundle
   .env.example                  NEXT_PUBLIC_API_URL template
