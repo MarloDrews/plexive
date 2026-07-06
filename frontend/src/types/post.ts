@@ -23,16 +23,6 @@ export interface AtAGlancePeopleContent {
   post_difficulty: 1 | 2 | 3
 }
 
-export interface PeopleFeedCard {
-  portrait: { image_url: string; image_attribution: string }
-  name: string
-  role: string
-  lifespan: string
-  essence: string
-  teasers: [string, string, string]
-  post_difficulty: 1 | 2 | 3
-}
-
 export interface CoreIdeaItem {
   title: string
   body: string
@@ -87,14 +77,6 @@ export interface SeeItContent {
   image_url?: string
   image_caption: string
   image_attribution?: string
-}
-
-// Feed-card visual anchor: a small square shown top-right beside the headline.
-// Exactly one of image_url or svg is set (image preferred, svg emblem fallback).
-export interface CardVisual {
-  image_url?: string
-  image_attribution?: string
-  svg?: string
 }
 
 export interface KeyNumberItem {
@@ -442,25 +424,6 @@ export interface Section {
   type: SectionType | string
   order: number
   content: unknown
-}
-
-export interface BooksFeedCard {
-  cover_url: string | null
-  title: string
-  author: string
-  essence: string
-  teasers: [string, string, string]
-  post_difficulty: 1 | 2 | 3
-  year: number
-  genre: string
-}
-
-export interface FactsFeedCard {
-  field: string
-  headline: string
-  card_visual?: CardVisual
-  teasers: [string, string, string]
-  post_difficulty: 1 | 2 | 3
 }
 
 // feed_card is format-specific JSON, so fields arrive as unknown.
