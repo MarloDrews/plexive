@@ -361,10 +361,11 @@ class PostOut(BaseModel):
     feed_card: dict
     sections: list[dict]
     tags: List[str] = []
-    connections: List[dict] = []
-    # Server-resolved featured edges for the detail page. Raw connections stay
-    # above as-is; this is the resolved projection so the frontend resolves
-    # nothing. Empty on list endpoints (only GET /posts/{id} populates it).
+    # Server-resolved featured edges for the detail page: the resolved
+    # projection so the frontend resolves nothing. The raw authoring-layer
+    # connections array stays on the ORM row (seed pipeline input) but is not
+    # serialized -- no client reads it. Empty on list endpoints (only
+    # GET /posts/{id} populates it).
     read_next: List[ReadNextItem] = []
     author_id: int | None = None
     author_username: str | None = None

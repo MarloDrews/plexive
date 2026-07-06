@@ -110,21 +110,6 @@ export interface KeyFigure {
   image_attribution?: string
 }
 
-// A connection's target identity. The shape depends on the connection's `format`:
-// people -> { name, birth_year? }, books -> { title, author }, any other -> { title }.
-export type ConnectionRef =
-  | { name: string; birth_year?: number }   // target: people
-  | { title: string; author: string }       // target: books
-  | { title: string }                        // any other format
-
-// Graph edge to another post (top-level on Post). The target may not exist yet
-// (latent edge), so it is identified by natural identity in `ref`, not an id.
-export interface ConnectionItem {
-  format: string
-  ref: ConnectionRef
-  featured: boolean
-}
-
 export interface StoryContent {
   body: string
   key_figures?: KeyFigure[]
@@ -446,9 +431,9 @@ export interface Post {
   feed_card: Record<string, unknown>
   sections: Section[]
   tags?: string[]
-  connections?: ConnectionItem[]
   // Server-resolved featured edges for the detail page (only GET /api/posts/{id}
   // populates it). The client renders this directly; it never re-derives it.
+  // The raw authoring-layer connections array is no longer serialized.
   read_next?: ReadNextItem[]
   author_id: number | null
   author_username: string | null
