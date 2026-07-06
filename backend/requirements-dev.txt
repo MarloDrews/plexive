@@ -1,0 +1,4 @@
+# Test-only dependencies (not needed at runtime).
+# Install alongside requirements.txt before running backend/tests/*.
+# FastAPI's TestClient imports httpx at runtime.
+httpx
