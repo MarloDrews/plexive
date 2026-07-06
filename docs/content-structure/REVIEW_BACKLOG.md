@@ -233,3 +233,15 @@ sources. Each entry stays `open` until a researcher confirms or resolves it.
 - finding: story key_figure William B. F. Ryan is not featured and omits birth_year. The person-list base shape permits omitting birth_year only if genuinely unknown; Ryan's birth year is on record, so the person-edge match key could be supplied.
 - needs: a source check to find and verify William B. F. Ryan's birth_year (a small new sourced fact). Deferred because supplying it requires fresh research; not changed in the post to avoid inventing a date.
 - added: 2026-07-05, 2026-07-05-a
+
+### mirror-image-molecules
+- status: open
+- finding: sources[3], the 1992 FDA "Development of New Stereoisomeric Drugs" policy URL (https://www.fda.gov/regulatory-information/search-fda-guidance-documents/development-new-stereoisomeric-drugs), returned HTTP 404 to the automated fetcher on two attempts, yet still surfaces as a live FDA search result, so this is most likely fetcher bot-blocking rather than a dead link. Re-surfaced in the 2026-07-05-d correctness review (see the 2026-07-04-c entry above for the same URL).
+- needs: a browser confirmation of the FDA URL; if genuinely dead, swap to the HHS mirror at https://www.hhs.gov/guidance/document/development-new-stereoisomeric-drugs. Deferred because resolving it may require changing the source URL (a source change), not a prose edit; the post is unchanged.
+- added: 2026-07-06, 2026-07-05-d
+
+### searing-does-not-seal-juices
+- status: open
+- finding: story.body attributes the first weighing test to "home economists finally weighed roasts in the 1930s". The general point (weighing shows seared meat loses as much moisture or more) is confirmed, and the Liebig-1847 and McGee-1984 attributions check out, but the specific 1930s decade and the "home economists" actors could not be confirmed against any source; the verified moisture-loss figures (13% plain vs 19% seared) trace to a modern experiment, not a 1930s study.
+- needs: a citation for a genuine early (1930s-era) weighing study to keep the sentence, or the sentence is reworded to drop the unverified decade/actors. Deferred to backlog because the safe path is a new source; not rewritten here to avoid altering the claim without one. The post is unchanged.
+- added: 2026-07-06, 2026-07-05-d
