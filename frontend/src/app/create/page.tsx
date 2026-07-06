@@ -8,7 +8,7 @@ import { apiFetch } from "@/app/lib/api"
 import { invalidateFeedCaches } from "@/app/lib/swr"
 import { FORMAT_IDS, FORMAT_STYLES, type FormatId } from "@/lib/formats"
 import { fcStr, type Post } from "@/types/post"
-import { CATEGORIES } from "@/app/onboarding/InterestPicker"
+import { CATEGORIES } from "@/lib/interests"
 import BottomNav from "@/app/components/BottomNav"
 import Spinner from "@/components/Spinner"
 
