@@ -4,11 +4,10 @@ import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import CommentsBottomSheet from "./CommentsBottomSheet"
 import Toast from "./Toast"
-import { queueEvent, hasPendingLike, cancelPendingLike } from "@/app/lib/eventQueue"
-import { apiFetch } from "@/app/lib/api"
+import { queueEvent } from "@/app/lib/eventQueue"
 import { savePost, unsavePost, isPostSaved } from "@/app/lib/savedPosts"
 import { requestAutoRead } from "@/lib/readAloud/autostart"
-import { likePost, unlikePost, isPostLiked, getCachedLikeCount, setCachedLikeCount, isLikeSent, markLikeSent, unmarkLikeSent } from "@/app/lib/likedPosts"
+import { usePostLike } from "@/lib/usePostLike"
 import { updatePostInFeedCaches } from "@/app/lib/swr"
 import { fcNum, fcStr, type Post } from "@/types/post"
 import { formatStyle } from "@/lib/formats"
@@ -149,13 +148,10 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
   const viewStartRef      = useRef<number | null>(null)
   const lastTapRef        = useRef<number>(0)
   const navTimerRef       = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const likeInteractedRef = useRef(false)
+
+  const { liked, likesCount, toggleLike, syncFromStorage } = usePostLike(post.id, post.like_count)
 
   const [visible, setVisible] = useState(false)
-  const [liked, setLiked] = useState(() => isPostLiked(post.id))
-  const [likesCount, setLikesCount] = useState(() =>
-    getCachedLikeCount(post.id) ?? post.like_count
-  )
   const [commentsCount, setCommentsCount] = useState(post.comment_count)
   const [saved, setSaved] = useState(() => isPostSaved(post.id))
   // Saves are local-only (no backend endpoint yet), so the count can only
@@ -171,23 +167,6 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
   const fc = post.feed_card
 
   useEffect(() => {
-    apiFetch(`/api/posts/${post.id}/likes`)
-      .then((r) => r.json())
-      .then((d) => {
-        if (!likeInteractedRef.current) {
-          const liked = isPostLiked(post.id)
-          const sent = isLikeSent(post.id)
-          const onServer = sent && !hasPendingLike(post.id)
-          const adjust = (liked && !onServer ? 1 : 0) - (!liked && sent ? 1 : 0)
-          const display = d.count + adjust
-          setLikesCount(display)
-          setCachedLikeCount(post.id, display)
-        }
-      })
-      .catch(() => {})
-  }, [post.id])
-
-  useEffect(() => {
     // Reduced motion only disables the entrance animation — view tracking
     // and like-state refresh must still run for those users.
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -201,9 +180,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
         if (entry.isIntersecting) {
           viewStartRef.current = Date.now()
           if (!reduceMotion) setVisible(true)
-          setLiked(isPostLiked(post.id))
-          const cached = getCachedLikeCount(post.id)
-          if (cached !== null) setLikesCount(cached)
+          syncFromStorage()
         } else {
           if (viewStartRef.current !== null) {
             const duration_ms = Date.now() - viewStartRef.current
@@ -219,37 +196,15 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
     )
     observer.observe(el)
     return () => observer.disconnect()
-  }, [post.id])
+  }, [post.id, syncFromStorage])
 
-  function handleLike() {
-    if (isPostLiked(post.id)) return
-    likeInteractedRef.current = true
-    likePost(post.id)
-    setLiked(true)
-    setLikesCount((prev) => { const n = prev + 1; setCachedLikeCount(post.id, n); return n })
-    setAnimatingLike(true)
-    if (!isLikeSent(post.id)) {
-      markLikeSent(post.id)
-      queueEvent({ post_id: post.id, event_type: "like" })
-    }
-    setShowHeartAnim(true)
-  }
-
-  function handleUnlike() {
-    if (!isPostLiked(post.id)) return
-    likeInteractedRef.current = true
-    unlikePost(post.id)
-    setLiked(false)
-    setLikesCount((prev) => { const n = prev - 1; setCachedLikeCount(post.id, n); return n })
-    if (hasPendingLike(post.id)) {
-      cancelPendingLike(post.id)
-      unmarkLikeSent(post.id)
-    }
-  }
-
+  // A fresh like fires the heart animation; an unlike does not. The like/unlike
+  // logic, event queueing and count reconciliation live in usePostLike.
   function handleToggleLike() {
-    if (liked) handleUnlike()
-    else handleLike()
+    if (toggleLike() === "liked") {
+      setAnimatingLike(true)
+      setShowHeartAnim(true)
+    }
   }
 
   function handleSaveClick(e: React.MouseEvent) {
@@ -288,7 +243,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
         clearTimeout(navTimerRef.current)
         navTimerRef.current = null
       }
-      if (!liked) handleLike()
+      if (!liked) handleToggleLike()
       return
     }
 

@@ -120,6 +120,7 @@ frontend/
       savedPosts.ts             isPostSaved, savePost, unsavePost, getSavedPostIds; localStorage key "deepscroll_saved"; server-safe; TODO: replace with backend endpoint
   src/lib/
     interests.ts                shared interest taxonomy grouping: Category type + CATEGORIES (10 display groups of taxonomy slugs); imported by onboarding/InterestPicker.tsx and create/page.tsx
+    usePostLike.ts              shared like state + reconcile hook (liked flag, display count, GET /likes reconciliation against the three localStorage keys, toggleLike + syncFromStorage); serverLikeCount param preserves the feed card (known at mount) and detail page (loads async) seeding; used by PostCard + post detail
     prng.ts                     shared deterministic PRNG helpers mulberry32 + xmur3 (non-cryptographic); used by bookCover.ts (generated cover) and battle/seededQuestions.ts (Battle seed, mobile-parity math, unchanged)
     storage.ts                  single source for the TOKEN_KEY localStorage key ("deepscroll_token", rename deferred) + wsUrl(path) http→ws derivation; read by api.ts/auth.tsx/eventQueue.ts and the chat/battle sockets
     prose.ts                    unescapeDollar(s) = s.replace(/\\$/g, "$"); shared by Prose.tsx + the section components' non-prose-post content strings (titles/quotes/in_practice/captions) so the "currency is always written \$" rule is safe on every plain-text prose path; the math branch (MathText) is never routed through it

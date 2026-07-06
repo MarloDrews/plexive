@@ -23,8 +23,7 @@ import { useReadAloud } from "@/lib/readAloud/useReadAloud"
 import { consumeAutoRead } from "@/lib/readAloud/autostart"
 import { useAuth } from "@/app/lib/auth"
 import { apiFetch } from "@/app/lib/api"
-import { queueEvent, hasPendingLike, cancelPendingLike } from "@/app/lib/eventQueue"
-import { likePost, unlikePost, isPostLiked, getCachedLikeCount, setCachedLikeCount, isLikeSent, markLikeSent, unmarkLikeSent } from "@/app/lib/likedPosts"
+import { usePostLike } from "@/lib/usePostLike"
 import { updatePostInFeedCaches } from "@/app/lib/swr"
 
 // Large category glyph anchored to the TOP RIGHT of the detail header, filling the
@@ -105,17 +104,14 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
   const [deletingId, setDeletingId] = useState<number | null>(null)
   const [stickyDraft, setStickyDraft] = useState("")
   const [posting, setPosting] = useState(false)
-  const [liked, setLiked] = useState(() => isPostLiked(Number(id)))
-  const [likesCount, setLikesCount] = useState(() =>
-    getCachedLikeCount(Number(id)) ?? 0
-  )
+
+  const { liked, likesCount, toggleLike } = usePostLike(Number(id), post?.like_count ?? null)
 
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const readableRef        = useRef<HTMLDivElement>(null)
   const commentsTopRef     = useRef<HTMLDivElement>(null)
   const stickyInputRef     = useRef<HTMLInputElement>(null)
   const isClosingRef       = useRef(false)
-  const likeInteractedRef  = useRef(false)
   const commentsLoadedRef  = useRef(false)
 
   // Feed lists are cached for the session; keep the cached comment_count in
@@ -134,9 +130,6 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
           return
         }
         setPost(data)
-        if (!likeInteractedRef.current) {
-          setLikesCount(getCachedLikeCount(data.id) ?? data.like_count)
-        }
       })
       .catch(() => setNotFound(true))
     apiFetch(`/api/posts/${id}/comments`)
@@ -144,20 +137,6 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
       .then((data: Comment[]) => {
         setComments(data)
         commentsLoadedRef.current = true
-      })
-      .catch(() => {})
-    apiFetch(`/api/posts/${id}/likes`)
-      .then((r) => r.json())
-      .then((d) => {
-        if (!likeInteractedRef.current) {
-          const liked = isPostLiked(Number(id))
-          const sent = isLikeSent(Number(id))
-          const onServer = sent && !hasPendingLike(Number(id))
-          const adjust = (liked && !onServer ? 1 : 0) - (!liked && sent ? 1 : 0)
-          const display = d.count + adjust
-          setLikesCount(display)
-          setCachedLikeCount(Number(id), display)
-        }
       })
       .catch(() => {})
   }, [id])
@@ -207,24 +186,7 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
 
   function handleToggleLike() {
     if (!post) return
-    likeInteractedRef.current = true
-    if (isPostLiked(post.id)) {
-      unlikePost(post.id)
-      setLiked(false)
-      setLikesCount((prev) => { const n = prev - 1; setCachedLikeCount(post.id, n); return n })
-      if (hasPendingLike(post.id)) {
-        cancelPendingLike(post.id)
-        unmarkLikeSent(post.id)
-      }
-    } else {
-      likePost(post.id)
-      setLiked(true)
-      setLikesCount((prev) => { const n = prev + 1; setCachedLikeCount(post.id, n); return n })
-      if (!isLikeSent(post.id)) {
-        markLikeSent(post.id)
-        queueEvent({ post_id: post.id, event_type: "like" })
-      }
-    }
+    toggleLike()
   }
 
   async function handleDelete(commentId: number) {
