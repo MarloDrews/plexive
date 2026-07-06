@@ -2,9 +2,8 @@ import os
 from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 
 from .database import Base, engine
 
@@ -43,12 +42,37 @@ app.add_middleware(
 MAX_BODY_BYTES = 10 * 1024 * 1024
 
 
-@app.middleware("http")
-async def limit_body_size(request: Request, call_next):
-    content_length = request.headers.get("content-length")
-    if content_length and content_length.isdigit() and int(content_length) > MAX_BODY_BYTES:
-        return JSONResponse(status_code=413, content={"detail": "Request body too large."})
-    return await call_next(request)
+class BodySizeLimitMiddleware:
+    """Reject oversized request bodies by Content-Length before dispatch.
+
+    Pure ASGI on purpose: a BaseHTTPMiddleware (@app.middleware("http")) would
+    wrap every request -- including /health and every GET -- in an extra
+    task/stream layer just to compare one header. This does the header check
+    directly and otherwise passes the request straight through.
+    """
+
+    def __init__(self, app, max_bytes: int):
+        self.app = app
+        self.max_bytes = max_bytes
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] == "http":
+            for name, value in scope["headers"]:
+                if name == b"content-length" and value.isdigit() and int(value) > self.max_bytes:
+                    await send({
+                        "type": "http.response.start",
+                        "status": 413,
+                        "headers": [(b"content-type", b"application/json")],
+                    })
+                    await send({
+                        "type": "http.response.body",
+                        "body": b'{"detail":"Request body too large."}',
+                    })
+                    return
+        await self.app(scope, receive, send)
+
+
+app.add_middleware(BodySizeLimitMiddleware, max_bytes=MAX_BODY_BYTES)
 
 app.include_router(admin_router.router, prefix="/api")
 app.include_router(auth_router.router, prefix="/api")
