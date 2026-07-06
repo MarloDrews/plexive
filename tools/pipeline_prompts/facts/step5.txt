@@ -1,0 +1,53 @@
+Read CLAUDE.md and ARCHITECTURE.md first.
+
+<context>
+Fresh session. Read the Facts posts added on the current feature branch as a reader and a texture
+critic. This is the HUMAN-SOUND review: the one question is whether each post reads as a good human
+author wrote it, or whether there are tells. Change nothing.
+</context>
+
+<references>
+The posts under docs/content-structure/generated/facts/ (the branch diff against main),
+@docs/content-structure/HUMAN_TEXTURE_STANDARD.md as the lens, plus
+@docs/content-structure/STYLE_GUIDE_LONGFORM.md, @docs/content-structure/CROSS_POST_VARIANCE.md
+(the cross-post lens), and SKEL. GOLD is the bar for how human it reads.
+</references>
+
+<method>
+1. Run the checker on each post: python3 tools/texture_check.py <path> --format facts. Its
+   DISTRIBUTION candidates are your starting spots (burstiness, rhythm drift, parallel-field shape,
+   comma stacking): confirm or clear each against the text.
+2. Read each post cold against the texture standard. Judge, do not just measure: is any closure
+   unneeded, any triplet unearned, is the variance real or applied, did the register slide into
+   symbolism (represents, embodies, underscores)? Does each teaser open a real loop the post closes?
+   Does each section end mostly plainly, with landings only where the length-aware rule allows? Count this concretely per post: how many units (sections and angle items) end on a short weighty landing versus trail off plainly. A post where most units land is metronomic even when each landing is plain rather than lyrical. Is
+   the reflex antithesis ("X, not Y") reached for as a default? Reach for the plain word: flag a
+   needlessly hard word or a sentence a non-native reader must parse twice.
+3. Italics correctness (typographic): flag any work title or named theory/framework not in the
+   asterisk marker, and any named principle, law, effect, model, or broad ism wrongly italicized,
+   per the style guide's boundary policy. The prose-only step applies these.
+4. Across the batch, not just within each post: judge cross-post sameness against
+   CROSS_POST_VARIANCE.md, at the positions a reader remembers. Check each template it lists: the reframe
+   opener; the closing "why it matters" line (watch hardest for the cosmic-zoom-then-aphorism-on-the-body
+   gesture and for every post ending on a crafted quotable turn); the story arc (lone-figure vindicated
+   after N years); the teaser triad (same three roles in the same order); and the two phrasing molds
+   ("X is not the same as Y", "the same ___"). Quote the parallel spots side by side and rate how strongly
+   each would register on a reader scrolling the feed. Do not flag format-inheritance (the section
+   skeleton, myth/reality pairs, the quiz, figure pairings); that is expected shared structure.
+</method>
+
+<output>
+Write docs/content-structure/generated/facts/_batches/{{BATCH}}/humansound_report.json: per post,
+the tells found (each accept / clear / flag with reasoning and the section), and a batch-level
+section for cross-post sameness. For the closing metronome, report it as a position: give a per-post count of landing units and an explicit list of the specific units the prose-only step should de-land, so step 6 acts on positions rather than on a style label. For each flag, say whether the prose-only step can fix it within
+its boundary (recast, resplit, reword, or apply an italic marker) or whether it would need a factual
+or structural change (then it is out of scope for prose-only and you say so). Change no files.
+</output>
+
+<boundary>
+Read only the files named above. Treat them as your complete and only context. Do not read other
+posts' reports, the earlier step logs, the git history, past conversations, or project knowledge.
+You are seeing these posts cold: you do not know how they were written or what was already changed,
+and you must not try to find out. Judge only the text against the standard. Web search is not needed
+for this step.
+</boundary>

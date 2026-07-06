@@ -1,0 +1,51 @@
+Read CLAUDE.md and ARCHITECTURE.md first.
+
+<context>
+Fresh session. Apply the correctness findings in
+@docs/content-structure/generated/facts/_batches/{{BATCH}}/correctness_report.json to the posts it
+names. You did not write the review; act on the report as written.
+</context>
+
+<rules>
+- Fix every must-fix that is a rule, structure, factual, or SVG/text-agreement problem. Remove
+  em-dashes and em-dash-substitute semicolons, straighten a non-slug tags[0], convert straight
+  quotes to curly doubles, remove any card_visual or feed_card.field, and the like, keeping the
+  voice intact rather than flattening it.
+- Apply the should-improve fixes you are confident about, EXCEPT prose-texture polishing, which the
+  separate prose-only step owns. You are not judging how human the prose reads here.
+- You may add or rebuild a visual when every number it needs is already verified in the post. Do
+  not add a visual needing a figure the post lacks, and never invent data points.
+- Never change a number, date, name, or the substance of a factual claim. If a claim is overstated,
+  hedge it only to what the sources support.
+- Do not do, on your own, any fix that needs fresh research (a new claim requiring a new source).
+  For each such item append an entry to docs/content-structure/REVIEW_BACKLOG.md (create if
+  absent): ### <post-slug> / - status: open / - finding: <...> / - needs: <the research and why
+  deferred> / - added: <YYYY-MM-DD>, {{BATCH}}. Logging is the complete action; do not rewrite the
+  science or pause the run.
+- Touch only the post files under review and the backlog file.
+</rules>
+
+<validation>
+Re-run the checker on each post you touched (--format facts) and confirm the convention candidates
+closed. Confirm JSON parses; required sections present and in order; every SVG's numbers still match
+the text; tags and connections still valid. Confirm the facts and numbers are unchanged from before
+your edits. List every change as a short before/after grouped by post, and list separately anything
+you left undone and flagged.
+</validation>
+
+<commit>
+One small conventional commit per post on the same feature branch (no co-author); commit the backlog
+update too if you logged items. Do not push or merge to main.
+</commit>
+
+<autonomy>Run unattended; do not pause between posts.</autonomy>
+
+<boundary>
+Read only the posts under review and the correctness report named above. Treat them as your
+complete and only context. Do not read the generation prompt, the reviewer's context beyond the
+written report, other step logs, past conversations, or project knowledge.
+</boundary>
+<safety>
+Install nothing; run no commands beyond reading the named repo files, git, and writing the post
+files and the backlog. If something blocks you, say so rather than working around it.
+</safety>

@@ -30,3 +30,5 @@ user_uploads/
 .DS_Store
 .vscode/
 !.vscode/extensions.json
+
+docs/content-structure/generated/*/_batches/

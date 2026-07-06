@@ -1,0 +1,61 @@
+Read CLAUDE.md and ARCHITECTURE.md first.
+
+<context>
+Fresh session. Apply the prose findings in
+@docs/content-structure/generated/facts/_batches/{{BATCH}}/humansound_report.json to the posts it
+names. You did not write the review; act on the report as written.
+</context>
+
+<rules>
+- Apply each flag the report marks as prose-only-fixable: recast, resplit, reorder, or reword within
+  a field to break a metronome, add a short beat to a flat section, thin a reflex antithesis to one
+  earned instance, or plainen a needlessly hard word. Keep the voice; do not flatten it to a safe
+  monotone, and do not perform variation (a counted short sentence reads as machine too). Breaking a metronome means the position, not only the wording: for the closing-landing units the report lists, end them mid-thought or on a plain clause (move the short beat earlier, or drop the closing sentence), and keep only the one earned landing per post. Flattening a landing's wording while leaving it at the unit end does not clear the tell.
+- Apply the batch-level cross_post findings as a COORDINATED set, not just per-post flags
+  (CROSS_POST_VARIANCE.md). Where the report flags a shared move across posts (the reframe opener, the
+  closing line, the story pivot), decide which post keeps a given shape and recast the others so the
+  batch genuinely varies at those positions. This is prose-only recasting and stays within the
+  boundary below; leave format-inheritance (skeleton, myth/reality pairs, quiz, figure pairings) alone.
+- Apply the typographic italics fixes: wrap an existing work or theory name in the asterisk marker,
+  or remove a marker wrongly placed on a named principle, law, effect, model, or ism. This changes
+  no fact, number, or name, so it is inside your boundary.
+- Do NOT change any fact, number, name, quote wording, or source, nor the set of sections, the
+  section types, the order, or the key section. If a flagged fix would require any of those, leave
+  it and note it at the end of your report rather than doing it; that would reopen the correctness
+  cycle.
+- Touch only the post files under review.
+</rules>
+
+<validation>
+Re-run the checker on each post you touched (--format facts); confirm the distribution candidates you
+addressed closed and no new ones opened. Confirm JSON parses and every fact, number, name, quote, and
+source is byte-unchanged from before your edits (diff the value fields). List every change as a short
+before/after grouped by post, and list separately anything you left for the correctness cycle.
+</validation>
+
+<recent_moves>
+After the fixes, update docs/content-structure/generated/facts/_recent_moves.md as a running tally, not
+an overwrite (CROSS_POST_VARIANCE.md gives the format). Read the existing file if present, fold in this
+batch, and write back: a "move tally" section (one line per distinct shape, grouped by position (reframe
+opener / closing line / story pivot), each with a count you increment; add a line only for a genuinely
+new shape), and a "recent batches" section (this batch plus the prior entries, keeping only the last ~10
+batches, older ones dropped); tag each post in that section with its rough topic archetype too (myth-corrected, experience-it, mechanism, scale-number, reasoning-trap, delayed-discovery, or a short new label), so the topic step can spread archetypes across batches. Keep shapes and labels terse, not full sentences. This is how the next batch's topic
+step avoids the moves used across many batches, not just the last one.
+</recent_moves>
+
+<commit>
+One small conventional commit per post on the same feature branch (no co-author); commit the
+_recent_moves.md update too. Do not push or merge to main.
+</commit>
+
+<autonomy>Run unattended; do not pause between posts.</autonomy>
+
+<boundary>
+Read only the posts under review and the human-sound report named above. Treat them as your complete
+and only context. Do not read the generation prompt, the reviewer's context beyond the written
+report, other step logs, past conversations, or project knowledge.
+</boundary>
+<safety>
+Install nothing; run no commands beyond reading the named repo files, git, and writing the post
+files. If something blocks you, say so rather than working around it.
+</safety>
