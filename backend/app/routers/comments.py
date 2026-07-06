@@ -94,16 +94,21 @@ def create_comment(
 
     comment = Comment(post_id=post_id, user_id=current_user.id, body=body.body)
     db.add(comment)
-    db.commit()
-
-    # Re-query with user relationship loaded for serialization
-    comment = (
-        db.query(Comment)
-        .options(selectinload(Comment.user))
-        .filter(Comment.id == comment.id)
-        .first()
+    # Flush assigns the id and fires the Python-side created_at default; the
+    # response is built from data already in hand (comment + current_user)
+    # BEFORE commit expires the instances, so serialization costs no re-query.
+    db.flush()
+    payload = CommentOut(
+        id=comment.id,
+        post_id=comment.post_id,
+        username=current_user.username,
+        is_verified=current_user.is_verified,
+        avatar_url=current_user.avatar_url,
+        body=comment.body,
+        created_at=comment.created_at,
     )
-    return comment
+    db.commit()
+    return payload
 
 
 @router.delete("/comments/{comment_id}", status_code=status.HTTP_204_NO_CONTENT)
