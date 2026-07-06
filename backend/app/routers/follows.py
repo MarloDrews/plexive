@@ -43,6 +43,30 @@ def _is_following(viewer_id: int, target_id: int, db: Session) -> bool:
     ).first() is not None
 
 
+def _can_view_private_lists(current_user: Optional[User], target: User, db: Session) -> bool:
+    """Whether the viewer may see the target's follower/following lists: public
+    accounts always, a private account only for the owner or an accepted
+    follower. Same gate for both list endpoints."""
+    if not target.is_private:
+        return True
+    if current_user is not None and current_user.id == target.id:
+        return True
+    return current_user is not None and _is_following(current_user.id, target.id, db)
+
+
+def _find_pending_request(requester_id: int, target_id: int, db: Session) -> Follow:
+    """The pending follow row from requester -> target, or 404. Shared by the
+    accept and reject endpoints, which differ only in the action on the row."""
+    follow = db.query(Follow).filter(
+        Follow.follower_id == requester_id,
+        Follow.following_id == target_id,
+        Follow.status == "pending",
+    ).first()
+    if not follow:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No pending follow request from this user.")
+    return follow
+
+
 @router.post("/{username}/follow")
 def follow_user(
     username: str,
@@ -95,13 +119,7 @@ def accept_follow_request(
 ):
     # current_user is the target; {username} is the requester
     requester = get_target_user(username, db)
-    follow = db.query(Follow).filter(
-        Follow.follower_id == requester.id,
-        Follow.following_id == current_user.id,
-        Follow.status == "pending",
-    ).first()
-    if not follow:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No pending follow request from this user.")
+    follow = _find_pending_request(requester.id, current_user.id, db)
     follow.status = "accepted"
     db.commit()
     return {"status": "accepted"}
@@ -115,13 +133,7 @@ def reject_follow_request(
 ):
     # current_user is the target; {username} is the requester
     requester = get_target_user(username, db)
-    follow = db.query(Follow).filter(
-        Follow.follower_id == requester.id,
-        Follow.following_id == current_user.id,
-        Follow.status == "pending",
-    ).first()
-    if not follow:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No pending follow request from this user.")
+    follow = _find_pending_request(requester.id, current_user.id, db)
     db.delete(follow)
     db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
@@ -135,10 +147,8 @@ def get_followers(
 ):
     target = get_target_user(username, db)
 
-    if target.is_private:
-        is_self = current_user is not None and current_user.id == target.id
-        if not is_self and (current_user is None or not _is_following(current_user.id, target.id, db)):
-            return []
+    if not _can_view_private_lists(current_user, target, db):
+        return []
 
     follows = db.query(Follow).filter(
         Follow.following_id == target.id,
@@ -155,10 +165,8 @@ def get_following(
 ):
     target = get_target_user(username, db)
 
-    if target.is_private:
-        is_self = current_user is not None and current_user.id == target.id
-        if not is_self and (current_user is None or not _is_following(current_user.id, target.id, db)):
-            return []
+    if not _can_view_private_lists(current_user, target, db):
+        return []
 
     follows = db.query(Follow).filter(
         Follow.follower_id == target.id,

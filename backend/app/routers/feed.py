@@ -25,6 +25,20 @@ def _fetch_posts(ids: Set[int], db: Session) -> List[Post]:
     )
 
 
+def _recent_published_posts(db: Session, author_filter) -> List[Post]:
+    """The 50 most recent published posts matching an author filter. Shared by
+    the following-feed and single-user-feed endpoints, which differ only in that
+    filter."""
+    return (
+        db.query(Post)
+        .options(*POST_EAGER)
+        .filter(author_filter, Post.status == "published")
+        .order_by(Post.created_at.desc())
+        .limit(50)
+        .all()
+    )
+
+
 @router.get("/feed", response_model=List[PostListOut])
 def get_feed(
     format: Optional[str] = None,
@@ -86,14 +100,7 @@ def get_following_feed(
     ]
     if not following_ids:
         return []
-    posts = (
-        db.query(Post)
-        .options(*POST_EAGER)
-        .filter(Post.author_id.in_(following_ids), Post.status == "published")
-        .order_by(Post.created_at.desc())
-        .limit(50)
-        .all()
-    )
+    posts = _recent_published_posts(db, Post.author_id.in_(following_ids))
     return attach_counts(posts, db)
 
 
@@ -104,12 +111,5 @@ def get_user_feed(
     db: Session = Depends(get_db),
 ):
     target = get_target_user(username, db)
-    posts = (
-        db.query(Post)
-        .options(*POST_EAGER)
-        .filter(Post.author_id == target.id, Post.status == "published")
-        .order_by(Post.created_at.desc())
-        .limit(50)
-        .all()
-    )
+    posts = _recent_published_posts(db, Post.author_id == target.id)
     return attach_counts(posts, db)
