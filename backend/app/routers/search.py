@@ -79,10 +79,10 @@ def search_posts(
 
     matched = [p for p in candidates if _post_matches(p, q_lower)]
 
-    # Title matches first, then recency (already ordered by created_at desc).
-    matched.sort(
-        key=lambda p: (0 if q_lower in p.title.lower() else 1, 0)
-    )
+    # Title matches first, then recency. Recency is preserved by Python's
+    # stable sort over the earlier ORDER BY created_at DESC, so the key holds
+    # only the title-match rank.
+    matched.sort(key=lambda p: 0 if q_lower in p.title.lower() else 1)
 
     results = matched[:50]
     return attach_counts(results, db)
