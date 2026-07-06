@@ -1,12 +1,13 @@
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy import case, func
 from sqlalchemy.orm import Session
 
 from ..auth import get_optional_user
 from ..database import get_db
 from ..models import Event, Post, User
+from ..rate_limit import check_rate_limit
 from ..schemas import EventIn
 from ._shared import get_visible_post
 
@@ -16,9 +17,20 @@ router = APIRouter()
 @router.post("/events")
 def create_events(
     events: List[EventIn],
+    request: Request,
     db: Session = Depends(get_db),
     optional_user: Optional[User] = Depends(get_optional_user),
 ):
+    # Perf angle only: bound the otherwise-unlimited growth of the events table,
+    # which feeds the feed-scoring and stats scans. The abuse lockdown (require
+    # auth, dedup, clamp) is M119 in the security batch -- this file is shared
+    # with it. The frontend queue flushes at most ~12 batches/min, so 120/min
+    # per identity is generous headroom.
+    identity = optional_user.id if optional_user else (
+        f"ip:{request.client.host if request.client else 'unknown'}"
+    )
+    check_rate_limit(identity, "create_events", 120, 60)
+
     # The frontend queue flushes at 5 events; anything near this cap is abuse.
     if len(events) > 50:
         raise HTTPException(status_code=422, detail="Too many events in one batch.")
