@@ -25,26 +25,32 @@ def _fetch_posts(ids: Set[int], db: Session) -> List[Post]:
     )
 
 
-def _recent_published_posts(db: Session, author_filter) -> List[Post]:
-    """The 50 most recent published posts matching an author filter. Shared by
-    the following-feed and single-user-feed endpoints, which differ only in that
-    filter."""
-    return (
+def _recent_published_posts(
+    db: Session, author_filter, limit: int, before_id: Optional[int]
+) -> List[Post]:
+    """The most recent published posts matching an author filter, newest first,
+    keyset-paginated (before_id = id of the last post the client already has;
+    ids follow insert order, so id-desc matches the old created_at-desc order
+    while making the cursor exact). Shared by the following-feed and
+    single-user-feed endpoints, which differ only in that filter."""
+    query = (
         db.query(Post)
         .options(*POST_EAGER)
         .filter(author_filter, Post.status == "published")
-        .order_by(Post.created_at.desc())
-        .limit(50)
-        .all()
     )
+    if before_id is not None:
+        query = query.filter(Post.id < before_id)
+    return query.order_by(Post.id.desc()).limit(limit).all()
 
 
 @router.get("/feed", response_model=List[PostListOut])
 def get_feed(
     format: Optional[str] = None,
     interests: Optional[str] = None,
+    limit: int = 50,
     db: Session = Depends(get_db),
 ):
+    limit = max(1, min(limit, 100))
     slugs: List[str] = [s.strip() for s in interests.split(",")] if interests else []
 
     # Query only Post.id (integer) here; the full rows (with the json-typed
@@ -53,11 +59,11 @@ def get_feed(
     if format:
         id_base = id_base.filter(Post.format == format)
 
-    # For You always shows every published post; interests only affect ordering,
-    # never inclusion. Fetch all of them once (interests eager-loaded).
+    # For You orders every published post (interests only affect ordering,
+    # never inclusion) and returns the top page of the scored ranking.
     posts = _fetch_posts({row[0] for row in id_base.all()}, db)
     if not slugs:
-        return attach_counts(score_posts(posts, [], db), db)
+        return attach_counts(score_posts(posts, [], db)[:limit], db)
 
     # Rank by tier: Tier 1 shares an interest with the user's selection, Tier 2
     # shares a co-tag with a Tier 1 post, Tier 3 is everything else. score_posts
@@ -83,14 +89,17 @@ def get_feed(
             continue
         tier_map[p.id] = 2 if any(i.slug in related_slugs for i in p.interests) else 3
 
-    return attach_counts(score_posts(posts, slugs, db, tier_map), db)
+    return attach_counts(score_posts(posts, slugs, db, tier_map)[:limit], db)
 
 
 @router.get("/feed/following", response_model=List[PostListOut])
 def get_following_feed(
+    before_id: Optional[int] = None,
+    limit: int = 50,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    limit = max(1, min(limit, 100))
     following_ids = [
         row.following_id
         for row in db.query(Follow).filter(
@@ -100,16 +109,19 @@ def get_following_feed(
     ]
     if not following_ids:
         return []
-    posts = _recent_published_posts(db, Post.author_id.in_(following_ids))
+    posts = _recent_published_posts(db, Post.author_id.in_(following_ids), limit, before_id)
     return attach_counts(posts, db)
 
 
 @router.get("/feed/user/{username}", response_model=List[PostListOut])
 def get_user_feed(
     username: str,
+    before_id: Optional[int] = None,
+    limit: int = 50,
     _current_user: Optional[User] = Depends(get_optional_user),
     db: Session = Depends(get_db),
 ):
+    limit = max(1, min(limit, 100))
     target = get_target_user(username, db)
-    posts = _recent_published_posts(db, Post.author_id == target.id)
+    posts = _recent_published_posts(db, Post.author_id == target.id, limit, before_id)
     return attach_counts(posts, db)

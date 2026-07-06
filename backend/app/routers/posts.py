@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
@@ -45,16 +45,22 @@ def _sanitize_sections_svgs(sections: list) -> list:
 # does not treat the literal string "mine" as an integer post_id.
 @router.get("/posts/mine", response_model=List[PostOut])
 def get_my_posts(
+    before_id: Optional[int] = None,
+    limit: int = 50,
     current_user=Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    posts = (
+    # Keyset pagination on the id (before_id = id of the last post the client
+    # already has); id-desc matches the old created_at-desc insert order.
+    limit = max(1, min(limit, 100))
+    query = (
         db.query(Post)
         .options(*POST_EAGER)
         .filter(Post.author_id == current_user.id)
-        .order_by(Post.created_at.desc())
-        .all()
     )
+    if before_id is not None:
+        query = query.filter(Post.id < before_id)
+    posts = query.order_by(Post.id.desc()).limit(limit).all()
     return attach_counts(posts, db)
 
 

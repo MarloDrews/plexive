@@ -17,10 +17,23 @@ router = APIRouter(prefix="/users", tags=["follows"])
 class FollowUserOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
+    # The follow edge id: the before_id keyset cursor for the list endpoints
+    # (the user rows themselves carry no id in this payload).
+    follow_id: int
     username: str
     is_verified: int
     is_private: bool
     avatar_url: Optional[str] = None
+
+
+def _follow_user_out(follow: Follow, user: User) -> FollowUserOut:
+    return FollowUserOut(
+        follow_id=follow.id,
+        username=user.username,
+        is_verified=user.is_verified,
+        is_private=user.is_private,
+        avatar_url=user.avatar_url,
+    )
 
 
 class ProfileOut(BaseModel):
@@ -141,9 +154,20 @@ def reject_follow_request(
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
+def _page_of_follows(query, before_id: Optional[int], limit: int) -> List[Follow]:
+    """Newest-first keyset page over a Follow filter (before_id = follow_id of
+    the last row the client already has). Shared by the three list endpoints."""
+    limit = max(1, min(limit, 100))
+    if before_id is not None:
+        query = query.filter(Follow.id < before_id)
+    return query.order_by(Follow.id.desc()).limit(limit).all()
+
+
 @router.get("/{username}/followers", response_model=List[FollowUserOut])
 def get_followers(
     username: str,
+    before_id: Optional[int] = None,
+    limit: int = 50,
     current_user: Optional[User] = Depends(get_optional_user),
     db: Session = Depends(get_db),
 ):
@@ -152,16 +176,22 @@ def get_followers(
     if not _can_view_private_lists(current_user, target, db):
         return []
 
-    follows = db.query(Follow).filter(
-        Follow.following_id == target.id,
-        Follow.status == "accepted",
-    ).all()
-    return [FollowUserOut.model_validate(f.follower) for f in follows]
+    follows = _page_of_follows(
+        db.query(Follow).filter(
+            Follow.following_id == target.id,
+            Follow.status == "accepted",
+        ),
+        before_id,
+        limit,
+    )
+    return [_follow_user_out(f, f.follower) for f in follows]
 
 
 @router.get("/{username}/following", response_model=List[FollowUserOut])
 def get_following(
     username: str,
+    before_id: Optional[int] = None,
+    limit: int = 50,
     current_user: Optional[User] = Depends(get_optional_user),
     db: Session = Depends(get_db),
 ):
@@ -170,28 +200,39 @@ def get_following(
     if not _can_view_private_lists(current_user, target, db):
         return []
 
-    follows = db.query(Follow).filter(
-        Follow.follower_id == target.id,
-        Follow.status == "accepted",
-    ).all()
-    return [FollowUserOut.model_validate(f.following) for f in follows]
+    follows = _page_of_follows(
+        db.query(Follow).filter(
+            Follow.follower_id == target.id,
+            Follow.status == "accepted",
+        ),
+        before_id,
+        limit,
+    )
+    return [_follow_user_out(f, f.following) for f in follows]
 
 
 @router.get("/{username}/follow-requests")
 def get_follow_requests(
     username: str,
+    before_id: Optional[int] = None,
+    limit: int = 50,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     if current_user.username != username:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied.")
 
-    follows = db.query(Follow).filter(
-        Follow.following_id == current_user.id,
-        Follow.status == "pending",
-    ).all()
+    follows = _page_of_follows(
+        db.query(Follow).filter(
+            Follow.following_id == current_user.id,
+            Follow.status == "pending",
+        ),
+        before_id,
+        limit,
+    )
     return [
         {
+            "follow_id": f.id,
             "username": f.follower.username,
             "is_verified": f.follower.is_verified,
             "avatar_url": f.follower.avatar_url,

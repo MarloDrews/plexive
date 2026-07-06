@@ -59,11 +59,13 @@ def search_posts(
     request: Request,
     q: str = "",
     format: Optional[str] = None,
+    limit: int = 50,
     current_user: Optional[User] = Depends(get_optional_user),
     db: Session = Depends(get_db),
 ):
     if not q.strip() or len(q) > QUERY_MAX_CHARS:
         return []
+    limit = max(1, min(limit, 50))
     _limit_search(request, current_user, "search_posts")
 
     q_lower = q.strip().lower()
@@ -85,7 +87,7 @@ def search_posts(
     # only the title-match rank.
     matched.sort(key=lambda p: 0 if q_lower in p.title.lower() else 1)
 
-    results = matched[:50]
+    results = matched[:limit]
     return attach_counts(results, db)
 
 
@@ -93,18 +95,20 @@ def search_posts(
 def search_users(
     request: Request,
     q: str = "",
+    limit: int = 20,
     current_user: Optional[User] = Depends(get_optional_user),
     db: Session = Depends(get_db),
 ):
     q = q.strip()
     if not q or len(q) > QUERY_MAX_CHARS:
         return []
+    limit = max(1, min(limit, 50))
     _limit_search(request, current_user, "search_users")
 
     matches = (
         db.query(User)
         .filter(User.is_active == True, User.username.ilike(f"%{q}%"))
-        .limit(20)
+        .limit(limit)
         .all()
     )
     # Prefix matches first, then alphabetical.
