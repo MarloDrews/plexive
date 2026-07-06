@@ -8,7 +8,7 @@ from ..database import get_db
 from ..graph_edges import on_post_written, resolved_read_next
 from ..graph_identity import post_identity_key
 from ..models import Interest, Post
-from ..post_counts import attach_counts, attach_counts_one
+from ..post_counts import attach_counts, attach_counts_one, primary_category_name
 from ..rate_limit import check_rate_limit
 from ..reading_time import compute_reading_minutes
 from ..sanitize import sanitize_svg_text
@@ -122,7 +122,13 @@ def create_post(
         .filter(Post.id == post_id)
         .first()
     )
-    return attach_counts_one(post, db)
+    # A just-created post has zero likes and comments by construction and its
+    # reading_minutes is already stored, so the two grouped count queries of
+    # attach_counts_one would be pure waste; attach the values directly.
+    post.like_count = 0
+    post.comment_count = 0
+    post.primary_category_name = primary_category_name(post)
+    return post
 
 
 @router.get("/posts/{post_id}", response_model=PostOut)

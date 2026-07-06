@@ -7,7 +7,7 @@ from .models import Comment, Event, Post
 from .reading_time import compute_reading_minutes
 
 
-def _primary_category_name(post: Post):
+def primary_category_name(post: Post):
     """Display name of the post's primary category, its first tag (tags[0]).
 
     Read from the post's own eager-loaded interests (Interest.name) so the card
@@ -58,7 +58,7 @@ def attach_counts(posts: List[Post], db: Session) -> List[Post]:
             # Transitional: pre-column row not yet backfilled. Never committed
             # here (read path), so the ORM change is discarded with the session.
             p.reading_minutes = compute_reading_minutes(p.sections)
-        p.primary_category_name = _primary_category_name(p)
+        p.primary_category_name = primary_category_name(p)
     return posts
 
 
