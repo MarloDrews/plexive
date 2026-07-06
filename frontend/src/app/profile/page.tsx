@@ -47,11 +47,13 @@ export default function ProfilePage() {
 
   // Privacy toggle
   const [privacyLoading, setPrivacyLoading] = useState(false)
+  const [privacyError, setPrivacyError] = useState("")
 
   // Follow requests
   const [pendingRequests, setPendingRequests] = useState<{ username: string; is_verified: number; avatar_url?: string | null; created_at: string }[]>([])
   const [showRequests, setShowRequests] = useState(false)
   const [requestActionLoading, setRequestActionLoading] = useState<string | null>(null)
+  const [requestError, setRequestError] = useState("")
 
   // Avatar upload
   const avatarInputRef = useRef<HTMLInputElement>(null)
@@ -63,7 +65,7 @@ export default function ProfilePage() {
   // one cache instead of refetching (writes stay on apiFetch).
   const { data: eloData } = useSWR<EloData>(user ? `/api/users/${user.username}/elo` : null)
   const elo = eloData ?? null
-  const { data: profileCounts } = useSWR<{ follower_count: number; following_count: number; post_count: number }>(
+  const { data: profileCounts, mutate: mutateCounts } = useSWR<{ follower_count: number; following_count: number; post_count: number }>(
     user ? `/api/users/${user.username}/profile` : null
   )
   const followerCount = profileCounts?.follower_count ?? null
@@ -217,6 +219,7 @@ export default function ProfilePage() {
 
   async function handleTogglePrivacy() {
     if (!user) return
+    setPrivacyError("")
     setPrivacyLoading(true)
     try {
       const r = await apiFetch("/api/auth/me", {
@@ -226,26 +229,40 @@ export default function ProfilePage() {
       const data = await r.json()
       if (!r.ok) throw new Error(data.detail ?? "Failed to update privacy.")
       updateUser(data)
+    } catch (err) {
+      // Without this catch the throw escaped the handler with no feedback.
+      setPrivacyError(err instanceof Error ? err.message : "Failed to update privacy.")
     } finally {
       setPrivacyLoading(false)
     }
   }
 
   async function handleAcceptRequest(requesterUsername: string) {
+    setRequestError("")
     setRequestActionLoading(requesterUsername)
     try {
-      await apiFetch(`/api/users/${requesterUsername}/follow/accept`, { method: "POST" })
+      const r = await apiFetch(`/api/users/${requesterUsername}/follow/accept`, { method: "POST" })
+      if (!r.ok) throw new Error("Failed to accept the request.")
+      // Only drop the row when the accept succeeded, and refresh the follower
+      // count so it reflects the new accepted follower.
       setPendingRequests((prev) => prev.filter((r) => r.username !== requesterUsername))
+      mutateCounts()
+    } catch (err) {
+      setRequestError(err instanceof Error ? err.message : "Failed to accept the request.")
     } finally {
       setRequestActionLoading(null)
     }
   }
 
   async function handleDeclineRequest(requesterUsername: string) {
+    setRequestError("")
     setRequestActionLoading(requesterUsername)
     try {
-      await apiFetch(`/api/users/${requesterUsername}/follow/reject`, { method: "DELETE" })
+      const r = await apiFetch(`/api/users/${requesterUsername}/follow/reject`, { method: "DELETE" })
+      if (!r.ok) throw new Error("Failed to decline the request.")
       setPendingRequests((prev) => prev.filter((r) => r.username !== requesterUsername))
+    } catch (err) {
+      setRequestError(err instanceof Error ? err.message : "Failed to decline the request.")
     } finally {
       setRequestActionLoading(null)
     }
@@ -414,6 +431,7 @@ export default function ProfilePage() {
             </button>
             {showRequests && (
               <div className="px-5 pb-5 flex flex-col gap-3">
+                {requestError && <p className="text-bad text-xs">{requestError}</p>}
                 {pendingRequests.length === 0 ? (
                   <p className="text-ink-muted text-sm">No pending requests.</p>
                 ) : (
@@ -471,6 +489,7 @@ export default function ProfilePage() {
                 }`} />
               </button>
             </div>
+            {privacyError && <p className="text-bad text-xs px-5 pb-3 -mt-1">{privacyError}</p>}
           </div>
 
           {/* Change username */}

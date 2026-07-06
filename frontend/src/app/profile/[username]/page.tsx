@@ -131,17 +131,30 @@ export default function PublicProfilePage() {
     if (!profile) return
     setFollowLoading(true)
     try {
-      // Optimistic update written into the SWR cache (revalidate: false keeps
-      // the previous behavior of trusting the computed counts, no refetch).
+      // Optimistic update written into the SWR cache only when the write
+      // succeeds (revalidate: false keeps trusting the computed counts). On a
+      // failed write (429 rate limit, 400 self/duplicate, stale 404) or a
+      // network error, revalidate the profile key so the button reflects the
+      // server's real state instead of a guess.
       const followStatus = profile.follow_status
       if (followStatus === "accepted" || followStatus === "pending") {
-        await apiFetch(`/api/users/${username}/follow`, { method: "DELETE" })
-        mutateProfile((p) => p ? { ...p, follow_status: "none", follower_count: Math.max(0, p.follower_count - (followStatus === "accepted" ? 1 : 0)) } : p, { revalidate: false })
+        const r = await apiFetch(`/api/users/${username}/follow`, { method: "DELETE" })
+        if (r.ok) {
+          mutateProfile((p) => p ? { ...p, follow_status: "none", follower_count: Math.max(0, p.follower_count - (followStatus === "accepted" ? 1 : 0)) } : p, { revalidate: false })
+        } else {
+          mutateProfile()
+        }
       } else {
         const r = await apiFetch(`/api/users/${username}/follow`, { method: "POST" })
-        const data = await r.json()
-        mutateProfile((p) => p ? { ...p, follow_status: data.status, follower_count: data.status === "accepted" ? p.follower_count + 1 : p.follower_count } : p, { revalidate: false })
+        if (r.ok) {
+          const data = await r.json()
+          mutateProfile((p) => p ? { ...p, follow_status: data.status, follower_count: data.status === "accepted" ? p.follower_count + 1 : p.follower_count } : p, { revalidate: false })
+        } else {
+          mutateProfile()
+        }
       }
+    } catch {
+      mutateProfile()
     } finally {
       setFollowLoading(false)
     }

@@ -58,8 +58,9 @@ function UserRow({ user, loggedIn }: { user: UserResult; loggedIn: boolean }) {
     setBusy(true)
     try {
       if (followStatus === "accepted" || followStatus === "pending") {
-        await apiFetch(`/api/users/${user.username}/follow`, { method: "DELETE" })
-        setFollowStatus("none")
+        const r = await apiFetch(`/api/users/${user.username}/follow`, { method: "DELETE" })
+        // Only drop to "none" when the unfollow actually succeeded.
+        if (r.ok) setFollowStatus("none")
       } else {
         const r = await apiFetch(`/api/users/${user.username}/follow`, { method: "POST" })
         if (r.ok) {
@@ -67,6 +68,8 @@ function UserRow({ user, loggedIn }: { user: UserResult; loggedIn: boolean }) {
           setFollowStatus(d.status)
         }
       }
+    } catch {
+      // Swallow so a failed toggle is not an unhandled rejection.
     } finally {
       setBusy(false)
     }
