@@ -120,22 +120,32 @@ def _edge_specs(post):
         yield "people", key, bool(person.get("featured"))
 
 
+# Pairs per resolve query. Each pair is 2 bind params, so this keeps a query
+# well under SQLite's ~999-param default even for a post with many connections.
+_RESOLVE_CHUNK = 100
+
+
 def _resolve_live_targets(db, pairs):
     """Map (format, identity_key) -> (post_id, title) for LIVE posts matching pairs.
 
-    pairs is an iterable of (format, identity_key). One query, OR of per-pair
-    equality clauses (robust on both SQLite and PostgreSQL).
+    pairs is an iterable of (format, identity_key). Chunked into bounded OR-of-
+    per-pair-equality queries (robust on both SQLite and PostgreSQL) so a post
+    with an unbounded number of connections cannot build one oversized statement.
     """
     pairs = [(f, k) for f, k in pairs if k is not None]
     if not pairs:
         return {}
-    clause = or_(*[and_(Post.format == f, Post.identity_key == k) for f, k in pairs])
-    rows = (
-        db.query(Post.id, Post.format, Post.identity_key, Post.title)
-        .filter(Post.status == LIVE_STATUS, clause)
-        .all()
-    )
-    return {(fmt, key): (pid, title) for pid, fmt, key, title in rows}
+    resolved = {}
+    for i in range(0, len(pairs), _RESOLVE_CHUNK):
+        chunk = pairs[i:i + _RESOLVE_CHUNK]
+        clause = or_(*[and_(Post.format == f, Post.identity_key == k) for f, k in chunk])
+        rows = (
+            db.query(Post.id, Post.format, Post.identity_key, Post.title)
+            .filter(Post.status == LIVE_STATUS, clause)
+            .all()
+        )
+        resolved.update({(fmt, key): (pid, title) for pid, fmt, key, title in rows})
+    return resolved
 
 
 def _relatent_incoming(db, post_id):
