@@ -9,32 +9,34 @@ See CROSS_POST_VARIANCE.md for the format.
 ## Move tally
 
 ### Reframe opener
-- longer-sentence reversal (belief carried into a long sentence) - 4
+- longer-sentence reversal (belief carried into a long sentence) - 5
 - mid-scene concrete open (lead on the fact, no flat belief-then-punch) - 4
-- flat declarative on the headline fact/number (gold-style, no reversal or imperative) - 1
+- flat declarative on the headline fact/number (gold-style, no reversal or imperative) - 2
 - staccato reversal punch (flat belief, then a 3-6 word negation) - 3
 - number-first mismatch (lead on the number gap) - 2
-- concrete-test / behavioral-mirror open - 4
+- concrete-test / behavioral-mirror open - 5
+- flat "X does Y fast" declarative, then prose pivot - 1
 - object-in-hand imperative - 3
 - accounting "start with" reframe - 2
 - threshold-fact / boundary-value opener - 1
 - flat paradox / two-true-claims statement - 1
 - concede-then-pivot ("[X] is not, by itself, [Y]") - 1
-- flat belief-rule declarative, overturned in prose (not a staccato punch) - 2
+- flat belief-rule declarative, overturned in prose (not a staccato punch) - 3
 
 ### Closing line
-- deep-time / long-duration aphorism - 3
+- deep-time / long-duration aphorism - 4
 - spatial / elemental image - 2
 - identity / boundary reflection - 4
-- quiet-utility, present-day consequence - 3
+- quiet-utility, present-day consequence - 4
 - elevated "written across/into [X]" aphorism - 1
 - concrete callback to the opening object - 1
 - flat callback to the opener motif - 1
 - measured causal present-day (tied to the cause) - 4
 - present-day, mildly urgent (loss outpacing knowledge) - 1
 - flat trade-off / cost statement - 1
-- blunt principle / rule statement - 2
-- practical how-to imperative - 1
+- blunt principle / rule statement - 3
+- practical how-to imperative - 2
+- flat caution, de-landed (do not assume X snaps back) - 1
 - flat observation on why a belief persisted - 1
 - flat mechanism restatement (de-landed, no aphorism) - 1
 - earned antithesis / symmetry landing (real opposition) - 1
@@ -42,11 +44,11 @@ See CROSS_POST_VARIANCE.md for the format.
 
 ### Story pivot
 - "the explanation waited until [year], when [role] [Name]" - 1
-- subject-first, "[Name] [verb]ed in [year]" - 1
-- long dormancy, "then in [year] the [role] went looking" - 2
+- subject-first, "[Name] [verb]ed in [year]" - 2
+- long dormancy, "then in [year] the [role] went looking" - 3
 - single-episode experiment, doubt beat, no why-pivot - 2
 - evidence settles it (no fresh dated scientist) - 1
-- relay across several actors (answer arrives from elsewhere) - 2
+- relay across several actors (answer arrives from elsewhere) - 3
 - discoverer + confirmer, replication holds - 2
 - old prediction, dated confirmation ("the case broke open on [date]") - 2
 - process/recovery narrative (get the sample, then read it) - 1
@@ -55,9 +57,22 @@ See CROSS_POST_VARIANCE.md for the format.
 - found, then lost, then re-established - 1
 - finding resisted / ignored after proof (inverse vindication) - 1
 - untested/invented claim -> century of repetition -> modern debunk - 3
+- view hardens into lore, then modern overturn (correct-for-its-time science overreaches) - 1
 - worry investigated, then dismissed (analyst finds no effect) - 1
 
 ## Recent batches
+
+### 2026-07-05-d
+Batch coordination: kept eyes' "learned to see" as the one earned crafted close, softened condorcet
++ antibiotics closes to plain present-day; thinned the "the same ___" bridge (kept condorcet's "The
+same knot" title, recast eyes x3 + loss x2); kept condorcet's "None of this means..." opener, recast
+antibiotics'; recast the "Why" teaser[1] in eyes + lactic (kept loss's); italicized *prospect
+theory*; split the loss one_line semicolon.
+- eyes: opener flat declarative on the headline fact ("An eye has appeared from scratch at least 40 separate times", recast off the imperative) / close deep-time aphorism ("the ones that learned to see", batch's one earned crafted close) / pivot relay across several actors (Darwin 1859, Mayr + Salvini-Plawen 1977, Nilsson + Pelger 1994, Gehring 1995) [mechanism]
+- condorcet: opener concrete-test / behavioral-mirror imperative ("Give three people a ballot ranking three options", batch keeper) / close blunt principle, de-landed ("with the very same ballots, the winner can change"; recast off "though not one voter moved") / pivot long dormancy, then 1951 Arrow [reasoning-trap]
+- loss-aversion: opener flat belief-rule declarative overturned in prose ("A gain and an equal loss look like they should cancel... In the experiments they do not") / close quiet-utility present-day ("instead of the numbers", batch keeper) / pivot subject-first dated build (Kahneman + Tversky 1979, number 1992) [reasoning-trap]
+- lactic: opener longer-sentence reversal ("The soreness... turns up a full day after... long after the lactic acid... has drained out", recast off the "clears fast" declarative) / close practical how-to imperative ("Ease into... the repeated-bout effect builds the protection for you") / pivot view hardens into lore, then modern overturn (Hill 1922, Brooks 1980s) [myth-corrected]
+- antibiotics: opener flat "X does Y fast" declarative, then prose pivot ("Antibiotics do their job fast. But the drug does not aim.", batch keeper) / close flat caution, de-landed ("rather than assuming it bounces back the day the pills stop"; recast off "It does not always snap back") / pivot none (no story section) [mechanism]
 
 ### 2026-07-05-c
 - languages: opener concrete-test / behavioral-mirror ("Play a Japanese speaker and a Thai speaker back to back") / close flat mechanism restatement, de-landed ("the channel it feeds runs near one speed", cross-post: batch plain close) / pivot none (no story section) [scale-number]
