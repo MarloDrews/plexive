@@ -142,7 +142,7 @@ def _relatent_incoming(db, post_id):
     Used both when the target is deleted and when it stops being a live node.
     """
     db.query(PostEdge).filter(PostEdge.target_post_id == post_id).update(
-        {PostEdge.target_post_id: None}, synchronize_session="fetch"
+        {PostEdge.target_post_id: None}, synchronize_session=False
     )
 
 
@@ -159,7 +159,7 @@ def rebuild_post_edges(db, post):
     re-created here.
     """
     db.query(PostEdge).filter(PostEdge.source_post_id == post.id).delete(
-        synchronize_session="fetch"
+        synchronize_session=False
     )
     if not is_live_node(post):
         return
@@ -193,7 +193,7 @@ def activate_edges_for(db, post):
     db.query(PostEdge).filter(
         PostEdge.target_format == post.format,
         PostEdge.target_identity_key == post.identity_key,
-    ).update({PostEdge.target_post_id: post.id}, synchronize_session="fetch")
+    ).update({PostEdge.target_post_id: post.id}, synchronize_session=False)
 
 
 def on_post_written(db, post):
@@ -218,7 +218,7 @@ def on_post_deleted(db, post):
     every edge that pointed at it (never dangling). Then delete the post row."""
     post_id = post.id
     db.query(PostEdge).filter(PostEdge.source_post_id == post_id).delete(
-        synchronize_session="fetch"
+        synchronize_session=False
     )
     _relatent_incoming(db, post_id)
     db.delete(post)
