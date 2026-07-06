@@ -35,7 +35,9 @@ class ProfileOut(BaseModel):
     follow_status: Optional[str]
 
 
-def _is_following(viewer_id: int, target_id: int, db: Session) -> bool:
+def _has_accepted_follow(viewer_id: int, target_id: int, db: Session) -> bool:
+    """Whether viewer -> target is an accepted follow (distinct from the profile
+    follow_status, which reports a pending row too)."""
     return db.query(Follow).filter(
         Follow.follower_id == viewer_id,
         Follow.following_id == target_id,
@@ -51,7 +53,7 @@ def _can_view_private_lists(current_user: Optional[User], target: User, db: Sess
         return True
     if current_user is not None and current_user.id == target.id:
         return True
-    return current_user is not None and _is_following(current_user.id, target.id, db)
+    return current_user is not None and _has_accepted_follow(current_user.id, target.id, db)
 
 
 def _find_pending_request(requester_id: int, target_id: int, db: Session) -> Follow:
@@ -207,8 +209,11 @@ def get_profile(
 ):
     target = get_target_user(username, db)
 
-    # One round trip instead of three count queries: the DB is remote, so
-    # every query costs a full network round trip regardless of data size.
+    # One round trip instead of four queries: the DB is remote, so every query
+    # costs a full network round trip regardless of data size. The viewer's
+    # follow_status folds in as a fourth subselect; :viewer is NULL when there is
+    # no viewer or the viewer is the target (so that subselect matches no row).
+    viewer_id = current_user.id if current_user is not None and current_user.id != target.id else None
     counts_row = db.execute(
         text(
             "SELECT"
@@ -217,24 +222,19 @@ def get_profile(
             " (SELECT COUNT(*) FROM follows"
             "   WHERE follower_id=:uid AND status='accepted') AS following_count,"
             " (SELECT COUNT(*) FROM posts"
-            "   WHERE author_id=:uid AND status='published') AS post_count"
+            "   WHERE author_id=:uid AND status='published') AS post_count,"
+            " (SELECT status FROM follows"
+            "   WHERE follower_id=:viewer AND following_id=:uid) AS follow_status"
         ),
-        {"uid": target.id},
+        {"uid": target.id, "viewer": viewer_id},
     ).one()
     follower_count = counts_row.follower_count or 0
     following_count = counts_row.following_count or 0
     post_count = counts_row.post_count or 0
 
-    follow_status: Optional[str] = None
-    if current_user is not None:
-        if current_user.id == target.id:
-            follow_status = None
-        else:
-            row = db.query(Follow).filter(
-                Follow.follower_id == current_user.id,
-                Follow.following_id == target.id,
-            ).first()
-            follow_status = row.status if row else "none"
+    # None when there is no viewer or the viewer is the target; otherwise the
+    # follow row's status, or "none" when the viewer follows nobody here.
+    follow_status: Optional[str] = None if viewer_id is None else (counts_row.follow_status or "none")
 
     return ProfileOut(
         username=target.username,

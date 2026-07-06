@@ -230,6 +230,14 @@ def main():
     check("follow bob", r.status_code == 200 and r.json()["status"] == "accepted")
     r = client.get("/api/search/users", params={"q": "bob"}, headers=a_h)
     check("search reflects follow", r.json()[0]["follow_status"] == "accepted")
+
+    # --- Profile follow_status (folded into the counts query) ---
+    r = client.get("/api/users/bob/profile", headers=a_h)
+    check("profile follow_status accepted for a follow", r.json()["follow_status"] == "accepted", r.text)
+    r = client.get("/api/users/alice/profile", headers=a_h)
+    check("profile follow_status None for self", r.json()["follow_status"] is None, r.text)
+    r = client.get("/api/users/bob/profile")
+    check("profile follow_status None for anon", r.json()["follow_status"] is None, r.text)
     r = client.get("/api/search/users", params={"q": "alice"}, headers=a_h)
     check("search marks self", r.json()[0]["is_self"] is True)
     r = client.get("/api/search/users", params={"q": ""})
