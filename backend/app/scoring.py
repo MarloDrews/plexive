@@ -2,6 +2,7 @@ import random
 from datetime import datetime, timedelta
 from typing import List, Optional
 
+from sqlalchemy import case, func
 from sqlalchemy.orm import Session
 
 from .models import Event, Post
@@ -30,38 +31,38 @@ def score_posts(
     # events to that user so bonuses reflect individual rather than global engagement.
 
     cutoff = datetime.utcnow() - timedelta(days=30)
-    # One joined tuple query instead of loading full Event ORM objects and
-    # then re-querying posts for their formats (the join also covers events
-    # on posts filtered out by ?format= or ?interests=, like the old
-    # two-query version did).
-    recent_rows = (
-        db.query(Event.post_id, Event.event_type, Event.duration_ms, Post.format)
+    # Two grouped queries instead of fetching every raw event row of the last
+    # 30 days: the aggregates are a handful of rows however much activity the
+    # platform records. The CASE filters keep the exact old fold semantics:
+    # AVG ignores NULL, so only view events with a duration shape the average
+    # (a view without duration still counts as a view below), and only like
+    # events count toward likes. The join covers events on posts filtered out
+    # by ?format= or ?interests=, like the old version did.
+    format_rows = (
+        db.query(
+            Post.format,
+            func.avg(case((Event.event_type == "view", Event.duration_ms))),
+            func.coalesce(func.sum(case((Event.event_type == "like", 1), else_=0)), 0),
+        )
+        .select_from(Event)
         .join(Post, Post.id == Event.post_id)
         .filter(Event.created_at >= cutoff)
+        .group_by(Post.format)
+        .all()
+    )
+    post_view_counts: dict[int, int] = dict(
+        db.query(Event.post_id, func.count(Event.id))
+        .filter(Event.created_at >= cutoff, Event.event_type == "view")
+        .group_by(Event.post_id)
         .all()
     )
 
-    # Accumulate per-format engagement stats and per-post view counts.
-    format_view_durations: dict[str, list[int]] = {}
-    format_like_counts: dict[str, int] = {}
-    post_view_counts: dict[int, int] = {}
-
-    for post_id, event_type, duration_ms, fmt in recent_rows:
-        if event_type == "view":
-            if duration_ms is not None:
-                format_view_durations.setdefault(fmt, []).append(duration_ms)
-            post_view_counts[post_id] = post_view_counts.get(post_id, 0) + 1
-        elif event_type == "like":
-            format_like_counts[fmt] = format_like_counts.get(fmt, 0) + 1
-
     # Raw engagement score per format: avg view duration (ms) + like count.
     # Units differ but normalisation below makes the scale irrelevant.
-    all_formats = set(format_view_durations) | set(format_like_counts)
-    format_raw: dict[str, float] = {}
-    for fmt in all_formats:
-        durations = format_view_durations.get(fmt, [])
-        avg_dur = sum(durations) / len(durations) if durations else 0.0
-        format_raw[fmt] = avg_dur + format_like_counts.get(fmt, 0)
+    format_raw: dict[str, float] = {
+        fmt: (float(avg_view_ms) if avg_view_ms is not None else 0.0) + (like_count or 0)
+        for fmt, avg_view_ms, like_count in format_rows
+    }
 
     max_raw = max(format_raw.values(), default=0.0)
     format_bonus: dict[str, float] = {
