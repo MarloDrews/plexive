@@ -32,6 +32,7 @@ variants, since no single rule catches all). Until then such edges stay correctl
 latent and surface in scripts/report_unmatched_edges.py.
 """
 
+import math
 import unicodedata
 
 # Dash variants that should all fold to a plain ASCII hyphen so "en-dash" and
@@ -57,20 +58,24 @@ def normalize_identity(text: str) -> str:
 def _coerce_year(value) -> int | None:
     """Coerce a birth year to an int, or None if it is not coercible.
 
-    bool is rejected even though it is an int subclass; a non-numeric string
-    yields None (the people post is then unresolvable rather than getting a
-    string-based key).
+    Returns None, NEVER raises: a malformed birth_year makes the people post
+    unresolvable, not a 500. bool is rejected even though it is an int
+    subclass; NaN/infinity floats and junk strings like "--480" (which the old
+    lstrip-based digit check let through to a raising int()) yield None.
     """
     if isinstance(value, bool):
         return None
     if isinstance(value, int):
         return value
     if isinstance(value, float):
-        return int(value)
+        return int(value) if math.isfinite(value) else None
     if isinstance(value, str):
-        s = value.strip()
-        if s.lstrip("-").isdigit():
-            return int(s)
+        # int() accepts one leading sign and surrounding whitespace; anything
+        # else ("--480", "12.5", "abc") is not a year.
+        try:
+            return int(value.strip())
+        except ValueError:
+            return None
     return None
 
 
