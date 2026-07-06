@@ -10,6 +10,7 @@ from ..graph_identity import post_identity_key
 from ..models import Interest, Post
 from ..post_counts import attach_counts, attach_counts_one
 from ..rate_limit import check_rate_limit
+from ..reading_time import compute_reading_minutes
 from ..sanitize import sanitize_svg_text
 from ..schemas import PostCreate, PostOut
 from ._shared import POST_EAGER
@@ -92,6 +93,7 @@ def create_post(
         identity_key=post_identity_key(data.format, data.feed_card),
         feed_card=data.feed_card,
         sections=sections_list,
+        reading_minutes=compute_reading_minutes(sections_list),
         author_id=current_user.id,
         is_user_content=True,
         status="published" if current_user.is_verified else "pending",

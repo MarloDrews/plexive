@@ -375,8 +375,9 @@ class PostOut(BaseModel):
     is_user_content: bool = False
     like_count: int = 0
     comment_count: int = 0
-    # Computed from the post's text at serialization (attach_counts), not stored.
-    # Survives PostListOut.drop_sections so feed cards still get the real value.
+    # Computed from the post's text on write and stored on the row
+    # (models.Post.reading_minutes), so it survives PostListOut.drop_sections
+    # and list endpoints never walk the sections JSON.
     reading_minutes: int = 1
     interests: List[str] = []
     # Display name of the primary category (tags[0]), attached by attach_counts

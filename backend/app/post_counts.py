@@ -26,14 +26,15 @@ def _primary_category_name(post: Post):
 
 
 def attach_counts(posts: List[Post], db: Session) -> List[Post]:
-    """Attach like_count, comment_count, reading_minutes and
-    primary_category_name as plain attributes for PostOut serialization.
+    """Attach like_count, comment_count and primary_category_name as plain
+    attributes for PostOut serialization.
 
     Counts for all posts are fetched in two grouped queries instead of two
-    queries per post. reading_minutes is computed from the raw sections here,
-    before the schema strips quiz answers or drops the section bodies, so the
-    feed card and the detail page show the same value. primary_category_name is
-    resolved from the already-loaded interests, so it costs no extra query.
+    queries per post. reading_minutes is a stored column computed on write
+    (posts.py / seed.py); the fallback below only fires for rows written before
+    the column existed and not yet backfilled by scripts/add_reading_minutes.py.
+    primary_category_name is resolved from the already-loaded interests, so it
+    costs no extra query.
     """
     if not posts:
         return posts
@@ -53,7 +54,10 @@ def attach_counts(posts: List[Post], db: Session) -> List[Post]:
     for p in posts:
         p.like_count = likes.get(p.id, 0)
         p.comment_count = comments.get(p.id, 0)
-        p.reading_minutes = compute_reading_minutes(p.sections)
+        if p.reading_minutes is None:
+            # Transitional: pre-column row not yet backfilled. Never committed
+            # here (read path), so the ORM change is discarded with the session.
+            p.reading_minutes = compute_reading_minutes(p.sections)
         p.primary_category_name = _primary_category_name(p)
     return posts
 
