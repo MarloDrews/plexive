@@ -34,6 +34,11 @@ export function usePostLike(postId: number, serverLikeCount: number | null) {
   // Once the user likes/unlikes here, the async reconcilers must not overwrite
   // the count with a pre-interaction value.
   const interactedRef = useRef(false)
+  // reconcile() fetches at most once per post; reset when the post changes.
+  const reconciledRef = useRef(false)
+  useEffect(() => {
+    reconciledRef.current = false
+  }, [postId])
 
   // Re-seed from the server count once it becomes known (the detail page loads
   // the post after mount). No-op on the feed card, where it is known at mount.
@@ -43,9 +48,14 @@ export function usePostLike(postId: number, serverLikeCount: number | null) {
   }, [postId, serverLikeCount])
 
   // Reconcile the display count against the server, adjusting for a like this
-  // client queued but the server has not counted yet, or a local like the server
-  // has not seen. Same formula both call sites carried.
-  useEffect(() => {
+  // client queued but the server has not counted yet, or a local like the
+  // server has not seen. Same formula both call sites carried. This used to run
+  // in a mount effect, so a feed of N cards fired N requests immediately on
+  // load; now the caller decides when (the feed card on first intersection, the
+  // detail page once the post has loaded) and it fetches at most once per post.
+  const reconcile = useCallback(() => {
+    if (reconciledRef.current) return
+    reconciledRef.current = true
     apiFetch(`/api/posts/${postId}/likes`)
       .then((r) => r.json())
       .then((d) => {
@@ -59,7 +69,6 @@ export function usePostLike(postId: number, serverLikeCount: number | null) {
         setCachedLikeCount(postId, display)
       })
       .catch(() => {})
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [postId])
 
   // Re-read liked + cached count from storage. The feed card calls this when a
@@ -102,5 +111,5 @@ export function usePostLike(postId: number, serverLikeCount: number | null) {
     return "liked"
   }, [postId])
 
-  return { liked, likesCount, toggleLike, syncFromStorage }
+  return { liked, likesCount, toggleLike, syncFromStorage, reconcile }
 }

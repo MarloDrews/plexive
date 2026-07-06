@@ -122,7 +122,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
   const lastTapRef        = useRef<number>(0)
   const navTimerRef       = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const { liked, likesCount, toggleLike, syncFromStorage } = usePostLike(post.id, post.like_count)
+  const { liked, likesCount, toggleLike, syncFromStorage, reconcile } = usePostLike(post.id, post.like_count)
 
   const [visible, setVisible] = useState(false)
   const [commentsCount, setCommentsCount] = useState(post.comment_count)
@@ -154,6 +154,10 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
           viewStartRef.current = Date.now()
           if (!reduceMotion) setVisible(true)
           syncFromStorage()
+          // Reconcile the like count against the server on first view (the hook
+          // fetches at most once), so the feed no longer fires one /likes
+          // request per mounted card the instant a tab opens.
+          reconcile()
         } else {
           if (viewStartRef.current !== null) {
             const duration_ms = Date.now() - viewStartRef.current
@@ -169,7 +173,7 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
     )
     observer.observe(el)
     return () => observer.disconnect()
-  }, [post.id, syncFromStorage])
+  }, [post.id, syncFromStorage, reconcile])
 
   // A fresh like fires the heart animation; an unlike does not. The like/unlike
   // logic, event queueing and count reconciliation live in usePostLike.

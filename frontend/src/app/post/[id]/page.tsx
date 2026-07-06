@@ -81,7 +81,7 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
   const [closing, setClosing] = useState(false)
   const [stickyDraft, setStickyDraft] = useState("")
 
-  const { liked, likesCount, toggleLike } = usePostLike(Number(id), post?.like_count ?? null)
+  const { liked, likesCount, toggleLike, reconcile } = usePostLike(Number(id), post?.like_count ?? null)
   // Feed lists are cached for the session; write the comment count through to
   // them whenever it changes here (add, delete, initial load).
   const { comments, posting, deletingId, postComment, deleteComment } = useComments(
@@ -121,6 +121,12 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
       stale = true
     }
   }, [id])
+
+  // The feed card no longer reconciles the like count on mount; the detail page
+  // has no visibility observer, so reconcile once the post has loaded.
+  useEffect(() => {
+    if (post) reconcile()
+  }, [post, reconcile])
 
   const { status: readStatus, start: startReading, stop: stopReading, toggle: toggleReading } =
     useReadAloud(readableRef)
