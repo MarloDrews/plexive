@@ -17,6 +17,13 @@ def _engine_kwargs(url: str) -> dict:
         # pool_pre_ping was measured and rejected: it costs one extra round
         # trip (~35ms+) on every checkout against the remote DB.
         return {
+            # Explicit pool sizing for a single worker against remote Supabase.
+            # The SQLAlchemy defaults (5 + 10) close overflow connections on
+            # release, so any burst past 5 pays a fresh TCP+TLS+auth handshake
+            # per request. Keep 10 warm and allow 20 overflow (30 max) -- tune to
+            # the Supabase plan / pooler connection limit before scaling workers.
+            "pool_size": 10,
+            "max_overflow": 20,
             # Supabase closes idle connections; recycle ours first so a
             # request never picks up a dead connection.
             "pool_recycle": 1200,
