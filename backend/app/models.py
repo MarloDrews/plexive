@@ -214,6 +214,13 @@ class ConversationParticipant(Base):
 
 class Message(Base):
     __tablename__ = "messages"
+    # The history query filters conversation_id and keysets on id, so the
+    # composite serves it exactly. create_all only adds this on fresh
+    # databases - scripts/add_comment_message_indexes.py applies it to the
+    # existing one.
+    __table_args__ = (
+        Index("ix_messages_conversation_id_id", "conversation_id", "id"),
+    )
 
     id              = Column(Integer, primary_key=True)
     conversation_id = Column(Integer, ForeignKey("conversations.id"), nullable=False, index=True)
@@ -226,6 +233,13 @@ class Message(Base):
 
 class Comment(Base):
     __tablename__ = "comments"
+    # list_comments filters post_id and orders by created_at, so the composite
+    # avoids a sort after the index scan. create_all only adds this on fresh
+    # databases - scripts/add_comment_message_indexes.py applies it to the
+    # existing one.
+    __table_args__ = (
+        Index("ix_comments_post_id_created_at", "post_id", "created_at"),
+    )
 
     id         = Column(Integer, primary_key=True)
     post_id    = Column(Integer, ForeignKey("posts.id"), nullable=False, index=True)
