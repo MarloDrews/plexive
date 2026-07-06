@@ -17,6 +17,8 @@ read_next (the post-detail "read next" set) is a small read-time projection of
 the featured edges, resolved against live posts; see resolved_read_next.
 """
 
+from collections import Counter
+
 from sqlalchemy import and_, or_
 
 from .graph_identity import _key_from_parts
@@ -149,34 +151,57 @@ def _relatent_incoming(db, post_id):
 def rebuild_post_edges(db, post):
     """Rebuild this post's outgoing edge rows from its current authoring data.
 
-    Always clears the post's existing rows first. A non-live post inserts none
-    (so going non-live tears its outgoing edges down). A live post inserts one
-    row per resolvable connection / person entry, with target_post_id resolved
-    against existing live posts. A person edge whose target does not exist yet is
-    stored latent (target_post_id NULL); a non-person edge whose target does not
-    resolve is discarded silently (_latent_allowed), never stored latent. This
-    also purges a pre-existing non-person latent row: it is deleted above and not
-    re-created here.
+    Derives the desired rows first: a non-live post yields none (so going
+    non-live tears its outgoing edges down). A live post yields one row per
+    resolvable connection / person entry, with target_post_id resolved against
+    existing live posts. A person edge whose target does not exist yet is stored
+    latent (target_post_id NULL); a non-person edge whose target does not resolve
+    is discarded silently (_latent_allowed), never stored latent.
+
+    When the desired rows match the stored rows exactly (a title/section tweak
+    that touched no connection), nothing is written -- no delete+reinsert churn.
+    Otherwise the post's rows are cleared and re-inserted, which also purges any
+    stale non-person latent row.
     """
+    desired = []  # (target_format, target_identity_key, target_post_id, featured)
+    if is_live_node(post):
+        specs = list(_edge_specs(post))
+        resolved = (
+            _resolve_live_targets(db, {(fmt, key) for fmt, key, _ in specs})
+            if specs else {}
+        )
+        for fmt, key, featured in specs:
+            target = resolved.get((fmt, key))
+            if target is None and not _latent_allowed(fmt):
+                continue  # non-person edge with no live target: discard, never latent
+            desired.append((fmt, key, target[0] if target else None, bool(featured)))
+
+    existing = [
+        (e.target_format, e.target_identity_key, e.target_post_id, e.featured)
+        for e in db.query(
+            PostEdge.target_format,
+            PostEdge.target_identity_key,
+            PostEdge.target_post_id,
+            PostEdge.featured,
+        )
+        .filter(PostEdge.source_post_id == post.id)
+        .all()
+    ]
+    # Multiset compare so duplicate authoring entries keep their current row
+    # behavior; only rewrite when the derived rows actually differ.
+    if Counter(existing) == Counter(desired):
+        return
+
     db.query(PostEdge).filter(PostEdge.source_post_id == post.id).delete(
         synchronize_session=False
     )
-    if not is_live_node(post):
-        return
-    specs = list(_edge_specs(post))
-    if not specs:
-        return
-    resolved = _resolve_live_targets(db, {(fmt, key) for fmt, key, _ in specs})
-    for fmt, key, featured in specs:
-        target = resolved.get((fmt, key))
-        if target is None and not _latent_allowed(fmt):
-            continue  # non-person edge with no live target: discard, never latent
+    for fmt, key, target_post_id, featured in desired:
         db.add(
             PostEdge(
                 source_post_id=post.id,
                 target_format=fmt,
                 target_identity_key=key,
-                target_post_id=target[0] if target else None,
+                target_post_id=target_post_id,
                 featured=featured,
             )
         )
