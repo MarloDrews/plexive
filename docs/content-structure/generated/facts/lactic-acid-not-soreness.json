@@ -1,0 +1,242 @@
+{
+  "tags": [
+    "sports-science",
+    "biology",
+    "human-body"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Eccentric contraction"
+      },
+      "featured": false
+    },
+    {
+      "format": "facts",
+      "ref": {
+        "title": "Lactate is a fuel"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "Lactic acid clears within an hour of exercise, yet the soreness it gets blamed for peaks 1 to 3 days later.",
+    "teasers": [
+      "Why the ache shows up a day too late",
+      "The half of every lift that actually hurts you",
+      "Your body makes lactic acid even at rest"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "Lactic acid clears within an hour of exercise, yet the soreness it gets blamed for peaks 1 to 3 days later."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 20 400 250' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='206' y='42' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='middle'>they never overlap</text><line x1='40' y1='232' x2='372' y2='232' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><path d='M48 231 L62 118 L104 228' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/><path d='M112 230 C 168 228 196 150 226 132 C 262 152 306 214 362 228' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><text x='62' y='104' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle'>lactic acid</text><text x='232' y='120' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>soreness</text><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'><text x='58' y='252'>workout</text><text x='118' y='252'>1 hr</text><text x='232' y='252'>day 2</text><text x='340' y='252'>day 4</text></g></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "Lactic acid clears out of your muscles fast. Within about an hour of your last rep, blood lactate is back to its resting level. The soreness that has you wincing on the stairs shows up a full day later and peaks somewhere between 24 and 72 hours out. By the time it hurts, the lactic acid has been gone for a day or more. Whatever is making you sore, it cannot be a chemical that left before the pain arrived."
+    },
+    {
+      "type": "how_we_know",
+      "order": 5,
+      "content": "You can watch it directly. Take a blood sample every few minutes after a hard workout, and lactate climbs, then falls to baseline inside an hour. Track soreness over the next week and it runs on a different clock. The muscles give the cleanest test of all. Running downhill or lowering weights, where the muscle works as it lengthens, leaves you brutally sore while making relatively little lactate. Running uphill or lifting makes far more lactate and barely leaves you sore."
+    },
+    {
+      "type": "story",
+      "order": 7,
+      "content": {
+        "body": "In 1922 A.V. Hill won a Nobel Prize for working out the chemistry of muscle, with lactic acid near the center of it. His generation of physiologists cast lactic acid as the byproduct of hard, oxygen-starved effort, the stuff that clogged a tiring muscle. That view hardened into gym lore, and lactic acid became the all-purpose villain of exercise, blamed not only for the burn but for the next day's ache. It took decades to unwind. In the 1980s George Brooks used tracer studies to show that muscles, the heart, and even the brain burn lactate as fuel, shuttling it around the body all the time. The soreness, meanwhile, came from something Hill's chemistry never touched. It was torn muscle fibers, and the slow inflammation that repairs them.",
+        "key_figures": [
+          {
+            "name": "Archibald Vivian Hill",
+            "role": "Put lactic acid at the center of muscle science",
+            "one_line": "His 1922 Nobel work on muscle chemistry made lactic acid the emblem of hard effort, a label that later overreached into blaming it for soreness.",
+            "lifespan": "1886-1977",
+            "birth_year": 1886,
+            "featured": true,
+            "image_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Archibald_Vivian_Hill.jpg",
+            "image_attribution": "The Nobel Foundation, “Archibald V. Hill”, public domain (Wikimedia Commons)"
+          },
+          {
+            "name": "George Brooks",
+            "role": "Recast lactate as fuel",
+            "one_line": "In the 1980s his tracer studies showed the body makes and burns lactate constantly, turning it from a waste product into a fuel.",
+            "featured": false
+          }
+        ]
+      }
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "The lowering is what wrecks you, not the lifting",
+          "body": "The damage that makes you sore comes mostly from one kind of work: contracting a muscle while it is being stretched. Lowering a heavy weight, running downhill, walking down stairs, each forces the muscle to act as a brake. Braking tears tiny gaps in the fibers. Over the next day or two the immune system moves in to clean up and rebuild, and that repair, not the workout itself, is what you feel. The delay is how long the repair takes."
+        },
+        {
+          "title": "Lactate is a fuel, not a waste product",
+          "body": "Lactate earned its bad name as the ash of hard exercise, the residue when muscles run short of oxygen. That picture is wrong. Your body makes lactate all the time, at rest and in motion, and then burns it. Working muscles pour it into the blood, and the heart, other muscles, and even the brain take it up for energy. George Brooks named this traffic the lactate shuttle. What people were told to flush out is one of the body's steadiest fuels.",
+          "visual_svg": "<svg viewBox='0 108 400 84' xmlns='http://www.w3.org/2000/svg' fill='none'><g stroke='currentColor' stroke-width='2.5'><rect x='16' y='120' width='104' height='54' rx='14'/><rect x='280' y='120' width='104' height='54' rx='14'/></g><rect x='148' y='120' width='104' height='54' rx='14' stroke='var(--accent)' stroke-width='2.5'/><g stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' opacity='0.55'><path d='M120 147 h28'/><path d='M148 147 l-12 -6 m12 6 l-12 6'/><path d='M252 147 h28'/><path d='M280 147 l-12 -6 m12 6 l-12 6'/></g><g font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' text-anchor='middle'><text x='68' y='152' fill='currentColor'>Muscle</text><text x='200' y='152' fill='var(--accent)'>Lactate</text><text x='332' y='152' fill='currentColor'>Heart, brain</text></g></svg>"
+        },
+        {
+          "title": "Do it again and you barely feel it",
+          "body": "Here is a neat proof that soreness is damage, not a chemical. Do the same unfamiliar workout again a week later. You will be far less sore, sometimes hardly at all. This is the repeated-bout effect: the first session injures the muscle, and the repair leaves it tougher and better defended against the same stress. Lactate draining away within an hour could not build that kind of memory."
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "The lactic acid story stuck because it is tidy: one villain to blame, from the burn during a set to the ache two days later. The truth is messier and more useful. The burn and the soreness are separate events, days apart, driven by unrelated causes. Knowing that changes what you do. There is nothing left to flush the morning after, so a cooldown or a stretch cannot clear a chemical that drained away hours ago. If you want less soreness next time, the lever is in the training itself. Ease into unfamiliar or heavy eccentric work, and the repeated-bout effect builds the protection for you."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "Why can't lactic acid be the cause of the soreness you feel two days after a workout?",
+          "options": [
+            "Lactic acid is not produced during exercise",
+            "Lactic acid only affects the heart, not the muscles",
+            "Lactate clears within about an hour, long before the soreness peaks a day or more later",
+            "Soreness is felt only during exercise, not after"
+          ],
+          "answer_index": 2,
+          "explanation": "Blood lactate returns to baseline within roughly an hour of stopping, while DOMS does not peak until 24 to 72 hours later. A cause cannot be gone before its effect begins."
+        },
+        {
+          "question": "What actually produces delayed onset muscle soreness?",
+          "options": [
+            "Microscopic damage to muscle fibers and the inflammation that repairs it",
+            "Lingering lactic acid trapped in the muscle",
+            "Dehydration during the workout",
+            "A drop in blood sugar the next day"
+          ],
+          "answer_index": 0,
+          "explanation": "Hard eccentric work tears tiny gaps in the muscle fibers. Over the following day or two the immune system moves in to repair them, and that inflammatory repair is what you feel as soreness."
+        },
+        {
+          "question": "Downhill running leaves you far more sore than uphill running, even though uphill produces more lactate. Why does that matter?",
+          "options": [
+            "It proves uphill running is easier on the body",
+            "It shows soreness tracks the amount of lactate produced",
+            "It shows downhill running burns more calories",
+            "It dissociates soreness from lactate: the exercise that makes the most lactate is not the one that makes you sore"
+          ],
+          "answer_index": 3,
+          "explanation": "Downhill running is mostly eccentric, so it damages fibers while making little lactate. Uphill running makes more lactate but far less soreness. Soreness follows the damage, not the metabolite."
+        },
+        {
+          "question": "What does the lactate shuttle describe?",
+          "options": [
+            "A machine that measures lactate in the blood",
+            "The body constantly making lactate and burning it as fuel in muscles, the heart, and the brain",
+            "The way lactate is flushed out by stretching",
+            "A drug that clears lactic acid faster"
+          ],
+          "answer_index": 1,
+          "explanation": "George Brooks showed with tracer studies that lactate is produced and consumed all the time, moving between tissues as an energy source, rather than sitting inertly as waste."
+        },
+        {
+          "question": "Why does repeating an unfamiliar workout a week later make you much less sore?",
+          "options": [
+            "Your muscles store less lactic acid the second time",
+            "You produce no lactate the second time",
+            "The first bout damages the muscle, and the repair leaves it tougher and protected against the same stress",
+            "Soreness only ever happens once per muscle"
+          ],
+          "answer_index": 2,
+          "explanation": "The repeated-bout effect is an adaptation: the muscle is rebuilt sturdier after the first bout. A metabolite that washes out within an hour could not produce a lasting protective change."
+        },
+        {
+          "question": "Does a post-workout stretch or cooldown prevent next-day soreness by flushing out lactic acid?",
+          "options": [
+            "Yes, it clears the lactic acid that would otherwise cause soreness",
+            "Yes, but only if done within an hour",
+            "Only massage flushes lactic acid, not stretching",
+            "No, because the lactic acid is long gone by then and the soreness comes from muscle damage"
+          ],
+          "answer_index": 3,
+          "explanation": "By the next day there is no lactic acid left to flush. Gentle movement may ease soreness a little, but not by clearing a metabolite that vanished hours earlier."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "The soreness a day after a workout is lactic acid buildup.",
+          "reality": "Lactic acid is back to baseline within about an hour. The soreness peaking a day or two later is muscle damage and repair, on a completely separate clock."
+        },
+        {
+          "myth": "You should stretch or massage to flush the lactic acid out.",
+          "reality": "By the next morning there is no lactic acid left to flush. Gentle movement or massage may ease soreness a little, but not by clearing a metabolite that vanished hours ago."
+        },
+        {
+          "myth": "Lactic acid is a useless waste product of tired muscles.",
+          "reality": "Lactate is a fuel. Muscles, the heart, and the brain burn it for energy around the clock, and it is made even at rest, not only when oxygen runs short."
+        }
+      ]
+    },
+    {
+      "type": "open_questions",
+      "order": 12,
+      "content": {
+        "body": "What causes DOMS is settled in outline but not in detail. Everyone agrees eccentric work damages muscle and that inflammation follows, but exactly which signals produce the delayed pain, and why it takes a day to arrive, is still being worked out. Some researchers argue the primary injury is not to the muscle fibers at all, but to the nerve endings inside them. The general picture is firm. The mechanism of the ache itself is not.",
+        "items": [
+          "Why is the pain delayed by a day rather than felt right away?",
+          "Is the core injury in the muscle fibers, the connective tissue, or the nerve endings?"
+        ]
+      }
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Delayed onset muscle soreness",
+          "url": "https://en.wikipedia.org/wiki/Delayed_onset_muscle_soreness",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Lactate shuttle hypothesis",
+          "url": "https://en.wikipedia.org/wiki/Lactate_shuttle_hypothesis",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Rehabilitating lactate: from poison to cure, Berkeley News (2018)",
+          "url": "https://news.berkeley.edu/2018/05/23/rehabilitating-lactate-from-poison-to-cure/",
+          "type": "article"
+        },
+        {
+          "label": "Robergs RA, Ghiasvand F, Parker D. Biochemistry of exercise-induced metabolic acidosis. Am J Physiol Regul Integr Comp Physiol 2004;287:R502-R516",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/15308499/",
+          "type": "paper"
+        },
+        {
+          "label": "Sonkodi B et al. Have we looked in the wrong direction for more than 100 years? DOMS as neural microdamage. Antioxidants 2020;9:212",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7139782/",
+          "type": "paper"
+        },
+        {
+          "label": "Archibald V. Hill, Facts, NobelPrize.org (1922)",
+          "url": "https://www.nobelprize.org/prizes/medicine/1922/hill/facts/",
+          "type": "article"
+        }
+      ]
+    }
+  ]
+}
