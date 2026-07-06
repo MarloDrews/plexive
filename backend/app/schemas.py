@@ -306,7 +306,14 @@ class PostCreate(BaseModel):
         return v
 
     @model_validator(mode="after")
-    def validate_books_sections(self) -> "PostCreate":
+    def validate_sections(self) -> "PostCreate":
+        # No format allows two sections of the same type: consumers read the
+        # first match (quiz answering, search), so questions in a duplicate
+        # section would render but never be answerable.
+        types = [s.type for s in self.sections]
+        duplicates = sorted({t for t in types if types.count(t) > 1})
+        if duplicates:
+            raise ValueError(f"duplicate section type(s): {', '.join(duplicates)}")
         if self.format != "books":
             return self
         # Validate feed card shape for books
@@ -361,10 +368,11 @@ class PostOut(BaseModel):
     feed_card: dict
     sections: list[dict]
     tags: List[str] = []
-    connections: List[dict] = []
-    # Server-resolved featured edges for the detail page. Raw connections stay
-    # above as-is; this is the resolved projection so the frontend resolves
-    # nothing. Empty on list endpoints (only GET /posts/{id} populates it).
+    # Server-resolved featured edges for the detail page: the resolved
+    # projection so the frontend resolves nothing. The raw authoring-layer
+    # connections array stays on the ORM row (seed pipeline input) but is not
+    # serialized -- no client reads it. Empty on list endpoints (only
+    # GET /posts/{id} populates it).
     read_next: List[ReadNextItem] = []
     author_id: int | None = None
     author_username: str | None = None
@@ -375,8 +383,9 @@ class PostOut(BaseModel):
     is_user_content: bool = False
     like_count: int = 0
     comment_count: int = 0
-    # Computed from the post's text at serialization (attach_counts), not stored.
-    # Survives PostListOut.drop_sections so feed cards still get the real value.
+    # Computed from the post's text on write and stored on the row
+    # (models.Post.reading_minutes), so it survives PostListOut.drop_sections
+    # and list endpoints never walk the sections JSON.
     reading_minutes: int = 1
     interests: List[str] = []
     # Display name of the primary category (tags[0]), attached by attach_counts

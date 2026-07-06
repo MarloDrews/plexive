@@ -164,8 +164,9 @@ def main():
     r = client.get("/api/users/alice/elo")
     d = r.json()
     check("public elo", r.status_code == 200 and d["global_rating"] is not None)
-    # The score is unified onto a single rating, so there is no per-format breakdown.
-    check("no per-format elo", d["formats"] == {})
+    # The score is unified onto a single rating; the per-format breakdown (and
+    # the always-empty compatibility dict that outlived it) is gone entirely.
+    check("no per-format elo", "formats" not in d)
     r = client.get("/api/users/bob/elo")
     check("unscored user has no global elo", r.json()["global_rating"] is None)
 

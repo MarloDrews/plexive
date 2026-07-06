@@ -64,13 +64,17 @@ class TokenResponse(BaseModel):
 @router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
 def register(body: RegisterRequest, request: Request, db: Session = Depends(get_db)):
     check_rate_limit(f"ip:{_client_ip(request)}", "register", 10, 3600)
-    if db.query(User).filter(User.email == body.email).first():
+    # EmailStr lowercases only the domain; normalize the whole address so
+    # Bob@x.com and bob@x.com are one account and login is case-insensitive
+    # (existing rows are normalized by scripts/lowercase_emails.py).
+    email = body.email.lower()
+    if db.query(User).filter(User.email == email).first():
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered.")
     if db.query(User).filter(User.username == body.username).first():
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Username already taken.")
 
     user = User(
-        email=body.email,
+        email=email,
         username=body.username,
         password_hash=hash_password(body.password),
     )
@@ -87,7 +91,7 @@ def login(body: LoginRequest, request: Request, db: Session = Depends(get_db)):
     # Slow down credential stuffing: per-IP and per-target-email limits.
     check_rate_limit(f"ip:{_client_ip(request)}", "login", 30, 300)
     check_rate_limit(f"email:{body.email.lower()}", "login", 10, 300)
-    user = db.query(User).filter(User.email == body.email, User.is_active == True).first()
+    user = db.query(User).filter(User.email == body.email.lower(), User.is_active == True).first()
     # use the same error whether the email is unknown or the password is wrong
     # to avoid leaking which field was incorrect
     if not user or not verify_password(body.password, user.password_hash):

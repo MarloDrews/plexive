@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
@@ -8,11 +8,12 @@ from ..database import get_db
 from ..graph_edges import on_post_written, resolved_read_next
 from ..graph_identity import post_identity_key
 from ..models import Interest, Post
-from ..post_counts import attach_counts, attach_counts_one
+from ..post_counts import attach_counts, attach_counts_one, primary_category_name
 from ..rate_limit import check_rate_limit
+from ..reading_time import compute_reading_minutes
 from ..sanitize import sanitize_svg_text
-from ..schemas import PostCreate, PostOut
-from ._shared import POST_EAGER
+from ..schemas import PostCreate, PostListOut, PostOut
+from ._shared import POST_EAGER, POST_LIST_EAGER, blank_sections
 
 router = APIRouter()
 
@@ -42,18 +43,26 @@ def _sanitize_sections_svgs(sections: list) -> list:
 
 # IMPORTANT: /posts/mine must be registered before /posts/{post_id} so FastAPI
 # does not treat the literal string "mine" as an integer post_id.
-@router.get("/posts/mine", response_model=List[PostOut])
+@router.get("/posts/mine", response_model=List[PostListOut])
 def get_my_posts(
+    before_id: Optional[int] = None,
+    limit: int = 50,
     current_user=Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    posts = (
+    # Keyset pagination on the id (before_id = id of the last post the client
+    # already has); id-desc matches the old created_at-desc insert order.
+    # PostListOut with deferred+blanked sections: the my-posts page renders
+    # only row-level fields, never section bodies.
+    limit = max(1, min(limit, 100))
+    query = (
         db.query(Post)
-        .options(*POST_EAGER)
+        .options(*POST_LIST_EAGER)
         .filter(Post.author_id == current_user.id)
-        .order_by(Post.created_at.desc())
-        .all()
     )
+    if before_id is not None:
+        query = query.filter(Post.id < before_id)
+    posts = blank_sections(query.order_by(Post.id.desc()).limit(limit).all())
     return attach_counts(posts, db)
 
 
@@ -92,6 +101,7 @@ def create_post(
         identity_key=post_identity_key(data.format, data.feed_card),
         feed_card=data.feed_card,
         sections=sections_list,
+        reading_minutes=compute_reading_minutes(sections_list),
         author_id=current_user.id,
         is_user_content=True,
         status="published" if current_user.is_verified else "pending",
@@ -112,7 +122,13 @@ def create_post(
         .filter(Post.id == post_id)
         .first()
     )
-    return attach_counts_one(post, db)
+    # A just-created post has zero likes and comments by construction and its
+    # reading_minutes is already stored, so the two grouped count queries of
+    # attach_counts_one would be pure waste; attach the values directly.
+    post.like_count = 0
+    post.comment_count = 0
+    post.primary_category_name = primary_category_name(post)
+    return post
 
 
 @router.get("/posts/{post_id}", response_model=PostOut)

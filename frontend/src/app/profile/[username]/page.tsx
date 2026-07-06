@@ -29,9 +29,10 @@ interface ProfileData {
   follow_status: string | null
 }
 
+// The knowledge score is one unified rating; the backend no longer sends a
+// per-format breakdown.
 interface EloData {
   global_rating: number | null
-  formats: Record<string, { rating: number; answered_count: number }>
 }
 
 interface Post {

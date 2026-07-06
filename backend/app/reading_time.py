@@ -1,12 +1,13 @@
 """Reading time computed from a post's reader-facing text.
 
-Reading time is computed, not authored: a stored estimate drifts from the
+Reading time is computed, not authored: an authored estimate drifts from the
 content. We walk the post's sections, count every reader-facing word, and
 divide by a fixed words-per-minute rate. One rule holds for all formats. The
-value is computed on the server at serialization time (attached alongside the
-like/comment counts) so the feed card, the detail header, and the at_a_glance
-row all show the same number even though list endpoints drop the section bodies
-from the response. See docs/content-structure/DEEPSCROLL_CONTENT_STRUCTURE.md.
+value is computed on WRITE (posts.py create, seed.py upsert) and stored on
+posts.reading_minutes, so list endpoints never re-walk the sections JSON per
+request; this module stays the single computation source. The feed card, the
+detail header, and the at_a_glance row all read the same stored number.
+See docs/content-structure/DEEPSCROLL_CONTENT_STRUCTURE.md.
 """
 
 WORDS_PER_MINUTE = 230

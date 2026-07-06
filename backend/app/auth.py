@@ -78,3 +78,18 @@ def get_optional_user(
         return db.query(User).filter(User.id == user_id, User.is_active == True).first()
     except HTTPException:
         return None
+
+
+def get_optional_user_id(
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(_optional_bearer),
+) -> Optional[int]:
+    """The caller's user id straight from the bearer token, WITHOUT the DB
+    lookup get_optional_user pays. For endpoints that only need an identity
+    (the feed's session seed and rate-limit key), never the user row; it does
+    not check is_active, so it must never gate data access."""
+    if not credentials:
+        return None
+    try:
+        return decode_access_token(credentials.credentials)
+    except HTTPException:
+        return None

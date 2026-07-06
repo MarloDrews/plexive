@@ -10,6 +10,7 @@ from app.database import Base, SessionLocal, engine
 from app.graph_edges import on_post_written
 from app.graph_identity import post_identity_key
 from app.models import Interest, Post, User
+from app.reading_time import compute_reading_minutes
 
 Base.metadata.create_all(bind=engine)
 
@@ -162,6 +163,7 @@ def upsert_post(db, marlo, post_format, data, slug, allow_legacy_adopt):
         existing.identity_key = identity_key
         existing.feed_card = feed_card
         existing.sections = sections
+        existing.reading_minutes = compute_reading_minutes(sections)
         existing.tags = tags
         existing.connections = connections
         existing.interests = interests
@@ -179,6 +181,7 @@ def upsert_post(db, marlo, post_format, data, slug, allow_legacy_adopt):
         identity_key=identity_key,
         feed_card=feed_card,
         sections=sections,
+        reading_minutes=compute_reading_minutes(sections),
         tags=tags,
         connections=connections,
         author_id=marlo.id,

@@ -51,6 +51,13 @@ class Post(Base):
     # live DB by scripts/add_identity_and_edges.py.
     identity_key = Column(String, nullable=True, index=True)
 
+    # Reading time in minutes, computed from the section text on write
+    # (app/reading_time.py stays the single computation source; posts.py and
+    # seed.py call it). Stored so list endpoints never walk the sections JSON
+    # per request. NULL only for rows written before the column existed --
+    # scripts/add_reading_minutes.py backfills those on the live DB.
+    reading_minutes = Column(Integer, nullable=True)
+
     # False for official/seed content; True for user submissions.
     # Cannot be derived from author_id because seed posts also have an author.
     is_user_content = Column(Boolean, nullable=False, default=False)

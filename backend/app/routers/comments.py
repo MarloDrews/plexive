@@ -58,6 +58,8 @@ class CommentOut(BaseModel):
 def list_comments(
     post_id: int,
     count: bool = Query(False),
+    before_id: int | None = None,
+    limit: int = 50,
     current_user: User | None = Depends(get_optional_user),
     db: Session = Depends(get_db),
 ):
@@ -65,13 +67,18 @@ def list_comments(
     if count:
         n = db.query(Comment).filter(Comment.post_id == post_id).count()
         return {"count": n}
-    comments = (
+    # Keyset pagination (chat's before_id pattern): before_id = id of the
+    # oldest comment the client already has; id-desc matches the old
+    # created_at-desc insert order while making the cursor exact.
+    limit = max(1, min(limit, 100))
+    query = (
         db.query(Comment)
         .filter(Comment.post_id == post_id)
         .options(selectinload(Comment.user))
-        .order_by(Comment.created_at.desc())
-        .all()
     )
+    if before_id is not None:
+        query = query.filter(Comment.id < before_id)
+    comments = query.order_by(Comment.id.desc()).limit(limit).all()
     return [CommentOut.model_validate(c) for c in comments]
 
 
@@ -87,16 +94,21 @@ def create_comment(
 
     comment = Comment(post_id=post_id, user_id=current_user.id, body=body.body)
     db.add(comment)
-    db.commit()
-
-    # Re-query with user relationship loaded for serialization
-    comment = (
-        db.query(Comment)
-        .options(selectinload(Comment.user))
-        .filter(Comment.id == comment.id)
-        .first()
+    # Flush assigns the id and fires the Python-side created_at default; the
+    # response is built from data already in hand (comment + current_user)
+    # BEFORE commit expires the instances, so serialization costs no re-query.
+    db.flush()
+    payload = CommentOut(
+        id=comment.id,
+        post_id=comment.post_id,
+        username=current_user.username,
+        is_verified=current_user.is_verified,
+        avatar_url=current_user.avatar_url,
+        body=comment.body,
+        created_at=comment.created_at,
     )
-    return comment
+    db.commit()
+    return payload
 
 
 @router.delete("/comments/{comment_id}", status_code=status.HTTP_204_NO_CONTENT)
