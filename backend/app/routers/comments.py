@@ -6,21 +6,11 @@ from sqlalchemy.orm import Session, selectinload
 
 from ..auth import get_current_user, get_optional_user
 from ..database import get_db
-from ..models import Comment, Post, User
+from ..models import Comment, User
 from ..rate_limit import check_rate_limit
+from ._shared import get_visible_post
 
 router = APIRouter(tags=["comments"])
-
-
-def _get_visible_post(post_id: int, db: Session, current_user: User | None) -> Post:
-    """Pending posts are only visible to their author (same rule as GET /posts/{id});
-    their comments must follow the same rule."""
-    post = db.query(Post).filter(Post.id == post_id).first()
-    if not post:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found.")
-    if post.status != "published" and (current_user is None or post.author_id != current_user.id):
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found.")
-    return post
 
 
 class CommentIn(BaseModel):
@@ -71,7 +61,7 @@ def list_comments(
     current_user: User | None = Depends(get_optional_user),
     db: Session = Depends(get_db),
 ):
-    _get_visible_post(post_id, db, current_user)
+    get_visible_post(post_id, db, current_user)
     if count:
         n = db.query(Comment).filter(Comment.post_id == post_id).count()
         return {"count": n}
@@ -93,7 +83,7 @@ def create_comment(
     db: Session = Depends(get_db),
 ):
     check_rate_limit(current_user.id, "create_comment", 30, 300)
-    _get_visible_post(post_id, db, current_user)
+    get_visible_post(post_id, db, current_user)
 
     comment = Comment(post_id=post_id, user_id=current_user.id, body=body.body)
     db.add(comment)

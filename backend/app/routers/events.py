@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import case, func
 from sqlalchemy.orm import Session
 
@@ -8,6 +8,7 @@ from ..auth import get_optional_user
 from ..database import get_db
 from ..models import Event, Post, User
 from ..schemas import EventIn
+from ._shared import get_visible_post
 
 router = APIRouter()
 
@@ -82,12 +83,8 @@ def get_likes(
     db: Session = Depends(get_db),
     optional_user: Optional[User] = Depends(get_optional_user),
 ):
-    post = db.query(Post).filter(Post.id == post_id).first()
-    if not post:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found.")
     # Pending posts are author-only everywhere else; like info follows the same rule.
-    if post.status != "published" and (optional_user is None or post.author_id != optional_user.id):
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found.")
+    get_visible_post(post_id, db, optional_user)
 
     # Count and the caller's liked-state in one round trip; MAX(CASE...)
     # over zero rows yields NULL, i.e. liked=False on posts with no likes.

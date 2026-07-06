@@ -130,9 +130,10 @@ def get_post(
     if post is None:
         raise HTTPException(status_code=404, detail="Post not found")
 
-    if post.status == "pending":
-        if current_user is None or post.author_id != current_user.id:
-            raise HTTPException(status_code=404, detail="Post not found")
+    # A non-published post is visible only to its author (same rule as the shared
+    # get_visible_post; kept inline here so the eager-loaded row is not re-queried).
+    if post.status != "published" and (current_user is None or post.author_id != current_user.id):
+        raise HTTPException(status_code=404, detail="Post not found")
 
     # Resolved "read next" set so the frontend resolves nothing itself.
     post.read_next = resolved_read_next(db, post)

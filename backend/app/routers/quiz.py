@@ -9,7 +9,7 @@ from ..database import get_db
 from ..elo import apply_answer, elo_summary
 from ..models import Post, QuizAnswer, User
 from ..rate_limit import check_rate_limit
-from ._shared import get_target_user
+from ._shared import get_target_user, get_visible_post
 
 router = APIRouter(tags=["quiz"])
 
@@ -45,11 +45,7 @@ def answer_quiz_question(
     current_user: Optional[User] = Depends(get_optional_user),
     db: Session = Depends(get_db),
 ):
-    post = db.query(Post).filter(Post.id == body.post_id).first()
-    if not post:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found.")
-    if post.status != "published" and (current_user is None or post.author_id != current_user.id):
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found.")
+    post = get_visible_post(body.post_id, db, current_user)
 
     items = _get_quiz_items(post)
     if not 0 <= body.question_index < len(items):
@@ -117,9 +113,7 @@ def get_quiz_state(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    post = db.query(Post).filter(Post.id == post_id).first()
-    if not post:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found.")
+    post = get_visible_post(post_id, db, current_user)
 
     items = _get_quiz_items(post)
     answers = db.query(QuizAnswer).filter(

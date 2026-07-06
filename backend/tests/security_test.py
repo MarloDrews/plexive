@@ -79,6 +79,13 @@ check("stranger cannot read likes of a pending post", r.status_code == 404, r.te
 r = client.get(f"/api/posts/{pending_id}/likes", headers=auth(author["access_token"]))
 check("author can read likes of own pending post", r.status_code == 200, r.text)
 
+# quiz/state must follow the same rule (no existence oracle for pending ids).
+r = client.get(f"/api/quiz/state/{pending_id}", headers=auth(stranger["access_token"]))
+check("stranger cannot read quiz state of a pending post", r.status_code == 404, r.text)
+
+r = client.get(f"/api/quiz/state/{pending_id}", headers=auth(author["access_token"]))
+check("author can read quiz state of own pending post", r.status_code == 200, r.text)
+
 # --- events validation -----------------------------------------------------------
 
 r = client.post("/api/events", json=[{"post_id": pending_id, "event_type": "view"}] * 51)
