@@ -24,7 +24,7 @@
   "feed_card": {
     "headline": "The eye evolved independently at least 40 times, nine of them in jellyfish alone.",
     "teasers": [
-      "Why an octopus eye has no blind spot",
+      "An octopus eye has no blind spot",
       "A camera eye can evolve in a geological blink",
       "The mouse gene that grows eyes on flies"
     ],
@@ -46,7 +46,7 @@
     {
       "type": "surprises",
       "order": 3,
-      "content": "Count the separate ways an eye has appeared, and you pass 40 before the lineages run out. Among the cnidarians, the jellyfish and their kin, it happened nine times over on its own. This is the organ Darwin singled out as his hardest case, the one he admitted seemed “absurd in the highest possible degree” to reach by small steps. Intuition says a structure that intricate is a fluke you stumble into once and then keep. Evolution treats it as routine. Give a lineage light, a body worth steering, and the time to work, and an eye tends to appear."
+      "content": "An eye has appeared from scratch at least 40 separate times across the animal kingdom. Among the cnidarians, the jellyfish and their kin, it happened nine times over on its own. This is the organ Darwin singled out as his hardest case, the one he admitted seemed “absurd in the highest possible degree” to reach by small steps. Intuition says a structure that intricate is a fluke you stumble into once and then keep. Evolution treats it as routine. Eyes tend to appear wherever the ordinary ingredients are in place: light to detect, a body that gains from steering by it, and enough time for selection to work."
     },
     {
       "type": "tangible",
@@ -117,14 +117,14 @@
         },
         {
           "title": "Nature keeps reaching for the same few optical tricks",
-          "body": "The nautilus focuses light with a pinhole and no lens at all, the way a pinhole camera does. A scallop lines the back of each eye with a curved mirror and focuses by reflection, like a small telescope. Both make sharp images. They rest on completely different physics. Michael Land counted roughly ten distinct optical designs across animals. Lenses, mirrors, pinholes, and compound arrays of tubes have each been arrived at more than once. Physics allows only a handful of ways to form an image, and evolution keeps landing on the same few."
+          "body": "The nautilus focuses light with a pinhole and no lens at all, the way a pinhole camera does. A scallop lines the back of each eye with a curved mirror and focuses by reflection, like a small telescope. Both make sharp images. They rest on completely different physics. Michael Land counted roughly ten distinct optical designs across animals. Physics allows only a handful of ways to form an image. Lenses, mirrors, pinholes, and compound arrays of tubes have each been arrived at more than once."
         }
       ]
     },
     {
       "type": "bigger_picture",
       "order": 9,
-      "content": "This turns the eye from a lucky accident into something nearer to an inevitability. Light is everywhere. Any lineage with cells that react to it sits at the foot of a slope that runs uphill toward an eye, and natural selection climbs that slope whenever the climb pays off. Different lineages take different routes up. An octopus and a human reach the same camera, each wired back to front from the other. Image-forming eyes reach only six of the roughly 33 animal phyla. But three of them (the molluscs, the arthropods, and the chordates that include us) hold some 96% of all animal species. The animals that took over the living world are the ones that learned to see."
+      "content": "This turns the eye from a lucky accident into something nearer to an inevitability. Light is everywhere. Any lineage with cells that react to it sits at the foot of a slope that runs uphill toward an eye, and natural selection climbs that slope whenever the climb pays off. Different lineages take different routes up. An octopus and a human reach a camera eye by different routes, each wired back to front from the other. Image-forming eyes reach only six of the roughly 33 animal phyla. But three of them (the molluscs, the arthropods, and the chordates that include us) hold some 96% of all animal species. The animals that took over the living world are the ones that learned to see."
     },
     {
       "type": "quiz",
@@ -212,7 +212,7 @@
         },
         {
           "myth": "An octopus eye and a human eye are basically the same eye.",
-          "reality": "They are the same solution reached twice. The octopus even wires its retina the sensible way round, without the blind spot vertebrates are stuck with."
+          "reality": "It is one design reached twice over, by two lineages that had split long before either had an eye."
         }
       ]
     },
