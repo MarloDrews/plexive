@@ -113,12 +113,17 @@ export default function SearchPage() {
   const [formatFilter, setFormatFilter] = useState<FormatValue>("")
   const [results, setResults] = useState<Post[] | null>(null)
   const [userResults, setUserResults] = useState<UserResult[] | null>(null)
-  const [loading, setLoading] = useState(false)
+  // Posts and accounts load in separate effects: only the posts search depends
+  // on the format filter, so a format-chip tap no longer refires the identical
+  // user search. Each carries its own loading flag and stale-response guard.
+  const [postsLoading, setPostsLoading] = useState(false)
+  const [usersLoading, setUsersLoading] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
-  // Monotonic counter so a slow response for an earlier query can never
+  // Monotonic counters so a slow response for an earlier query can never
   // overwrite the results of a later one (the debounce only cancels the timer,
   // not an in-flight request).
-  const searchSeq = useRef(0)
+  const postsSeq = useRef(0)
+  const usersSeq = useRef(0)
 
   // Posts/Accounts is no longer a pre-search mode: one search fetches both,
   // and this swipeable switcher just flips which fetched list is visible.
@@ -129,42 +134,53 @@ export default function SearchPage() {
     inputRef.current?.focus()
   }, [])
 
+  // Posts search — depends on the format filter.
   useEffect(() => {
     const trimmed = query.trim()
     if (!trimmed) {
       setResults(null)
-      setUserResults(null)
-      setLoading(false)
+      setPostsLoading(false)
       return
     }
-
-    setLoading(true)
-    const seq = ++searchSeq.current
+    setPostsLoading(true)
+    const seq = ++postsSeq.current
     const timer = setTimeout(async () => {
       try {
-        // Both endpoints in parallel — the backend has no combined search,
-        // and the two routes are rate-limited independently.
         const params = new URLSearchParams({ q: trimmed })
         if (formatFilter) params.set("format", formatFilter)
-        const [postsRes, usersRes] = await Promise.all([
-          apiFetch(`/api/search?${params}`),
-          apiFetch(`/api/search/users?${new URLSearchParams({ q: trimmed })}`),
-        ])
-        const postsData = (await postsRes.json()) as Post[]
-        const usersData = (await usersRes.json()) as UserResult[]
-        // Drop the response if a newer search has since started.
-        if (seq !== searchSeq.current) return
-        setResults(postsData)
-        setUserResults(usersData)
+        const data = (await (await apiFetch(`/api/search?${params}`)).json()) as Post[]
+        if (seq === postsSeq.current) setResults(data)
       } catch {
         // Network/parse failure: swallow so it is not an unhandled rejection.
       } finally {
-        if (seq === searchSeq.current) setLoading(false)
+        if (seq === postsSeq.current) setPostsLoading(false)
       }
     }, 300)
-
     return () => clearTimeout(timer)
   }, [query, formatFilter])
+
+  // User search — keyed on the query only, so format-chip taps do not refire it.
+  useEffect(() => {
+    const trimmed = query.trim()
+    if (!trimmed) {
+      setUserResults(null)
+      setUsersLoading(false)
+      return
+    }
+    setUsersLoading(true)
+    const seq = ++usersSeq.current
+    const timer = setTimeout(async () => {
+      try {
+        const data = (await (await apiFetch(`/api/search/users?${new URLSearchParams({ q: trimmed })}`)).json()) as UserResult[]
+        if (seq === usersSeq.current) setUserResults(data)
+      } catch {
+        // Network/parse failure: swallow so it is not an unhandled rejection.
+      } finally {
+        if (seq === usersSeq.current) setUsersLoading(false)
+      }
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [query])
 
   const hasQuery = !!query.trim()
 
@@ -283,7 +299,7 @@ export default function SearchPage() {
           className="flex-1 min-h-0 flex overflow-x-scroll overflow-y-hidden snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [scrollbar-width:none]"
         >
           <div className={pageClass}>
-            {loading ? (
+            {postsLoading ? (
               loadingSlabs
             ) : !hasQuery ? (
               idleMessage
@@ -318,7 +334,7 @@ export default function SearchPage() {
           </div>
 
           <div className={pageClass}>
-            {loading ? (
+            {usersLoading ? (
               loadingSlabs
             ) : !hasQuery ? (
               idleMessage
