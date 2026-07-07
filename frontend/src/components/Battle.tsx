@@ -561,7 +561,7 @@ export default function Battle({ onExit }: Props) {
   else body = renderSummary()
 
   return (
-    <div className="h-full overflow-y-auto overscroll-y-contain [&::-webkit-scrollbar]:hidden [scrollbar-width:none] px-4 pt-20 pb-24">
+    <div className="h-full overflow-y-auto overscroll-y-contain px-4 pt-20 pb-24">
       {body}
     </div>
   )

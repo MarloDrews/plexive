@@ -276,7 +276,7 @@ export default function ProfilePage() {
   return (
     <div className="h-[100dvh] bg-surface-0 flex justify-center">
       <div className="w-full max-w-[430px] h-[100dvh] relative">
-        <div className="h-full overflow-y-auto pb-24 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
+        <div className="h-full overflow-y-auto pb-24">
 
         {/* Back button */}
         <button
@@ -289,7 +289,7 @@ export default function ProfilePage() {
           </svg>
         </button>
 
-        {/* Header — avatar + identity */}
+        {/* Header â€” avatar + identity */}
         <div className="flex flex-col items-center pt-16 pb-6 px-6">
           <div className="relative mb-4">
             <Avatar username={user.username} avatarUrl={user.avatar_url} size={88} verified={user.is_verified} className={avatarLoading ? "opacity-50" : ""} />
@@ -321,15 +321,15 @@ export default function ProfilePage() {
           {/* Followers / Following / Posts row */}
           <div className="flex gap-6 mt-3 mb-1">
             <div className="text-center">
-              <p className="text-ink font-bold text-base font-mono">{postCount ?? "—"}</p>
+              <p className="text-ink font-bold text-base font-mono">{postCount ?? "â€”"}</p>
               <p className="text-ink-muted text-xs">Posts</p>
             </div>
             <button className="text-center cursor-pointer" onClick={() => openList("followers")}>
-              <p className="text-ink font-bold text-base font-mono">{followerCount ?? "—"}</p>
+              <p className="text-ink font-bold text-base font-mono">{followerCount ?? "â€”"}</p>
               <p className="text-ink-muted text-xs">Followers</p>
             </button>
             <button className="text-center cursor-pointer" onClick={() => openList("following")}>
-              <p className="text-ink font-bold text-base font-mono">{followingCount ?? "—"}</p>
+              <p className="text-ink font-bold text-base font-mono">{followingCount ?? "â€”"}</p>
               <p className="text-ink-muted text-xs">Following</p>
             </button>
           </div>
@@ -348,7 +348,7 @@ export default function ProfilePage() {
               <p className="text-ink-muted text-xs mt-0.5">Answer quizzes to raise it</p>
             </div>
             <p className="text-lamp text-2xl font-bold font-mono">
-              {elo?.global_rating ?? "—"}
+              {elo?.global_rating ?? "â€”"}
             </p>
           </div>
         </div>

@@ -155,7 +155,7 @@ export function ActivityHeatmap({
                     backgroundColor:
                       count === 0 ? "#1a1a1a" : `rgba(${color},${0.15 + intensity * 0.85})`,
                   }}
-                  title={`${days[wd]} ${hr}:00 — ${count}`}
+                  title={`${days[wd]} ${hr}:00 â€” ${count}`}
                 />
               )
             })}
@@ -292,7 +292,7 @@ export function CategorySection({ title, charts }: { title: string; charts: Char
         {title}
       </div>
       {charts.length > 1 && (
-        <div className="flex gap-1.5 mb-4 overflow-x-auto overscroll-x-contain [&::-webkit-scrollbar]:hidden [scrollbar-width:none] pb-1">
+        <div className="flex gap-1.5 mb-4 overflow-x-auto overscroll-x-contain pb-1">
           {charts.map((c, i) => (
             <button
               key={c.label}

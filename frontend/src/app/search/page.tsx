@@ -33,7 +33,7 @@ interface UserResult {
 
 function Snippet({ post }: { post: Post }) {
   const text = fcStr(post.feed_card, "essence") || fcStr(post.feed_card, "headline")
-  const snippet = text.length > 120 ? text.slice(0, 120) + "…" : text
+  const snippet = text.length > 120 ? text.slice(0, 120) + "â€¦" : text
   return <p className="text-ink-dim text-xs mt-1 line-clamp-2">{snippet}</p>
 }
 
@@ -245,7 +245,7 @@ export default function SearchPage() {
   const hasQuery = !!query.trim()
 
   // The capsule only mounts once a query exists, after the hook's initial
-  // measurement ran — ask it to re-measure so the indicator appears.
+  // measurement ran â€” ask it to re-measure so the indicator appears.
   useEffect(() => {
     if (hasQuery) refreshIndicator()
   }, [hasQuery, refreshIndicator])
@@ -263,7 +263,7 @@ export default function SearchPage() {
   )
   const idleMessage = (
     <div className="flex flex-col items-center justify-center pt-20 text-center px-6">
-      <p className="text-ink-muted text-sm">Search posts, books, people…</p>
+      <p className="text-ink-muted text-sm">Search posts, books, peopleâ€¦</p>
     </div>
   )
   const errorMessage = (
@@ -273,7 +273,7 @@ export default function SearchPage() {
     </div>
   )
   const pageClass =
-    "w-full shrink-0 snap-start h-full overflow-y-auto overscroll-y-contain px-3 pb-24 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]"
+    "w-full shrink-0 snap-start h-full overflow-y-auto overscroll-y-contain px-3 pb-24"
 
   return (
     <div className="h-[100dvh] bg-surface-0 flex justify-center">
@@ -303,7 +303,7 @@ export default function SearchPage() {
                 type="search"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search posts, books, people…"
+                placeholder="Search posts, books, peopleâ€¦"
                 className="field rounded-full text-sm pl-9 pr-9 py-2.5"
               />
               {query && (
@@ -320,7 +320,7 @@ export default function SearchPage() {
             </div>
           </div>
 
-          {/* Posts | Accounts — appears after a query exists and filters the
+          {/* Posts | Accounts â€” appears after a query exists and filters the
               already-fetched results, swipeable like the result pager. */}
           {hasQuery && (
             <SegmentedTabs
@@ -335,7 +335,7 @@ export default function SearchPage() {
 
           {/* Format chips (refine the posts search server-side) */}
           {activeIndex === 0 && (
-            <div className="flex gap-2 mt-2 overflow-x-auto [&::-webkit-scrollbar]:hidden [scrollbar-width:none] pb-1">
+            <div className="flex gap-2 mt-2 overflow-x-auto pb-1">
               {FORMAT_CHIPS.map((chip) => {
                 const isActive = formatFilter === chip.value
                 const style = chip.value ? FORMAT_STYLES[chip.value] : null
@@ -359,10 +359,10 @@ export default function SearchPage() {
           )}
         </div>
 
-        {/* Results — swipeable pager: Posts | Accounts */}
+        {/* Results â€” swipeable pager: Posts | Accounts */}
         <div
           ref={pagerRef}
-          className="flex-1 min-h-0 flex overflow-x-scroll overflow-y-hidden snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [scrollbar-width:none]"
+          className="flex-1 min-h-0 flex overflow-x-scroll overflow-y-hidden snap-x snap-mandatory"
         >
           {/* Skeletons appear only when there is nothing to show yet; with
               previous results on screen they stay visible while the debounced

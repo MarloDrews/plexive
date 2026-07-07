@@ -30,7 +30,7 @@ export default function HeadlineSection({
 }) {
   return (
     <div className="px-6 pt-3 pb-5">
-      <p className="font-serif text-[2rem] font-medium tracking-tight text-ink leading-snug max-w-[24ch]">
+      <p className="font-serif text-headline font-medium tracking-tight text-ink leading-snug max-w-[24ch]">
         {accentNumbers ? <WithCyanNumbers text={unescapeDollar(content)} /> : unescapeDollar(content)}
       </p>
     </div>

@@ -85,7 +85,7 @@ export default function InterestPicker() {
   return (
     <div className="h-[100dvh] bg-surface-0 flex justify-center">
     <div className="w-full max-w-[430px] h-[100dvh] flex flex-col">
-      {/* Top bar — fixed height, does not scroll */}
+      {/* Top bar â€” fixed height, does not scroll */}
       <div className="shrink-0 px-6 pt-10 pb-4">
         <p className="label-caps text-lamp">
           Deepscroll
@@ -102,7 +102,7 @@ export default function InterestPicker() {
       </div>
 
       {/* Scrollable content */}
-      <div className="flex-1 overflow-y-auto px-6 pb-4 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
+      <div className="flex-1 overflow-y-auto px-6 pb-4">
         {error ? (
           <div className="flex flex-col items-center text-center gap-3 mt-16 px-6">
             <p className="font-serif text-lg text-ink">Could not load topics</p>
@@ -183,7 +183,7 @@ export default function InterestPicker() {
         )}
       </div>
 
-      {/* Bottom bar — fixed height, does not scroll */}
+      {/* Bottom bar â€” fixed height, does not scroll */}
       <div className="shrink-0 px-6 pt-4 pb-8 bg-surface-overlay backdrop-blur">
         <p className="text-ink-muted text-sm mb-3">
           {selected.size} of {interests.length} selected

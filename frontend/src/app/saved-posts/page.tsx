@@ -84,7 +84,7 @@ export default function SavedPostsPage() {
               </svg>
             </button>
 
-            <div ref={scrollRef} className="h-[100dvh] overflow-y-auto snap-y snap-mandatory [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
+            <div ref={scrollRef} className="h-[100dvh] overflow-y-auto snap-y snap-mandatory">
               {start > 0 && <div aria-hidden="true" style={{ height: `${start * 100}dvh` }} />}
               {posts.slice(start, end).map((post) => (
                 <div key={post.id} className="snap-center shrink-0 h-[100dvh] relative">

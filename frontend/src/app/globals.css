@@ -64,6 +64,15 @@
   /* Radii (in-content blocks; chrome surfaces use rounded-2xl/3xl/full) */
   --radius-card: 0.875rem;                /* section-body cards */
   --radius-field: 0.625rem;               /* small in-content boxes */
+
+  /* Type sizes shared across components; single source for values that were
+     hand-mirrored as arbitrary classes. */
+  --text-reading: 1.0625rem;              /* 17px reading size: .prose-post + card teasers */
+  --text-headline: 2rem;                  /* detail headline: HeadlineSection + the people header beside the portrait */
+
+  /* The feed action rail and interest-tag box bottom-anchor 4px above the
+     nav dock top (dock top = safe-area + 68px). */
+  --spacing-rail: calc(env(safe-area-inset-bottom) + 72px);
 }
 
 /* Dark-only app; fixed to avoid a white flash on light-mode devices.
@@ -278,7 +287,7 @@ body::before {
   /* Long-form post prose: the reading voice of the app. */
   .prose-post {
     font-family: var(--font-serif);
-    font-size: 1.0625rem;
+    font-size: var(--text-reading);
     line-height: 1.7;
     color: var(--color-ink-body);
   }

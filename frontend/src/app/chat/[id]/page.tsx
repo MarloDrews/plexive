@@ -278,7 +278,7 @@ export default function ConversationPage() {
         <div
           ref={listRef}
           onScroll={handleScroll}
-          className="flex-1 overflow-y-auto px-3 py-3 flex flex-col gap-1.5 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]"
+          className="flex-1 overflow-y-auto px-3 py-3 flex flex-col gap-1.5"
         >
           {loadingOlder && (
             <p className="text-ink-faint text-xs text-center py-1 shrink-0">Loading earlier messages…</p>

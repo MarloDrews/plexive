@@ -191,7 +191,7 @@ export default function PublicProfilePage() {
       <div className="w-full max-w-[430px] h-[100dvh] relative">
         {/* Scrolling moved to an inner div so the floating dock and the
             followers sheet stay pinned while the content scrolls. */}
-        <div className="h-full overflow-y-auto pb-24 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
+        <div className="h-full overflow-y-auto pb-24">
 
         {/* Header */}
         <div className="flex items-center px-4 pt-4 pb-2">
@@ -324,7 +324,7 @@ export default function PublicProfilePage() {
             >
               <div
                 ref={pagerRef}
-                className="flex items-start overflow-x-scroll overflow-y-hidden snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [scrollbar-width:none]"
+                className="flex items-start overflow-x-scroll overflow-y-hidden snap-x snap-mandatory"
               >
                 <div ref={(el) => { pageRefs.current[0] = el }} className="w-full shrink-0 snap-start px-4 pt-3 min-h-[160px]">
                   <PostsTab posts={posts} />

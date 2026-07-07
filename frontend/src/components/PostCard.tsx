@@ -37,7 +37,7 @@ function Teasers({ items }: { items: string[] }) {
       {items.map((teaser, i) => (
         <div key={i} className="flex items-start gap-2.5">
           <span className="w-1.5 h-1.5 rounded-full bg-(--accent) mt-2 shrink-0" />
-          <span className="text-[1.0625rem] text-ink leading-snug">{unescapeDollar(teaser)}</span>
+          <span className="text-reading text-ink leading-snug">{unescapeDollar(teaser)}</span>
         </div>
       ))}
     </div>
@@ -595,7 +595,7 @@ function PostCard({ post, activeTabId }: { post: Post; activeTabId: string }) {
           second row below the box, into the nav band where the dock covers
           them until scrolled. */}
       {post.interests.length > 0 && (
-        <div className="absolute left-4 right-20 bottom-[calc(env(safe-area-inset-bottom)+72px)] flex flex-wrap content-start gap-2 h-7 z-10">
+        <div className="absolute left-4 right-20 bottom-rail flex flex-wrap content-start gap-2 h-7 z-10">
           {post.interests.map((name) => (
             <span
               key={name}
@@ -615,7 +615,7 @@ function PostCard({ post, activeTabId }: { post: Post; activeTabId: string }) {
           rhythm between items. Press feedback is a springy scale-down. The
           rail bottom-aligns with the first interest-tag row just above the
           nav dock (dock top = safe-area + 68px). */}
-      <div className="absolute right-2 bottom-[calc(env(safe-area-inset-bottom)+72px)] z-10 flex flex-col items-center">
+      <div className="absolute right-2 bottom-rail z-10 flex flex-col items-center">
         {/* Like */}
         <div className="flex flex-col items-center">
           <button

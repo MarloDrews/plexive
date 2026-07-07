@@ -33,7 +33,7 @@ export default function MyPostsPage() {
   return (
     <div className="h-[100dvh] bg-surface-0 flex justify-center">
       <div className="w-full max-w-[430px] h-[100dvh] relative">
-        <div className="h-full overflow-y-auto pb-24 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
+        <div className="h-full overflow-y-auto pb-24">
 
           {/* Header */}
           <div className="flex items-center gap-3 px-4 pt-4 pb-3">

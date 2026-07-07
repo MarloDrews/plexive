@@ -1,6 +1,6 @@
 "use client"
 
-// Stage comments sheet — a floating card detached from every edge, rounded
+// Stage comments sheet â€” a floating card detached from every edge, rounded
 // on all corners. Keeps the drag gestures (swipe up expands, swipe down
 // collapses or closes, live translateY feedback); the spring-in keyframes
 // live in globals.css with a reduced-motion guard.
@@ -33,7 +33,7 @@ export default function CommentsBottomSheet({ postId, onClose, onCountChange }: 
 
   useEffect(() => { setMounted(true) }, [])
 
-  // Drag handle: swipe up → expand to 75 vh, swipe down → collapse or close
+  // Drag handle: swipe up â†’ expand to 75 vh, swipe down â†’ collapse or close
   useEffect(() => {
     const el = dragRef.current
     if (!el) return
@@ -82,7 +82,7 @@ export default function CommentsBottomSheet({ postId, onClose, onCountChange }: 
       {/* Backdrop */}
       <div className="absolute inset-0 bg-surface-0/70" />
 
-      {/* Floating card sheet — detached margins, rounded on all corners */}
+      {/* Floating card sheet â€” detached margins, rounded on all corners */}
       <div
         className="stage-sheet-in absolute inset-x-3 bottom-3 max-w-[406px] mx-auto rounded-3xl bg-surface-1/95 backdrop-blur-xl flex flex-col overflow-hidden"
         style={{
@@ -100,7 +100,7 @@ export default function CommentsBottomSheet({ postId, onClose, onCountChange }: 
           {/* Comment count (blank until the list loads so it never asserts 0) */}
           <p className="text-sm text-ink-dim text-center">
             {comments === null
-              ? " "
+              ? "Â "
               : comments.length === 1
                 ? "1 comment"
                 : `${comments.length} comments`}
@@ -119,8 +119,8 @@ export default function CommentsBottomSheet({ postId, onClose, onCountChange }: 
           </button>
         </div>
 
-        {/* Comment list — chat-style rows */}
-        <div className="flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden [scrollbar-width:none] px-4 py-3">
+        {/* Comment list â€” chat-style rows */}
+        <div className="flex-1 overflow-y-auto px-4 py-3">
           {comments === null && !error ? (
             // Loading: pulsing rows where the comments will appear.
             <div className="flex flex-col gap-2 py-2">
@@ -145,7 +145,7 @@ export default function CommentsBottomSheet({ postId, onClose, onCountChange }: 
           )}
         </div>
 
-        {/* Input bar — pill field + circular send, safe-area padded */}
+        {/* Input bar â€” pill field + circular send, safe-area padded */}
         <div
           className="flex-none px-4 pt-1"
           style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))" }}

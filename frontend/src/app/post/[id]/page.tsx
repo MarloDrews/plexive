@@ -324,7 +324,7 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
           {/* Scrollable content */}
           <div
             ref={scrollContainerRef}
-            className="flex-1 overflow-y-auto pt-16 pb-24 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]"
+            className="flex-1 overflow-y-auto pt-16 pb-24"
           >
             {post && style ? (
               <>
@@ -440,9 +440,9 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                       <div className="min-w-0">
                         {/* Name — the single headline. Styled inline rather than via
                             HeadlineSection only so it can align beside the portrait;
-                            the serif scale is kept matched to HeadlineSection by hand,
-                            so a HeadlineSection typography change must be mirrored here. */}
-                        <h1 className="font-serif text-[2rem] font-medium tracking-tight text-ink leading-snug">
+                            the serif scale comes from the shared --text-headline
+                            token, the same size HeadlineSection uses. */}
+                        <h1 className="font-serif text-headline font-medium tracking-tight text-ink leading-snug">
                           {post.title}
                         </h1>
                         {fcStr(post.feed_card, "lifespan") && (

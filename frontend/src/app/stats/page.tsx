@@ -57,12 +57,12 @@ export default function StatsPage() {
   // Shared page wrapper: each pager page scrolls vertically on its own, so
   // every tab keeps its own scroll position.
   const pageClass =
-    "w-full shrink-0 snap-start h-full overflow-y-auto overscroll-y-contain pt-1 pb-24 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]"
+    "w-full shrink-0 snap-start h-full overflow-y-auto overscroll-y-contain pt-1 pb-24"
 
   return (
     <StatsErrorBoundary>
     <div className="relative max-w-[430px] mx-auto bg-surface-0 h-[100dvh] flex flex-col">
-      {/* Tab switcher — floating frosted segmented capsule */}
+      {/* Tab switcher â€” floating frosted segmented capsule */}
       <div className="z-20 px-3 pt-3 pb-2">
         <SegmentedTabs
           labels={["Global", "Personal", "Friends"]}
@@ -73,12 +73,12 @@ export default function StatsPage() {
         />
       </div>
 
-      {/* Horizontal pager — one full-width, vertically scrolling page per
+      {/* Horizontal pager â€” one full-width, vertically scrolling page per
           tab. min-h-0 keeps flex-1 inside the viewport; overflow-y-hidden
           because overflow-x: scroll would otherwise force it to auto. */}
       <div
         ref={pagerRef}
-        className="flex-1 min-h-0 flex overflow-x-scroll overflow-y-hidden snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [scrollbar-width:none]"
+        className="flex-1 min-h-0 flex overflow-x-scroll overflow-y-hidden snap-x snap-mandatory"
       >
         {/* Per-tab error boundaries (inside the page-level one): a render
             crash in one tab degrades that tab alone; the switcher keeps

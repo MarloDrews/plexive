@@ -113,7 +113,7 @@ function NewChatOverlay({ onClose, onCreated }: { onClose: () => void; onCreated
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search people you follow…"
+          placeholder="Search people you followâ€¦"
           autoFocus
           className="field rounded-full mt-2 text-sm py-2.5"
         />
@@ -127,7 +127,7 @@ function NewChatOverlay({ onClose, onCreated }: { onClose: () => void; onCreated
               >
                 <Avatar username={u.username} avatarUrl={u.avatar_url} size={20} />
                 @{u.username}
-                <span className="text-ink-muted">×</span>
+                <span className="text-ink-muted">Ã—</span>
               </button>
             ))}
           </div>
@@ -145,7 +145,7 @@ function NewChatOverlay({ onClose, onCreated }: { onClose: () => void; onCreated
         {error && <p className="text-bad text-xs mt-2">{error}</p>}
       </div>
 
-      <div className="flex-1 overflow-y-auto px-3 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
+      <div className="flex-1 overflow-y-auto px-3">
         {results.map((u) => {
           const isSelected = selected.some((s) => s.username === u.username)
           return (
@@ -180,7 +180,7 @@ function NewChatOverlay({ onClose, onCreated }: { onClose: () => void; onCreated
           disabled={selected.length === 0 || busy}
           className="btn btn-primary w-full py-2.5"
         >
-          {busy ? "Starting…" : selected.length > 1 ? "Start group chat" : "Start chat"}
+          {busy ? "Startingâ€¦" : selected.length > 1 ? "Start group chat" : "Start chat"}
         </button>
       </div>
     </div>
@@ -231,7 +231,7 @@ export default function ChatPage() {
           )}
         </div>
 
-        <div className="flex-1 overflow-y-auto pb-24 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
+        <div className="flex-1 overflow-y-auto pb-24">
           {!authLoading && !user ? (
             <div className="h-full flex items-center justify-center px-6">
               <div className="card px-8 py-10 text-center max-w-xs flex flex-col items-center gap-3">
