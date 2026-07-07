@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { memo, useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { type Post } from "@/components/PostCard"
@@ -109,6 +109,52 @@ function UserRow({ user, loggedIn }: { user: UserResult; loggedIn: boolean }) {
   )
 }
 
+// Memoized result lists: a keystroke re-renders the page (query state), but
+// these skip until their fetched arrays actually change, so rows (and the
+// UserRow follow state) are never remounted or reconciled mid-typing.
+const PostResultsList = memo(function PostResultsList({ results }: { results: Post[] }) {
+  const router = useRouter()
+  return (
+    <div className="flex flex-col gap-2 pt-2">
+      {results.map((post) => (
+        <button
+          key={post.id}
+          onClick={() => router.push(`/post/${post.id}`)}
+          className="w-full text-left card px-4 py-3 cursor-pointer hover:bg-white/[0.07] transition-colors duration-150"
+        >
+          <FormatBadge format={post.format} />
+          <p className="text-ink font-serif font-medium text-[15px] mt-0.5 line-clamp-2">{post.title}</p>
+          <p className="flex items-center gap-1 text-ink-faint text-xs mt-0.5">
+            {post.is_user_content && post.author_username ? (
+              <Link href={`/profile/${post.author_username}`} className="hover:text-ink-dim transition-colors" onClick={(e) => e.stopPropagation()}>
+                @{post.author_username}
+              </Link>
+            ) : "Deepscroll"}
+            {post.is_user_content && post.author_is_verified != null && post.author_is_verified > 0 && <VerifiedBadge size={14} level={post.author_is_verified} />}
+          </p>
+          <Snippet post={post} />
+        </button>
+      ))}
+    </div>
+  )
+})
+
+const UserResultsList = memo(function UserResultsList({
+  users,
+  loggedIn,
+}: {
+  users: UserResult[]
+  loggedIn: boolean
+}) {
+  return (
+    <div className="flex flex-col gap-2 pt-2">
+      {users.map((u) => (
+        <UserRow key={u.username} user={u} loggedIn={loggedIn} />
+      ))}
+    </div>
+  )
+})
+
 export default function SearchPage() {
   const router = useRouter()
   const { user: authUser } = useAuth()
@@ -147,10 +193,13 @@ export default function SearchPage() {
       setPostsLoading(false)
       return
     }
-    setPostsLoading(true)
-    setPostsError(false)
     const seq = ++postsSeq.current
     const timer = setTimeout(async () => {
+      // Loading starts only when the debounced request actually fires; the
+      // previous results stay on screen while it is in flight (the skeletons
+      // used to swap in synchronously on every keystroke).
+      setPostsLoading(true)
+      setPostsError(false)
       try {
         const params = new URLSearchParams({ q: trimmed })
         if (formatFilter) params.set("format", formatFilter)
@@ -175,10 +224,10 @@ export default function SearchPage() {
       setUsersLoading(false)
       return
     }
-    setUsersLoading(true)
-    setUsersError(false)
     const seq = ++usersSeq.current
     const timer = setTimeout(async () => {
+      setUsersLoading(true)
+      setUsersError(false)
       try {
         const res = await apiFetch(`/api/search/users?${new URLSearchParams({ q: trimmed })}`)
         if (!res.ok) throw new Error(`status ${res.status}`)
@@ -315,11 +364,14 @@ export default function SearchPage() {
           ref={pagerRef}
           className="flex-1 min-h-0 flex overflow-x-scroll overflow-y-hidden snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [scrollbar-width:none]"
         >
+          {/* Skeletons appear only when there is nothing to show yet; with
+              previous results on screen they stay visible while the debounced
+              refetch is in flight and swap in place when it lands. */}
           <div className={pageClass}>
-            {postsLoading ? (
-              loadingSlabs
-            ) : !hasQuery ? (
+            {!hasQuery ? (
               idleMessage
+            ) : postsLoading && results === null ? (
+              loadingSlabs
             ) : postsError ? (
               errorMessage
             ) : emptyPosts ? (
@@ -328,35 +380,17 @@ export default function SearchPage() {
                 <p className="text-ink-muted text-xs">Try a different word or format</p>
               </div>
             ) : results !== null ? (
-              <div className="flex flex-col gap-2 pt-2">
-                {results.map((post) => (
-                  <button
-                    key={post.id}
-                    onClick={() => router.push(`/post/${post.id}`)}
-                    className="w-full text-left card px-4 py-3 cursor-pointer hover:bg-white/[0.07] transition-colors duration-150"
-                  >
-                    <FormatBadge format={post.format} />
-                    <p className="text-ink font-serif font-medium text-[15px] mt-0.5 line-clamp-2">{post.title}</p>
-                    <p className="flex items-center gap-1 text-ink-faint text-xs mt-0.5">
-                      {post.is_user_content && post.author_username ? (
-                        <Link href={`/profile/${post.author_username}`} className="hover:text-ink-dim transition-colors" onClick={(e) => e.stopPropagation()}>
-                          @{post.author_username}
-                        </Link>
-                      ) : "Deepscroll"}
-                      {post.is_user_content && post.author_is_verified != null && post.author_is_verified > 0 && <VerifiedBadge size={14} level={post.author_is_verified} />}
-                    </p>
-                    <Snippet post={post} />
-                  </button>
-                ))}
-              </div>
-            ) : null}
+              <PostResultsList results={results} />
+            ) : (
+              loadingSlabs
+            )}
           </div>
 
           <div className={pageClass}>
-            {usersLoading ? (
-              loadingSlabs
-            ) : !hasQuery ? (
+            {!hasQuery ? (
               idleMessage
+            ) : usersLoading && userResults === null ? (
+              loadingSlabs
             ) : usersError ? (
               errorMessage
             ) : emptyUsers ? (
@@ -365,12 +399,10 @@ export default function SearchPage() {
                 <p className="text-ink-muted text-xs">Try a different username</p>
               </div>
             ) : userResults !== null ? (
-              <div className="flex flex-col gap-2 pt-2">
-                {userResults.map((u) => (
-                  <UserRow key={u.username} user={u} loggedIn={!!authUser} />
-                ))}
-              </div>
-            ) : null}
+              <UserResultsList users={userResults} loggedIn={!!authUser} />
+            ) : (
+              loadingSlabs
+            )}
           </div>
         </div>
 
