@@ -34,7 +34,7 @@ function assetSize(ref) {
   }
 }
 
-async function waitForServer(url, tries = 40) {
+async function waitForServer(url, tries = 240) {
   for (let i = 0; i < tries; i++) {
     try {
       await fetch(url)
