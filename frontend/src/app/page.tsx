@@ -12,6 +12,7 @@ import FeedHeader, { type FeedTab } from "@/components/FeedHeader"
 import type { Post } from "@/types/post"
 import { useAuth, hasToken } from "@/lib/auth"
 import { useSwipeTabs } from "@/lib/useSwipeTabs"
+import { useWindowedFeed } from "@/lib/useWindowedFeed"
 
 // Train and Battle ship as their own lazy chunks: their whole import graphs
 // (stage kit, sockets, question pools, Elo math) otherwise sit in the entry
@@ -106,6 +107,11 @@ function TabPage({
   // below and offer a retry.
   const posts: Post[] | null = isFollowingTab ? (error ? [] : data ?? null) : data ?? null
 
+  // Window the card list: only the active card plus a small overscan stay
+  // mounted; the rest collapse into dvh spacers so DOM size no longer grows
+  // with the corpus.
+  const { start, end } = useWindowedFeed(scrollRef, posts?.length ?? 0)
+
   useEffect(() => {
     if (posts === null || !scrollRef.current) return
     const raw = sessionStorage.getItem("feedScrollPosition")
@@ -164,7 +170,15 @@ function TabPage({
           </div>
         </div>
       ) : (
-        posts.map((post) => <PostCard key={post.id} post={post} activeTabId={tab.id} />)
+        <>
+          {start > 0 && <div aria-hidden="true" style={{ height: `${start * 100}dvh` }} />}
+          {posts.slice(start, end).map((post) => (
+            <PostCard key={post.id} post={post} activeTabId={tab.id} />
+          ))}
+          {end < posts.length && (
+            <div aria-hidden="true" style={{ height: `${(posts.length - end) * 100}dvh` }} />
+          )}
+        </>
       )}
     </div>
   )

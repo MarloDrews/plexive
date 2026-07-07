@@ -1,10 +1,11 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import PostCard, { type Post } from "@/components/PostCard"
 import { getSavedPostIds } from "@/lib/savedPosts"
 import { fetchPostsByIds } from "@/lib/fetchPosts"
+import { useWindowedFeed } from "@/lib/useWindowedFeed"
 import BottomNav from "@/components/BottomNav"
 import ToastHost from "@/components/ToastHost"
 import { BookmarkIcon } from "@/components/icons"
@@ -12,6 +13,10 @@ import { BookmarkIcon } from "@/components/icons"
 export default function SavedPostsPage() {
   const router = useRouter()
   const [posts, setPosts] = useState<Post[] | null>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
+  // Same windowing as the feed: a heavy saver no longer mounts one
+  // full-screen card per saved post at once.
+  const { start, end } = useWindowedFeed(scrollRef, posts?.length ?? 0)
 
   useEffect(() => {
     const ids = getSavedPostIds()
@@ -79,12 +84,16 @@ export default function SavedPostsPage() {
               </svg>
             </button>
 
-            <div className="h-[100dvh] overflow-y-auto snap-y snap-mandatory [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
-              {posts.map((post) => (
+            <div ref={scrollRef} className="h-[100dvh] overflow-y-auto snap-y snap-mandatory [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
+              {start > 0 && <div aria-hidden="true" style={{ height: `${start * 100}dvh` }} />}
+              {posts.slice(start, end).map((post) => (
                 <div key={post.id} className="snap-center shrink-0 h-[100dvh] relative">
                   <PostCard post={post} activeTabId={`saved-${post.id}`} />
                 </div>
               ))}
+              {end < posts.length && (
+                <div aria-hidden="true" style={{ height: `${(posts.length - end) * 100}dvh` }} />
+              )}
             </div>
           </>
         )}
