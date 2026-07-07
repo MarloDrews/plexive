@@ -223,6 +223,12 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
   // label, the end-of-post tags, and the headline-section filter.
   const flatHeader = typographic || typographicAcademy || coverFlat || coverBooks || coverStories
 
+  // True while only the feed-cache seed is on screen (list payloads strip
+  // sections; every full post carries at least one). The page then renders
+  // header + ONE clean loading region: tags, read next and comments wait for
+  // the full post, so no content islands appear around dark gaps.
+  const seededOnly = !!post && post.sections.length === 0
+
   // Memoized so SectionRenderer (React.memo) sees a stable prop: without this,
   // the fresh .filter() array on every render defeated the memo and each
   // keystroke or read-aloud tick re-ran the whole section tree.
@@ -614,12 +620,13 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                   format={post.format}
                   readingMinutes={post.reading_minutes}
                 />
-                {post.sections.length === 0 && (
+                {seededOnly && (
                   // Seeded from the feed cache: the header above is real, the
-                  // body is still loading (list payloads strip sections).
-                  <div className="px-3 pt-2 flex flex-col gap-3">
-                    <div className="stage-pulse card h-40 w-full" />
-                    <div className="stage-pulse card h-24 w-3/4" />
+                  // body is still loading. Same slab shapes as the unseeded
+                  // full-page skeleton so this reads as one loading region.
+                  <div className="px-3 pt-2 pb-24 flex flex-col gap-3">
+                    <div className="stage-pulse card h-56 w-full" />
+                    <div className="stage-pulse card h-28 w-3/4" />
                   </div>
                 )}
                 </div>
@@ -628,7 +635,7 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                     sources section, the network/filter layer at the foot of the
                     post. The slab header carries its own tags, so this is only for
                     the banner-header formats. */}
-                {flatHeader && post.interests.length > 0 && (
+                {!seededOnly && flatHeader && post.interests.length > 0 && (
                   <div data-no-read className="px-6 pt-2 pb-6 flex flex-wrap gap-2">
                     {post.interests.map((name) => (
                       <span
@@ -658,16 +665,18 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                   )
                 })()}
 
-                {/* Comments list */}
-                <div ref={commentsTopRef} className="px-6">
-                  <CommentsSection
-                    comments={comments}
-                    error={commentsError}
-                    currentUsername={user?.username}
-                    onDelete={deleteComment}
-                    deletingId={deletingId}
-                  />
-                </div>
+                {/* Comments list (once the full post is on screen) */}
+                {!seededOnly && (
+                  <div ref={commentsTopRef} className="px-6">
+                    <CommentsSection
+                      comments={comments}
+                      error={commentsError}
+                      currentUsername={user?.username}
+                      onDelete={deleteComment}
+                      deletingId={deletingId}
+                    />
+                  </div>
+                )}
               </>
             ) : notFound ? (
               <div className="flex items-center justify-center h-full px-6">
