@@ -420,6 +420,11 @@ export default function CreatePage() {
   }
 
   async function handleSubmit() {
+    // Re-entrancy guard: a second click before the pending POST resolves used
+    // to submit the post twice (the disabled state only lands after the
+    // re-render).
+    if (submitting) return
+
     if (selectedFormat !== "books") {
       const errs = validateGeneric()
       if (Object.keys(errs).length > 0) {
@@ -492,10 +497,14 @@ export default function CreatePage() {
     }
   }
 
-  function resetForm() {
+  // Discard everything authored for a post (feed cards, sections, quiz,
+  // sources, duplicate-check search, errors). Interests are format-independent
+  // and survive a format switch; resetForm additionally clears them and
+  // returns to step 1.
+  function resetAuthoredContent() {
     setGFc(emptyGenericFeedCard())
     setGenericBody("")
-    setStep(1); setSelectedFormat(null); setSearchQuery(""); setSearchResults([])
+    setSearchQuery(""); setSearchResults([])
     setFc(emptyBooksFeedCard())
     setSEssence(""); setSWhyEndures(""); setSHeart(""); setSWorldContext(""); setSCritique("")
     setAtAGlance(emptyAtAGlance())
@@ -506,7 +515,23 @@ export default function CreatePage() {
     setQuizItems(Array.from({ length: 5 }, emptyQuizItem))
     setAuthorContext(emptyAuthorContext())
     setSources([emptySource()])
-    setSelectedInterests([]); setErrors({}); setServerError("")
+    setErrors({}); setServerError("")
+  }
+
+  function resetForm() {
+    resetAuthoredContent()
+    setStep(1)
+    setSelectedFormat(null)
+    setSelectedInterests([])
+  }
+
+  // Switching formats at step 1 discards the authored content so nothing
+  // written for one format leaks into a post of another format (essence,
+  // teasers, quiz and sources used to carry over silently).
+  function handleSelectFormat(id: FormatId) {
+    if (id === selectedFormat) return
+    if (selectedFormat !== null) resetAuthoredContent()
+    setSelectedFormat(id)
   }
 
   // Rebuilt only when the interest list itself changes (it is a static list
@@ -582,7 +607,7 @@ export default function CreatePage() {
                   return (
                     <button
                       key={fmt.id}
-                      onClick={() => setSelectedFormat(fmt.id)}
+                      onClick={() => handleSelectFormat(fmt.id)}
                       className={`rounded-3xl p-5 text-left transition-colors border-2 ${selected ? `${fmt.accent} bg-white/[0.08]` : "border-transparent bg-white/[0.04]"} cursor-pointer`}
                     >
                       <div className="font-semibold text-ink text-sm">{fmt.name}</div>

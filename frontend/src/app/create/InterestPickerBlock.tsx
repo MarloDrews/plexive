@@ -16,11 +16,17 @@ const InterestPickerBlock = memo(function InterestPickerBlock({
   error?: string
   max?: number
 }) {
+  // At the cap, the counter highlights and the remaining pills dim so the
+  // limit is visible at the moment it binds instead of a tap silently doing
+  // nothing (the cap of 5 is a product choice; the backend accepts up to 10).
+  const atMax = selected.length >= max
   return (
     <div className="card px-4 pb-4 pt-3 mb-3">
       <div className="flex items-center justify-between mb-2">
         <p className="label-caps text-lamp">Interests *</p>
-        <span className="text-ink-muted text-xs font-mono">{selected.length}/{max}</span>
+        <span className={`text-xs font-mono ${atMax ? "text-lamp" : "text-ink-muted"}`}>
+          {selected.length}/{max}{atMax ? " (max)" : ""}
+        </span>
       </div>
       <FieldError msg={error} />
       {sections.map((sec) => (
@@ -33,7 +39,13 @@ const InterestPickerBlock = memo(function InterestPickerBlock({
                 <button
                   key={interest.slug}
                   onClick={() => onToggle(interest.slug)}
-                  className={`rounded-full px-2.5 py-1 text-xs font-medium cursor-pointer transition-colors duration-150 ${isSelected ? "bg-white/[0.12] text-ink" : "bg-white/[0.04] text-ink-dim"}`}
+                  className={`rounded-full px-2.5 py-1 text-xs font-medium transition-colors duration-150 ${
+                    isSelected
+                      ? "bg-white/[0.12] text-ink cursor-pointer"
+                      : atMax
+                        ? "bg-white/[0.04] text-ink-faint opacity-50 cursor-default"
+                        : "bg-white/[0.04] text-ink-dim cursor-pointer"
+                  }`}
                 >
                   {interest.name}
                 </button>
