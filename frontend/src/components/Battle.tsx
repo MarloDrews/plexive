@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { useAuth } from "@/lib/auth"
 import { apiFetch } from "@/lib/api"
@@ -60,6 +60,11 @@ export default function Battle({ onExit }: Props) {
 
   const [stage, setStage] = useState<Stage>("lobby")
   const [message, setMessage] = useState("")
+  // Render-mirrored ref so the stable socket handler reads the current stage
+  // without impure state updaters (setters called inside an updater are the
+  // pattern that breaks when React invokes the updater twice).
+  const stageRef = useRef<Stage>("lobby")
+  stageRef.current = stage
 
   // User search (lobby).
   const [query, setQuery] = useState("")
@@ -138,11 +143,12 @@ export default function Battle({ onExit }: Props) {
         setOppDone(true)
         break
       case "opponent_left":
-        setStage((s) => {
-          if (s === "lobby" || s === "summary") return s
+        // Sibling setters over the stage ref instead of a side effect inside
+        // the setStage updater (updaters must stay pure).
+        if (stageRef.current !== "lobby" && stageRef.current !== "summary") {
           setMessage("Your opponent left the battle.")
-          return "lobby"
-        })
+          setStage("lobby")
+        }
         break
       case "opponent_unavailable":
         setMessage(`@${e.username ?? "That user"} is not online. Ask them to open the Battle tab.`)

@@ -99,14 +99,19 @@ export async function submitAnswer(params: {
     })
     if (!r.ok) throw new Error("Failed to submit answer.")
     const data: { rating: number; delta: number } = await r.json()
+    const eloAfter = Math.round(data.rating)
+    const delta = Math.round(data.delta)
     return {
       correct,
       correctIndex,
       correctValue,
       explanation: question.explanation,
-      eloBefore,
-      eloAfter: Math.round(data.rating),
-      delta: Math.round(data.delta),
+      // Derived from the server's own rating and delta so the ticker start,
+      // end and delta chip always agree; the client session value could
+      // differ (rounding, concurrent activity elsewhere).
+      eloBefore: eloAfter - delta,
+      eloAfter,
+      delta,
       answerMs,
       questionRating: questionRating(question.difficulty),
     }

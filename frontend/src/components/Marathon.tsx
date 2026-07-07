@@ -90,7 +90,9 @@ function TickingNumber({
   reduceMotion: boolean
   className?: string
 }) {
-  const [val, setVal] = useState(to)
+  // Initialized from `from`: starting at `to` painted the final rating for
+  // one frame before the animation snapped back to the start value.
+  const [val, setVal] = useState(from)
   useEffect(() => {
     if (reduceMotion || from === to) {
       setVal(to)
@@ -164,7 +166,9 @@ export default function Marathon({ onExit }: Props) {
 
   // Rating state. sessionElo is the live simulated rating; startElo is its value
   // when the current session began (for the summary's net change); lifetimeAnswered
-  // is the persisted scored-answer count that drives the K-factor.
+  // counts the answers scored since this component mounted (NOT persisted:
+  // each visit restarts the guest K-factor at its fast phase; logged-in
+  // scoring is server-side and unaffected).
   const [sessionElo, setSessionElo] = useState(START_ELO)
   const [startElo, setStartElo] = useState(START_ELO)
   const [lifetimeAnswered, setLifetimeAnswered] = useState(0)
@@ -183,22 +187,32 @@ export default function Marathon({ onExit }: Props) {
   const [lastResult, setLastResult] = useState<AnswerResult | null>(null)
   const questionStartMs = useRef(0)
   const retry = useRef<() => void>(() => {})
+  // Render-mirrored refs so async handlers read current values without stale
+  // closures (same pattern as the quiz pager's currentRef).
+  const stageRef = useRef<Stage>("intro")
+  stageRef.current = stage
+  const streakRef = useRef(0)
+  streakRef.current = streak
 
   // Seed the rating once. Logged-in players start from their server knowledge
   // score (the same number as the profile "Knowledge score"); a null score
   // (never answered) starts at START_ELO. Guests start fresh at START_ELO and
   // are never persisted, so the "won't be saved" promise stays honest.
+  // Keyed on the username (not the user object identity, which changes on any
+  // profile edit) and applied only while the intro is showing, so a refetch
+  // can never overwrite the live rating mid-marathon.
+  const username = user?.username
   useEffect(() => {
     let alive = true
     ;(async () => {
-      if (user) {
+      if (username && stageRef.current === "intro") {
         try {
-          const r = await apiFetch(`/api/users/${user.username}/elo`)
+          const r = await apiFetch(`/api/users/${username}/elo`)
           const d = r.ok ? await r.json() : null
-          if (!alive) return
+          if (!alive || stageRef.current !== "intro") return
           setSessionElo(d?.global_rating ?? START_ELO)
         } catch {
-          if (alive) setSessionElo(START_ELO)
+          if (alive && stageRef.current === "intro") setSessionElo(START_ELO)
         }
       }
       if (alive) setLoaded(true)
@@ -206,7 +220,7 @@ export default function Marathon({ onExit }: Props) {
     return () => {
       alive = false
     }
-  }, [user])
+  }, [username])
 
   // Fetch the next question. Mid-session a null means the pool is exhausted -> summary.
   const loadQuestion = useCallback(async (ids: string[], elo: number) => {
@@ -223,11 +237,15 @@ export default function Marathon({ onExit }: Props) {
       setLastResult(null)
       // Numeric questions start the slider at a random step within their limits
       // (so it never anchors on the midpoint / a hintable spot, and the player
-      // always has to move it to commit).
+      // always has to move it to commit). Never on the correct answer itself:
+      // an unmoved submit would be a free full-time-bonus correct.
       if (q.kind === "numeric") {
         const step = q.step ?? 1
         const steps = Math.floor((q.max - q.min) / step)
-        const rand = q.min + Math.round(Math.random() * steps) * step
+        let rand = q.min + Math.round(Math.random() * steps) * step
+        if (rand === q.answerValue) {
+          rand = rand + step <= q.max ? rand + step : rand - step
+        }
         setSliderValue(Math.min(q.max, Math.max(q.min, rand)))
       }
       questionStartMs.current = Date.now()
@@ -246,14 +264,17 @@ export default function Marathon({ onExit }: Props) {
   }
 
   // Shared bookkeeping once an answer is scored (same for choice and slider).
+  // Consistently functional updaters (plus the streak ref for the paired
+  // best-streak write), so nothing here depends on a stale closure.
   function applyResult(result: AnswerResult) {
     if (!current) return
-    const nextStreak = result.correct ? streak + 1 : 0
+    const currentId = current.id
+    const nextStreak = result.correct ? streakRef.current + 1 : 0
 
     setLastResult(result)
     setSessionElo(result.eloAfter)
-    setAnsweredIds([...answeredIds, current.id])
-    setLifetimeAnswered(lifetimeAnswered + 1)
+    setAnsweredIds((prev) => [...prev, currentId])
+    setLifetimeAnswered((prev) => prev + 1)
     setStreak(nextStreak)
     setBestStreak((b) => Math.max(b, nextStreak))
     setResults((r) => [...r, result])
@@ -262,9 +283,11 @@ export default function Marathon({ onExit }: Props) {
     setStage("feedback")
   }
 
-  async function handleSelect(index: number) {
-    if (!current || current.kind === "numeric" || stage !== "question" || busy || selected !== null) return
-    const answerMs = Date.now() - questionStartMs.current
+  // The submit body takes the reaction time as a parameter so a retry replays
+  // the ORIGINAL payload: recomputing answer_ms at retry time measured the
+  // error round trip as thinking time and destroyed the speed bonus.
+  async function submitChoice(index: number, answerMs: number) {
+    if (!current) return
     setSelected(index)
     setBusy(true)
     setError("")
@@ -282,23 +305,26 @@ export default function Marathon({ onExit }: Props) {
       applyResult(result)
     } catch {
       setSelected(null)
-      retry.current = () => handleSelect(index)
+      retry.current = () => void submitChoice(index, answerMs)
       setError("Could not submit your answer.")
     } finally {
       setBusy(false)
     }
   }
 
-  // Submit the slider's current value for a numeric question.
-  async function handleSubmitNumeric() {
-    if (!current || current.kind !== "numeric" || stage !== "question" || busy) return
-    const answerMs = Date.now() - questionStartMs.current
+  function handleSelect(index: number) {
+    if (!current || current.kind === "numeric" || stage !== "question" || busy || selected !== null) return
+    void submitChoice(index, Date.now() - questionStartMs.current)
+  }
+
+  async function submitNumeric(value: number, answerMs: number) {
+    if (!current) return
     setBusy(true)
     setError("")
     try {
       const result = await submitAnswer({
         question: current,
-        chosenValue: sliderValue,
+        chosenValue: value,
         answerMs,
         currentElo: sessionElo,
         answeredCountInSession: lifetimeAnswered,
@@ -306,14 +332,23 @@ export default function Marathon({ onExit }: Props) {
       })
       applyResult(result)
     } catch {
-      retry.current = () => handleSubmitNumeric()
+      retry.current = () => void submitNumeric(value, answerMs)
       setError("Could not submit your answer.")
     } finally {
       setBusy(false)
     }
   }
 
+  // Submit the slider's current value for a numeric question.
+  function handleSubmitNumeric() {
+    if (!current || current.kind !== "numeric" || stage !== "question" || busy) return
+    void submitNumeric(sliderValue, Date.now() - questionStartMs.current)
+  }
+
   function handleNext() {
+    // Busy-guarded so rapid taps cannot start two overlapping loads once
+    // question fetching becomes async for real.
+    if (busy) return
     // answeredIds already includes the just-answered question, so this either
     // returns a fresh question or null (pool exhausted -> summary).
     loadQuestion(answeredIds, sessionElo)
