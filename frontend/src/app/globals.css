@@ -352,3 +352,33 @@ body::before {
     animation: none;
   }
 }
+
+/* Post detail sheet slide-in/out (previously an inline <style> injected by
+   the detail page, whose reduced-motion guard used an unscoped `*` selector
+   that zeroed every animation app-wide while the page was mounted). The
+   guard is scoped to the sheet itself; other animations keep their own
+   guards above. */
+@keyframes post-sheet-up {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+@keyframes post-sheet-down {
+  from { transform: translateY(0); }
+  to   { transform: translateY(100%); }
+}
+
+.post-sheet-open {
+  animation: post-sheet-up 300ms ease-out forwards;
+}
+
+.post-sheet-closing {
+  animation: post-sheet-down 250ms ease-in forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .post-sheet-open,
+  .post-sheet-closing {
+    animation-duration: 0ms;
+  }
+}

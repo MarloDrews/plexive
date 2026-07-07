@@ -233,29 +233,14 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
     <div className="h-[100dvh] bg-surface-0 flex justify-center">
       <div className="w-full max-w-[430px] h-[100dvh] relative overflow-hidden">
         <div
-          className="absolute inset-0 bg-surface-0 flex flex-col z-40"
-          // --accent drives every format-colored detail in the header and sections.
-          style={{
-            animation: closing
-              ? "slideDown 250ms ease-in forwards"
-              : "slideUp 300ms ease-out forwards",
-            ["--accent" as string]: style?.accent,
-          }}
+          className={`absolute inset-0 bg-surface-0 flex flex-col z-40 ${
+            closing ? "post-sheet-closing" : "post-sheet-open"
+          }`}
+          // --accent drives every format-colored detail in the header and
+          // sections. The slide animation and its (sheet-scoped) reduced-motion
+          // guard live in globals.css.
+          style={{ ["--accent" as string]: style?.accent }}
         >
-          <style>{`
-            @keyframes slideUp {
-              from { transform: translateY(100%); }
-              to   { transform: translateY(0); }
-            }
-            @keyframes slideDown {
-              from { transform: translateY(0); }
-              to   { transform: translateY(100%); }
-            }
-            @media (prefers-reduced-motion: reduce) {
-              * { animation-duration: 0ms !important; }
-            }
-          `}</style>
-
           {/* Back button */}
           <button
             onClick={close}
