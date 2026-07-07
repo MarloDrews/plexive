@@ -10,7 +10,7 @@ import {
 } from "recharts"
 import Link from "next/link"
 import useSWR from "swr"
-import { apiFetch } from "@/lib/api"
+import { jsonFetcher } from "@/lib/swr"
 import type { FriendStats } from "./types"
 import {
   DEFAULT_COLOR, RANK_COLORS, TT, AXIS, GRID,
@@ -34,14 +34,15 @@ async function loadFriendsStats(username: string, verifiedLevel: number): Promis
   totalFollowing: number
   followingEmpty: boolean
 }> {
-  const [followingData, myEloData, myProfileData]: [
-    { username: string; is_verified: number }[],
-    { global_rating: number | null },
-    { post_count: number; follower_count: number; following_count: number },
-  ] = await Promise.all([
-    apiFetch(`/api/users/${username}/following`).then(r => r.json()),
-    apiFetch(`/api/users/${username}/elo`).then(r => r.json()),
-    apiFetch(`/api/users/${username}/profile`).then(r => r.json()),
+  // jsonFetcher throws on a non-2xx response. A FastAPI error body is valid
+  // JSON, so a bare r.json() would "succeed" on a 404/429/500 and poison the
+  // participant objects with undefined fields that crash the charts later.
+  const [followingData, myEloData, myProfileData] = await Promise.all([
+    jsonFetcher<{ username: string; is_verified: number }[]>(`/api/users/${username}/following`),
+    jsonFetcher<{ global_rating: number | null }>(`/api/users/${username}/elo`),
+    jsonFetcher<{ post_count: number; follower_count: number; following_count: number }>(
+      `/api/users/${username}/profile`
+    ),
   ])
 
   const me: FriendStats = {
@@ -61,12 +62,13 @@ async function loadFriendsStats(username: string, verifiedLevel: number): Promis
     await Promise.all(
       followingData.slice(0, FRIENDS_CAP).map(async (u) => {
         try {
-          const [eloData, profileData]: [
-            { global_rating: number | null },
-            { post_count: number; follower_count: number; following_count: number },
-          ] = await Promise.all([
-            apiFetch(`/api/users/${u.username}/elo`).then(r => r.json()),
-            apiFetch(`/api/users/${u.username}/profile`).then(r => r.json()),
+          // Non-2xx now throws (jsonFetcher), so a rate-limited or failed
+          // friend drops into the catch instead of joining as a poisoned row.
+          const [eloData, profileData] = await Promise.all([
+            jsonFetcher<{ global_rating: number | null }>(`/api/users/${u.username}/elo`),
+            jsonFetcher<{ post_count: number; follower_count: number; following_count: number }>(
+              `/api/users/${u.username}/profile`
+            ),
           ])
           return {
             username: u.username,
@@ -97,7 +99,7 @@ function FriendsTab({ username, verifiedLevel }: { username: string; verifiedLev
   // Cache the fan-out in SWR so leaving and returning to this tab within a
   // session does not refire the ~27 requests. Keyed on username (+ the viewer's
   // verified level, which feeds the "me" row).
-  const { data, error, isLoading } = useSWR(
+  const { data, error, isLoading, mutate } = useSWR(
     username ? ["friends-stats", username, verifiedLevel] : null,
     () => loadFriendsStats(username, verifiedLevel)
   )
@@ -111,8 +113,26 @@ function FriendsTab({ username, verifiedLevel }: { username: string; verifiedLev
     )
   }
 
-  // A total failure or a user who follows nobody both land on the empty state.
-  if (error || !data || data.followingEmpty) {
+  const me = data?.participants.find(p => p.username === username)
+
+  // A failed fan-out is an error with a retry, no longer conflated with the
+  // "follows nobody" empty state (the fan-out shares a rate limiter, so a
+  // transient 429 here used to read as "no friends").
+  if (error || !data || !me) {
+    return (
+      <div className="flex items-center justify-center px-6 pt-16">
+        <div className="card px-8 py-10 text-center max-w-xs flex flex-col items-center gap-3">
+          <p className="font-serif text-xl text-ink leading-snug">Could not load the comparison</p>
+          <p className="text-ink-muted text-sm">Check your connection and try again.</p>
+          <button onClick={() => mutate()} className="btn btn-primary px-5 py-2">
+            Retry
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  if (data.followingEmpty) {
     return (
       <div className="flex flex-col items-center justify-center gap-4 px-8 py-16 text-center">
         <div className="w-12 h-12 rounded-full bg-white/[0.06] flex items-center justify-center">
@@ -136,7 +156,6 @@ function FriendsTab({ username, verifiedLevel }: { username: string; verifiedLev
 
   const participants = data.participants
   const friends = participants.filter(p => p.username !== username)
-  const me = participants.find(p => p.username === username)!
   // True number the viewer follows vs. how many are actually compared, so the
   // subset can be labeled instead of silently presented as the whole network.
   const comparedCount = friends.length
@@ -152,7 +171,7 @@ function FriendsTab({ username, verifiedLevel }: { username: string; verifiedLev
 
   const eloSorted = sorted(p => p.global_rating ?? 0).filter(p => p.global_rating !== null)
 
-  const eloProgressBars = (
+  const eloProgressBars = eloSorted.length === 0 ? <NoData /> : (
     <div className="flex flex-col gap-3">
       {eloSorted.map(p => (
         <div key={p.username} className="flex items-center gap-3">
@@ -187,7 +206,7 @@ function FriendsTab({ username, verifiedLevel }: { username: string; verifiedLev
     </ResponsiveContainer>
   )
 
-  const eloTable = (
+  const eloTable = eloSorted.length === 0 ? <NoData /> : (
     <div className="overflow-x-auto overscroll-x-contain">
       <table className="w-full text-xs">
         <thead>
@@ -205,7 +224,8 @@ function FriendsTab({ username, verifiedLevel }: { username: string; verifiedLev
                 <Link href={`/profile/${p.username}`} className={`hover:text-ink-body transition-colors ${p.username === username ? "text-lamp font-semibold" : "text-ink"}`}>
                   {p.username === username ? "You" : p.username}
                 </Link>
-                {p.is_verified && p.username !== username && <span className="ml-1 text-lamp text-[10px]">✓</span>}
+                {/* is_verified is a number; a bare && would render a literal 0. */}
+                {p.is_verified > 0 && p.username !== username && <span className="ml-1 text-lamp text-[10px]">✓</span>}
               </td>
               <td className="py-2 text-right text-ink-body font-mono">{Math.round(p.global_rating ?? 0)}</td>
             </tr>

@@ -84,9 +84,14 @@ export function CalendarHeatmap({ data }: { data: { period: string; count: numbe
   }
   const lookup = new Map(data.map(d => [d.period, d.count]))
   const maxCount = Math.max(...data.map(d => d.count), 1)
-  const now = new Date()
+  // The 12-month window ends at the newest period key IN THE DATA, not at the
+  // client's local-time month: backend periods are keyed in UTC, so around a
+  // month boundary a local-clock window could silently drop the newest month.
+  // YYYY-MM keys compare correctly as strings.
+  const maxPeriod = data.reduce((m, d) => (d.period > m ? d.period : m), data[0].period)
+  const [endYear, endMonth] = maxPeriod.split("-").map(Number)
   const months = Array.from({ length: 12 }, (_, i) => {
-    const d = new Date(now.getFullYear(), now.getMonth() - (11 - i), 1)
+    const d = new Date(endYear, endMonth - 1 - (11 - i), 1)
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`
     return { key, label: d.toLocaleString("default", { month: "short" }), year: d.getFullYear() }
   })
@@ -167,12 +172,16 @@ export function GaugeChart({
   label,
   color = "#7c6fff",
   size = 160,
+  display,
 }: {
   value: number
   max: number
   label?: string
   color?: string
   size?: number
+  // Overrides the big center text. Needed where `value` only drives the arc
+  // fill (e.g. an inverted rank) and printing it would contradict the caption.
+  display?: string
 }) {
   const pct = max > 0 ? Math.min(value / max, 0.999) : 0
   const cx = size / 2
@@ -191,7 +200,8 @@ export function GaugeChart({
   const fillEnd = toXY(pct)
 
   const displayValue =
-    typeof value === "number" ? (value % 1 === 0 ? String(value) : value.toFixed(1)) : String(value)
+    display ??
+    (typeof value === "number" ? (value % 1 === 0 ? String(value) : value.toFixed(1)) : String(value))
 
   return (
     <div className="flex flex-col items-center">
@@ -243,10 +253,13 @@ export function NoData() {
 }
 
 export function FormatChip({ format }: { format: string }) {
+  // Fall back to the neutral color for an unknown format id, which otherwise
+  // computes a backgroundColor of "undefined22" and renders an unstyled chip.
+  const color = FORMAT_COLORS[format] ?? DEFAULT_COLOR
   return (
     <span
       className="inline-block text-[10px] font-medium px-2 py-0.5 rounded-full capitalize"
-      style={{ backgroundColor: FORMAT_COLORS[format] + "22", color: FORMAT_COLORS[format] }}
+      style={{ backgroundColor: color + "22", color }}
     >
       {format}
     </span>
@@ -321,7 +334,9 @@ export function TreemapCell(props: {
   name?: string; fill?: string
 }) {
   const { x = 0, y = 0, width = 0, height = 0, name, fill } = props
-  if (width <= 0 || height <= 0) return null
+  // !(w > 0) instead of w <= 0: recharts computes NaN cell sizes for an
+  // all-zero total, and NaN <= 0 is false, which used to emit <rect NaN>.
+  if (!(width > 0) || !(height > 0)) return null
   return (
     <g>
       <rect x={x} y={y} width={width} height={height} fill={fill ?? "#222222"} rx={2} />
@@ -557,20 +572,25 @@ export const makeRadar = (byFormat: Record<string, number>) => (
   </ResponsiveContainer>
 )
 
-export const makeTreemap = (byFormat: Record<string, number>) => (
-  <ResponsiveContainer width="100%" height={200}>
-    <Treemap
-      data={FORMATS.map(f => ({
-        name: f,
-        size: byFormat[f] ?? 0,
-        fill: FORMAT_COLORS[f],
-      }))}
-      dataKey="size"
-      nameKey="name"
-      content={<TreemapCell />}
-    />
-  </ResponsiveContainer>
-)
+export const makeTreemap = (byFormat: Record<string, number>) => {
+  // All-zero data would make recharts compute NaN cell areas; show the empty
+  // state instead of an invisible chart.
+  if (FORMATS.every(f => (byFormat[f] ?? 0) === 0)) return <NoData />
+  return (
+    <ResponsiveContainer width="100%" height={200}>
+      <Treemap
+        data={FORMATS.map(f => ({
+          name: f,
+          size: byFormat[f] ?? 0,
+          fill: FORMAT_COLORS[f],
+        }))}
+        dataKey="size"
+        nameKey="name"
+        content={<TreemapCell />}
+      />
+    </ResponsiveContainer>
+  )
+}
 
 export const makeWaffle = (byFormat: Record<string, number>) => (
   <WaffleChart

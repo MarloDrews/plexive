@@ -16,7 +16,7 @@ import Link from "next/link"
 import type { GlobalStats } from "./types"
 import {
   FORMAT_COLORS, FORMATS, RANK_COLORS, TT, AXIS, GRID,
-  CalendarHeatmap, ActivityHeatmap, GaugeChart, FormatChip, StatCard, CategorySection, TreemapCell,
+  CalendarHeatmap, ActivityHeatmap, GaugeChart, FormatChip, StatCard, CategorySection, TreemapCell, NoData,
   makeLineChart, makeAreaChart, makeBarChart, makeCumulativeArea, makeOverlayLine,
   makeDonut, makePie, makeVertBar, makeHorizBar, makeRadar, makeTreemap, makeWaffle,
 } from "./charts"
@@ -34,7 +34,9 @@ function GlobalTab({ data }: { data: GlobalStats }) {
       <StatCard label="Total Users" value={overview.total_users.toLocaleString()} />
       <StatCard label="Total Comments" value={overview.total_comments.toLocaleString()} />
       <StatCard label="Total Likes" value={overview.total_likes.toLocaleString()} />
-      <StatCard label="Avg Posts / User" value={overview.avg_posts_per_user} />
+      {/* Rounded client-side so a future unrounded backend value cannot leak
+          full float precision into the card. */}
+      <StatCard label="Avg Posts / User" value={Math.round((overview.avg_posts_per_user ?? 0) * 100) / 100} />
     </div>
   )
 
@@ -78,7 +80,8 @@ function GlobalTab({ data }: { data: GlobalStats }) {
               <td className="py-2 pr-3 text-ink-muted">{i + 1}</td>
               <td className="py-2 pr-3 text-ink">
                 <Link href={`/profile/${r.username}`} className="hover:text-ink-body transition-colors">{r.username}</Link>
-                {r.is_verified && <span className="ml-1 text-lamp text-[10px]">✓</span>}
+                {/* is_verified is a number; a bare && would render a literal 0. */}
+                {r.is_verified > 0 && <span className="ml-1 text-lamp text-[10px]">✓</span>}
               </td>
               <td className="py-2 text-right text-ink-body">{r.post_count}</td>
             </tr>
@@ -87,7 +90,7 @@ function GlobalTab({ data }: { data: GlobalStats }) {
       </table>
     </div>
   )
-  const topByPostsTreemap = (
+  const topByPostsTreemap = topByPosts.every(r => r.post_count === 0) ? <NoData /> : (
     <ResponsiveContainer width="100%" height={240}>
       <Treemap
         data={topByPosts.map((r, i) => ({
@@ -145,7 +148,7 @@ function GlobalTab({ data }: { data: GlobalStats }) {
               <td className="py-2 pr-3 text-ink-muted">{i + 1}</td>
               <td className="py-2 pr-3 text-ink">
                 <Link href={`/profile/${r.username}`} className="hover:text-ink-body transition-colors">{r.username}</Link>
-                {r.is_verified && <span className="ml-1 text-lamp text-[10px]">✓</span>}
+                {r.is_verified > 0 && <span className="ml-1 text-lamp text-[10px]">✓</span>}
               </td>
               <td className="py-2 text-right text-ink-body">{r.like_count}</td>
             </tr>
@@ -499,12 +502,15 @@ function GlobalTab({ data }: { data: GlobalStats }) {
       </AreaChart>
     </ResponsiveContainer>
   )
+  // Keyed on the hour field, not the array position: the zero-filled 0-23
+  // ordering is a backend implementation detail, not a contract.
+  const countByHour = new Map(data.activity_by_hour.map(d => [d.hour, d.count]))
   const hrPolar = (
     <ResponsiveContainer width="100%" height={220}>
       <RadarChart
         data={Array.from({ length: 24 }, (_, h) => ({
           subject: h % 6 === 0 ? `${h}h` : "",
-          count: data.activity_by_hour[h]?.count ?? 0,
+          count: countByHour.get(h) ?? 0,
         }))}
       >
         <PolarGrid stroke="rgba(200,200,200,0.07)" />
@@ -553,8 +559,7 @@ function GlobalTab({ data }: { data: GlobalStats }) {
 
   // 18. Content status
   const { published, pending } = data.pending_vs_published
-  const statusDonut = makeDonut({ published, pending } as unknown as Record<string, number>)
-  const statusDonutReal = (() => {
+  const statusDonut = (() => {
     const statusData = [
       { name: "Published", value: published, fill: "#72bb80" },
       { name: "Pending", value: pending, fill: "#7c6fff" },
@@ -745,9 +750,11 @@ function GlobalTab({ data }: { data: GlobalStats }) {
           { label: "Bar", component: makeBarChart(data.likes_over_time, "#7c6fff") },
           {
             label: "Overlay",
+            // Distinct second color: both series in #7c6fff made the overlay
+            // unreadable (the legend showed two identical entries).
             component: makeOverlayLine(
               data.likes_over_time, "likes", "#7c6fff",
-              data.posts_over_time, "posts", "#7c6fff",
+              data.posts_over_time, "posts", "#72bb80",
             ),
           },
         ]}
@@ -826,7 +833,7 @@ function GlobalTab({ data }: { data: GlobalStats }) {
       <CategorySection
         title="Content Status"
         charts={[
-          { label: "Donut", component: statusDonutReal },
+          { label: "Donut", component: statusDonut },
           { label: "Gauge", component: statusGauge },
         ]}
       />

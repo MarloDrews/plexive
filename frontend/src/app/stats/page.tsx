@@ -1,6 +1,5 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import useSWR from "swr"
 import dynamic from "next/dynamic"
 import { useAuth } from "@/lib/auth"
@@ -32,13 +31,18 @@ const FriendsTab = dynamic(() => import("./FriendsTab"), { ssr: false, loading: 
 
 export default function StatsPage() {
   const { user } = useAuth()
-  const [savedCount, setSavedCount] = useState(0)
 
   // Swipeable Global/Personal/Friends pager; the capsule indicator tracks
   // the swipe. activatedIndices keeps lazy mounting: a page renders nothing
   // until first visited (FriendsTab's fan-out fetch must not run on load).
   const { activeIndex, activatedIndices, pagerRef, indicatorRef, tabRefs, selectTab } =
     useSwipeTabs({ count: 3 })
+
+  // Saved count read at render time (cheap, client-only): the previous
+  // read-once-per-activation effect flashed its initial 0 on the first paint
+  // and went stale when a save happened elsewhere in the app. The tab is only
+  // mounted client-side behind auth + activation, so there is no SSR read.
+  const savedCount = user ? getSavedPostIds().length : 0
 
   // Global stats via SWR: a revisit renders the cached data instantly and
   // refreshes silently in the background (stats are aggregates, no reorder).
@@ -49,12 +53,6 @@ export default function StatsPage() {
   // until the session is restored), so opening the Personal tab is instant.
   const { data: myData, error: myError } = useSWR<MyStats>(user ? "/api/stats/me" : null)
   const myLoading = !myData && !myError
-
-  // Read localStorage saved count client-side (Personal tab is index 1)
-  useEffect(() => {
-    if (activeIndex !== 1 || !user) return
-    setSavedCount(getSavedPostIds().length)
-  }, [activeIndex, user])
 
   // Shared page wrapper: each pager page scrolls vertically on its own, so
   // every tab keeps its own scroll position.

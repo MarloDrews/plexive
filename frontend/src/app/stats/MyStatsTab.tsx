@@ -11,6 +11,7 @@ import {
   ScatterChart, Scatter,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend,
 } from "recharts"
+import FlameIcon from "@/components/FlameIcon"
 import type { MyStats } from "./types"
 import {
   FORMAT_COLORS, FORMATS, DEFAULT_COLOR, TT, AXIS, GRID,
@@ -39,17 +40,19 @@ function MyStatsTab({
       <StatCard label="Likes Received" value={overview.likes_received} />
       <StatCard label="Comments Received" value={overview.comments_received} />
       <StatCard label="Posts Liked" value={overview.posts_liked} />
-      <StatCard label="Saved Posts" value={savedCount >= 0 ? savedCount : "—"} />
+      <StatCard label="Saved Posts" value={savedCount} />
     </div>
   )
 
   // 1b. Knowledge score (Elo) — one unified rating, no per-format bars.
+  // my_elo/my_quiz are defaulted at the point of use so a payload from an
+  // older backend that omits them degrades to placeholders, not a crash.
   const knowledgeBlock = (
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-3 gap-3">
-        <StatCard label="Global Score" value={data.my_elo.global_rating ?? "—"} />
-        <StatCard label="Answered" value={data.my_quiz.answered} />
-        <StatCard label="Accuracy" value={`${data.my_quiz.accuracy}%`} />
+        <StatCard label="Global Score" value={data.my_elo?.global_rating ?? "—"} />
+        <StatCard label="Answered" value={data.my_quiz?.answered ?? 0} />
+        <StatCard label="Accuracy" value={`${data.my_quiz?.accuracy ?? 0}%`} />
       </div>
       <p className="text-ink-muted text-xs">
         Answer post quizzes to build your score. Correct answers raise it, wrong answers lower it.
@@ -267,16 +270,18 @@ function MyStatsTab({
 
   // 12. My ranking
   const { by_posts, by_likes, total_users } = data.my_ranking
+  // The inverted value drives the arc fill only (rank 1 = full gauge); the
+  // printed number is the actual rank, matching the caption underneath.
   const rankingGauges = (
     <div className="flex justify-around">
       <div className="flex flex-col items-center gap-1">
-        <GaugeChart value={total_users - by_posts + 1} max={total_users} label="Posts rank" color="#7c6fff" size={140} />
+        <GaugeChart value={total_users - by_posts + 1} max={total_users} display={`#${by_posts}`} label="Posts rank" color="#7c6fff" size={140} />
         <div className="text-ink-dim text-xs text-center">
           #{by_posts} of {total_users}
         </div>
       </div>
       <div className="flex flex-col items-center gap-1">
-        <GaugeChart value={total_users - by_likes + 1} max={total_users} label="Likes rank" color="#c47dcc" size={140} />
+        <GaugeChart value={total_users - by_likes + 1} max={total_users} display={`#${by_likes}`} label="Likes rank" color="#c47dcc" size={140} />
         <div className="text-ink-dim text-xs text-center">
           #{by_likes} of {total_users}
         </div>
@@ -284,8 +289,8 @@ function MyStatsTab({
     </div>
   )
 
-  // 13. Engagement score
-  const score = data.my_engagement_score
+  // 13. Engagement score (defaulted so a missing field cannot crash toFixed)
+  const score = data.my_engagement_score ?? 0
   const engagementGauge = (
     <div className="flex flex-col items-center gap-2">
       <div className="text-ink text-4xl font-bold">{score.toFixed(1)}</div>
@@ -318,12 +323,16 @@ function MyStatsTab({
       <div className="bg-white/[0.04] rounded-2xl p-5 text-center">
         <div className="text-4xl font-bold text-ink">{current_days}</div>
         <div className="text-ink-dim text-xs mt-1">Current streak</div>
-        <div className="text-2xl mt-1">🔥</div>
+        <div className="mt-1 flex justify-center">
+          <FlameIcon size={24} color="var(--color-save)" filled={current_days > 0} />
+        </div>
       </div>
       <div className="bg-white/[0.04] rounded-2xl p-5 text-center">
         <div className="text-4xl font-bold text-ink">{best_days}</div>
         <div className="text-ink-dim text-xs mt-1">Best streak</div>
-        <div className="text-2xl mt-1">🔥</div>
+        <div className="mt-1 flex justify-center">
+          <FlameIcon size={24} color="var(--color-save)" filled={best_days > 0} />
+        </div>
       </div>
     </div>
   )
