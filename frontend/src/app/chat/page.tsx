@@ -8,7 +8,7 @@ import BottomNav from "@/components/BottomNav"
 import Avatar from "@/components/Avatar"
 import VerifiedBadge from "@/components/VerifiedBadge"
 import { apiFetch } from "@/lib/api"
-import { useAuth } from "@/lib/auth"
+import { useAuth, hasToken } from "@/lib/auth"
 import { relativeTime } from "@/lib/relativeTime"
 import type { ChatParticipant, Conversation } from "@/lib/chatSocket"
 
@@ -192,11 +192,12 @@ export default function ChatPage() {
   const { user, loading: authLoading } = useAuth()
   const [showNew, setShowNew] = useState(false)
 
-  // Conversation list via SWR (key null until the session is restored, same
-  // gating as before). Revisits render the cached list instantly; the default
-  // revalidate-on-mount keeps new messages appearing on each visit.
+  // Conversation list via SWR, gated on token presence rather than the /me
+  // round trip so the list starts loading during session restore. Revisits
+  // render the cached list instantly; the default revalidate-on-mount keeps new
+  // messages appearing on each visit.
   const { data: convData, error: convError } = useSWR<Conversation[]>(
-    !authLoading && user ? "/api/chat/conversations" : null
+    hasToken() ? "/api/chat/conversations" : null
   )
   const conversations: Conversation[] | null = convError ? [] : convData ?? null
 

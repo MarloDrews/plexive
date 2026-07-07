@@ -10,7 +10,7 @@ import FeedHeader, { type FeedTab } from "@/components/FeedHeader"
 import Marathon from "@/components/Marathon"
 import Battle from "@/components/Battle"
 import type { Post } from "@/types/post"
-import { useAuth } from "@/lib/auth"
+import { useAuth, hasToken } from "@/lib/auth"
 import { useSwipeTabs } from "@/lib/useSwipeTabs"
 
 const TABS: FeedTab[] = [
@@ -57,7 +57,11 @@ function TabPage({
   let key: string | null = null
   if (isActivated) {
     if (isFollowingTab) {
-      if (!authLoading && user) key = "/api/feed/following"
+      // Gate on token presence, not the /me round trip: the following feed only
+      // needs the Bearer token, so it starts loading during session restore
+      // instead of waiting for it. An invalid token 401s here and clears via
+      // AuthProvider, which then shows the logged-out state.
+      if (hasToken()) key = "/api/feed/following"
     } else if (slugs.length > 0) {
       const params = new URLSearchParams({ interests: slugs.join(",") })
       if (tab.format) params.set("format", tab.format)

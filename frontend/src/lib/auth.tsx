@@ -28,6 +28,15 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null)
 
+// Synchronous token presence check for gating auth-dependent fetches. The
+// gated requests only need the Bearer token (already in localStorage), not the
+// /me response, so they can fire without waiting for the session restore round
+// trip. AuthProvider still validates the token via /me and clears it if
+// invalid, which flips user to null and re-renders the gated components.
+export function hasToken(): boolean {
+  return typeof window !== "undefined" && !!localStorage.getItem(TOKEN_KEY)
+}
+
 // FastAPI returns detail as a string for HTTPException but as an array of
 // objects for 422 validation errors; both must become a readable message.
 function detailToMessage(detail: unknown, fallback: string): string {
