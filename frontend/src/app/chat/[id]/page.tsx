@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
+import useSWR from "swr"
 import Avatar from "@/components/Avatar"
 import { apiFetch } from "@/lib/api"
 import { useAuth } from "@/lib/auth"
@@ -19,8 +20,14 @@ export default function ConversationPage() {
   const conversationId = Number(params.id)
   const { user, loading: authLoading } = useAuth()
 
-  const [conversation, setConversation] = useState<Conversation | null>(null)
   const [messages, setMessages] = useState<ChatMessage[] | null>(null)
+  // Reuse the conversation list the /chat page already cached under this key
+  // (revalidates in the background) instead of refetching the whole list just
+  // to render one header. There is no single-conversation endpoint.
+  const { data: convList } = useSWR<Conversation[]>(
+    !authLoading && user ? "/api/chat/conversations" : null
+  )
+  const conversation = convList?.find((c) => c.id === conversationId) ?? null
   const [draft, setDraft] = useState("")
   const [notFound, setNotFound] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
@@ -46,12 +53,6 @@ export default function ConversationPage() {
         return
       }
       setMessages(await r.json())
-    })
-    // There is no single-conversation endpoint; the list is small, find the entry.
-    apiFetch("/api/chat/conversations").then(async (r) => {
-      if (!r.ok) return
-      const list: Conversation[] = await r.json()
-      setConversation(list.find((c) => c.id === conversationId) ?? null)
     })
   }, [authLoading, user, conversationId])
 
