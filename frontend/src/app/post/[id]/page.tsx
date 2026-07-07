@@ -152,7 +152,13 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
     isClosingRef.current = true
     stopReading()
     setClosing(true)
-    setTimeout(() => router.back(), 250)
+    setTimeout(() => {
+      // A direct link / new tab has no in-app entry to return to, so router.back()
+      // is a no-op and the page stays translated off-screen (blank stuck screen);
+      // fall back to the feed in that case.
+      if (window.history.length > 1) router.back()
+      else router.push("/")
+    }, 250)
   }
 
   useEffect(() => {
@@ -161,13 +167,31 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
 
     let startX = 0
     let startY = 0
+    // Set when the gesture begins inside a horizontally scrollable region (the
+    // Read Next row, a wide equation block): scrubbing those must not be read as
+    // a swipe-to-close.
+    let ignore = false
+
+    function inHorizontalScroller(node: EventTarget | null): boolean {
+      let n = node instanceof HTMLElement ? node : null
+      while (n && n !== el) {
+        if (n.scrollWidth > n.clientWidth) {
+          const overflowX = getComputedStyle(n).overflowX
+          if (overflowX === "auto" || overflowX === "scroll") return true
+        }
+        n = n.parentElement
+      }
+      return false
+    }
 
     function onTouchStart(e: TouchEvent) {
       startX = e.touches[0].clientX
       startY = e.touches[0].clientY
+      ignore = inHorizontalScroller(e.target)
     }
 
     function onTouchEnd(e: TouchEvent) {
+      if (ignore) return
       const dx = e.changedTouches[0].clientX - startX
       const dy = Math.abs(e.changedTouches[0].clientY - startY)
       if (dx > 80 && dx > dy) close()
