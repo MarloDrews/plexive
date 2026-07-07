@@ -10,7 +10,7 @@
 //   3. otherwise the live GeneratedBookCover fallback (for books with no baked svg).
 // See IMAGE_STANDARD.md and LAYOUT_STANDARD.md.
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { resolveBookCover, generatedCoverStyle, bakedCoverSvg } from "@/lib/bookCover"
 import { toBase64Utf8 } from "@/lib/svg"
 import { fcStr } from "@/types/post"
@@ -73,6 +73,14 @@ export default function BookCover({
   const [imgFailed, setImgFailed] = useState(false)
 
   const decision = resolveBookCover(feedCard)
+  // Reset the failure flag when the resolved cover changes, so a component
+  // instance reused for a different book (e.g. a recycled feed card) does not
+  // stay stuck on the generated fallback from the previous cover's load error.
+  const resolvedUrl = decision.kind === "real" ? decision.url : null
+  useEffect(() => {
+    setImgFailed(false)
+  }, [resolvedUrl])
+
   const title = fcStr(feedCard, "title")
   const author = fcStr(feedCard, "author")
   const baked = bakedCoverSvg(feedCard)

@@ -57,14 +57,16 @@ export function usePostLike(postId: number, serverLikeCount: number | null) {
     if (reconciledRef.current) return
     reconciledRef.current = true
     apiFetch(`/api/posts/${postId}/likes`)
-      .then((r) => r.json())
+      .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
-        if (interactedRef.current) return
+        // Apply only a real numeric count: an error body (or a missing field)
+        // would make d.count undefined and render "NaN" next to the heart.
+        if (interactedRef.current || !d || typeof d.count !== "number") return
         const l = isPostLiked(postId)
         const sent = isLikeSent(postId)
         const onServer = sent && !hasPendingLike(postId)
         const adjust = (l && !onServer ? 1 : 0) - (!l && sent ? 1 : 0)
-        const display = d.count + adjust
+        const display = Math.max(0, d.count + adjust)
         setLikesCount(display)
         setCachedLikeCount(postId, display)
       })
@@ -87,7 +89,8 @@ export function usePostLike(postId: number, serverLikeCount: number | null) {
       unlikePost(postId)
       setLiked(false)
       setLikesCount((prev) => {
-        const n = prev - 1
+        // Never show a negative count (a dropped-flush desync could take it to -1).
+        const n = Math.max(0, prev - 1)
         setCachedLikeCount(postId, n)
         return n
       })

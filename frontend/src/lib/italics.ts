@@ -7,7 +7,10 @@ export type Run = { text: string; italic: boolean }
 
 export function splitItalics(text: string): Run[] {
   const runs: Run[] = []
-  const re = /\*([^*]+)\*/g // shortest pair, no nested or empty *
+  // The delimited content must begin and end with a non-whitespace character, so
+  // arithmetic like "3 * 4 * 5" is not read as italic " 4 " (the asterisks are
+  // operators there, not emphasis markers).
+  const re = /\*(\S(?:[^*]*\S)?)\*/g // shortest pair, no nested/empty, no space-adjacent
   let last = 0
   let m: RegExpExecArray | null
   while ((m = re.exec(text)) !== null) {

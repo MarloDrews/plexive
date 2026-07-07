@@ -58,6 +58,9 @@ function isStories(c: AnyAtAGlance): c is AtAGlanceStoriesContent {
 }
 
 export default function AtAGlanceSection({ content, readingMinutes }: Props) {
+  // Guard the type: a missing reading time would otherwise render "null min".
+  // An empty string is dropped by visible(), so the row simply does not show.
+  const readTime = typeof readingMinutes === "number" ? `${readingMinutes} min` : ""
   if (isAcademy(content)) {
     // Only the keys actually present are shown: an absent optional (sample_size,
     // pre_registered, open_data, open_code) reads as not-applicable per the
@@ -76,7 +79,7 @@ export default function AtAGlanceSection({ content, readingMinutes }: Props) {
       rows.push({ label: "Open data", value: content.open_data ? "Yes" : "No" })
     if (content.open_code !== undefined)
       rows.push({ label: "Open code", value: content.open_code ? "Yes" : "No" })
-    rows.push({ label: "Read time", value: `${readingMinutes} min` })
+    rows.push({ label: "Read time", value: readTime })
     rows.push({ label: "Difficulty", value: <DotScale value={content.post_difficulty} /> })
     return (
       <div className="px-6 py-8">
@@ -99,7 +102,7 @@ export default function AtAGlanceSection({ content, readingMinutes }: Props) {
       { label: "First posed by", value: unescapeDollar(content.first_posed_by) },
       { label: "Key year", value: String(content.year) },
       { label: "Still debated", value: content.still_debated ? "Yes" : "No" },
-      { label: "Read time", value: `${readingMinutes} min` },
+      { label: "Read time", value: readTime },
       { label: "Difficulty", value: <DotScale value={content.post_difficulty} /> },
     ]
 
@@ -123,7 +126,7 @@ export default function AtAGlanceSection({ content, readingMinutes }: Props) {
       { label: "Location", value: unescapeDollar(content.location) },
       { label: "Category", value: unescapeDollar(content.category) },
       { label: "Source reliability", value: <DotScale value={content.sources_reliability} /> },
-      { label: "Read time", value: `${readingMinutes} min` },
+      { label: "Read time", value: readTime },
       { label: "Difficulty", value: <DotScale value={content.post_difficulty} /> },
     ]
 
@@ -147,7 +150,7 @@ export default function AtAGlanceSection({ content, readingMinutes }: Props) {
       ...(content.died ? [{ label: "Died", value: unescapeDollar(content.died) }] : []),
       { label: "Nationality", value: unescapeDollar(content.nationality) },
       { label: "Field", value: unescapeDollar(content.field) },
-      { label: "Read time", value: `${readingMinutes} min` },
+      { label: "Read time", value: readTime },
       { label: "Difficulty", value: <DotScale value={content.post_difficulty} /> },
     ]
 
@@ -175,14 +178,14 @@ export default function AtAGlanceSection({ content, readingMinutes }: Props) {
     { label: "Country", value: unescapeDollar(content.country) },
     { label: "Pages", value: content.pages },
     { label: "Reading ease", value: <DotScale value={content.reading_ease} /> },
-    { label: "Read time", value: `${readingMinutes} min` },
+    { label: "Read time", value: readTime },
     { label: "Difficulty", value: <DotScale value={content.post_difficulty} /> },
   ]
 
   return (
     <div className="px-6 py-8">
       <div className="grid grid-cols-2 gap-x-6 gap-y-3 mb-4">
-        {rows.map(({ label, value }) => (
+        {visible(rows).map(({ label, value }) => (
           <div key={label} className="flex flex-col gap-0.5">
             <span className="text-xs text-ink-muted uppercase tracking-wide">{label}</span>
             <span className="text-sm text-ink">{value}</span>

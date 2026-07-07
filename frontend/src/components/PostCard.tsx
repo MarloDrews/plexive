@@ -95,7 +95,8 @@ export function SlabAccent() {
 function CardFooter({ post, fc }: { post: Post; fc: Post["feed_card"] }) {
   const difficulty = fcNum(fc, "post_difficulty")
   // Reading time is computed on the server from the post's text (post.reading_minutes).
-  const metaText = `${post.reading_minutes} min`
+  // Guard the type: a missing value would otherwise render "null min" / "undefined min".
+  const metaText = typeof post.reading_minutes === "number" ? `${post.reading_minutes} min` : ""
   return (
     <div className="flex items-center gap-2 pt-1 min-w-0">
       {post.author_username && (
@@ -352,9 +353,9 @@ function PostCard({ post, activeTabId }: { post: Post; activeTabId: string }) {
               <div className="flex gap-4 items-start">
                 <div className="flex-1 min-w-0">
                   <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
-                    {fc.title as string}
+                    {fcStr(fc, "title")}
                   </h2>
-                  <p className="text-ink-dim text-sm font-medium mt-1">{fc.author as string}</p>
+                  <p className="text-ink-dim text-sm font-medium mt-1">{fcStr(fc, "author")}</p>
                 </div>
                 {/* Two-tier cover (real or generated), resolved the same way as
                     the detail header. Thumbnail size, so no credit line here. */}
@@ -404,7 +405,7 @@ function PostCard({ post, activeTabId }: { post: Post; activeTabId: string }) {
                     </p>
                   )}
                   <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
-                    {fc.name as string}
+                    {fcStr(fc, "name")}
                   </h2>
                   {fcStr(fc, "lifespan") && (
                     <p className="text-ink-muted text-xs font-mono mt-0.5">{fcStr(fc, "lifespan")}</p>
@@ -438,7 +439,7 @@ function PostCard({ post, activeTabId }: { post: Post; activeTabId: string }) {
                   <FieldGlyph slug={post.tags?.[0]} reach="-bottom-1" />
                 </div>
                 <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
-                  {fc.headline as string}
+                  {fcStr(fc, "headline")}
                 </h2>
               </div>
 
