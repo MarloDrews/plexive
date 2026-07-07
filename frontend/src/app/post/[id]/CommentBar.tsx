@@ -30,23 +30,34 @@ export default function CommentBar({
 }: Props) {
   const { user } = useAuth()
   const [draft, setDraft] = useState("")
+  const [error, setError] = useState("")
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     const body = draft.trim()
     if (!body) return
-    setDraft("")
+    setError("")
+    // Keep the draft until the server confirms: a rate-limited (30/5min) or
+    // failed comment must not silently vanish while the input looks empty.
     const created = await postComment(body)
-    if (created) onPosted()
+    if (created) {
+      setDraft("")
+      onPosted()
+    } else {
+      setError("Could not post your comment. Please try again.")
+    }
   }
 
   return (
     // Detached from every edge, sits above the bottom nav (page z-40 > nav
-    // z-30); safe-area aware.
+    // z-30); safe-area aware. The wrapper is the positioned element so an error
+    // line can sit just above the pill (the pill stays pinned at the bottom).
     <div
-      className="absolute left-3 right-3 z-10 rounded-full backdrop-blur-xl bg-white/[0.06] px-2 py-1.5 flex items-center gap-1.5"
+      className="absolute left-3 right-3 z-10"
       style={{ bottom: "calc(env(safe-area-inset-bottom) + 12px)" }}
     >
+      {error && <p className="mb-1.5 mx-3 text-bad text-xs">{error}</p>}
+      <div className="rounded-full backdrop-blur-xl bg-white/[0.06] px-2 py-1.5 flex items-center gap-1.5">
       <div className="flex-1 min-w-0">
         {user ? (
           <form onSubmit={handleSubmit} className="flex items-center gap-1.5">
@@ -93,6 +104,7 @@ export default function CommentBar({
           <HeartIcon filled={liked} className="w-5 h-5" />
         </button>
       )}
+      </div>
     </div>
   )
 }

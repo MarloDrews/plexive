@@ -71,6 +71,10 @@ export function useComments(postId: number, onCountChange?: (count: number) => v
       const created: Comment = await r.json()
       setComments((prev) => (prev ? [created, ...prev] : [created]))
       return true
+    } catch {
+      // Network failure: report as not-posted so the caller can keep the draft
+      // and show an error, instead of an unhandled promise rejection.
+      return false
     } finally {
       setPosting(false)
     }
