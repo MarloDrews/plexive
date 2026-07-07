@@ -11,7 +11,6 @@ import {
   Poppins,
 } from "next/font/google";
 import "./globals.css";
-import "katex/dist/katex.min.css";
 import Providers from "@/components/Providers";
 
 // "Lamplight" type system (docs/DESIGN.md): Newsreader is the serif voice of

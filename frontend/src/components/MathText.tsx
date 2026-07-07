@@ -1,6 +1,6 @@
-import katex from "katex"
 import { splitItalics } from "@/lib/italics"
 import { unescapeDollar } from "@/lib/prose"
+import { useKatex } from "@/lib/katexLoader"
 
 type Segment = { type: "text"; content: string } | { type: "math"; content: string }
 
@@ -43,9 +43,12 @@ interface Props {
   className?: string
 }
 
-// Renders prose text that may contain inline $...$ LaTeX math.
+// Renders prose text that may contain inline $...$ LaTeX math. KaTeX loads
+// lazily and only when a math segment actually exists, so plain prose never
+// pays for the module; math shows its raw LaTeX as plain text until then.
 export default function MathText({ text, className }: Props) {
   const segments = parseSegments(text)
+  const katex = useKatex(segments.some((seg) => seg.type === "math"))
 
   return (
     <span className={className}>
@@ -58,6 +61,7 @@ export default function MathText({ text, className }: Props) {
               )}
             </span>
           )
+        if (!katex) return <span key={i}>{seg.content}</span>
         const html = (() => {
           try {
             return katex.renderToString(seg.content, { throwOnError: false, output: "html" })

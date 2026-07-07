@@ -1,22 +1,12 @@
-import katex from "katex"
 import SectionLabel from "../SectionLabel"
 import type { FormalismContent } from "../../types/post"
+import DisplayMath from "../DisplayMath"
 import MathText from "../MathText"
 import Prose from "../Prose"
 import { unescapeDollar } from "@/lib/prose"
 
 interface Props {
   content: FormalismContent
-}
-
-function DisplayMath({ latex }: { latex: string }) {
-  let html = latex
-  try {
-    html = katex.renderToString(latex, { displayMode: true, throwOnError: false, output: "html" })
-  } catch {
-    // fall through
-  }
-  return <div className="overflow-x-auto py-1" dangerouslySetInnerHTML={{ __html: html }} />
 }
 
 export default function FormalismSection({ content }: Props) {
