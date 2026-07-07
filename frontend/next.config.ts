@@ -11,6 +11,12 @@ const nextConfig: NextConfig = {
   // OPTIMIZED_HOSTS allowlist; a URL on any other host renders there as a
   // plain <img> instead of failing in the optimizer.
   images: {
+    // Dev serves the original files directly: the dev optimizer fetches and
+    // resizes every remote image per request without the production cache,
+    // which made first post opens noticeably slower while developing.
+    // Production keeps the optimized, disk-cached variants (measured: warm
+    // loads drop from ~1 MB/1.2s to ~30 KB/20ms on the stories lead image).
+    unoptimized: process.env.NODE_ENV === "development",
     remotePatterns: [
       { protocol: "https", hostname: "**.supabase.co" },
       { protocol: "https", hostname: "commons.wikimedia.org" },

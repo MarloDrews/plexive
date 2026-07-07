@@ -66,7 +66,7 @@ backend/
 tools/                        Facts generation pipeline: per-step prompts (pipeline_prompts/facts/step1-6.txt), runners (run_pipeline.ps1/.sh), and texture_check.py
 
 frontend/
-  next.config.ts                devIndicators disabled (the floating dev badge covered the comment send button at phone width); images.remotePatterns for the next/image optimizer (Supabase Storage, commons/upload.wikimedia.org, localhost legacy /uploads/; kept in sync with AppImage's allowlist); turbopack resolveAlias fs → readAloud/nodeStub.ts for vits-web's browser bundle
+  next.config.ts                devIndicators disabled (the floating dev badge covered the comment send button at phone width); images.remotePatterns for the next/image optimizer (Supabase Storage, commons/upload.wikimedia.org, localhost legacy /uploads/; kept in sync with AppImage's allowlist; unoptimized in dev so first post opens are not slowed by per-request dev-mode optimization, production keeps the cached variants); turbopack resolveAlias fs → readAloud/nodeStub.ts for vits-web's browser bundle
   .env.example                  NEXT_PUBLIC_API_URL template
   .env.local                    actual env vars (gitignored)
   scripts/analyze-routes.mjs    per-route bundle report: serves the production build and sums each route's eager /_next/static JS+CSS from its HTML (Turbopack has no webpack bundle analyzer and the build output prints no size table); run npm run build then npm run analyze; writes .next/route-report.json
