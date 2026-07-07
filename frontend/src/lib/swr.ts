@@ -1,4 +1,4 @@
-import { mutate } from "swr"
+import { mutate, type Cache } from "swr"
 import { apiFetch } from "./api"
 import type { Post } from "@/types/post"
 
@@ -27,10 +27,9 @@ export function clearApiCache(): void {
   mutate(() => true, undefined, { revalidate: false })
 }
 
-// The feed tabs are served cache-first within a session (no background
-// revalidate: the backend jitters feed order per request, and a silent
-// reshuffle under the user is worse than slightly stale data). That makes
-// in-session mutations the cache's responsibility:
+// Feed lists revalidate again (the per-session seed pinned the For You order,
+// see app/page.tsx), but a revisit still renders the cached list first, so
+// in-session mutations remain the cache's responsibility:
 
 // Patch one post inside every cached feed list (all /api/feed* keys).
 // Used to keep comment counts on feed cards in sync after commenting.
@@ -49,4 +48,20 @@ export function invalidateFeedCaches(): void {
   mutate((key) => typeof key === "string" && key.startsWith("/api/feed"), undefined, {
     revalidate: false,
   })
+}
+
+// Find a post inside the cached feed lists (all /api/feed* keys). The detail
+// page seeds its header from this so a card tap paints instantly; the entry
+// is a list-endpoint payload, so its sections are [] and read_next is absent,
+// and the full GET /api/posts/{id} still runs. Pass useSWRConfig().cache.
+export function findPostInFeedCaches(cache: Cache, postId: number): Post | undefined {
+  for (const key of cache.keys()) {
+    if (typeof key !== "string" || !key.startsWith("/api/feed")) continue
+    const data = cache.get(key)?.data
+    if (Array.isArray(data)) {
+      const post = (data as Post[]).find((p) => p.id === postId)
+      if (post) return post
+    }
+  }
+  return undefined
 }

@@ -25,7 +25,8 @@ import { useAuth } from "@/lib/auth"
 import { apiFetch } from "@/lib/api"
 import { usePostLike } from "@/lib/usePostLike"
 import { useComments } from "@/lib/useComments"
-import { updatePostInFeedCaches } from "@/lib/swr"
+import { findPostInFeedCaches, updatePostInFeedCaches } from "@/lib/swr"
+import { useSWRConfig } from "swr"
 
 // Shared flat-header meta row: avatar + creator, then the derived quiz-question
 // count, difficulty and reading time. Used by every flat header (facts,
@@ -76,8 +77,13 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
   const { id } = use(params)
   const router = useRouter()
   const { user } = useAuth()
+  const { cache } = useSWRConfig()
 
-  const [post, setPost] = useState<Post | null>(null)
+  // Seed from the cached feed lists so the tapped card's header (title,
+  // feed card, counts, author) paints instantly instead of a full skeleton.
+  // List payloads strip sections (serialized []) and carry no read_next, so
+  // the body shows its own pulse until the full fetch below replaces this.
+  const [post, setPost] = useState<Post | null>(() => findPostInFeedCaches(cache, Number(id)) ?? null)
   const [notFound, setNotFound] = useState(false)
   const [closing, setClosing] = useState(false)
 
@@ -96,30 +102,34 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
 
   useEffect(() => {
     // Reset per-id so a client-side post-to-post navigation (Read Next uses
-    // next/link now) shows the loading state for the new post rather than the
-    // previous one, and a slow response for the old id can never overwrite the
-    // new post: the stale flag discards it. usePostLike/useComments re-key on
-    // Number(id) and reset themselves.
+    // next/link now) shows the new post's seed or loading state rather than
+    // the previous post, and a slow response for the old id can never
+    // overwrite the new post: the stale flag discards it. usePostLike/
+    // useComments re-key on Number(id) and reset themselves.
     let stale = false
-    setPost(null)
+    setPost(findPostInFeedCaches(cache, Number(id)) ?? null)
     setNotFound(false)
     apiFetch(`/api/posts/${id}`)
       .then((r) => (r.ok ? r.json() : null))
       .then((data: Post | null) => {
         if (stale) return
         if (!data) {
+          setPost(null)
           setNotFound(true)
           return
         }
         setPost(data)
       })
       .catch(() => {
-        if (!stale) setNotFound(true)
+        if (!stale) {
+          setPost(null)
+          setNotFound(true)
+        }
       })
     return () => {
       stale = true
     }
-  }, [id])
+  }, [id, cache])
 
   // The feed card no longer reconciles the like count on mount; the detail page
   // has no visibility observer, so reconcile once the post has loaded.
@@ -597,6 +607,14 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                   format={post.format}
                   readingMinutes={post.reading_minutes}
                 />
+                {post.sections.length === 0 && (
+                  // Seeded from the feed cache: the header above is real, the
+                  // body is still loading (list payloads strip sections).
+                  <div className="px-3 pt-2 flex flex-col gap-3">
+                    <div className="stage-pulse card h-40 w-full" />
+                    <div className="stage-pulse card h-24 w-3/4" />
+                  </div>
+                )}
                 </div>
 
                 {/* Tags at the end (typographic formats) — small chips near the
