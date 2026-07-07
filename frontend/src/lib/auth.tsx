@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react"
 import { clearApiCache } from "./swr"
 import { TOKEN_KEY } from "@/lib/storage"
 
@@ -72,7 +72,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .finally(() => setLoading(false))
   }, [])
 
-  async function login(email: string, password: string): Promise<void> {
+  // The actions are useCallback-stable and the context value is memoized on
+  // [user, loading]: an inline value object gave every consumer a fresh
+  // identity per provider render and invalidated any effect listing these
+  // functions as deps.
+  const login = useCallback(async (email: string, password: string): Promise<void> => {
     const r = await fetch(`${API_URL}/api/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -84,9 +88,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     clearApiCache()
     localStorage.setItem(TOKEN_KEY, data.access_token)
     setUser(data.user as AuthUser)
-  }
+  }, [])
 
-  async function register(email: string, username: string, password: string): Promise<void> {
+  const register = useCallback(async (email: string, username: string, password: string): Promise<void> => {
     const r = await fetch(`${API_URL}/api/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -97,23 +101,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     clearApiCache()
     localStorage.setItem(TOKEN_KEY, data.access_token)
     setUser(data.user as AuthUser)
-  }
+  }, [])
 
-  function logout(): void {
+  const logout = useCallback((): void => {
     clearApiCache()
     localStorage.removeItem(TOKEN_KEY)
     setUser(null)
-  }
+  }, [])
 
-  function updateUser(updated: AuthUser): void {
+  const updateUser = useCallback((updated: AuthUser): void => {
     setUser(updated)
-  }
+  }, [])
 
-  return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, updateUser }}>
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo(
+    () => ({ user, loading, login, register, logout, updateUser }),
+    [user, loading, login, register, logout, updateUser]
   )
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
 export function useAuth(): AuthContextType {
