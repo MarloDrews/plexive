@@ -68,13 +68,19 @@ export default function PublicProfilePage() {
 
   // The pager's natural height is its tallest page, which would leave dead
   // scroll space under short tabs; clamp a wrapper to the active page's
-  // measured height instead (ResizeObserver catches async post loads).
+  // measured height instead (ResizeObserver catches async post loads). The
+  // height is written to the wrapper node imperatively: routing it through
+  // state re-rendered the whole profile page on every content resize (async
+  // post loads, trickling images) just to update one inline style.
   const pageRefs = useRef<(HTMLDivElement | null)[]>([])
-  const [pagerHeight, setPagerHeight] = useState<number | undefined>(undefined)
+  const pagerClampRef = useRef<HTMLDivElement | null>(null)
   useEffect(() => {
     const page = pageRefs.current[activeIndex]
     if (!page) return
-    const measure = () => setPagerHeight(page.offsetHeight)
+    const measure = () => {
+      const wrapper = pagerClampRef.current
+      if (wrapper) wrapper.style.height = `${page.offsetHeight}px`
+    }
     measure()
     const resizeObserver = new ResizeObserver(measure)
     resizeObserver.observe(page)
@@ -313,8 +319,8 @@ export default function PublicProfilePage() {
                 the wrapper height-clamps to the active page so short tabs
                 don't inherit the tallest page's scroll length. */}
             <div
+              ref={pagerClampRef}
               className="overflow-hidden transition-[height] duration-200"
-              style={{ height: pagerHeight }}
             >
               <div
                 ref={pagerRef}
