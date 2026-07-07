@@ -22,9 +22,12 @@ export async function jsonFetcher<T>(path: string): Promise<T> {
 
 // Clear every cached key. Called on login/register/logout so a different
 // account can never see the previous account's cached /api/feed/following,
-// /api/stats/me or /api/chat/conversations data. Public data simply refetches.
+// /api/stats/me or /api/chat/conversations data. revalidate is true so a key
+// that is still mounted at the transition (an open feed or profile) refetches
+// under the new account right away, instead of sitting on the emptied cache
+// until some later trigger.
 export function clearApiCache(): void {
-  mutate(() => true, undefined, { revalidate: false })
+  mutate(() => true, undefined, { revalidate: true })
 }
 
 // Feed lists revalidate again (the per-session seed pinned the For You order,
