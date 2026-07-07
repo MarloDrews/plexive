@@ -94,17 +94,22 @@ export default function Battle({ onExit }: Props) {
   const [lastCorrect, setLastCorrect] = useState<boolean | null>(null)
 
   // Numeric questions start the slider at a random step (never anchored on a
-  // hintable midpoint), exactly like the Train marathon.
+  // hintable midpoint), exactly like the Train marathon. Never on the correct
+  // answer itself: an unmoved submit would be a free correct.
   function startSlider(q: MarathonQuestion | undefined) {
     if (q && q.kind === "numeric") {
       const step = q.step ?? 1
       const steps = Math.floor((q.max - q.min) / step)
-      const rand = q.min + Math.round(Math.random() * steps) * step
+      let rand = q.min + Math.round(Math.random() * steps) * step
+      if (rand === q.answerValue) {
+        rand = rand + step <= q.max ? rand + step : rand - step
+      }
       setSliderValue(Math.min(q.max, Math.max(q.min, rand)))
     }
   }
 
   function resetToLobby() {
+    committedRef.current = false
     setStage("lobby")
     setSeq([])
     setCount(0)
@@ -121,6 +126,7 @@ export default function Battle({ onExit }: Props) {
     switch (e.type) {
       case "battle_start": {
         const next = buildSequence(e.seed, e.count)
+        committedRef.current = false
         setOpponent(e.opponent)
         setSeq(next)
         setCount(e.count)
@@ -226,8 +232,14 @@ export default function Battle({ onExit }: Props) {
     if (challenge(username)) setStage("waiting")
   }
 
-  // Shared bookkeeping once an answer is committed (choice or slider).
+  // Shared bookkeeping once an answer is committed (choice or slider). The
+  // ref-guard makes commits per-question idempotent: the numeric Submit had
+  // no selected-style latch, so rapid double activations could emit duplicate
+  // progress frames and double-count the score.
+  const committedRef = useRef(false)
   function commitAnswer(correct: boolean) {
+    if (committedRef.current) return
+    committedRef.current = true
     const newScore = myScore + (correct ? 1 : 0)
     setMyScore(newScore)
     setLastCorrect(correct)
@@ -250,12 +262,16 @@ export default function Battle({ onExit }: Props) {
 
   function handleNext() {
     const nextIndex = index + 1
-    if (nextIndex >= count) {
+    // Bounded by BOTH the server count and the derived sequence: buildSequence
+    // silently slices to the question pool, so a count above the pool used to
+    // strand the duel on a blank, unfinishable screen.
+    if (nextIndex >= Math.min(count, seq.length)) {
       // myScore already includes the answer just revealed.
       finish(myScore)
       setStage("done")
       return
     }
+    committedRef.current = false
     setIndex(nextIndex)
     setSelected(null)
     setLastCorrect(null)

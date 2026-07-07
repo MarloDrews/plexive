@@ -54,11 +54,18 @@ export default function NumberSlider({
 }: Props) {
   const trackRef = useRef<HTMLDivElement>(null)
   const [dragging, setDragging] = useState(false)
+  // The live value while dragging stays LOCAL: every step crossing used to
+  // call onChange and re-render the whole parent screen (Marathon/Battle);
+  // the parent now gets one onChange when the pointer is released.
+  const [liveValue, setLiveValue] = useState<number | null>(null)
   const locked = !!disabled || !!showResult
 
-  const frac = max > min ? (value - min) / (max - min) : 0
+  const shown = liveValue ?? value
+  // Clamped so an out-of-range value can never paint the fill/thumb outside
+  // the track.
+  const frac = max > min ? Math.min(1, Math.max(0, (shown - min) / (max - min))) : 0
 
-  // Map a pointer x (page coords) to a snapped value and report it when changed.
+  // Map a pointer x (page coords) to a snapped local value.
   const updateFromClientX = useCallback(
     (clientX: number) => {
       const el = trackRef.current
@@ -66,16 +73,21 @@ export default function NumberSlider({
       const rect = el.getBoundingClientRect()
       const f = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width))
       const v = snap(min + f * (max - min), min, max, step)
-      if (v !== value) onChange(v)
+      setLiveValue((prev) => (prev === v ? prev : v))
     },
-    [min, max, step, value, onChange],
+    [min, max, step],
   )
 
   // Pointer drag: capture on the row so dragging continues outside the track.
   function onPointerDown(e: React.PointerEvent) {
-    if (locked) return
+    // Only the primary button starts a drag (a right/middle click used to).
+    if (locked || e.button !== 0) return
     setDragging(true)
-    e.currentTarget.setPointerCapture(e.pointerId)
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId)
+    } catch {
+      // capture can be unavailable (e.g. the pointer already ended)
+    }
     updateFromClientX(e.clientX)
   }
   function onPointerMove(e: React.PointerEvent) {
@@ -85,6 +97,9 @@ export default function NumberSlider({
   function onPointerUp(e: React.PointerEvent) {
     if (!dragging) return
     setDragging(false)
+    // Commit once on release.
+    if (liveValue !== null && liveValue !== value) onChange(liveValue)
+    setLiveValue(null)
     try {
       e.currentTarget.releasePointerCapture(e.pointerId)
     } catch {
@@ -105,7 +120,7 @@ export default function NumberSlider({
       {/* Big live value readout. */}
       <div className="flex flex-col items-center">
         <span className="font-mono text-[40px] leading-none" style={{ color: accent }}>
-          {format(value, step, unit)}
+          {format(shown, step, unit)}
         </span>
         {showResult && correctValue !== undefined && !correct && (
           <span className="font-mono text-[13px] text-good mt-1">
