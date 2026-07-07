@@ -2164,80 +2164,83 @@ function shortName(u: string, me: string) {
   return label.length > 12 ? label.slice(0, 11) + "…" : label
 }
 
+// The Friends comparison fans out one elo + profile pair per followed user, so
+// it is capped to keep the burst bounded. A backend batch endpoint returning
+// elo+profile for a list of usernames in one request is the real fix; the cap
+// is surfaced in the UI so a well-connected user is not shown a silent subset.
+const FRIENDS_CAP = 12
+
+async function loadFriendsStats(username: string, verifiedLevel: number): Promise<{
+  participants: FriendStats[]
+  totalFollowing: number
+  followingEmpty: boolean
+}> {
+  const [followingData, myEloData, myProfileData]: [
+    { username: string; is_verified: number }[],
+    { global_rating: number | null },
+    { post_count: number; follower_count: number; following_count: number },
+  ] = await Promise.all([
+    apiFetch(`/api/users/${username}/following`).then(r => r.json()),
+    apiFetch(`/api/users/${username}/elo`).then(r => r.json()),
+    apiFetch(`/api/users/${username}/profile`).then(r => r.json()),
+  ])
+
+  const me: FriendStats = {
+    username,
+    is_verified: verifiedLevel,
+    global_rating: myEloData.global_rating,
+    post_count: myProfileData.post_count,
+    follower_count: myProfileData.follower_count,
+    following_count: myProfileData.following_count,
+  }
+
+  if (!Array.isArray(followingData) || followingData.length === 0) {
+    return { participants: [me], totalFollowing: myProfileData.following_count, followingEmpty: true }
+  }
+
+  const friendList = (
+    await Promise.all(
+      followingData.slice(0, FRIENDS_CAP).map(async (u) => {
+        try {
+          const [eloData, profileData]: [
+            { global_rating: number | null },
+            { post_count: number; follower_count: number; following_count: number },
+          ] = await Promise.all([
+            apiFetch(`/api/users/${u.username}/elo`).then(r => r.json()),
+            apiFetch(`/api/users/${u.username}/profile`).then(r => r.json()),
+          ])
+          return {
+            username: u.username,
+            is_verified: u.is_verified,
+            global_rating: eloData.global_rating,
+            post_count: profileData.post_count,
+            follower_count: profileData.follower_count,
+            following_count: profileData.following_count,
+          } satisfies FriendStats
+        } catch {
+          return null
+        }
+      }),
+    )
+  ).filter((f): f is FriendStats => f !== null)
+
+  return {
+    participants: [me, ...friendList],
+    totalFollowing: myProfileData.following_count,
+    followingEmpty: false,
+  }
+}
+
 function FriendsTab({ username, verifiedLevel }: { username: string; verifiedLevel: number }) {
-  const [loading, setLoading] = useState(true)
-  const [noFollowing, setNoFollowing] = useState(false)
-  const [participants, setParticipants] = useState<FriendStats[]>([])
+  // Cache the fan-out in SWR so leaving and returning to this tab within a
+  // session does not refire the ~27 requests. Keyed on username (+ the viewer's
+  // verified level, which feeds the "me" row).
+  const { data, error, isLoading } = useSWR(
+    username ? ["friends-stats", username, verifiedLevel] : null,
+    () => loadFriendsStats(username, verifiedLevel)
+  )
 
-  useEffect(() => {
-    let cancelled = false
-
-    async function load() {
-      try {
-        const [followingData, myEloData, myProfileData]: [
-          { username: string; is_verified: number }[],
-          { global_rating: number | null },
-          { post_count: number; follower_count: number; following_count: number },
-        ] = await Promise.all([
-          apiFetch(`/api/users/${username}/following`).then(r => r.json()),
-          apiFetch(`/api/users/${username}/elo`).then(r => r.json()),
-          apiFetch(`/api/users/${username}/profile`).then(r => r.json()),
-        ])
-        if (cancelled) return
-
-        if (followingData.length === 0) {
-          setNoFollowing(true)
-          return
-        }
-
-        const me: FriendStats = {
-          username,
-          is_verified: verifiedLevel,
-          global_rating: myEloData.global_rating,
-          post_count: myProfileData.post_count,
-          follower_count: myProfileData.follower_count,
-          following_count: myProfileData.following_count,
-        }
-
-        const friendList = (
-          await Promise.all(
-            followingData.slice(0, 12).map(async (u) => {
-              try {
-                const [eloData, profileData]: [
-                  { global_rating: number | null },
-                  { post_count: number; follower_count: number; following_count: number },
-                ] = await Promise.all([
-                  apiFetch(`/api/users/${u.username}/elo`).then(r => r.json()),
-                  apiFetch(`/api/users/${u.username}/profile`).then(r => r.json()),
-                ])
-                return {
-                  username: u.username,
-                  is_verified: u.is_verified,
-                  global_rating: eloData.global_rating,
-                  post_count: profileData.post_count,
-                  follower_count: profileData.follower_count,
-                  following_count: profileData.following_count,
-                } satisfies FriendStats
-              } catch {
-                return null
-              }
-            }),
-          )
-        ).filter((f): f is FriendStats => f !== null)
-
-        if (!cancelled) setParticipants([me, ...friendList])
-      } catch {
-        // leave empty state
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
-    }
-
-    load()
-    return () => { cancelled = true }
-  }, [username])
-
-  if (loading) {
+  if (isLoading || (!data && !error)) {
     return (
       <div className="flex flex-col px-3 gap-3 pt-2">
         <div className="stage-pulse card h-40 w-full" />
@@ -2246,7 +2249,8 @@ function FriendsTab({ username, verifiedLevel }: { username: string; verifiedLev
     )
   }
 
-  if (noFollowing) {
+  // A total failure or a user who follows nobody both land on the empty state.
+  if (error || !data || data.followingEmpty) {
     return (
       <div className="flex flex-col items-center justify-center gap-4 px-8 py-16 text-center">
         <div className="w-12 h-12 rounded-full bg-white/[0.06] flex items-center justify-center">
@@ -2268,8 +2272,13 @@ function FriendsTab({ username, verifiedLevel }: { username: string; verifiedLev
     )
   }
 
+  const participants = data.participants
   const friends = participants.filter(p => p.username !== username)
   const me = participants.find(p => p.username === username)!
+  // True number the viewer follows vs. how many are actually compared, so the
+  // subset can be labeled instead of silently presented as the whole network.
+  const comparedCount = friends.length
+  const isTruncated = data.totalFollowing > comparedCount
   const eloMax = Math.max(1600, ...participants.map(p => p.global_rating ?? 0))
 
   // Helper: sort participants by a numeric getter, descending, for charts
@@ -2467,7 +2476,7 @@ function FriendsTab({ username, verifiedLevel }: { username: string; verifiedLev
         <StatCard label="Friends Avg Elo" value={friendAvgElo !== null ? friendAvgElo : "—"} />
         <StatCard label="Your Posts" value={me?.post_count ?? 0} />
         <StatCard label="Friends Avg Posts" value={friendAvgPosts} />
-        <StatCard label="Friends Following" value={friends.length} />
+        <StatCard label="Friends Following" value={data.totalFollowing} />
       </div>
     )
   })()
@@ -2478,6 +2487,11 @@ function FriendsTab({ username, verifiedLevel }: { username: string; verifiedLev
       <div className="card mx-3 mb-3 px-4 py-4">
         <div className="label-caps text-ink-dim mb-3">Overview</div>
         {overviewCards}
+        {isTruncated && (
+          <p className="text-ink-muted text-xs mt-3">
+            Comparing {comparedCount} of the {data.totalFollowing} people you follow.
+          </p>
+        )}
       </div>
 
       {/* Knowledge Leaderboard */}
