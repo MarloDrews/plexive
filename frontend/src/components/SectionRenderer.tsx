@@ -117,7 +117,13 @@ function SectionFallback() {
 // read-aloud status changes and like taps; with a stable (memoized) sections
 // prop the whole tree, including every MathText, skips those re-renders.
 function SectionRenderer({ sections, isUserContent, postId, format, readingMinutes }: Props) {
-  const sorted = useMemo(() => [...sections].sort((a, b) => a.order - b.order), [sections])
+  // Skip null/malformed entries and treat a missing order as 0 so the comparator
+  // stays consistent (a.order - b.order is NaN when order is absent, which can
+  // scramble the whole list).
+  const sorted = useMemo(
+    () => sections.filter(Boolean).sort((a, b) => (a?.order ?? 0) - (b?.order ?? 0)),
+    [sections],
+  )
 
   return (
     // Serif is the reading voice; labels (.label-caps) and data (font-mono)

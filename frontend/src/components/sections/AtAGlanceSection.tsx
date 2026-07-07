@@ -21,6 +21,13 @@ interface Props {
   readingMinutes: number
 }
 
+// Drop rows whose value is missing (an absent optional key coerces to "" via
+// unescapeDollar) so a partial at_a_glance renders the keys it has instead of
+// blank rows. Numbers (including 0) and rendered elements are kept.
+function visible(rows: { label: string; value: ReactNode }[]) {
+  return rows.filter((r) => r.value !== "" && r.value !== null && r.value !== undefined)
+}
+
 function DotScale({ value, max = 3 }: { value: number; max?: number }) {
   return (
     <span className="flex gap-0.5" aria-label={`${value} of ${max}`}>
@@ -74,7 +81,7 @@ export default function AtAGlanceSection({ content, readingMinutes }: Props) {
     return (
       <div className="px-6 py-8">
         <div className="grid grid-cols-2 gap-x-6 gap-y-3">
-          {rows.map(({ label, value }) => (
+          {visible(rows).map(({ label, value }) => (
             <div key={label} className="flex flex-col gap-0.5">
               <span className="text-xs text-ink-muted uppercase tracking-wide">{label}</span>
               <span className="text-sm text-ink">{value}</span>
@@ -99,7 +106,7 @@ export default function AtAGlanceSection({ content, readingMinutes }: Props) {
     return (
       <div className="px-6 py-8">
         <div className="grid grid-cols-2 gap-x-6 gap-y-3">
-          {rows.map(({ label, value }) => (
+          {visible(rows).map(({ label, value }) => (
             <div key={label} className="flex flex-col gap-0.5">
               <span className="text-xs text-ink-muted uppercase tracking-wide">{label}</span>
               <span className="text-sm text-ink">{value}</span>
@@ -123,7 +130,7 @@ export default function AtAGlanceSection({ content, readingMinutes }: Props) {
     return (
       <div className="px-6 py-8">
         <div className="grid grid-cols-2 gap-x-6 gap-y-3">
-          {rows.map(({ label, value }) => (
+          {visible(rows).map(({ label, value }) => (
             <div key={label} className="flex flex-col gap-0.5">
               <span className="text-xs text-ink-muted uppercase tracking-wide">{label}</span>
               <span className="text-sm text-ink">{value}</span>
@@ -147,7 +154,7 @@ export default function AtAGlanceSection({ content, readingMinutes }: Props) {
     return (
       <div className="px-6 py-8">
         <div className="grid grid-cols-2 gap-x-6 gap-y-3 mb-4">
-          {rows.map(({ label, value }) => (
+          {visible(rows).map(({ label, value }) => (
             <div key={label} className="flex flex-col gap-0.5">
               <span className="text-xs text-ink-muted uppercase tracking-wide">{label}</span>
               <span className="text-sm text-ink">{value}</span>

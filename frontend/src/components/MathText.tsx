@@ -51,7 +51,10 @@ interface Props {
 // and the component is memo-exported, so page-level re-renders (comment
 // drafts, read-aloud status) never repeat LaTeX layout work.
 function MathText({ text, className }: Props) {
-  const segments = useMemo(() => parseSegments(text), [text])
+  // Coerce a missing string once here: every free-text prose field in all seven
+  // formats routes through MathText, so a section whose prose is absent must
+  // degrade to empty rather than throw inside parseSegments (text.length).
+  const segments = useMemo(() => parseSegments(text ?? ""), [text])
   const katex = useKatex(segments.some((seg) => seg.type === "math"))
 
   const children = useMemo(
