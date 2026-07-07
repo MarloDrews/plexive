@@ -41,6 +41,12 @@ def _like_pattern(q_lower: str) -> str:
     return f"%{escaped}%"
 
 
+def _lower(value) -> str:
+    """Lowercase a value only when it is a string, else "" -- so a non-string
+    feed_card/idea field cannot raise inside the Python matcher."""
+    return value.lower() if isinstance(value, str) else ""
+
+
 def _post_matches(post: Post, q_lower: str) -> bool:
     """
     Python-side exact match across the JSON schema. The SQL pre-filter in
@@ -49,16 +55,21 @@ def _post_matches(post: Post, q_lower: str) -> bool:
     unchanged. Revisit with PostgreSQL full-text search once even the narrowed
     scan makes the post count noticeable.
     """
-    if q_lower in post.title.lower():
+    # Seed/legacy rows are arbitrary JSON; every value read here is guarded with
+    # isinstance so a non-string field or a non-dict section/idea is skipped
+    # rather than crashing the whole search (.lower()/.get on the wrong type).
+    if isinstance(post.title, str) and q_lower in post.title.lower():
         return True
 
-    fc = post.feed_card or {}
-    if q_lower in (fc.get("essence") or "").lower():
+    fc = post.feed_card if isinstance(post.feed_card, dict) else {}
+    if q_lower in _lower(fc.get("essence")):
         return True
-    if q_lower in (fc.get("author") or "").lower():
+    if q_lower in _lower(fc.get("author")):
         return True
 
     for section in (post.sections or []):
+        if not isinstance(section, dict):
+            continue
         stype = section.get("type")
         content = section.get("content")
         if stype == "heart" and isinstance(content, str):
@@ -66,9 +77,11 @@ def _post_matches(post: Post, q_lower: str) -> bool:
                 return True
         elif stype == "core_ideas" and isinstance(content, list):
             for idea in content:
-                if q_lower in (idea.get("title") or "").lower():
+                if not isinstance(idea, dict):
+                    continue
+                if q_lower in _lower(idea.get("title")):
                     return True
-                if q_lower in (idea.get("body") or "").lower():
+                if q_lower in _lower(idea.get("body")):
                     return True
 
     return False

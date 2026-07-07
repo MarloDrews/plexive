@@ -39,7 +39,12 @@ TIME_BONUS_MAX = 0.5
 
 
 def question_rating(post_difficulty) -> float:
-    return DIFFICULTY_RATING.get(post_difficulty, DIFFICULTY_RATING[2])
+    # post_difficulty comes from arbitrary feed_card JSON; an unhashable value
+    # (list/dict) would raise inside dict.get, so fall back to the medium rating.
+    try:
+        return DIFFICULTY_RATING.get(post_difficulty, DIFFICULTY_RATING[2])
+    except TypeError:
+        return DIFFICULTY_RATING[2]
 
 
 def expected_score(user_rating: float, q_rating: float) -> float:

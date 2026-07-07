@@ -20,10 +20,14 @@ class QuizAnswerIn(BaseModel):
     chosen_index: int
 
 
-def _get_quiz_items(post: Post) -> list[dict]:
+def _get_quiz_items(post: Post) -> list:
+    # Seed/legacy sections are arbitrary JSON: a non-dict section or a quiz whose
+    # content is not a list must not crash the endpoint (isinstance tolerance,
+    # matching graph_edges/reading_time).
     for section in (post.sections or []):
-        if section.get("type") == "quiz":
-            return section.get("content") or []
+        if isinstance(section, dict) and section.get("type") == "quiz":
+            content = section.get("content")
+            return content if isinstance(content, list) else []
     return []
 
 
@@ -54,14 +58,16 @@ def answer_quiz_question(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid option index.")
 
     item = items[body.question_index]
-    correct_index = item.get("answer_index")
+    # A non-dict item (malformed content) has no answer -- treat it as
+    # unanswerable rather than crashing on .get.
+    correct_index = item.get("answer_index") if isinstance(item, dict) else None
     # Correctness is decided here, server-side; answer_index never reaches the client.
     correct = body.chosen_index == correct_index
 
     result = {
         "correct": correct,
         "correct_index": correct_index,
-        "explanation": item.get("explanation"),
+        "explanation": item.get("explanation") if isinstance(item, dict) else None,
         "already_answered": False,
         "scored": False,
         "elo": None,
@@ -93,7 +99,8 @@ def answer_quiz_question(
     is_scorable = correct_index in (0, 1, 2, 3)
     delta = 0.0
     if not is_own_post and is_scorable:
-        difficulty = (post.feed_card or {}).get("post_difficulty")
+        fc = post.feed_card if isinstance(post.feed_card, dict) else {}
+        difficulty = fc.get("post_difficulty")
         delta = apply_answer(db, current_user, difficulty, correct)
         result["scored"] = True
 
@@ -130,6 +137,8 @@ def get_quiz_state(
         if not 0 <= a.question_index < len(items):
             continue
         item = items[a.question_index]
+        if not isinstance(item, dict):
+            continue
         out.append({
             "question_index": a.question_index,
             "chosen_index": a.chosen_index,

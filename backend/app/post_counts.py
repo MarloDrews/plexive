@@ -15,7 +15,9 @@ def primary_category_name(post: Post):
     source, they cannot disagree. Returns None when the post has no tags or
     tags[0] does not map to one of its interests (an empty/odd-tag post).
     """
-    tags = post.tags or []
+    # tags is arbitrary JSON on seed/legacy rows: a non-list (e.g. a dict) would
+    # raise on tags[0], and this runs for every row on every list response.
+    tags = post.tags if isinstance(post.tags, list) else []
     if not tags:
         return None
     primary = tags[0]

@@ -98,16 +98,20 @@ def _key_from_parts(
     - books:  title + author
     - else:   title
     """
+    # Every part must be a real string. A non-string (e.g. a feed_card title of
+    # 123, or a legacy connection ref carrying a number) makes the post/ref
+    # unresolvable -- None, never a TypeError inside normalize_identity -- which
+    # honors this module's documented "returns None, never raises" contract.
     if post_format == "people":
         year = _coerce_year(birth_year)
-        if not name or year is None:
+        if not isinstance(name, str) or not name or year is None:
             return None
         return normalize_identity(f"{name} ({year})")
     if post_format == "books":
-        if not title or not author:
+        if not isinstance(title, str) or not isinstance(author, str) or not title or not author:
             return None
         return normalize_identity(f"{title} by {author}")
-    if not title:
+    if not isinstance(title, str) or not title:
         return None
     return normalize_identity(title)
 
