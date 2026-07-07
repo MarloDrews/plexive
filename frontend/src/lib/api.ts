@@ -1,6 +1,4 @@
-import { TOKEN_KEY } from "@/lib/storage"
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL
+import { API_URL, TOKEN_KEY } from "@/lib/storage"
 
 // Wrapper around fetch that automatically attaches the Authorization header
 // when a token is present in localStorage. Use this for any API call that

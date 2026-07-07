@@ -1,7 +1,5 @@
-import { TOKEN_KEY } from "@/lib/storage"
+import { API_URL, TOKEN_KEY } from "@/lib/storage"
 import { markLikeSent, unmarkLikeSent } from "@/lib/likedPosts"
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL
 
 interface QueuedEvent {
   post_id: number

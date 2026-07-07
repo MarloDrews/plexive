@@ -50,7 +50,19 @@ export function useChatSocket(onMessage: (m: ChatMessage) => void) {
     let retryTimer: ReturnType<typeof setTimeout>
 
     function connect() {
-      const ws = new WebSocket(wsUrl("/api/chat/ws"))
+      // The constructor throws synchronously on a malformed URL (e.g. a missing
+      // API base). Treat that like a failed connection and schedule a retry, so
+      // the throw does not escape the reconnect timer and permanently kill the
+      // socket.
+      let ws: WebSocket
+      try {
+        ws = new WebSocket(wsUrl("/api/chat/ws"))
+      } catch {
+        if (unmounted) return
+        setStatus("closed")
+        retryTimer = setTimeout(connect, 3000)
+        return
+      }
       wsRef.current = ws
       setStatus("connecting")
       ws.onopen = () => ws.send(JSON.stringify({ type: "auth", token }))

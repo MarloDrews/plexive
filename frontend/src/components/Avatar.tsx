@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from "react"
 import AppImage from "./AppImage"
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL
+import { API_URL } from "@/lib/storage"
 
 const RING_COLOR: Record<number, string> = {
   1: "var(--color-fmt-concepts)",

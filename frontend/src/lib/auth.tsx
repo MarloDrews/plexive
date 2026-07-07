@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react"
 import { clearApiCache } from "./swr"
-import { TOKEN_KEY } from "@/lib/storage"
+import { API_URL, TOKEN_KEY } from "@/lib/storage"
 import { detailToMessage } from "@/lib/errorMessage"
 import { clearLikeStorage } from "@/lib/likedPosts"
 import { clearSavedStorage } from "@/lib/savedPosts"
@@ -18,8 +18,6 @@ function clearAccountData(): void {
   clearLikeStorage()
   clearSavedStorage()
 }
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL
 
 export interface AuthUser {
   id: number

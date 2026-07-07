@@ -2,8 +2,7 @@
 
 import { memo } from "react"
 import { FieldError, inputCls, labelCls } from "./formUi"
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL
+import { API_URL } from "@/lib/storage"
 
 export const emptyBooksFeedCard = () => ({
   cover_url: "", title: "", author: "", essence: "",

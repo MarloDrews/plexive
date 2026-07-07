@@ -3,14 +3,13 @@
 import { useCallback, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { CATEGORIES } from "@/lib/interests"
+import { API_URL } from "@/lib/storage"
 
 interface Interest {
   id: number
   name: string
   slug: string
 }
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL
 
 export default function InterestPicker() {
   const router = useRouter()
