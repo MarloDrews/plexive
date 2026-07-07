@@ -139,6 +139,15 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
   const style = formatStyle(post.format)
   const fc = post.feed_card
 
+  // The 300ms single-tap timer must die with the card: a card unmounted
+  // within the window (tab switch, cache invalidation, windowing) used to
+  // still fire navigate() from a dead component and write feedActiveTab.
+  useEffect(() => {
+    return () => {
+      if (navTimerRef.current) clearTimeout(navTimerRef.current)
+    }
+  }, [])
+
   useEffect(() => {
     // Reduced motion only disables the entrance animation — view tracking
     // and like-state refresh must still run for those users.
