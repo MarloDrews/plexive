@@ -14,6 +14,10 @@ import {
   type Conversation,
 } from "@/lib/chatSocket"
 
+// Matches the backend GET messages default limit; a full page means more
+// history may exist, a short page means we have reached the start.
+const MESSAGE_PAGE = 50
+
 export default function ConversationPage() {
   const router = useRouter()
   const params = useParams<{ id: string }>()
@@ -30,7 +34,11 @@ export default function ConversationPage() {
   const conversation = convList?.find((c) => c.id === conversationId) ?? null
   const [draft, setDraft] = useState("")
   const [notFound, setNotFound] = useState(false)
+  // Older-history pagination: hasMore stays true until a page comes back short.
+  const [loadingOlder, setLoadingOlder] = useState(false)
+  const [hasMore, setHasMore] = useState(true)
   const bottomRef = useRef<HTMLDivElement>(null)
+  const listRef = useRef<HTMLDivElement>(null)
 
   const onSocketMessage = useCallback(
     (m: ChatMessage) => {
@@ -52,13 +60,60 @@ export default function ConversationPage() {
         setNotFound(true)
         return
       }
-      setMessages(await r.json())
+      const page: ChatMessage[] = await r.json()
+      setMessages(page)
+      // A short first page means there is no older history to page back to.
+      setHasMore(page.length >= MESSAGE_PAGE)
     })
   }, [authLoading, user, conversationId])
 
+  // Auto-scroll to the bottom only when the newest message changes (initial
+  // load or a message appended live), never when older history is prepended.
+  const lastMessageId = messages && messages.length ? messages[messages.length - 1].id : null
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "instant", block: "end" })
-  }, [messages?.length])
+  }, [lastMessageId])
+
+  // Load the previous page of history and prepend it, preserving the scroll
+  // position so the view does not jump. Fires when the list is scrolled near
+  // the top. Reuses the existing dedupe-by-id logic.
+  async function loadOlder() {
+    if (loadingOlder || !hasMore || !messages || messages.length === 0) return
+    setLoadingOlder(true)
+    const oldestId = messages[0].id
+    const container = listRef.current
+    const prevHeight = container?.scrollHeight ?? 0
+    try {
+      const r = await apiFetch(
+        `/api/chat/conversations/${conversationId}/messages?before_id=${oldestId}`
+      )
+      if (!r.ok) {
+        setHasMore(false)
+        return
+      }
+      const older: ChatMessage[] = await r.json()
+      if (older.length < MESSAGE_PAGE) setHasMore(false)
+      if (older.length > 0) {
+        setMessages((prev) => {
+          if (!prev) return older
+          const existing = new Set(prev.map((m) => m.id))
+          return [...older.filter((m) => !existing.has(m.id)), ...prev]
+        })
+        // Keep the first previously-visible message under the same finger.
+        requestAnimationFrame(() => {
+          const c = listRef.current
+          if (c) c.scrollTop = c.scrollHeight - prevHeight
+        })
+      }
+    } finally {
+      setLoadingOlder(false)
+    }
+  }
+
+  function handleScroll() {
+    const c = listRef.current
+    if (c && c.scrollTop < 48) loadOlder()
+  }
 
   function handleSend() {
     const body = draft.trim()
@@ -120,7 +175,14 @@ export default function ConversationPage() {
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto px-3 py-3 flex flex-col gap-1.5 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
+        <div
+          ref={listRef}
+          onScroll={handleScroll}
+          className="flex-1 overflow-y-auto px-3 py-3 flex flex-col gap-1.5 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]"
+        >
+          {loadingOlder && (
+            <p className="text-ink-faint text-xs text-center py-1 shrink-0">Loading earlier messages…</p>
+          )}
           {notFound ? (
             <div className="flex-1 flex items-center justify-center">
               <p className="text-ink-muted text-sm">Conversation not found.</p>
