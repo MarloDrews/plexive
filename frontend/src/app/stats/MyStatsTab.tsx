@@ -1,5 +1,6 @@
 "use client"
 
+import { memo } from "react"
 import {
   ResponsiveContainer,
   BarChart, Bar,
@@ -18,7 +19,9 @@ import {
   makeFormatDonut, makeFormatHorizBar, makeFormatRadar, makeFormatWaffle, makeFormatVertBar,
 } from "./charts"
 
-export default function MyStatsTab({
+// memo: the tab rebuilds its chart variants only when the stats payload or
+// the saved count actually changes, not on every parent re-render.
+function MyStatsTab({
   data,
   savedCount,
 }: {
@@ -582,3 +585,5 @@ export default function MyStatsTab({
     </div>
   )
 }
+
+export default memo(MyStatsTab)

@@ -1,5 +1,6 @@
 "use client"
 
+import { memo } from "react"
 import {
   ResponsiveContainer,
   BarChart, Bar,
@@ -20,7 +21,10 @@ import {
   makeDonut, makePie, makeVertBar, makeHorizBar, makeRadar, makeTreemap, makeWaffle,
 } from "./charts"
 
-export default function GlobalTab({ data }: { data: GlobalStats }) {
+// memo: the tab rebuilds its ~80 chart variants only when the stats payload
+// itself changes, not on every parent re-render (swipe settle, saved-count
+// updates on the sibling tab).
+function GlobalTab({ data }: { data: GlobalStats }) {
   const { overview } = data
 
   // 1. Overview cards
@@ -838,3 +842,5 @@ export default function GlobalTab({ data }: { data: GlobalStats }) {
     </div>
   )
 }
+
+export default memo(GlobalTab)

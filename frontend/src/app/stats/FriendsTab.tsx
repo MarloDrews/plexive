@@ -1,5 +1,6 @@
 "use client"
 
+import { memo } from "react"
 import {
   ResponsiveContainer,
   BarChart, Bar, Cell,
@@ -89,7 +90,10 @@ async function loadFriendsStats(username: string, verifiedLevel: number): Promis
   }
 }
 
-export default function FriendsTab({ username, verifiedLevel }: { username: string; verifiedLevel: number }) {
+// memo: props are two stable scalars, so parent re-renders (swipe settle,
+// saved-count updates) never rebuild the comparison charts; only this tab's
+// own SWR state changes do.
+function FriendsTab({ username, verifiedLevel }: { username: string; verifiedLevel: number }) {
   // Cache the fan-out in SWR so leaving and returning to this tab within a
   // session does not refire the ~27 requests. Keyed on username (+ the viewer's
   // verified level, which feeds the "me" row).
@@ -384,3 +388,5 @@ export default function FriendsTab({ username, verifiedLevel }: { username: stri
     </div>
   )
 }
+
+export default memo(FriendsTab)
