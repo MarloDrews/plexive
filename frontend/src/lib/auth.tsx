@@ -79,12 +79,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((r) => {
-        if (!r.ok) throw new Error("token invalid")
-        return r.json() as Promise<AuthUser>
+        if (r.ok) return r.json() as Promise<AuthUser>
+        // Only a real 401/403 means the token is bad -- drop it. Any other
+        // status (a 5xx during a deploy) keeps the token so a transient backend
+        // blip does not log the whole userbase out of open tabs.
+        if (r.status === 401 || r.status === 403) {
+          try {
+            localStorage.removeItem(TOKEN_KEY)
+          } catch {}
+        }
+        return null
       })
-      .then((data) => setUser(data))
-      .catch(() => localStorage.removeItem(TOKEN_KEY))
+      .then((data) => {
+        if (data) setUser(data)
+      })
+      .catch(() => {
+        // Network failure during restore (offline, flaky tunnel): keep the token
+        // and stay logged out for this load; it can restore on the next request.
+      })
       .finally(() => setLoading(false))
+  }, [])
+
+  // Central sign-out signal: apiFetch dispatches "auth:unauthorized" (and has
+  // already cleared the token) when an authed call 401s mid-session, e.g. the
+  // 30-day JWT expired. Reflect it in the UI so it stops looking logged in.
+  useEffect(() => {
+    function onUnauthorized() {
+      setUser(null)
+    }
+    window.addEventListener("auth:unauthorized", onUnauthorized)
+    return () => window.removeEventListener("auth:unauthorized", onUnauthorized)
   }, [])
 
   // The actions are useCallback-stable and the context value is memoized on

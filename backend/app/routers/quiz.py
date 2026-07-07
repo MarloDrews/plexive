@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from ..auth import get_current_user, get_optional_user
+from ..auth import get_current_user, get_optional_user_strict
 from ..database import get_db
 from ..elo import apply_answer, elo_summary
 from ..models import Post, QuizAnswer, User
@@ -46,7 +46,9 @@ def _elo_payload(user: User, fmt: str, delta: float) -> dict:
 @router.post("/quiz/answer")
 def answer_quiz_question(
     body: QuizAnswerIn,
-    current_user: Optional[User] = Depends(get_optional_user),
+    # Strict: a stale/expired token 401s (the client re-authenticates) rather
+    # than silently scoring the answer as an anonymous guest.
+    current_user: Optional[User] = Depends(get_optional_user_strict),
     db: Session = Depends(get_db),
 ):
     post = get_visible_post(body.post_id, db, current_user)

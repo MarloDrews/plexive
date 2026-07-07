@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { useAuth } from "@/lib/auth"
+import { useAuth, hasToken } from "@/lib/auth"
 
 // "search" stays in the union for the search page, which now lives behind the
 // top-right button on the feed and highlights nothing down here.
@@ -51,7 +51,19 @@ const NAV_ICONS: Record<NavItem["id"], React.ReactNode> = {
 // Active state is a filled neutral circle (functional, never glow).
 export default function BottomNav({ activeTab }: { activeTab: ActiveTab }) {
   const router = useRouter()
-  const { user } = useAuth()
+  const { user, loading } = useAuth()
+
+  // Profile tap: go to the profile when known, to /login for a token-less
+  // visitor, and defer (do nothing) while a session is still restoring so a
+  // logged-in user is not misrouted to /login and bounced back.
+  function goToProfile() {
+    if (user) {
+      router.push(`/profile/${user.username}`)
+      return
+    }
+    if (loading && hasToken()) return
+    router.push("/login")
+  }
 
   // Prefetch the sibling routes so the first tap on a nav item does not pay
   // the route-chunk download (no-op in dev; effective in production builds).
@@ -69,7 +81,7 @@ export default function BottomNav({ activeTab }: { activeTab: ActiveTab }) {
     { id: "stats", label: "Stats", active: activeTab === "stats", onClick: () => router.push("/stats"), icon: NAV_ICONS.stats },
     { id: "feed", label: "Feed", active: activeTab === "feed", onClick: () => router.push("/"), icon: NAV_ICONS.feed },
     { id: "create", label: "Create", active: activeTab === "create", onClick: () => router.push("/create"), icon: NAV_ICONS.create },
-    { id: "profile", label: "Profile", active: activeTab === "profile", onClick: () => router.push(user ? `/profile/${user.username}` : "/login"), icon: NAV_ICONS.profile },
+    { id: "profile", label: "Profile", active: activeTab === "profile", onClick: goToProfile, icon: NAV_ICONS.profile },
   ]
 
   return (

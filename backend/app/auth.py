@@ -84,6 +84,21 @@ def get_optional_user(
         return None
 
 
+def get_optional_user_strict(
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(_optional_bearer),
+    db: Session = Depends(get_db),
+) -> Optional[User]:
+    """Like get_optional_user, but a PRESENT-but-invalid/expired token is a hard
+    401 (bad credentials) instead of silently anonymous. Absent credentials still
+    mean a legitimate anonymous caller. Use on optional-auth WRITE endpoints so a
+    stale-token client is told to re-authenticate rather than having its write
+    recorded against no one (or, for the quiz, returned unscored)."""
+    if not credentials:
+        return None
+    user_id = decode_access_token(credentials.credentials)  # raises 401 on a bad token
+    return db.query(User).filter(User.id == user_id, User.is_active == True).first()
+
+
 def get_optional_user_id(
     credentials: Optional[HTTPAuthorizationCredentials] = Depends(_optional_bearer),
 ) -> Optional[int]:

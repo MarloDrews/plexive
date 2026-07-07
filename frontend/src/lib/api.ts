@@ -19,5 +19,17 @@ export async function apiFetch(path: string, options: RequestInit = {}): Promise
     headers["Content-Type"] = "application/json"
   }
   if (token) headers["Authorization"] = `Bearer ${token}`
-  return fetch(`${API_URL}${path}`, { ...options, headers })
+  const res = await fetch(`${API_URL}${path}`, { ...options, headers })
+  // Central expired-token handling: if we attached a token and the server
+  // rejects it (401), the session is dead. Clear the token and broadcast so the
+  // AuthProvider drops the logged-in UI instead of every authed call silently
+  // 401ing while the app still looks signed in. Only react when a token was
+  // actually sent -- a 401 on an anonymous call is not about our session.
+  if (res.status === 401 && token && typeof window !== "undefined") {
+    try {
+      localStorage.removeItem(TOKEN_KEY)
+    } catch {}
+    window.dispatchEvent(new Event("auth:unauthorized"))
+  }
+  return res
 }
