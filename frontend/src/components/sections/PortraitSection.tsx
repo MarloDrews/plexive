@@ -1,4 +1,3 @@
-import AppImage from "../AppImage"
 import MathText from "../MathText"
 import { unescapeDollar } from "@/lib/prose"
 
@@ -15,12 +14,14 @@ interface Props {
 export default function PortraitSection({ content }: Props) {
   return (
     <div className="flex flex-col">
-      <AppImage
+      {/* Plain img on purpose: unknown intrinsic ratio, so a nominal
+          next/image size painted a large dark placeholder before load. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
         src={content.image_url}
         alt=""
-        width={860}
-        height={645}
-        sizes="(max-width: 430px) 100vw, 430px"
+        loading="lazy"
+        decoding="async"
         className="w-full object-cover max-h-[420px]"
         onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none" }}
       />

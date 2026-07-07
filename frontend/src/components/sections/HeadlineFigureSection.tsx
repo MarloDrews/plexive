@@ -1,5 +1,4 @@
 import type { HeadlineFigureContent } from "../../types/post"
-import AppImage from "../AppImage"
 import SvgBlock from "../SvgBlock"
 import MathText from "../MathText"
 import { unescapeDollar } from "@/lib/prose"
@@ -19,12 +18,14 @@ export default function HeadlineFigureSection({ content, isUserContent }: Props)
       )}
       {content.image_url && !content.visual_svg && (
         <div className="w-full max-w-[360px] mx-auto">
-          <AppImage
+          {/* Plain img on purpose: unknown intrinsic ratio, so a nominal
+              next/image size painted a dark placeholder before load. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
             src={content.image_url}
             alt=""
-            width={860}
-            height={645}
-            sizes="(max-width: 430px) 100vw, 430px"
+            loading="lazy"
+            decoding="async"
             className="w-full rounded-lg object-cover"
             onError={(e) => {
               // Hide the whole figure block (image + spacer) like ContentImage.
