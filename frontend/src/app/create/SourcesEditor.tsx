@@ -1,10 +1,12 @@
 "use client"
 
+import { memo } from "react"
 import { Accordion, FieldError, inputCls, SOURCE_TYPES, emptySource, type Source } from "./formUi"
 
 // Sources editor shared by the generic and Books create forms. The only
 // difference between the two call sites was the label input's placeholder.
-export default function SourcesEditor({
+// Memoized: typing elsewhere in the wizard no longer re-renders the rows.
+const SourcesEditor = memo(function SourcesEditor({
   items, onChange, labelPlaceholder, error,
 }: {
   items: Source[]
@@ -37,4 +39,6 @@ export default function SourcesEditor({
       </div>
     </Accordion>
   )
-}
+})
+
+export default SourcesEditor

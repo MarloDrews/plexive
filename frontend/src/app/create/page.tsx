@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import useSWR from "swr"
 import { useAuth } from "@/lib/auth"
@@ -12,10 +12,6 @@ import { CATEGORIES } from "@/lib/interests"
 import BottomNav from "@/components/BottomNav"
 import Spinner from "@/components/Spinner"
 import {
-  Accordion,
-  FieldError,
-  inputCls,
-  labelCls,
   emptyQuizItem,
   emptySource,
   type Interest,
@@ -25,8 +21,15 @@ import {
 import QuizEditor from "./QuizEditor"
 import SourcesEditor from "./SourcesEditor"
 import InterestPickerBlock from "./InterestPickerBlock"
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL
+import TextSectionAccordion from "./TextSectionAccordion"
+import VoicesEditor, { emptyVoice, type Voice } from "./VoicesEditor"
+import AtAGlanceEditor, { emptyAtAGlance } from "./AtAGlanceEditor"
+import CoreIdeasEditor, { emptyCoreIdea, type CoreIdea } from "./CoreIdeasEditor"
+import TakeawayEditor, { emptyTakeaway, type TakeawayState } from "./TakeawayEditor"
+import StructureEditor from "./StructureEditor"
+import AuthorContextEditor, { emptyAuthorContext, type AuthorContextState } from "./AuthorContextEditor"
+import BooksFeedCardBlock, { emptyBooksFeedCard, type BooksFeedCard } from "./BooksFeedCardBlock"
+import GenericFeedCardFields, { emptyGenericFeedCard, type GenericFeedCard } from "./GenericFeedCardFields"
 
 const FORMAT_DESCRIPTIONS: Record<FormatId, string> = {
   books: "Summarize a book's key ideas",
@@ -45,14 +48,10 @@ const FORMATS = FORMAT_IDS.map((id) => ({
   description: FORMAT_DESCRIPTIONS[id],
 }))
 
-// Default state shapes local to the wizard (the shared quiz/source shapes live
-// in ./formUi)
-const emptyVoice = () => ({ quote: "", attribution: "" })
-const emptyCoreIdea = () => ({ title: "", body: "", in_practice: "", visual_svg: "", image_url: "", quote: "" })
-
-type Voice = ReturnType<typeof emptyVoice>
-type CoreIdea = ReturnType<typeof emptyCoreIdea>
-
+// The wizard's state stays on the page (one source of truth for submit); every
+// step-3 block is a memoized component receiving only its slice plus a stable
+// setter, so one keystroke re-renders its own section instead of the whole
+// step-3 tree (feed card + ~15 accordions + ~140 interest pills).
 export default function CreatePage() {
   const router = useRouter()
   const { user, loading } = useAuth()
@@ -66,12 +65,7 @@ export default function CreatePage() {
   const [searchLoading, setSearchLoading] = useState(false)
 
   // Feed Card state
-  const [fc, setFc] = useState({
-    cover_url: "", title: "", author: "", essence: "",
-    teaser1: "", teaser2: "", teaser3: "",
-    difficulty: "2" as "1"|"2"|"3",
-    year: "", genre: "",
-  })
+  const [fc, setFc] = useState<BooksFeedCard>(emptyBooksFeedCard)
 
   // Section states — simple text sections
   const [sEssence, setSEssence] = useState("")
@@ -81,33 +75,19 @@ export default function CreatePage() {
   const [sCritique, setSCritique] = useState("")
 
   // At-a-glance section
-  const [atAGlance, setAtAGlance] = useState({
-    genre: "", year: "", country: "", pages: "",
-    reading_ease: "2" as "1"|"2"|"3",
-    post_difficulty: "2" as "1"|"2"|"3",
-    best_for: "",
-  })
+  const [atAGlance, setAtAGlance] = useState(emptyAtAGlance)
 
   // Array sections
   const [voices, setVoices] = useState<Voice[]>([emptyVoice(), emptyVoice(), emptyVoice()])
   const [structure, setStructure] = useState<string[]>(["", "", ""])
   const [coreIdeas, setCoreIdeas] = useState<CoreIdea[]>(Array.from({ length: 6 }, emptyCoreIdea))
-  const [takeaway, setTakeaway] = useState({ framing: "framework" as "framework"|"question", body: "", visual_svg: "" })
+  const [takeaway, setTakeaway] = useState<TakeawayState>(emptyTakeaway)
   const [quizItems, setQuizItems] = useState<QuizItem[]>(Array.from({ length: 5 }, emptyQuizItem))
-  const [authorContext, setAuthorContext] = useState({ body: "", image_url: "", image_attribution: "", wikipedia_url: "" })
+  const [authorContext, setAuthorContext] = useState<AuthorContextState>(emptyAuthorContext)
   const [sources, setSources] = useState<Source[]>([emptySource()])
 
   // Generic form state (non-Books formats)
-  const [gFc, setGFc] = useState({
-    field: "", headline: "",
-    name: "", role: "", born: "", died: "", nationality: "",
-    concept_name: "", one_liner: "",
-    the_question: "", framing: "empirical",
-    era: "", location: "",
-    authors_compact: "", venue: "", key_finding_one_line: "", published_year: "",
-    essence: "", teaser1: "", teaser2: "", teaser3: "",
-    difficulty: "2" as "1"|"2"|"3",
-  })
+  const [gFc, setGFc] = useState<GenericFeedCard>(emptyGenericFeedCard)
   const [genericBody, setGenericBody] = useState("")
 
   // Interests
@@ -115,7 +95,7 @@ export default function CreatePage() {
   // Interests via SWR: the list is static, so a revisit renders it from
   // cache instead of refetching. Error keeps the old behavior (empty list).
   const { data: interestsData } = useSWR<Interest[]>("/api/interests")
-  const allInterests: Interest[] = interestsData ?? []
+  const allInterests: Interest[] = useMemo(() => interestsData ?? [], [interestsData])
 
   // Cover upload
   const [coverUploading, setCoverUploading] = useState(false)
@@ -153,30 +133,38 @@ export default function CreatePage() {
     return () => { if (searchTimerRef.current) clearTimeout(searchTimerRef.current) }
   }, [searchQuery, step, selectedFormat])
 
-  function setFcField(key: keyof typeof fc, value: string) {
+  // Every handler below is useCallback-stable and clears errors without
+  // replacing the errors object when the key is absent, so the memoized
+  // section components are not invalidated by keystrokes elsewhere.
+  const clearError = useCallback((key: string) => {
+    setErrors((prev) => {
+      if (!(key in prev)) return prev
+      const n = { ...prev }
+      delete n[key]
+      return n
+    })
+  }, [])
+
+  const setFcField = useCallback((key: keyof BooksFeedCard, value: string) => {
     setFc((prev) => ({ ...prev, [key]: value }))
-    setErrors((prev) => { const n = { ...prev }; delete n[`fc_${key}`]; return n })
-  }
+    clearError(`fc_${key}`)
+  }, [clearError])
 
-  function setGFcField(key: keyof typeof gFc, value: string) {
+  const setGFcField = useCallback((key: keyof GenericFeedCard, value: string) => {
     setGFc((prev) => ({ ...prev, [key]: value }))
-    setErrors((prev) => { const n = { ...prev }; delete n[`gfc_${key}`]; return n })
-  }
+    clearError(`gfc_${key}`)
+  }, [clearError])
 
-  function clearError(key: string) {
-    setErrors((prev) => { const n = { ...prev }; delete n[key]; return n })
-  }
-
-  function toggleInterest(slug: string) {
+  const toggleInterest = useCallback((slug: string) => {
     setSelectedInterests((prev) => {
       if (prev.includes(slug)) return prev.filter((s) => s !== slug)
       if (prev.length >= 5) return prev
       return [...prev, slug]
     })
     clearError("interests")
-  }
+  }, [clearError])
 
-  async function handleCoverUpload(e: React.ChangeEvent<HTMLInputElement>) {
+  const handleCoverUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
     setCoverUploading(true)
@@ -193,7 +181,16 @@ export default function CreatePage() {
       setCoverUploading(false)
       e.target.value = ""
     }
-  }
+  }, [setFcField])
+
+  // Per-section change handlers for the plain-text accordions.
+  const onEssenceChange = useCallback((v: string) => { setSEssence(v); clearError("s_essence") }, [clearError])
+  const onHeartChange = useCallback((v: string) => { setSHeart(v); clearError("s_heart") }, [clearError])
+  const onWhyEnduresChange = useCallback((v: string) => setSWhyEndures(v), [])
+  const onWorldContextChange = useCallback((v: string) => setSWorldContext(v), [])
+  const onCritiqueChange = useCallback((v: string) => setSCritique(v), [])
+  const onGenericBodyChange = useCallback((v: string) => { setGenericBody(v); clearError("generic_body") }, [clearError])
+  const onTakeawayChange = useCallback((v: TakeawayState) => { setTakeaway(v); clearError("s_takeaway") }, [clearError])
 
   function buildSections() {
     const sections: Array<{ type: string; order: number; content: unknown }> = []
@@ -496,27 +493,31 @@ export default function CreatePage() {
   }
 
   function resetForm() {
-    setGFc({ field: "", headline: "", name: "", role: "", born: "", died: "", nationality: "", concept_name: "", one_liner: "", the_question: "", framing: "empirical", era: "", location: "", authors_compact: "", venue: "", key_finding_one_line: "", published_year: "", essence: "", teaser1: "", teaser2: "", teaser3: "", difficulty: "2" })
+    setGFc(emptyGenericFeedCard())
     setGenericBody("")
     setStep(1); setSelectedFormat(null); setSearchQuery(""); setSearchResults([])
-    setFc({ cover_url: "", title: "", author: "", essence: "", teaser1: "", teaser2: "", teaser3: "", difficulty: "2", year: "", genre: "" })
+    setFc(emptyBooksFeedCard())
     setSEssence(""); setSWhyEndures(""); setSHeart(""); setSWorldContext(""); setSCritique("")
-    setAtAGlance({ genre: "", year: "", country: "", pages: "", reading_ease: "2", post_difficulty: "2", best_for: "" })
+    setAtAGlance(emptyAtAGlance())
     setVoices([emptyVoice(), emptyVoice(), emptyVoice()])
     setStructure(["", "", ""])
     setCoreIdeas(Array.from({ length: 6 }, emptyCoreIdea))
-    setTakeaway({ framing: "framework", body: "", visual_svg: "" })
+    setTakeaway(emptyTakeaway())
     setQuizItems(Array.from({ length: 5 }, emptyQuizItem))
-    setAuthorContext({ body: "", image_url: "", image_attribution: "", wikipedia_url: "" })
+    setAuthorContext(emptyAuthorContext())
     setSources([emptySource()])
     setSelectedInterests([]); setErrors({}); setServerError("")
   }
 
-  const bySlug = new Map(allInterests.map((i) => [i.slug, i]))
-  const interestSections = CATEGORIES.map((cat) => ({
-    label: cat.label,
-    items: cat.slugs.flatMap((s) => { const i = bySlug.get(s); return i ? [i] : [] }),
-  })).filter((sec) => sec.items.length > 0)
+  // Rebuilt only when the interest list itself changes (it is a static list
+  // fetched once), never per keystroke.
+  const interestSections = useMemo(() => {
+    const bySlug = new Map(allInterests.map((i) => [i.slug, i]))
+    return CATEGORIES.map((cat) => ({
+      label: cat.label,
+      items: cat.slugs.flatMap((s) => { const i = bySlug.get(s); return i ? [i] : [] }),
+    })).filter((sec) => sec.items.length > 0)
+  }, [allInterests])
 
   if (!loading && !user) {
     return (
@@ -637,235 +638,62 @@ export default function CreatePage() {
           )}
 
           {/* STEP 3: Generic form for non-Books formats */}
-          {step === 3 && selectedFormat && selectedFormat !== "books" && (() => {
-            const fmt = selectedFormat
-            const fmtLabel = FORMAT_STYLES[fmt]?.label ?? fmt
-            return (
-              <>
-                <h1 className="font-serif text-ink text-2xl font-medium mb-5">{fmtLabel} post</h1>
+          {step === 3 && selectedFormat && selectedFormat !== "books" && (
+            <>
+              <h1 className="font-serif text-ink text-2xl font-medium mb-5">{FORMAT_STYLES[selectedFormat]?.label ?? selectedFormat} post</h1>
 
-                {/* Feed card */}
-                <div className="rounded-3xl bg-white/[0.04] px-4 pb-4 pt-3 mb-3">
-                  <p className="label-caps text-lamp mb-3">Feed Card</p>
+              <GenericFeedCardFields
+                format={selectedFormat}
+                value={gFc}
+                onField={setGFcField}
+                errors={errors}
+              />
 
-                  {fmt === "facts" && (
-                    <>
-                      <label className={labelCls}>Field *</label>
-                      <input type="text" value={gFc.field} onChange={e => setGFcField("field", e.target.value)} placeholder="Physics" className={inputCls} />
-                      <FieldError msg={errors.gfc_field} />
-                      <label className={labelCls}>Headline *</label>
-                      <input type="text" value={gFc.headline} onChange={e => setGFcField("headline", e.target.value)} placeholder="The mind-blowing fact in one line..." className={inputCls} />
-                      <FieldError msg={errors.gfc_headline} />
-                    </>
-                  )}
+              <InterestPickerBlock
+                sections={interestSections}
+                selected={selectedInterests}
+                onToggle={toggleInterest}
+                error={errors.interests}
+              />
 
-                  {fmt === "people" && (
-                    <>
-                      <label className={labelCls}>Full name *</label>
-                      <input type="text" value={gFc.name} onChange={e => setGFcField("name", e.target.value)} placeholder="Marie Curie" className={inputCls} />
-                      <FieldError msg={errors.gfc_name} />
-                      <label className={labelCls}>Role *</label>
-                      <input type="text" value={gFc.role} onChange={e => setGFcField("role", e.target.value)} placeholder="Physicist & Chemist" className={inputCls} />
-                      <FieldError msg={errors.gfc_role} />
-                      <div className="grid grid-cols-2 gap-2">
-                        <div>
-                          <label className={labelCls}>Born</label>
-                          <input type="text" value={gFc.born} onChange={e => setGFcField("born", e.target.value)} placeholder="1867" className={inputCls} />
-                        </div>
-                        <div>
-                          <label className={labelCls}>Died</label>
-                          <input type="text" value={gFc.died} onChange={e => setGFcField("died", e.target.value)} placeholder="1934" className={inputCls} />
-                        </div>
-                      </div>
-                      <label className={labelCls}>Nationality</label>
-                      <input type="text" value={gFc.nationality} onChange={e => setGFcField("nationality", e.target.value)} placeholder="Polish-French" className={inputCls} />
-                    </>
-                  )}
+              <p className="label-caps mb-3 mt-5">Sections</p>
 
-                  {fmt === "concepts" && (
-                    <>
-                      <label className={labelCls}>Concept name *</label>
-                      <input type="text" value={gFc.concept_name} onChange={e => setGFcField("concept_name", e.target.value)} placeholder="Confirmation Bias" className={inputCls} />
-                      <FieldError msg={errors.gfc_concept_name} />
-                      <label className={labelCls}>Field</label>
-                      <input type="text" value={gFc.field} onChange={e => setGFcField("field", e.target.value)} placeholder="Psychology" className={inputCls} />
-                      <label className={labelCls}>One-liner *</label>
-                      <input type="text" value={gFc.one_liner} onChange={e => setGFcField("one_liner", e.target.value)} placeholder="The concept in a single clear sentence..." className={inputCls} />
-                      <FieldError msg={errors.gfc_one_liner} />
-                    </>
-                  )}
+              <TextSectionAccordion
+                title="Body"
+                required
+                defaultOpen
+                hint="The main content — explain, describe, or narrate in full"
+                rows={10}
+                placeholder="Write the full content here..."
+                value={genericBody}
+                onChange={onGenericBodyChange}
+                error={errors.generic_body}
+              />
 
-                  {fmt === "questions" && (
-                    <>
-                      <label className={labelCls}>The question *</label>
-                      <input type="text" value={gFc.the_question} onChange={e => setGFcField("the_question", e.target.value)} placeholder="Is free will an illusion?" className={inputCls} />
-                      <FieldError msg={errors.gfc_the_question} />
-                      <label className={labelCls}>Framing</label>
-                      <select value={gFc.framing} onChange={e => setGFcField("framing", e.target.value)} className={inputCls}>
-                        {["empirical", "ethical", "aesthetic", "practical", "metaphysical"].map(f => <option key={f} value={f}>{f}</option>)}
-                      </select>
-                    </>
-                  )}
+              <QuizEditor items={quizItems} onChange={setQuizItems} radioNamePrefix="gquiz_answer_" error={errors.s_quiz} />
 
-                  {fmt === "stories" && (
-                    <>
-                      <label className={labelCls}>Headline *</label>
-                      <input type="text" value={gFc.headline} onChange={e => setGFcField("headline", e.target.value)} placeholder="The story in one compelling line..." className={inputCls} />
-                      <FieldError msg={errors.gfc_headline} />
-                      <label className={labelCls}>Era *</label>
-                      <input type="text" value={gFc.era} onChange={e => setGFcField("era", e.target.value)} placeholder="1940s" className={inputCls} />
-                      <FieldError msg={errors.gfc_era} />
-                      <label className={labelCls}>Location</label>
-                      <input type="text" value={gFc.location} onChange={e => setGFcField("location", e.target.value)} placeholder="Berlin, Germany" className={inputCls} />
-                    </>
-                  )}
+              <SourcesEditor items={sources} onChange={setSources} labelPlaceholder="Source name..." error={errors.s_sources} />
 
-                  {fmt === "academy" && (
-                    <>
-                      <label className={labelCls}>Paper / Article title *</label>
-                      <input type="text" value={gFc.concept_name} onChange={e => setGFcField("concept_name", e.target.value)} placeholder="On the Origin of Species" className={inputCls} />
-                      <FieldError msg={errors.gfc_concept_name} />
-                      <label className={labelCls}>Field</label>
-                      <input type="text" value={gFc.field} onChange={e => setGFcField("field", e.target.value)} placeholder="Evolutionary Biology" className={inputCls} />
-                      <label className={labelCls}>Authors *</label>
-                      <input type="text" value={gFc.authors_compact} onChange={e => setGFcField("authors_compact", e.target.value)} placeholder="Darwin, C." className={inputCls} />
-                      <FieldError msg={errors.gfc_authors_compact} />
-                      <label className={labelCls}>Journal / Venue</label>
-                      <input type="text" value={gFc.venue} onChange={e => setGFcField("venue", e.target.value)} placeholder="Nature" className={inputCls} />
-                      <label className={labelCls}>Key finding (one line) *</label>
-                      <input type="text" value={gFc.key_finding_one_line} onChange={e => setGFcField("key_finding_one_line", e.target.value)} placeholder="Species evolve through natural selection..." className={inputCls} />
-                      <FieldError msg={errors.gfc_key_finding_one_line} />
-                      <label className={labelCls}>Published year</label>
-                      <input type="number" value={gFc.published_year} onChange={e => setGFcField("published_year", e.target.value)} placeholder="1859" className={inputCls} />
-                    </>
-                  )}
-
-                  {fmt !== "academy" && (
-                    <>
-                      <label className={labelCls}>Essence * <span className="normal-case text-ink-faint">(why this matters)</span></label>
-                      <textarea value={gFc.essence} onChange={e => setGFcField("essence", e.target.value)} maxLength={300} rows={3} placeholder="In one or two sentences..." className={`${inputCls} resize-none`} />
-                      <FieldError msg={errors.gfc_essence} />
-                    </>
-                  )}
-
-                  <label className={labelCls}>Teaser 1 *</label>
-                  <input type="text" value={gFc.teaser1} onChange={e => setGFcField("teaser1", e.target.value)} maxLength={80} placeholder="What you'll learn..." className={inputCls} />
-                  <FieldError msg={errors.gfc_teaser1} />
-                  <label className={labelCls}>Teaser 2 *</label>
-                  <input type="text" value={gFc.teaser2} onChange={e => setGFcField("teaser2", e.target.value)} maxLength={80} placeholder="Another insight..." className={inputCls} />
-                  <FieldError msg={errors.gfc_teaser2} />
-                  <label className={labelCls}>Teaser 3 *</label>
-                  <input type="text" value={gFc.teaser3} onChange={e => setGFcField("teaser3", e.target.value)} maxLength={80} placeholder="A third takeaway..." className={inputCls} />
-                  <FieldError msg={errors.gfc_teaser3} />
-
-                  <div className="mt-1">
-                    <div>
-                      <label className={labelCls}>Difficulty *</label>
-                      <select value={gFc.difficulty} onChange={e => setGFcField("difficulty", e.target.value as "1"|"2"|"3")} className={inputCls}>
-                        <option value="1">1 — Easy</option>
-                        <option value="2">2 — Medium</option>
-                        <option value="3">3 — Hard</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Interests */}
-                <InterestPickerBlock
-                  sections={interestSections}
-                  selected={selectedInterests}
-                  onToggle={toggleInterest}
-                  error={errors.interests}
-                />
-
-                {/* Sections */}
-                <p className="label-caps mb-3 mt-5">Sections</p>
-
-                <Accordion title="Body" required defaultOpen>
-                  <p className="text-ink-muted text-xs mb-2">The main content — explain, describe, or narrate in full</p>
-                  <textarea value={genericBody} onChange={e => { setGenericBody(e.target.value); clearError("generic_body") }} rows={10} placeholder="Write the full content here..." className={`${inputCls} resize-none`} />
-                  <FieldError msg={errors.generic_body} />
-                </Accordion>
-
-                <QuizEditor items={quizItems} onChange={setQuizItems} radioNamePrefix="gquiz_answer_" error={errors.s_quiz} />
-
-                <SourcesEditor items={sources} onChange={setSources} labelPlaceholder="Source name..." error={errors.s_sources} />
-
-                {serverError && <p className="text-bad text-sm mb-3">{serverError}</p>}
-                <button onClick={handleSubmit} disabled={submitting} className="btn btn-primary h-12 w-full mt-4">
-                  {submitting ? "Submitting..." : "Submit post"}
-                </button>
-              </>
-            )
-          })()}
+              {serverError && <p className="text-bad text-sm mb-3">{serverError}</p>}
+              <button onClick={handleSubmit} disabled={submitting} className="btn btn-primary h-12 w-full mt-4">
+                {submitting ? "Submitting..." : "Submit post"}
+              </button>
+            </>
+          )}
 
           {/* STEP 3: Books form */}
           {step === 3 && selectedFormat === "books" && (
             <>
               <h1 className="font-serif text-ink text-2xl font-medium mb-5">Books post</h1>
 
-              {/* Feed Card block */}
-              <div className="border border-lamp/30 rounded-card px-4 pb-4 pt-3 mb-3 bg-lamp/5">
-                <p className="label-caps text-lamp mb-3">Feed Card</p>
+              <BooksFeedCardBlock
+                value={fc}
+                onField={setFcField}
+                errors={errors}
+                coverUploading={coverUploading}
+                onCoverUpload={handleCoverUpload}
+              />
 
-                <label className={labelCls}>Book title *</label>
-                <input type="text" value={fc.title} onChange={(e) => setFcField("title", e.target.value)} maxLength={200} placeholder="Thinking, Fast and Slow" className={inputCls} data-err={errors.fc_title || undefined} />
-                <FieldError msg={errors.fc_title} />
-
-                <label className={labelCls}>Author *</label>
-                <input type="text" value={fc.author} onChange={(e) => setFcField("author", e.target.value)} placeholder="Daniel Kahneman" className={inputCls} />
-                <FieldError msg={errors.fc_author} />
-
-                <label className={labelCls}>Essence * <span className="normal-case text-ink-faint">(~200 chars, why this book matters)</span></label>
-                <textarea value={fc.essence} onChange={(e) => setFcField("essence", e.target.value)} maxLength={300} rows={3} placeholder="The core insight in one or two sentences..." className={`${inputCls} resize-none`} />
-                <FieldError msg={errors.fc_essence} />
-
-                <label className={labelCls}>Teaser 1 * <span className="normal-case text-ink-faint">(~40 chars)</span></label>
-                <input type="text" value={fc.teaser1} onChange={(e) => setFcField("teaser1", e.target.value)} maxLength={80} placeholder="What you'll learn..." className={inputCls} />
-                <FieldError msg={errors.fc_teaser1} />
-                <label className={labelCls}>Teaser 2 *</label>
-                <input type="text" value={fc.teaser2} onChange={(e) => setFcField("teaser2", e.target.value)} maxLength={80} placeholder="Another insight..." className={inputCls} />
-                <FieldError msg={errors.fc_teaser2} />
-                <label className={labelCls}>Teaser 3 *</label>
-                <input type="text" value={fc.teaser3} onChange={(e) => setFcField("teaser3", e.target.value)} maxLength={80} placeholder="A third takeaway..." className={inputCls} />
-                <FieldError msg={errors.fc_teaser3} />
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className={labelCls}>Difficulty *</label>
-                    <select value={fc.difficulty} onChange={(e) => setFcField("difficulty", e.target.value as "1"|"2"|"3")} className={inputCls}>
-                      <option value="1">1 — Easy</option>
-                      <option value="2">2 — Medium</option>
-                      <option value="3">3 — Hard</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className={labelCls}>Year *</label>
-                    <input type="number" value={fc.year} onChange={(e) => setFcField("year", e.target.value)} placeholder="2011" className={inputCls} />
-                    <FieldError msg={errors.fc_year} />
-                  </div>
-                  <div>
-                    <label className={labelCls}>Genre *</label>
-                    <input type="text" value={fc.genre} onChange={(e) => setFcField("genre", e.target.value)} placeholder="Psychology" className={inputCls} />
-                    <FieldError msg={errors.fc_genre} />
-                  </div>
-                </div>
-
-                <label className={labelCls}>Cover image</label>
-                <div className="flex items-center gap-3">
-                  <label className="btn btn-ghost shrink-0 px-3 py-2 text-xs cursor-pointer">
-                    <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={handleCoverUpload} />
-                    {coverUploading ? "Uploading..." : "Upload"}
-                  </label>
-                  {fc.cover_url && (
-                    <img src={`${API_URL}${fc.cover_url}`} alt="" className="w-10 h-14 object-cover rounded" />
-                  )}
-                  {!fc.cover_url && <span className="text-ink-faint text-xs">or type /uploads/… URL</span>}
-                </div>
-                <FieldError msg={errors.cover} />
-              </div>
-
-              {/* Interests */}
               <InterestPickerBlock
                 sections={interestSections}
                 selected={selectedInterests}
@@ -876,137 +704,71 @@ export default function CreatePage() {
               {/* Section accordions */}
               <p className="label-caps mb-3 mt-5">Sections</p>
 
-              <Accordion title="Essence" required defaultOpen>
-                <p className="text-ink-muted text-xs mb-2">The core insight in one strong sentence (shown full-screen on the detail page)</p>
-                <textarea value={sEssence} onChange={(e) => { setSEssence(e.target.value); clearError("s_essence") }} rows={2} maxLength={300} placeholder="Why our fast intuitive thinking often misleads us..." className={`${inputCls} resize-none`} />
-                <FieldError msg={errors.s_essence} />
-              </Accordion>
+              <TextSectionAccordion
+                title="Essence"
+                required
+                defaultOpen
+                hint="The core insight in one strong sentence (shown full-screen on the detail page)"
+                rows={2}
+                maxLength={300}
+                placeholder="Why our fast intuitive thinking often misleads us..."
+                value={sEssence}
+                onChange={onEssenceChange}
+                error={errors.s_essence}
+              />
 
-              <Accordion title="Voices (3–4 quotes)" required defaultOpen>
-                <FieldError msg={errors.s_voices} />
-                {voices.map((v, i) => (
-                  <div key={i} className="mb-3 bg-white/[0.04] rounded-2xl p-3">
-                    <p className="text-ink-muted text-xs mb-2">Quote {i + 1}</p>
-                    <textarea value={v.quote} onChange={(e) => { const n = [...voices]; n[i] = { ...n[i], quote: e.target.value }; setVoices(n) }} rows={2} placeholder="Quote text..." className={`${inputCls} resize-none mb-2`} />
-                    <input type="text" value={v.attribution} onChange={(e) => { const n = [...voices]; n[i] = { ...n[i], attribution: e.target.value }; setVoices(n) }} placeholder="Attribution (name, role, page, etc.)" className={inputCls} />
-                  </div>
-                ))}
-                {voices.length < 4 && (
-                  <button onClick={() => setVoices([...voices, emptyVoice()])} className="btn btn-quiet text-lamp text-xs px-1.5 py-1">+ Add quote</button>
-                )}
-                {voices.length > 3 && (
-                  <button onClick={() => setVoices(voices.slice(0, -1))} className="btn btn-quiet text-xs px-1.5 py-1 ml-3">Remove last</button>
-                )}
-              </Accordion>
+              <VoicesEditor items={voices} onChange={setVoices} error={errors.s_voices} />
 
-              <Accordion title="At a Glance" required defaultOpen>
-                <FieldError msg={errors.s_at_a_glance} />
-                <div className="grid grid-cols-2 gap-2">
-                  {[
-                    { key: "genre" as const, label: "Genre", placeholder: "Psychology" },
-                    { key: "year" as const, label: "Year", placeholder: "2011" },
-                    { key: "country" as const, label: "Country", placeholder: "United States" },
-                    { key: "pages" as const, label: "Pages", placeholder: "499" },
-                    { key: "best_for" as const, label: "Best for", placeholder: "Curious minds" },
-                  ].map(({ key, label, placeholder }) => (
-                    <div key={key}>
-                      <label className="text-ink-muted text-xs mb-1 block">{label}</label>
-                      <input type="text" value={atAGlance[key]} onChange={(e) => setAtAGlance({ ...atAGlance, [key]: e.target.value })} placeholder={placeholder} className={inputCls} />
-                    </div>
-                  ))}
-                  <div>
-                    <label className="text-ink-muted text-xs mb-1 block">Reading ease</label>
-                    <select value={atAGlance.reading_ease} onChange={(e) => setAtAGlance({ ...atAGlance, reading_ease: e.target.value as "1"|"2"|"3" })} className={inputCls}>
-                      <option value="1">1 — Easy</option><option value="2">2 — Moderate</option><option value="3">3 — Dense</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="text-ink-muted text-xs mb-1 block">Difficulty</label>
-                    <select value={atAGlance.post_difficulty} onChange={(e) => setAtAGlance({ ...atAGlance, post_difficulty: e.target.value as "1"|"2"|"3" })} className={inputCls}>
-                      <option value="1">1 — Easy</option><option value="2">2 — Medium</option><option value="3">3 — Hard</option>
-                    </select>
-                  </div>
-                </div>
-              </Accordion>
+              <AtAGlanceEditor value={atAGlance} onChange={setAtAGlance} error={errors.s_at_a_glance} />
 
-              <Accordion title="Heart" required defaultOpen>
-                <p className="text-ink-muted text-xs mb-2">The central argument of the book in a paragraph</p>
-                <textarea value={sHeart} onChange={(e) => { setSHeart(e.target.value); clearError("s_heart") }} rows={4} placeholder="The heart of the book is..." className={`${inputCls} resize-none`} />
-                <FieldError msg={errors.s_heart} />
-              </Accordion>
+              <TextSectionAccordion
+                title="Heart"
+                required
+                defaultOpen
+                hint="The central argument of the book in a paragraph"
+                rows={4}
+                placeholder="The heart of the book is..."
+                value={sHeart}
+                onChange={onHeartChange}
+                error={errors.s_heart}
+              />
 
-              <Accordion title="Core Ideas (6–12)" required defaultOpen>
-                <FieldError msg={errors.s_core_ideas} />
-                {coreIdeas.map((ci, i) => (
-                  <div key={i} className="mb-4 bg-white/[0.04] rounded-2xl p-3">
-                    <p className="text-ink-muted text-xs mb-2">Idea {i + 1}</p>
-                    <label className="text-ink-faint text-xs mb-1 block">Title *</label>
-                    <input type="text" value={ci.title} onChange={(e) => { const n = [...coreIdeas]; n[i] = { ...n[i], title: e.target.value }; setCoreIdeas(n) }} placeholder="Concept name..." className={`${inputCls} mb-2`} />
-                    <label className="text-ink-faint text-xs mb-1 block">Body *</label>
-                    <textarea value={ci.body} onChange={(e) => { const n = [...coreIdeas]; n[i] = { ...n[i], body: e.target.value }; setCoreIdeas(n) }} rows={3} placeholder="Explain the idea..." className={`${inputCls} resize-none mb-2`} />
-                    <label className="text-ink-faint text-xs mb-1 block">In practice (optional)</label>
-                    <input type="text" value={ci.in_practice} onChange={(e) => { const n = [...coreIdeas]; n[i] = { ...n[i], in_practice: e.target.value }; setCoreIdeas(n) }} placeholder="How to apply this..." className={`${inputCls} mb-2`} />
-                    <label className="text-ink-faint text-xs mb-1 block">Pull quote (optional)</label>
-                    <input type="text" value={ci.quote} onChange={(e) => { const n = [...coreIdeas]; n[i] = { ...n[i], quote: e.target.value }; setCoreIdeas(n) }} placeholder="A notable quote..." className={inputCls} />
-                  </div>
-                ))}
-                <div className="flex gap-3">
-                  {coreIdeas.length < 12 && (
-                    <button onClick={() => setCoreIdeas([...coreIdeas, emptyCoreIdea()])} className="btn btn-quiet text-lamp text-xs px-1.5 py-1">+ Add idea</button>
-                  )}
-                  {coreIdeas.length > 6 && (
-                    <button onClick={() => setCoreIdeas(coreIdeas.slice(0, -1))} className="btn btn-quiet text-xs px-1.5 py-1">Remove last</button>
-                  )}
-                </div>
-              </Accordion>
+              <CoreIdeasEditor items={coreIdeas} onChange={setCoreIdeas} error={errors.s_core_ideas} />
 
-              <Accordion title="Takeaway" required defaultOpen>
-                <FieldError msg={errors.s_takeaway} />
-                <label className="text-ink-muted text-xs mb-1 block">Framing</label>
-                <select value={takeaway.framing} onChange={(e) => setTakeaway({ ...takeaway, framing: e.target.value as "framework"|"question" })} className={`${inputCls} mb-3`}>
-                  <option value="framework">Framework (a model or principle)</option>
-                  <option value="question">Question (a reflection prompt)</option>
-                </select>
-                <label className="text-ink-muted text-xs mb-1 block">Body *</label>
-                <textarea value={takeaway.body} onChange={(e) => { setTakeaway({ ...takeaway, body: e.target.value }); clearError("s_takeaway") }} rows={3} placeholder="The key thing to take away..." className={`${inputCls} resize-none`} />
-              </Accordion>
+              <TakeawayEditor value={takeaway} onChange={onTakeawayChange} error={errors.s_takeaway} />
 
               <QuizEditor items={quizItems} onChange={setQuizItems} radioNamePrefix="quiz_answer_" error={errors.s_quiz} />
 
               <SourcesEditor items={sources} onChange={setSources} labelPlaceholder="Book title, article name..." error={errors.s_sources} />
 
               {/* Optional sections */}
-              <Accordion title="Why It Endures">
-                <textarea value={sWhyEndures} onChange={(e) => setSWhyEndures(e.target.value)} rows={3} placeholder="Why this book is still relevant today..." className={`${inputCls} resize-none`} />
-              </Accordion>
+              <TextSectionAccordion
+                title="Why It Endures"
+                rows={3}
+                placeholder="Why this book is still relevant today..."
+                value={sWhyEndures}
+                onChange={onWhyEnduresChange}
+              />
 
-              <Accordion title="Structure">
-                {structure.map((s, i) => (
-                  <div key={i} className="flex gap-2 mb-2">
-                    <input type="text" value={s} onChange={(e) => { const n = [...structure]; n[i] = e.target.value; setStructure(n) }} placeholder={`Part ${i + 1}...`} className={`${inputCls} flex-1`} />
-                    {structure.length > 1 && (
-                      <button onClick={() => setStructure(structure.filter((_, idx) => idx !== i))} className="text-ink-muted text-lg w-8 h-10 flex items-center justify-center shrink-0 cursor-pointer">×</button>
-                    )}
-                  </div>
-                ))}
-                {structure.length < 10 && (
-                  <button onClick={() => setStructure([...structure, ""])} className="btn btn-quiet text-lamp text-xs px-1.5 py-1 mt-1">+ Add part</button>
-                )}
-              </Accordion>
+              <StructureEditor items={structure} onChange={setStructure} />
 
-              <Accordion title="World Context">
-                <textarea value={sWorldContext} onChange={(e) => setSWorldContext(e.target.value)} rows={3} placeholder="The historical or cultural context when the book was written..." className={`${inputCls} resize-none`} />
-              </Accordion>
+              <TextSectionAccordion
+                title="World Context"
+                rows={3}
+                placeholder="The historical or cultural context when the book was written..."
+                value={sWorldContext}
+                onChange={onWorldContextChange}
+              />
 
-              <Accordion title="Author Context">
-                <textarea value={authorContext.body} onChange={(e) => setAuthorContext({ ...authorContext, body: e.target.value })} rows={3} placeholder="About the author..." className={`${inputCls} resize-none mb-2`} />
-                <label className="text-ink-faint text-xs mb-1 block">Wikipedia URL</label>
-                <input type="url" value={authorContext.wikipedia_url} onChange={(e) => setAuthorContext({ ...authorContext, wikipedia_url: e.target.value })} placeholder="https://en.wikipedia.org/wiki/..." className={inputCls} />
-              </Accordion>
+              <AuthorContextEditor value={authorContext} onChange={setAuthorContext} />
 
-              <Accordion title="Critique &amp; Limitations">
-                <textarea value={sCritique} onChange={(e) => setSCritique(e.target.value)} rows={3} placeholder="Where the book falls short or has been criticized..." className={`${inputCls} resize-none`} />
-              </Accordion>
+              <TextSectionAccordion
+                title="Critique & Limitations"
+                rows={3}
+                placeholder="Where the book falls short or has been criticized..."
+                value={sCritique}
+                onChange={onCritiqueChange}
+              />
 
               {/* Submit */}
               {errors.image_urls && (

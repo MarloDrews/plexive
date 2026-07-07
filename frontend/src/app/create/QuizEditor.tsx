@@ -1,10 +1,13 @@
 "use client"
 
+import { memo } from "react"
 import { Accordion, FieldError, inputCls, emptyQuizItem, type QuizItem } from "./formUi"
 
 // Quiz editor shared by the generic and Books create forms. The only difference
 // between the two call sites was the radio-group name prefix, so it is a prop.
-export default function QuizEditor({
+// Memoized: typing elsewhere in the wizard no longer re-renders the 5-10
+// question groups of 6 inputs each.
+const QuizEditor = memo(function QuizEditor({
   items, onChange, radioNamePrefix, error,
 }: {
   items: QuizItem[]
@@ -52,4 +55,6 @@ export default function QuizEditor({
       </div>
     </Accordion>
   )
-}
+})
+
+export default QuizEditor

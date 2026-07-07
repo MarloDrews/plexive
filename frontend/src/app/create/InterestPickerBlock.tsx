@@ -1,11 +1,13 @@
 "use client"
 
+import { memo } from "react"
 import { FieldError, type Interest } from "./formUi"
 
 // Interest picker block shared by the generic and Books create forms (the two
 // call sites were byte-identical). Renders the category-grouped pills over the
-// caller's selection state.
-export default function InterestPickerBlock({
+// caller's selection state. Memoized: typing elsewhere in the wizard no longer
+// re-renders the ~140 pills.
+const InterestPickerBlock = memo(function InterestPickerBlock({
   sections, selected, onToggle, error, max = 5,
 }: {
   sections: { label: string; items: Interest[] }[]
@@ -42,4 +44,6 @@ export default function InterestPickerBlock({
       ))}
     </div>
   )
-}
+})
+
+export default InterestPickerBlock
