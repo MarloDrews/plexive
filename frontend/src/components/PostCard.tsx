@@ -13,6 +13,7 @@ import { updatePostInFeedCaches } from "@/lib/swr"
 import { fcNum, fcStr, type Post } from "@/types/post"
 import { formatStyle } from "@/lib/formats"
 import { unescapeDollar } from "@/lib/prose"
+import AppImage from "@/components/AppImage"
 import Avatar from "@/components/Avatar"
 import BookCover from "@/components/BookCover"
 import DotScale from "@/components/DotScale"
@@ -358,10 +359,12 @@ function PostCard({ post, activeTabId }: { post: Post; activeTabId: string }) {
               <div className="flex gap-4 items-start">
                 {(fc.portrait as { image_url?: string } | undefined)?.image_url && (
                   <div className="shrink-0 w-20 h-20 rounded-full overflow-hidden bg-white/[0.06]">
-                    <img
+                    <AppImage
                       src={(fc.portrait as { image_url: string }).image_url}
                       alt=""
-                      loading="lazy"
+                      width={80}
+                      height={80}
+                      sizes="80px"
                       className="w-full h-full object-cover object-top"
                       onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none" }}
                     />
@@ -490,10 +493,12 @@ function PostCard({ post, activeTabId }: { post: Post; activeTabId: string }) {
                   object-position keeps the central scene (faces and table) in frame
                   on a slim crop of a near-square image. */}
               {fcStr(fc, "lead_image_url") && (
-                <img
+                <AppImage
                   src={fcStr(fc, "lead_image_url")}
                   alt=""
-                  loading="lazy"
+                  width={860}
+                  height={256}
+                  sizes="(max-width: 430px) 100vw, 430px"
                   draggable={false}
                   className="block -mx-6 -mt-7 w-[calc(100%+3rem)] max-w-none h-32 object-cover object-[center_38%] pointer-events-none select-none"
                   onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none" }}

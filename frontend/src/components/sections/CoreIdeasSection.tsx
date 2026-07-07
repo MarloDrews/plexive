@@ -1,4 +1,5 @@
 import type { CoreIdeaItem } from "../../types/post"
+import AppImage from "../AppImage"
 import SvgBlock from "../SvgBlock"
 import SectionLabel from "../SectionLabel"
 import Prose from "../Prose"
@@ -26,12 +27,18 @@ export default function CoreIdeasSection({ content, isUserContent }: Props) {
 
           {idea.image_url && (
             <div className="max-w-[360px] mx-auto my-2">
-              <img
+              <AppImage
                 src={idea.image_url}
                 alt=""
-                loading="lazy"
-                decoding="async"
+                width={860}
+                height={645}
+                sizes="(max-width: 430px) 100vw, 430px"
                 className="w-full rounded-lg object-cover"
+                onError={(e) => {
+                  // Hide the whole figure block (image + caption) like ContentImage.
+                  const wrap = (e.currentTarget as HTMLImageElement).parentElement
+                  if (wrap) wrap.style.display = "none"
+                }}
               />
               {/* Caption is optional; the credit line is required with every
                   sourced image and renders independently of it (IMAGE_STANDARD

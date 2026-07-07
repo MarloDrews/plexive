@@ -1,3 +1,8 @@
+"use client"
+
+import { useEffect, useState } from "react"
+import AppImage from "./AppImage"
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
 const RING_COLOR: Record<number, string> = {
@@ -31,18 +36,24 @@ export default function Avatar({ username, avatarUrl, size, verified = 0, classN
     ? { boxShadow: `0 0 0 2px var(--color-surface-0), 0 0 0 4px ${ringColor(verified)}` }
     : {}
 
-  if (avatarUrl) {
+  // A dead avatar URL falls back to the serif initial instead of showing the
+  // browser's broken-image glyph; reset when the URL changes (new upload).
+  const [failed, setFailed] = useState(false)
+  useEffect(() => {
+    setFailed(false)
+  }, [avatarUrl])
+
+  if (avatarUrl && !failed) {
     return (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
+      <AppImage
         src={resolveUrl(avatarUrl)}
         alt={`@${username}`}
-        loading="lazy"
-        decoding="async"
         width={size}
         height={size}
+        sizes={`${size}px`}
         className={`rounded-full object-cover shrink-0 ${className}`}
         style={{ width: size, height: size, ...ringStyle }}
+        onError={() => setFailed(true)}
       />
     )
   }

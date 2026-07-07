@@ -13,6 +13,7 @@ import RelatedPostsSection from "@/components/sections/RelatedPostsSection"
 import CommentsSection from "@/components/CommentsSection"
 import CommentBar from "./CommentBar"
 import { SlabAccent, SlabGlow } from "@/components/PostCard"
+import AppImage from "@/components/AppImage"
 import Avatar from "@/components/Avatar"
 import BookCover from "@/components/BookCover"
 import DotScale from "@/components/DotScale"
@@ -425,9 +426,12 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                     <div className="px-6 pt-3 pb-4 flex items-center gap-4">
                       {(post.feed_card as { portrait?: { image_url?: string } }).portrait?.image_url && (
                         <div className="shrink-0 w-24 h-24 rounded-full overflow-hidden bg-white/[0.06]">
-                          <img
+                          <AppImage
                             src={(post.feed_card as { portrait: { image_url: string } }).portrait.image_url}
                             alt=""
+                            width={96}
+                            height={96}
+                            sizes="96px"
                             className="w-full h-full object-cover object-top"
                             onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none" }}
                           />
@@ -511,9 +515,12 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                          draggable=false so the bare image never opens the platform
                          image viewer. object-position keeps the central scene
                          (faces and table) in frame on the slim crop. */
-                      <img
+                      <AppImage
                         src={fcStr(post.feed_card, "lead_image_url")}
                         alt=""
+                        width={860}
+                        height={352}
+                        sizes="(max-width: 430px) 100vw, 430px"
                         draggable={false}
                         className="block w-full h-44 object-cover object-[center_38%] pointer-events-none select-none"
                         onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none" }}

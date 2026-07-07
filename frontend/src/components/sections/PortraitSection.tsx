@@ -1,3 +1,4 @@
+import AppImage from "../AppImage"
 import MathText from "../MathText"
 import { unescapeDollar } from "@/lib/prose"
 
@@ -14,10 +15,12 @@ interface Props {
 export default function PortraitSection({ content }: Props) {
   return (
     <div className="flex flex-col">
-      <img
+      <AppImage
         src={content.image_url}
         alt=""
-        loading="lazy"
+        width={860}
+        height={645}
+        sizes="(max-width: 430px) 100vw, 430px"
         className="w-full object-cover max-h-[420px]"
         onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none" }}
       />
