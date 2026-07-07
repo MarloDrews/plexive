@@ -4,6 +4,20 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import { clearApiCache } from "./swr"
 import { TOKEN_KEY } from "@/lib/storage"
 import { detailToMessage } from "@/lib/errorMessage"
+import { clearLikeStorage } from "@/lib/likedPosts"
+import { clearSavedStorage } from "@/lib/savedPosts"
+
+// Remove this device's per-account local data (interests, saved, liked and the
+// like-reconciliation keys) on any account transition, so one account never
+// inherits another's Saved/Liked tabs or gets bounced past onboarding. Mirrors
+// clearApiCache, which does the same for the SWR cache.
+function clearAccountData(): void {
+  try {
+    localStorage.removeItem("deepscroll_interests")
+  } catch {}
+  clearLikeStorage()
+  clearSavedStorage()
+}
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
@@ -85,8 +99,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     })
     const data = await safeJson(r)
     if (!r.ok) throw new Error(detailToMessage(data.detail, "Login failed."))
-    // Drop all cached API data so nothing from a previous account survives.
+    // Drop all cached API data and per-account local data so nothing from a
+    // previous account survives.
     clearApiCache()
+    clearAccountData()
     localStorage.setItem(TOKEN_KEY, data.access_token as string)
     setUser(data.user as AuthUser)
   }, [])
@@ -100,12 +116,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const data = await safeJson(r)
     if (!r.ok) throw new Error(detailToMessage(data.detail, "Registration failed."))
     clearApiCache()
+    clearAccountData()
     localStorage.setItem(TOKEN_KEY, data.access_token as string)
     setUser(data.user as AuthUser)
   }, [])
 
   const logout = useCallback((): void => {
     clearApiCache()
+    clearAccountData()
     localStorage.removeItem(TOKEN_KEY)
     setUser(null)
   }, [])

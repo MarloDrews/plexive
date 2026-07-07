@@ -134,3 +134,17 @@ export function unmarkLikeSent(id: number): void {
   sentCache = getSentIds().filter((x) => x !== id)
   safeSet(SENT_KEY, JSON.stringify(sentCache))
 }
+
+// Wipe this device's per-account like state (stored keys + in-memory caches) so
+// a different account signing in on the same device never inherits it, and the
+// reconciliation arithmetic does not carry over. Called on login/register/logout.
+export function clearLikeStorage(): void {
+  likedCache = null
+  countsCache = null
+  sentCache = null
+  try {
+    localStorage.removeItem(LIKED_KEY)
+    localStorage.removeItem(COUNTS_KEY)
+    localStorage.removeItem(SENT_KEY)
+  } catch {}
+}

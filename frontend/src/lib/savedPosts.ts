@@ -46,3 +46,13 @@ export function unsavePost(id: number): void {
 export function isPostSaved(id: number): boolean {
   return getSavedPostIds().includes(id)
 }
+
+// Wipe this device's saved-post ids (key + in-memory cache) so a different
+// account signing in on the same device does not see them. Called on
+// login/register/logout alongside the like and interest clears.
+export function clearSavedStorage(): void {
+  savedCache = null
+  try {
+    localStorage.removeItem(KEY)
+  } catch {}
+}
