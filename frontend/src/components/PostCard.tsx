@@ -162,10 +162,24 @@ function PostCard({ post, activeTabId }: { post: Post; activeTabId: string }) {
     const el = cardRef.current
     if (!el) return
 
+    let intersecting = false
+
+    // Record the accumulated dwell (if it clears the floor) and stop the clock.
+    const flushDwell = () => {
+      if (viewStartRef.current !== null) {
+        const duration_ms = Date.now() - viewStartRef.current
+        if (duration_ms >= MIN_DWELL_MS) {
+          queueEvent({ post_id: post.id, event_type: "view", duration_ms })
+        }
+        viewStartRef.current = null
+      }
+    }
+
     // One shared IntersectionObserver serves every card (same threshold);
     // this registers the per-card callback and returns its cleanup.
-    return observeCard(el, (entry) => {
+    const unobserve = observeCard(el, (entry) => {
       if (entry.isIntersecting) {
+        intersecting = true
         viewStartRef.current = Date.now()
         if (!reduceMotion) setVisible(true)
         syncFromStorage()
@@ -174,16 +188,29 @@ function PostCard({ post, activeTabId }: { post: Post; activeTabId: string }) {
         // request per mounted card the instant a tab opens.
         reconcile()
       } else {
-        if (viewStartRef.current !== null) {
-          const duration_ms = Date.now() - viewStartRef.current
-          if (duration_ms >= MIN_DWELL_MS) {
-            queueEvent({ post_id: post.id, event_type: "view", duration_ms })
-          }
-          viewStartRef.current = null
-        }
+        intersecting = false
+        flushDwell()
         if (!reduceMotion) setVisible(false)
       }
     })
+
+    // Do not count time while the tab is hidden: flush what accumulated on hide,
+    // and restart the clock on show if the card is still on screen. Without this
+    // the dwell inflated with background wall-clock time.
+    const onVisibility = () => {
+      if (document.visibilityState === "hidden") flushDwell()
+      else if (intersecting && viewStartRef.current === null) viewStartRef.current = Date.now()
+    }
+    document.addEventListener("visibilitychange", onVisibility)
+
+    return () => {
+      // Tapping a card unmounts the feed, so the leave callback never fires for
+      // the card the user actually engaged with; flush its dwell here instead of
+      // dropping the strongest view signal.
+      flushDwell()
+      document.removeEventListener("visibilitychange", onVisibility)
+      unobserve()
+    }
   }, [post.id, syncFromStorage, reconcile])
 
   // A fresh like fires the heart animation; an unlike does not. The like/unlike
