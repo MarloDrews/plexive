@@ -5,6 +5,7 @@ import { useAuth } from "@/lib/auth"
 import { apiFetch } from "@/lib/api"
 import type { QuizItem } from "../../types/post"
 import MathText from "../MathText"
+import { asArray } from "@/lib/asArray"
 
 interface Props {
   content: QuizItem[]
@@ -89,9 +90,12 @@ const QuizCard = memo(function QuizCard({
             <li key={i}>
               <button
                 onClick={() => answer(i)}
-                disabled={!!result || submitting}
+                // Include `locked` (state still loading) so options are not
+                // tappable-looking while GET /quiz/state settles -- they used to
+                // swallow taps silently until it returned.
+                disabled={!!result || submitting || locked}
                 className={`w-full text-left px-4 py-3 rounded-field text-[15px] font-sans border transition-colors duration-150 disabled:cursor-default ${optionClass(i, result)} ${
-                  submitting && !result ? "opacity-60" : ""
+                  (submitting || locked) && !result ? "opacity-60" : ""
                 }`}
               >
                 <MathText text={opt} />
@@ -120,10 +124,13 @@ const QuizCard = memo(function QuizCard({
 
 export default function QuizSection({ content, postId }: Props) {
   const { user } = useAuth()
+  // Tolerate a malformed (non-array) quiz content shape from seed/legacy rows so
+  // .length/.map cannot crash the section.
+  const items = asArray<QuizItem>(content)
   const [results, setResults] = useState<Record<number, AnswerResult>>({})
   const [stateLoaded, setStateLoaded] = useState(false)
   // One question at a time. `current` indexes the slide; the slide after the
-  // last question (index === content.length) is the result summary.
+  // last question (index === items.length) is the result summary.
   const [current, setCurrent] = useState(0)
 
   // Restore previously answered questions so they can never be re-scored.
@@ -168,10 +175,10 @@ export default function QuizSection({ content, postId }: Props) {
   // Advance only after the current question is answered (no auto-advance, and
   // swiping forward past an unanswered question is blocked); back is always free.
   function goTo(index: number) {
-    setCurrent(Math.max(0, Math.min(index, content.length)))
+    setCurrent(Math.max(0, Math.min(index, items.length)))
   }
   function canAdvance(from: number) {
-    return from < content.length && !!resultsRef.current[from]
+    return from < items.length && !!resultsRef.current[from]
   }
 
   useEffect(() => {
@@ -202,20 +209,24 @@ export default function QuizSection({ content, postId }: Props) {
       el.removeEventListener("touchstart", onStart)
       el.removeEventListener("touchend", onEnd)
     }
-  }, [content.length])
+  }, [items.length])
 
-  if (content.length === 0) return null
+  if (items.length === 0) return null
 
-  const correct = Object.values(results).filter((r) => r.correct).length
-  const onSummary = current >= content.length
-  const isLast = current === content.length - 1
+  // Count only answers within the current question range: a stale cached post
+  // with fewer questions must not show e.g. "4/3 correct".
+  const correct = Object.entries(results).filter(
+    ([i, r]) => Number(i) < items.length && r.correct
+  ).length
+  const onSummary = current >= items.length
+  const isLast = current === items.length - 1
 
   return (
     <div className="px-6 py-8 flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <h3 className="label-caps">Quiz</h3>
         <span className="text-xs text-ink-muted font-mono">
-          {onSummary ? "Results" : `Question ${current + 1} of ${content.length}`}
+          {onSummary ? "Results" : `Question ${current + 1} of ${items.length}`}
         </span>
       </div>
 
@@ -233,7 +244,7 @@ export default function QuizSection({ content, postId }: Props) {
           className="flex items-start transition-transform duration-300 ease-out"
           style={{ transform: `translateX(-${current * 100}%)` }}
         >
-          {content.map((item, i) => (
+          {items.map((item, i) => (
             <div key={i} className="w-full shrink-0">
               <QuizCard
                 item={item}
@@ -251,7 +262,7 @@ export default function QuizSection({ content, postId }: Props) {
             <div className="card px-4 py-6 flex flex-col items-center gap-1 text-center">
               <p className="label-caps text-(--accent)">Quiz complete</p>
               <p className="text-lg text-ink font-semibold">
-                {correct}/{content.length} correct
+                {correct}/{items.length} correct
               </p>
             </div>
           </div>

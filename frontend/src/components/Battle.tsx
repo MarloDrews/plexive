@@ -6,6 +6,7 @@ import { useAuth } from "@/lib/auth"
 import { apiFetch } from "@/lib/api"
 import { useBattleSocket, type BattleInbound } from "@/lib/battleSocket"
 import { buildSequence } from "@/lib/battle/seededQuestions"
+import { numericMatch } from "@/lib/train/numeric"
 import type { MarathonQuestion } from "@/types/train"
 import NumberSlider from "./NumberSlider"
 import { GlowCard, MessageSlab, LABEL_CAPS } from "./stage"
@@ -257,7 +258,7 @@ export default function Battle({ onExit }: Props) {
   function handleSubmitNumeric() {
     const cur = seq[index]
     if (stage !== "question" || !cur || cur.kind !== "numeric") return
-    commitAnswer(sliderValue === cur.answerValue)
+    commitAnswer(numericMatch(sliderValue, cur.answerValue, cur.min, cur.step ?? 1))
   }
 
   function handleNext() {

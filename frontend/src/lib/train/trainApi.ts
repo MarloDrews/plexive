@@ -1,6 +1,7 @@
 import type { AnswerResult, Difficulty, MarathonQuestion } from "@/types/train"
 import { mockQuestions } from "./mockQuestions"
 import { applyDelta, computeDelta, DIFFICULTY_RATING, pickDifficulty } from "./elo"
+import { numericMatch } from "./numeric"
 import { apiFetch } from "@/lib/api"
 
 // THE SEAM (ported from mobile/src/lib/train/trainApi.ts). Question SELECTION
@@ -79,7 +80,7 @@ export async function submitAnswer(params: {
   // note at the top of @/types/train).
   const numeric = question.kind === "numeric"
   const correct = numeric
-    ? chosenValue === question.answerValue
+    ? numericMatch(chosenValue ?? NaN, question.answerValue, question.min, question.step ?? 1)
     : chosenIndex === question.answerIndex
   // Per-kind correct answer to show in feedback (only one applies).
   const correctIndex = numeric ? undefined : question.answerIndex
