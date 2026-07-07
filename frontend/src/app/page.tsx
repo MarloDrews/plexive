@@ -50,12 +50,17 @@ const DEFAULT_TAB_INDEX = TABS.findIndex((t) => t.id === "for-you")
 // visibly reshuffling under the user.
 function getFeedSeed(): string {
   if (typeof window === "undefined") return "0"
-  let s = sessionStorage.getItem("feedSeed")
-  if (!s) {
-    s = Math.floor(Math.random() * 1_000_000_000).toString()
-    sessionStorage.setItem("feedSeed", s)
+  try {
+    let s = sessionStorage.getItem("feedSeed")
+    if (!s) {
+      s = Math.floor(Math.random() * 1_000_000_000).toString()
+      sessionStorage.setItem("feedSeed", s)
+    }
+    return s
+  } catch {
+    // Private-mode / disabled storage must not crash the feed render.
+    return Math.floor(Math.random() * 1_000_000_000).toString()
   }
-  return s
 }
 
 function PhoneFrame({ children }: { children: React.ReactNode }) {
@@ -116,10 +121,17 @@ function TabPage({
     if (posts === null || !scrollRef.current) return
     const raw = sessionStorage.getItem("feedScrollPosition")
     if (!raw) return
-    const { scrollTop, tabId } = JSON.parse(raw)
-    if (tabId !== tab.id) return
-    scrollRef.current.scrollTop = scrollTop
-    sessionStorage.removeItem("feedScrollPosition")
+    try {
+      const { scrollTop, tabId } = JSON.parse(raw)
+      // Only the matching tab consumes (and clears) the entry; a mismatch leaves
+      // it for the correct tab.
+      if (tabId !== tab.id) return
+      scrollRef.current.scrollTop = scrollTop
+      sessionStorage.removeItem("feedScrollPosition")
+    } catch {
+      // Corrupt entry: drop it so it cannot wedge scroll restore.
+      sessionStorage.removeItem("feedScrollPosition")
+    }
   }, [posts, tab.id])
 
   return (
@@ -211,7 +223,18 @@ export default function Home() {
       router.replace("/onboarding")
       return
     }
-    setSlugs(JSON.parse(saved))
+    let parsed: unknown
+    try {
+      parsed = JSON.parse(saved)
+    } catch {
+      parsed = null
+    }
+    if (!Array.isArray(parsed)) {
+      // Corrupt interests value reads as "not onboarded" rather than crashing.
+      router.replace("/onboarding")
+      return
+    }
+    setSlugs(parsed)
 
     const savedTab = sessionStorage.getItem("feedActiveTab")
     if (savedTab) sessionStorage.removeItem("feedActiveTab")

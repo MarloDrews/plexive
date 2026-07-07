@@ -17,6 +17,7 @@ export default function InterestPicker() {
   const [interests, setInterests] = useState<Interest[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
+  const [saveError, setSaveError] = useState("")
   const [selected, setSelected] = useState<Set<string>>(new Set())
 
   // Onboarding gates the whole app, so a transient failure here must not strand
@@ -60,7 +61,14 @@ export default function InterestPicker() {
   }
 
   function handleContinue() {
-    localStorage.setItem("deepscroll_interests", JSON.stringify([...selected]))
+    try {
+      localStorage.setItem("deepscroll_interests", JSON.stringify([...selected]))
+    } catch {
+      // A full or unwritable storage would otherwise throw here and leave the
+      // button doing nothing; surface it instead of silently dead-ending.
+      setSaveError("Could not save your interests. Please free up some storage and try again.")
+      return
+    }
     router.push("/")
   }
 
@@ -188,6 +196,7 @@ export default function InterestPicker() {
         <p className="text-ink-muted text-sm mb-3">
           {selected.size} of {interests.length} selected
         </p>
+        {saveError && <p className="text-bad text-sm mb-3">{saveError}</p>}
         <button
           onClick={handleContinue}
           disabled={!canContinue}

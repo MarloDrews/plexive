@@ -11,17 +11,40 @@ let likedCache: number[] | null = null
 let countsCache: Record<string, number> | null = null
 let sentCache: number[] | null = null
 
+// Storage is user- and extension-writable and survives deploys, so every read
+// must tolerate corrupt/wrong-shaped values and every write must tolerate a
+// quota/security error, rather than throwing out of a render or (worst case) at
+// module-evaluation time.
+function readIdArray(key: string): number[] {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(key) ?? "[]")
+    return Array.isArray(parsed) ? parsed : []
+  } catch {
+    return []
+  }
+}
+
+function safeSet(key: string, value: string): void {
+  try {
+    localStorage.setItem(key, value)
+  } catch {}
+}
+
 // One-time migration: posts liked before SENT_KEY existed must be treated as sent
 // so the reconciliation formula does not double-count them.
 function migrateSentKey(): void {
-  if (localStorage.getItem("deepscroll_like_sent_v1")) return
-  const liked = JSON.parse(localStorage.getItem(LIKED_KEY) ?? "[]") as number[]
-  if (liked.length > 0) {
-    const alreadySent = JSON.parse(localStorage.getItem(SENT_KEY) ?? "[]") as number[]
-    const merged = Array.from(new Set([...alreadySent, ...liked]))
-    localStorage.setItem(SENT_KEY, JSON.stringify(merged))
+  try {
+    if (localStorage.getItem("deepscroll_like_sent_v1")) return
+    const liked = readIdArray(LIKED_KEY)
+    if (liked.length > 0) {
+      const merged = Array.from(new Set([...readIdArray(SENT_KEY), ...liked]))
+      localStorage.setItem(SENT_KEY, JSON.stringify(merged))
+    }
+    localStorage.setItem("deepscroll_like_sent_v1", "1")
+  } catch {
+    // A corrupt or unwritable storage must not crash every page importing this
+    // module at load time; skip the migration and let the reads self-heal.
   }
-  localStorage.setItem("deepscroll_like_sent_v1", "1")
 }
 
 if (typeof window !== "undefined") migrateSentKey()
@@ -29,11 +52,7 @@ if (typeof window !== "undefined") migrateSentKey()
 export function getLikedPostIds(): number[] {
   if (typeof window === "undefined") return []
   if (likedCache === null) {
-    try {
-      likedCache = JSON.parse(localStorage.getItem(LIKED_KEY) ?? "[]") as number[]
-    } catch {
-      likedCache = []
-    }
+    likedCache = readIdArray(LIKED_KEY)
   }
   return likedCache
 }
@@ -43,14 +62,14 @@ export function likePost(id: number): void {
   const ids = getLikedPostIds()
   if (!ids.includes(id)) {
     likedCache = [...ids, id]
-    localStorage.setItem(LIKED_KEY, JSON.stringify(likedCache))
+    safeSet(LIKED_KEY, JSON.stringify(likedCache))
   }
 }
 
 export function unlikePost(id: number): void {
   if (typeof window === "undefined") return
   likedCache = getLikedPostIds().filter((x) => x !== id)
-  localStorage.setItem(LIKED_KEY, JSON.stringify(likedCache))
+  safeSet(LIKED_KEY, JSON.stringify(likedCache))
 }
 
 export function isPostLiked(id: number): boolean {
@@ -60,7 +79,11 @@ export function isPostLiked(id: number): boolean {
 function getCounts(): Record<string, number> {
   if (countsCache === null) {
     try {
-      countsCache = JSON.parse(localStorage.getItem(COUNTS_KEY) ?? "{}") as Record<string, number>
+      const parsed = JSON.parse(localStorage.getItem(COUNTS_KEY) ?? "{}")
+      countsCache =
+        parsed && typeof parsed === "object" && !Array.isArray(parsed)
+          ? (parsed as Record<string, number>)
+          : {}
     } catch {
       countsCache = {}
     }
@@ -86,11 +109,7 @@ export function setCachedLikeCount(id: number, count: number): void {
 function getSentIds(): number[] {
   if (typeof window === "undefined") return []
   if (sentCache === null) {
-    try {
-      sentCache = JSON.parse(localStorage.getItem(SENT_KEY) ?? "[]") as number[]
-    } catch {
-      sentCache = []
-    }
+    sentCache = readIdArray(SENT_KEY)
   }
   return sentCache
 }
@@ -105,7 +124,7 @@ export function markLikeSent(id: number): void {
   const ids = getSentIds()
   if (!ids.includes(id)) {
     sentCache = [...ids, id]
-    localStorage.setItem(SENT_KEY, JSON.stringify(sentCache))
+    safeSet(SENT_KEY, JSON.stringify(sentCache))
   }
 }
 
@@ -113,5 +132,5 @@ export function markLikeSent(id: number): void {
 export function unmarkLikeSent(id: number): void {
   if (typeof window === "undefined") return
   sentCache = getSentIds().filter((x) => x !== id)
-  localStorage.setItem(SENT_KEY, JSON.stringify(sentCache))
+  safeSet(SENT_KEY, JSON.stringify(sentCache))
 }

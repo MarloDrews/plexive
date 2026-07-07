@@ -6,11 +6,21 @@ const KEY = "deepscroll_saved"
 // session instead of on every call from every mounted card.
 let savedCache: number[] | null = null
 
+// Reads tolerate a corrupt or wrong-shaped value (a valid-JSON non-array would
+// otherwise pass the try/catch and later throw on .includes); writes tolerate a
+// quota/security error.
+function safeSet(value: string): void {
+  try {
+    localStorage.setItem(KEY, value)
+  } catch {}
+}
+
 export function getSavedPostIds(): number[] {
   if (typeof window === "undefined") return []
   if (savedCache === null) {
     try {
-      savedCache = JSON.parse(localStorage.getItem(KEY) ?? "[]") as number[]
+      const parsed = JSON.parse(localStorage.getItem(KEY) ?? "[]")
+      savedCache = Array.isArray(parsed) ? parsed : []
     } catch {
       savedCache = []
     }
@@ -23,14 +33,14 @@ export function savePost(id: number): void {
   const ids = getSavedPostIds()
   if (!ids.includes(id)) {
     savedCache = [...ids, id]
-    localStorage.setItem(KEY, JSON.stringify(savedCache))
+    safeSet(JSON.stringify(savedCache))
   }
 }
 
 export function unsavePost(id: number): void {
   if (typeof window === "undefined") return
   savedCache = getSavedPostIds().filter((x) => x !== id)
-  localStorage.setItem(KEY, JSON.stringify(savedCache))
+  safeSet(JSON.stringify(savedCache))
 }
 
 export function isPostSaved(id: number): boolean {
