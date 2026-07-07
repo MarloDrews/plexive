@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { CATEGORIES } from "@/lib/interests"
 
@@ -16,20 +16,39 @@ export default function InterestPicker() {
   const router = useRouter()
   const [interests, setInterests] = useState<Interest[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
   const [selected, setSelected] = useState<Set<string>>(new Set())
+
+  // Onboarding gates the whole app, so a transient failure here must not strand
+  // the user on pulsing placeholders: check r.ok, validate the payload is a
+  // non-empty array (a non-ok body is {detail: ...} which would crash the
+  // interests.map below), and surface a retry.
+  const loadInterests = useCallback(() => {
+    setError(false)
+    setLoading(true)
+    fetch(`${API_URL}/api/interests`)
+      .then((r) => {
+        if (!r.ok) throw new Error(`status ${r.status}`)
+        return r.json()
+      })
+      .then((data: Interest[]) => {
+        if (!Array.isArray(data) || data.length === 0) throw new Error("empty interests")
+        setInterests(data)
+        setLoading(false)
+      })
+      .catch(() => {
+        setError(true)
+        setLoading(false)
+      })
+  }, [])
 
   useEffect(() => {
     if (localStorage.getItem("deepscroll_interests")) {
       router.replace("/")
       return
     }
-    fetch(`${API_URL}/api/interests`)
-      .then((r) => r.json())
-      .then((data: Interest[]) => {
-        setInterests(data)
-        setLoading(false)
-      })
-  }, [router])
+    loadInterests()
+  }, [router, loadInterests])
 
   function toggle(slug: string) {
     setSelected((prev) => {
@@ -84,7 +103,15 @@ export default function InterestPicker() {
 
       {/* Scrollable content */}
       <div className="flex-1 overflow-y-auto px-6 pb-4 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
-        {loading ? (
+        {error ? (
+          <div className="flex flex-col items-center text-center gap-3 mt-16 px-6">
+            <p className="font-serif text-lg text-ink">Could not load topics</p>
+            <p className="text-ink-muted text-sm">Check your connection and try again.</p>
+            <button onClick={loadInterests} className="btn btn-primary px-5 py-2 mt-1">
+              Retry
+            </button>
+          </div>
+        ) : loading ? (
           // Loading: pulsing pill placeholders where the chips will appear.
           <div className="flex flex-wrap gap-2 mt-4">
             {Array.from({ length: 12 }, (_, i) => (

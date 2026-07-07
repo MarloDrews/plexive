@@ -64,9 +64,11 @@ function TabPage({
       key = `/api/feed?${params}`
     }
   }
-  const { data, error } = useSWR<Post[]>(key, { revalidateIfStale: false })
-  // Error mapping preserves the old per-tab behavior: the following tab
-  // treated failures as an empty feed, the others kept showing the spinner.
+  const { data, error, mutate } = useSWR<Post[]>(key, { revalidateIfStale: false })
+  // The following tab still treats a failure as an empty feed (its empty and
+  // error states read the same). The other tabs used to leave posts at null on
+  // error, which is indistinguishable from loading, so they now branch on error
+  // below and offer a retry.
   const posts: Post[] | null = isFollowingTab ? (error ? [] : data ?? null) : data ?? null
 
   useEffect(() => {
@@ -101,6 +103,16 @@ function TabPage({
             <Link href="/search" className="btn btn-primary px-5 py-2">
               Find people
             </Link>
+          </div>
+        </div>
+      ) : !isFollowingTab && error ? (
+        <div className="h-full flex items-center justify-center bg-surface-0 px-6">
+          <div className="card px-8 py-10 text-center max-w-xs flex flex-col items-center gap-3">
+            <p className="font-serif text-xl text-ink leading-snug">Could not load your feed</p>
+            <p className="text-ink-muted text-sm">Check your connection and try again.</p>
+            <button onClick={() => mutate()} className="btn btn-primary px-5 py-2">
+              Retry
+            </button>
           </div>
         </div>
       ) : posts === null ? (

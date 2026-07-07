@@ -121,6 +121,8 @@ export default function SearchPage() {
   // user search. Each carries its own loading flag and stale-response guard.
   const [postsLoading, setPostsLoading] = useState(false)
   const [usersLoading, setUsersLoading] = useState(false)
+  const [postsError, setPostsError] = useState(false)
+  const [usersError, setUsersError] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   // Monotonic counters so a slow response for an earlier query can never
   // overwrite the results of a later one (the debounce only cancels the timer,
@@ -146,15 +148,18 @@ export default function SearchPage() {
       return
     }
     setPostsLoading(true)
+    setPostsError(false)
     const seq = ++postsSeq.current
     const timer = setTimeout(async () => {
       try {
         const params = new URLSearchParams({ q: trimmed })
         if (formatFilter) params.set("format", formatFilter)
-        const data = (await (await apiFetch(`/api/search?${params}`)).json()) as Post[]
+        const res = await apiFetch(`/api/search?${params}`)
+        if (!res.ok) throw new Error(`status ${res.status}`)
+        const data = (await res.json()) as Post[]
         if (seq === postsSeq.current) setResults(data)
       } catch {
-        // Network/parse failure: swallow so it is not an unhandled rejection.
+        if (seq === postsSeq.current) setPostsError(true)
       } finally {
         if (seq === postsSeq.current) setPostsLoading(false)
       }
@@ -171,13 +176,16 @@ export default function SearchPage() {
       return
     }
     setUsersLoading(true)
+    setUsersError(false)
     const seq = ++usersSeq.current
     const timer = setTimeout(async () => {
       try {
-        const data = (await (await apiFetch(`/api/search/users?${new URLSearchParams({ q: trimmed })}`)).json()) as UserResult[]
+        const res = await apiFetch(`/api/search/users?${new URLSearchParams({ q: trimmed })}`)
+        if (!res.ok) throw new Error(`status ${res.status}`)
+        const data = (await res.json()) as UserResult[]
         if (seq === usersSeq.current) setUserResults(data)
       } catch {
-        // Network/parse failure: swallow so it is not an unhandled rejection.
+        if (seq === usersSeq.current) setUsersError(true)
       } finally {
         if (seq === usersSeq.current) setUsersLoading(false)
       }
@@ -207,6 +215,12 @@ export default function SearchPage() {
   const idleMessage = (
     <div className="flex flex-col items-center justify-center pt-20 text-center px-6">
       <p className="text-ink-muted text-sm">Search posts, books, people…</p>
+    </div>
+  )
+  const errorMessage = (
+    <div className="flex flex-col items-center justify-center pt-20 text-center px-6 gap-2">
+      <p className="text-ink font-serif font-medium text-base">Something went wrong</p>
+      <p className="text-ink-muted text-xs">Check your connection and try again.</p>
     </div>
   )
   const pageClass =
@@ -306,6 +320,8 @@ export default function SearchPage() {
               loadingSlabs
             ) : !hasQuery ? (
               idleMessage
+            ) : postsError ? (
+              errorMessage
             ) : emptyPosts ? (
               <div className="flex flex-col items-center justify-center pt-20 text-center px-6 gap-2">
                 <p className="text-ink font-serif font-medium text-base">No results for &ldquo;{query}&rdquo;</p>
@@ -341,6 +357,8 @@ export default function SearchPage() {
               loadingSlabs
             ) : !hasQuery ? (
               idleMessage
+            ) : usersError ? (
+              errorMessage
             ) : emptyUsers ? (
               <div className="flex flex-col items-center justify-center pt-20 text-center px-6 gap-2">
                 <p className="text-ink font-serif font-medium text-base">No results for &ldquo;{query}&rdquo;</p>
