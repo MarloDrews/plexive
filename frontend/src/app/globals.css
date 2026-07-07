@@ -116,9 +116,14 @@ body::before {
    is detached neutral pills, press feedback is a springy scale-down.
    Sizing stays at the call site; these own the look. */
 @layer components {
+  /* No backdrop-filter on the slab: over the near-uniform dark page the blur
+     read identically to the plain translucent fill, while forcing per-frame
+     backdrop sampling for every mounted card during feed scroll (one of the
+     most expensive compositing features on mobile GPUs). Blur stays on the
+     chrome that genuinely overlays scrolling content (.btn-icon, nav dock,
+     tab capsules, toast, comment bar). */
   .card {
     background: rgb(255 255 255 / 0.04);
-    backdrop-filter: blur(24px);
     border: none;
     border-radius: 1.5rem;
   }
