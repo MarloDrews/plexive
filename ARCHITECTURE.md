@@ -69,6 +69,7 @@ frontend/
   next.config.ts                devIndicators disabled (the floating dev badge covered the comment send button at phone width); turbopack resolveAlias fs → readAloud/nodeStub.ts for vits-web's browser bundle
   .env.example                  NEXT_PUBLIC_API_URL template
   .env.local                    actual env vars (gitignored)
+  scripts/analyze-routes.mjs    per-route bundle report: serves the production build and sums each route's eager /_next/static JS+CSS from its HTML (Turbopack has no webpack bundle analyzer and the build output prints no size table); run npm run build then npm run analyze; writes .next/route-report.json
   test/italics.test.mjs         node --test: splitItalics unit cases (italic split into <em>, no-asterisk text incl. $5/a_{b} left untouched, lone * stays literal); run with npm run test (node --test; .mjs so tsc skips the type-stripped .ts import)
   test/gold-routing-scan.test.mjs  node --test content guard: scans ONLY the MathText-routed fields in the books/people/concepts/questions example golds for a bare unescaped $ or an unbalanced/unclosed * pair (italics now authored intentionally; asterisks inside $...$ ignored, mirrors MathText segmentation) and fails loudly listing format/section/field; also pins the pair checker (well-formed pair passes, unclosed caught); academy excluded (already math-routed)
   src/app/
