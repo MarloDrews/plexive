@@ -1,3 +1,4 @@
+import { memo, useMemo } from "react"
 import { splitItalics } from "@/lib/italics"
 import { unescapeDollar } from "@/lib/prose"
 import { useKatex } from "@/lib/katexLoader"
@@ -46,13 +47,16 @@ interface Props {
 // Renders prose text that may contain inline $...$ LaTeX math. KaTeX loads
 // lazily and only when a math segment actually exists, so plain prose never
 // pays for the module; math shows its raw LaTeX as plain text until then.
-export default function MathText({ text, className }: Props) {
-  const segments = parseSegments(text)
+// Parsing and katex.renderToString are memoized on the text (stable per post),
+// and the component is memo-exported, so page-level re-renders (comment
+// drafts, read-aloud status) never repeat LaTeX layout work.
+function MathText({ text, className }: Props) {
+  const segments = useMemo(() => parseSegments(text), [text])
   const katex = useKatex(segments.some((seg) => seg.type === "math"))
 
-  return (
-    <span className={className}>
-      {segments.map((seg, i) => {
+  const children = useMemo(
+    () =>
+      segments.map((seg, i) => {
         if (seg.type === "text")
           return (
             <span key={i}>
@@ -70,7 +74,11 @@ export default function MathText({ text, className }: Props) {
           }
         })()
         return <span key={i} dangerouslySetInnerHTML={{ __html: html }} />
-      })}
-    </span>
+      }),
+    [segments, katex]
   )
+
+  return <span className={className}>{children}</span>
 }
+
+export default memo(MathText)

@@ -1,3 +1,4 @@
+import { memo, useMemo } from "react"
 import type { Section } from "../types/post"
 import EssenceSection from "./sections/EssenceSection"
 import VoicesSection from "./sections/VoicesSection"
@@ -104,8 +105,11 @@ const NO_READ_SECTIONS = new Set([
   "sources",
 ])
 
-export default function SectionRenderer({ sections, isUserContent, postId, format, readingMinutes }: Props) {
-  const sorted = [...sections].sort((a, b) => a.order - b.order)
+// memo (export at the bottom): the detail page re-renders on comment drafts,
+// read-aloud status changes and like taps; with a stable (memoized) sections
+// prop the whole tree, including every MathText, skips those re-renders.
+function SectionRenderer({ sections, isUserContent, postId, format, readingMinutes }: Props) {
+  const sorted = useMemo(() => [...sections].sort((a, b) => a.order - b.order), [sections])
 
   return (
     // Serif is the reading voice; labels (.label-caps) and data (font-mono)
@@ -295,3 +299,5 @@ export default function SectionRenderer({ sections, isUserContent, postId, forma
     </div>
   )
 }
+
+export default memo(SectionRenderer)

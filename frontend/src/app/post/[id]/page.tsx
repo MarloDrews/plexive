@@ -1,6 +1,6 @@
 "use client"
 
-import { use, useEffect, useRef, useState } from "react"
+import { use, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { formatStyle } from "@/lib/formats"
@@ -11,13 +11,14 @@ import SectionLabel from "@/components/SectionLabel"
 import HeadlineSection from "@/components/sections/HeadlineSection"
 import RelatedPostsSection from "@/components/sections/RelatedPostsSection"
 import CommentsSection from "@/components/CommentsSection"
+import CommentBar from "./CommentBar"
 import { SlabAccent, SlabGlow } from "@/components/PostCard"
 import Avatar from "@/components/Avatar"
 import BookCover from "@/components/BookCover"
 import DotScale from "@/components/DotScale"
 import FieldGlyph from "@/components/FieldGlyph"
 import VerifiedBadge from "@/components/VerifiedBadge"
-import { ArrowUpIcon, HeartIcon, PauseIcon, SpeakerIcon, StopIcon } from "@/components/icons"
+import { PauseIcon, SpeakerIcon, StopIcon } from "@/components/icons"
 import { useReadAloud } from "@/lib/readAloud/useReadAloud"
 import { consumeAutoRead } from "@/lib/readAloud/autostart"
 import { useAuth } from "@/lib/auth"
@@ -79,7 +80,6 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
   const [post, setPost] = useState<Post | null>(null)
   const [notFound, setNotFound] = useState(false)
   const [closing, setClosing] = useState(false)
-  const [stickyDraft, setStickyDraft] = useState("")
 
   const { liked, likesCount, toggleLike, reconcile } = usePostLike(Number(id), post?.like_count ?? null)
   // Feed lists are cached for the session; write the comment count through to
@@ -92,7 +92,6 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const readableRef        = useRef<HTMLDivElement>(null)
   const commentsTopRef     = useRef<HTMLDivElement>(null)
-  const stickyInputRef     = useRef<HTMLInputElement>(null)
   const isClosingRef       = useRef(false)
 
   useEffect(() => {
@@ -176,19 +175,13 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
     toggleLike()
   }
 
-  async function handleStickySubmit(e: React.FormEvent) {
-    e.preventDefault()
-    const body = stickyDraft.trim()
-    if (!body) return
-    setStickyDraft("")
-    const created = await postComment(body)
-    if (created) {
-      // Scroll the comments heading into view so the user sees their new comment.
-      setTimeout(() => {
-        commentsTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
-      }, 50)
-    }
-  }
+  // Scroll the comments heading into view so the user sees their new comment
+  // (invoked by CommentBar after a successful post).
+  const scrollToComments = useCallback(() => {
+    setTimeout(() => {
+      commentsTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
+    }, 50)
+  }, [])
 
   const style = post ? formatStyle(post.format) : null
   // Typographic formats (LAYOUT_STANDARD s1) use the banner header: field line +
@@ -218,6 +211,23 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
   // Every flat header (typographic + cover formats) shares the top-bar format
   // label, the end-of-post tags, and the headline-section filter.
   const flatHeader = typographic || typographicAcademy || coverFlat || coverBooks || coverStories
+
+  // Memoized so SectionRenderer (React.memo) sees a stable prop: without this,
+  // the fresh .filter() array on every render defeated the memo and each
+  // keystroke or read-aloud tick re-ran the whole section tree.
+  // For flat headers the headline section is dropped to avoid doubling it, and
+  // questions' the_question too (it is the header headline there; academy's
+  // the_question is a real body section and must render).
+  const bodySections = useMemo(() => {
+    if (!post) return []
+    return flatHeader
+      ? post.sections.filter(
+          (s) =>
+            s.type !== "headline" &&
+            !(s.type === "the_question" && post.format === "questions")
+        )
+      : post.sections
+  }, [post, flatHeader])
 
   return (
     <div className="h-[100dvh] bg-surface-0 flex justify-center">
@@ -593,23 +603,10 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                   </div>
                 )}
 
-                {/* Sections — for typographic formats the headline now lives in
-                    the header above, so drop any headline section to avoid doubling
-                    it (concepts has none, so this is a no-op there). Questions'
-                    the_question is likewise the header headline, so drop it too —
-                    but ONLY for questions: Academy also carries a the_question
-                    section, where it is a real body section (The Open Problem), not
-                    the page title, so it must render. */}
+                {/* Sections — the memoized bodySections array (headline filter
+                    for flat headers) keeps SectionRenderer's memo effective. */}
                 <SectionRenderer
-                  sections={
-                    flatHeader
-                      ? post.sections.filter(
-                          (s) =>
-                            s.type !== "headline" &&
-                            !(s.type === "the_question" && post.format === "questions")
-                        )
-                      : post.sections
-                  }
+                  sections={bodySections}
                   isUserContent={post.is_user_content}
                   postId={post.id}
                   format={post.format}
@@ -681,60 +678,16 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
             )}
           </div>
 
-          {/* Floating pill comment bar — detached from every edge, sits above
-              the bottom nav (page z-40 > nav z-30); safe-area aware. */}
-          <div
-            className="absolute left-3 right-3 z-10 rounded-full backdrop-blur-xl bg-white/[0.06] px-2 py-1.5 flex items-center gap-1.5"
-            style={{ bottom: "calc(env(safe-area-inset-bottom) + 12px)" }}
-          >
-            <div className="flex-1 min-w-0">
-              {user ? (
-                <form onSubmit={handleStickySubmit} className="flex items-center gap-1.5">
-                  <input
-                    ref={stickyInputRef}
-                    value={stickyDraft}
-                    onChange={(e) => setStickyDraft(e.target.value)}
-                    placeholder="Add a comment..."
-                    maxLength={2000}
-                    className="flex-1 min-w-0 h-11 rounded-full bg-white/[0.06] px-4 text-sm text-ink placeholder:text-ink-muted"
-                  />
-                  <button
-                    type="submit"
-                    disabled={!stickyDraft.trim() || posting}
-                    aria-label="Post comment"
-                    className={`w-11 h-11 shrink-0 rounded-full bg-white/[0.10] flex items-center justify-center cursor-pointer transition-all duration-150 active:scale-95 disabled:opacity-45 disabled:cursor-default ${
-                      stickyDraft.trim() && !posting ? "text-ink" : "text-ink-muted"
-                    }`}
-                  >
-                    <ArrowUpIcon className="w-4 h-4" />
-                  </button>
-                </form>
-              ) : (
-                <p className="text-sm text-ink-muted px-3 py-2 whitespace-nowrap overflow-hidden text-ellipsis">
-                  <Link
-                    href="/login"
-                    className="text-ink-dim hover:text-lamp underline transition-colors"
-                  >
-                    Sign in
-                  </Link>{" "}
-                  to comment
-                </p>
-              )}
-            </div>
-
-            {/* Like circle — the bar carries only comment + like */}
-            {post && (
-              <button
-                onClick={handleToggleLike}
-                aria-label={liked ? "Unlike" : "Like"}
-                className={`w-11 h-11 shrink-0 rounded-full flex items-center justify-center cursor-pointer transition-all duration-150 active:scale-95 ${
-                  liked ? "bg-like/10 text-like" : "bg-white/[0.06] text-ink-dim"
-                }`}
-              >
-                <HeartIcon filled={liked} className="w-5 h-5" />
-              </button>
-            )}
-          </div>
+          {/* Floating pill comment bar — owns the draft state so keystrokes
+              re-render the bar alone, never the section tree above it. */}
+          <CommentBar
+            posting={posting}
+            postComment={postComment}
+            onPosted={scrollToComments}
+            showLike={!!post}
+            liked={liked}
+            onToggleLike={handleToggleLike}
+          />
         </div>
       </div>
     </div>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { memo, useCallback, useEffect, useRef, useState } from "react"
 import { useAuth } from "@/lib/auth"
 import { apiFetch } from "@/lib/api"
 import type { QuizItem } from "../../types/post"
@@ -31,7 +31,10 @@ function optionClass(i: number, result: AnswerResult | undefined): string {
   return "border-edge text-ink-faint font-sans"
 }
 
-function QuizCard({
+// memo: every slide stays mounted in the translateX pager, so advancing a
+// slide (or any page-level re-render reaching the quiz) re-renders only the
+// card whose result actually changed, not each MathText on every slide.
+const QuizCard = memo(function QuizCard({
   item,
   index,
   postId,
@@ -113,7 +116,7 @@ function QuizCard({
       )}
     </div>
   )
-}
+})
 
 export default function QuizSection({ content, postId }: Props) {
   const { user } = useAuth()
@@ -147,9 +150,10 @@ export default function QuizSection({ content, postId }: Props) {
       .finally(() => setStateLoaded(true))
   }, [user, postId])
 
-  function handleResult(index: number, result: AnswerResult) {
+  // Stable identity so it never invalidates the memoized QuizCards.
+  const handleResult = useCallback((index: number, result: AnswerResult) => {
     setResults((prev) => ({ ...prev, [index]: result }))
-  }
+  }, [])
 
   // Swipe navigation. The detail page closes on a rightward swipe via a native
   // listener on its scroll container; React synthetic stopPropagation would not
