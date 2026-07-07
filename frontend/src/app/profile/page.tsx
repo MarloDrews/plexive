@@ -90,8 +90,10 @@ export default function ProfilePage() {
   useEffect(() => {
     if (!user?.is_private) return
     apiFetch(`/api/users/${user.username}/follow-requests`)
-      .then((r) => r.json())
-      .then(setPendingRequests)
+      // Guard the shape: a non-ok error body is a JSON object, not an array, and
+      // would throw on .map when the requests panel opens.
+      .then((r) => (r.ok ? r.json() : []))
+      .then((d) => setPendingRequests(Array.isArray(d) ? d : []))
       .catch(() => {})
   }, [user])
 

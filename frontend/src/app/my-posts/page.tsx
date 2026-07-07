@@ -23,8 +23,14 @@ export default function MyPostsPage() {
   useEffect(() => {
     if (!user) return
     apiFetch("/api/posts/mine")
-      .then((r) => r.json())
-      .then((data: Post[]) => setPosts(data))
+      .then((r) => {
+        // Without the ok-check a 401/500 error body (a JSON object, not an
+        // array) would land in `posts` and the page would render permanently
+        // blank; throw into the catch instead.
+        if (!r.ok) throw new Error(`status ${r.status}`)
+        return r.json()
+      })
+      .then((data: Post[]) => setPosts(Array.isArray(data) ? data : []))
       .catch(() => setFetchError("Failed to load posts."))
   }, [user])
 

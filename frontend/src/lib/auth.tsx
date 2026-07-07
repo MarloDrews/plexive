@@ -37,6 +37,17 @@ export function hasToken(): boolean {
   return typeof window !== "undefined" && !!localStorage.getItem(TOKEN_KEY)
 }
 
+// Parse a JSON body defensively: a proxy 502/504 returns an HTML error page,
+// so r.json() throws "Unexpected token '<'"; fall back to an empty object so
+// the caller shows a clean message instead of the raw SyntaxError.
+async function safeJson(r: Response): Promise<Record<string, unknown>> {
+  try {
+    return (await r.json()) as Record<string, unknown>
+  } catch {
+    return {}
+  }
+}
+
 // FastAPI returns detail as a string for HTTPException but as an array of
 // objects for 422 validation errors; both must become a readable message.
 function detailToMessage(detail: unknown, fallback: string): string {
@@ -82,11 +93,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
     })
-    const data = await r.json()
+    const data = await safeJson(r)
     if (!r.ok) throw new Error(detailToMessage(data.detail, "Login failed."))
     // Drop all cached API data so nothing from a previous account survives.
     clearApiCache()
-    localStorage.setItem(TOKEN_KEY, data.access_token)
+    localStorage.setItem(TOKEN_KEY, data.access_token as string)
     setUser(data.user as AuthUser)
   }, [])
 
@@ -96,10 +107,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, username, password }),
     })
-    const data = await r.json()
+    const data = await safeJson(r)
     if (!r.ok) throw new Error(detailToMessage(data.detail, "Registration failed."))
     clearApiCache()
-    localStorage.setItem(TOKEN_KEY, data.access_token)
+    localStorage.setItem(TOKEN_KEY, data.access_token as string)
     setUser(data.user as AuthUser)
   }, [])
 

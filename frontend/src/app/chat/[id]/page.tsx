@@ -130,6 +130,9 @@ export default function ConversationPage() {
   )
   const conversation = convList?.find((c) => c.id === conversationId) ?? null
   const [notFound, setNotFound] = useState(false)
+  // Distinct from notFound: a transient failure (offline, 500) is retryable and
+  // must not tell a real participant the conversation does not exist.
+  const [loadError, setLoadError] = useState(false)
   // Older-history pagination: hasMore stays true until a page comes back short.
   const [loadingOlder, setLoadingOlder] = useState(false)
   const [hasMore, setHasMore] = useState(true)
@@ -149,19 +152,43 @@ export default function ConversationPage() {
   )
   const { status, error, send, clearError } = useChatSocket(onSocketMessage)
 
-  useEffect(() => {
-    if (authLoading || !user || !Number.isFinite(conversationId)) return
-    apiFetch(`/api/chat/conversations/${conversationId}/messages`).then(async (r) => {
-      if (!r.ok) {
+  const loadInitial = useCallback(async () => {
+    setNotFound(false)
+    setLoadError(false)
+    setMessages(null)
+    try {
+      const r = await apiFetch(`/api/chat/conversations/${conversationId}/messages`)
+      // Only a real 404 is "not found"; any other non-ok (401/500) is a
+      // retryable error, not a missing conversation.
+      if (r.status === 404) {
         setNotFound(true)
+        return
+      }
+      if (!r.ok) {
+        setLoadError(true)
         return
       }
       const page: ChatMessage[] = await r.json()
       setMessages(page)
       // A short first page means there is no older history to page back to.
       setHasMore(page.length >= MESSAGE_PAGE)
-    })
-  }, [authLoading, user, conversationId])
+    } catch {
+      // Network failure (offline, dropped connection): retryable, never eternal
+      // skeleton or an unhandled rejection.
+      setLoadError(true)
+    }
+  }, [conversationId])
+
+  useEffect(() => {
+    if (authLoading || !user) return
+    // A non-numeric route id (/chat/abc) can never resolve: treat as not found
+    // rather than leaving the skeleton up forever.
+    if (!Number.isFinite(conversationId)) {
+      setNotFound(true)
+      return
+    }
+    loadInitial()
+  }, [authLoading, user, conversationId, loadInitial])
 
   // Auto-scroll to the bottom only when the newest message changes (initial
   // load or a message appended live), never when older history is prepended.
@@ -286,6 +313,15 @@ export default function ConversationPage() {
           {notFound ? (
             <div className="flex-1 flex items-center justify-center">
               <p className="text-ink-muted text-sm">Conversation not found.</p>
+            </div>
+          ) : loadError ? (
+            <div className="flex-1 flex items-center justify-center">
+              <div className="flex flex-col items-center gap-3 text-center">
+                <p className="text-ink-muted text-sm">Could not load this conversation.</p>
+                <button onClick={loadInitial} className="btn btn-primary px-4 py-1.5 text-sm">
+                  Retry
+                </button>
+              </div>
             </div>
           ) : messages === null ? (
             // Loading: pulsing bubbles where the history will appear.
