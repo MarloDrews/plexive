@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { memo, useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import CommentsBottomSheet from "./CommentsBottomSheet"
 import { showToast } from "@/lib/toastBus"
@@ -116,7 +116,11 @@ function CardFooter({ post, fc }: { post: Post; fc: Post["feed_card"] }) {
   )
 }
 
-export default function PostCard({ post, activeTabId }: { post: Post; activeTabId: string }) {
+// memo (export at the bottom): both props are referentially stable (SWR list
+// patches replace only the changed post's object; activeTabId is a constant
+// per tab), so tab swipes and cache write-throughs stop re-rendering every
+// mounted card and touch only the one that actually changed.
+function PostCard({ post, activeTabId }: { post: Post; activeTabId: string }) {
   const router = useRouter()
   const cardRef           = useRef<HTMLDivElement>(null)
   const viewStartRef      = useRef<number | null>(null)
@@ -678,3 +682,5 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
     </div>
   )
 }
+
+export default memo(PostCard)

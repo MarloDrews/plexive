@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import useSWR from "swr"
@@ -199,6 +199,11 @@ export default function Home() {
   const selectTabRef = useRef(selectTab)
   selectTabRef.current = selectTab
 
+  // Stable identities for the two inline call-site props, so the memoized
+  // children (and PostCard behind them) are not invalidated every render.
+  const handleSearch = useCallback(() => router.push("/search"), [router])
+  const handleExitToFeed = useCallback(() => selectTabRef.current(DEFAULT_TAB_INDEX), [])
+
   // Check localStorage on mount, store interests, and restore active tab from sessionStorage
   useEffect(() => {
     const saved = localStorage.getItem("deepscroll_interests")
@@ -242,7 +247,7 @@ export default function Home() {
         tabs={TABS}
         activeTab={activeTab}
         onTabClick={selectTab}
-        onSearch={() => router.push("/search")}
+        onSearch={handleSearch}
         tabRefs={tabRefs}
         indicatorRef={indicatorRef}
         tabStripRef={tabStripRef}
@@ -265,9 +270,9 @@ export default function Home() {
                 {!isActivated ? (
                   <div className="h-full bg-surface-0" />
                 ) : tab.id === "train" ? (
-                  <Marathon onExit={() => selectTab(DEFAULT_TAB_INDEX)} />
+                  <Marathon onExit={handleExitToFeed} />
                 ) : (
-                  <Battle onExit={() => selectTab(DEFAULT_TAB_INDEX)} />
+                  <Battle onExit={handleExitToFeed} />
                 )}
               </div>
             )
