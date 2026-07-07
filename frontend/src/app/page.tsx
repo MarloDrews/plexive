@@ -189,7 +189,7 @@ export default function Home() {
   const [slugs, setSlugs] = useState<string[]>([])
   // The swipe pager, sliding indicator and active/activated tab state all
   // live in the shared hook; the indicator is the neutral pill fill whose
-  // color never changes â€” the per-post accent switches hard with the
+  // color never changes — the per-post accent switches hard with the
   // settled card, not the chrome.
   const { activeIndex, activatedIndices, pagerRef, indicatorRef, tabRefs, selectTab } =
     useSwipeTabs({ count: TABS.length, initialIndex: DEFAULT_TAB_INDEX })
@@ -218,7 +218,7 @@ export default function Home() {
     const savedIndex = savedTab ? TABS.findIndex((t) => t.id === savedTab) : -1
     // The default tab (For You) is not the first pager page since Following
     // sits left of it, so the pager always needs an instant alignment on
-    // mount â€” to the restored tab if there is one, otherwise the default.
+    // mount — to the restored tab if there is one, otherwise the default.
     selectTabRef.current(savedIndex !== -1 ? savedIndex : DEFAULT_TAB_INDEX, {
       behavior: "instant",
     })
@@ -253,7 +253,7 @@ export default function Home() {
         tabStripRef={tabStripRef}
       />
 
-      {/* Horizontal strip â€” one full-width page per tab */}
+      {/* Horizontal strip — one full-width page per tab */}
       <div
         ref={pagerRef}
         className="h-full flex flex-row overflow-x-scroll overflow-y-hidden snap-x snap-mandatory"

@@ -113,7 +113,7 @@ function NewChatOverlay({ onClose, onCreated }: { onClose: () => void; onCreated
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search people you followâ€¦"
+          placeholder="Search people you follow…"
           autoFocus
           className="field rounded-full mt-2 text-sm py-2.5"
         />
@@ -127,7 +127,7 @@ function NewChatOverlay({ onClose, onCreated }: { onClose: () => void; onCreated
               >
                 <Avatar username={u.username} avatarUrl={u.avatar_url} size={20} />
                 @{u.username}
-                <span className="text-ink-muted">Ã—</span>
+                <span className="text-ink-muted">×</span>
               </button>
             ))}
           </div>
@@ -180,7 +180,7 @@ function NewChatOverlay({ onClose, onCreated }: { onClose: () => void; onCreated
           disabled={selected.length === 0 || busy}
           className="btn btn-primary w-full py-2.5"
         >
-          {busy ? "Startingâ€¦" : selected.length > 1 ? "Start group chat" : "Start chat"}
+          {busy ? "Starting…" : selected.length > 1 ? "Start group chat" : "Start chat"}
         </button>
       </div>
     </div>

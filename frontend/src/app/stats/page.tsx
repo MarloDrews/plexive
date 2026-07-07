@@ -62,7 +62,7 @@ export default function StatsPage() {
   return (
     <StatsErrorBoundary>
     <div className="relative max-w-[430px] mx-auto bg-surface-0 h-[100dvh] flex flex-col">
-      {/* Tab switcher â€” floating frosted segmented capsule */}
+      {/* Tab switcher — floating frosted segmented capsule */}
       <div className="z-20 px-3 pt-3 pb-2">
         <SegmentedTabs
           labels={["Global", "Personal", "Friends"]}
@@ -73,7 +73,7 @@ export default function StatsPage() {
         />
       </div>
 
-      {/* Horizontal pager â€” one full-width, vertically scrolling page per
+      {/* Horizontal pager — one full-width, vertically scrolling page per
           tab. min-h-0 keeps flex-1 inside the viewport; overflow-y-hidden
           because overflow-x: scroll would otherwise force it to auto. */}
       <div

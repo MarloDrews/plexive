@@ -33,7 +33,7 @@ interface UserResult {
 
 function Snippet({ post }: { post: Post }) {
   const text = fcStr(post.feed_card, "essence") || fcStr(post.feed_card, "headline")
-  const snippet = text.length > 120 ? text.slice(0, 120) + "â€¦" : text
+  const snippet = text.length > 120 ? text.slice(0, 120) + "…" : text
   return <p className="text-ink-dim text-xs mt-1 line-clamp-2">{snippet}</p>
 }
 
@@ -245,7 +245,7 @@ export default function SearchPage() {
   const hasQuery = !!query.trim()
 
   // The capsule only mounts once a query exists, after the hook's initial
-  // measurement ran â€” ask it to re-measure so the indicator appears.
+  // measurement ran — ask it to re-measure so the indicator appears.
   useEffect(() => {
     if (hasQuery) refreshIndicator()
   }, [hasQuery, refreshIndicator])
@@ -263,7 +263,7 @@ export default function SearchPage() {
   )
   const idleMessage = (
     <div className="flex flex-col items-center justify-center pt-20 text-center px-6">
-      <p className="text-ink-muted text-sm">Search posts, books, peopleâ€¦</p>
+      <p className="text-ink-muted text-sm">Search posts, books, people…</p>
     </div>
   )
   const errorMessage = (
@@ -303,7 +303,7 @@ export default function SearchPage() {
                 type="search"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search posts, books, peopleâ€¦"
+                placeholder="Search posts, books, people…"
                 className="field rounded-full text-sm pl-9 pr-9 py-2.5"
               />
               {query && (
@@ -320,7 +320,7 @@ export default function SearchPage() {
             </div>
           </div>
 
-          {/* Posts | Accounts â€” appears after a query exists and filters the
+          {/* Posts | Accounts — appears after a query exists and filters the
               already-fetched results, swipeable like the result pager. */}
           {hasQuery && (
             <SegmentedTabs
@@ -359,7 +359,7 @@ export default function SearchPage() {
           )}
         </div>
 
-        {/* Results â€” swipeable pager: Posts | Accounts */}
+        {/* Results — swipeable pager: Posts | Accounts */}
         <div
           ref={pagerRef}
           className="flex-1 min-h-0 flex overflow-x-scroll overflow-y-hidden snap-x snap-mandatory"

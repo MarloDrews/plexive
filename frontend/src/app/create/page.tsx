@@ -59,7 +59,7 @@ export default function CreatePage() {
   const [step, setStep] = useState<1 | 2 | 3 | "success">(1)
   const [selectedFormat, setSelectedFormat] = useState<FormatId | null>(null)
 
-  // Step 2 â€” duplicate check
+  // Step 2 — duplicate check
   const [searchQuery, setSearchQuery] = useState("")
   const [searchResults, setSearchResults] = useState<Post[]>([])
   const [searchLoading, setSearchLoading] = useState(false)
@@ -67,7 +67,7 @@ export default function CreatePage() {
   // Feed Card state
   const [fc, setFc] = useState<BooksFeedCard>(emptyBooksFeedCard)
 
-  // Section states â€” simple text sections
+  // Section states — simple text sections
   const [sEssence, setSEssence] = useState("")
   const [sWhyEndures, setSWhyEndures] = useState("")
   const [sHeart, setSHeart] = useState("")
@@ -292,7 +292,7 @@ export default function CreatePage() {
     if (!fc.genre.trim()) errs.fc_genre = "Required"
 
     if (selectedInterests.length < 1 || selectedInterests.length > 5) {
-      errs.interests = "Select 1â€“5 interests"
+      errs.interests = "Select 1–5 interests"
     }
 
     if (!sEssence.trim()) errs.s_essence = "Required"
@@ -403,7 +403,7 @@ export default function CreatePage() {
     if (validQuiz.length < 5) errs.s_quiz = "Need at least 5 complete questions"
     const validSources = sources.filter(s => s.label.trim() && s.url.trim())
     if (validSources.length < 1) errs.s_sources = "Add at least 1 source"
-    if (selectedInterests.length < 1) errs.interests = "Select 1â€“5 interests"
+    if (selectedInterests.length < 1) errs.interests = "Select 1–5 interests"
     return errs
   }
 
@@ -687,7 +687,7 @@ export default function CreatePage() {
                 title="Body"
                 required
                 defaultOpen
-                hint="The main content â€” explain, describe, or narrate in full"
+                hint="The main content — explain, describe, or narrate in full"
                 rows={10}
                 placeholder="Write the full content here..."
                 value={genericBody}

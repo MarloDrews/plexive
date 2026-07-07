@@ -44,13 +44,13 @@ function MyStatsTab({
     </div>
   )
 
-  // 1b. Knowledge score (Elo) â€” one unified rating, no per-format bars.
+  // 1b. Knowledge score (Elo) — one unified rating, no per-format bars.
   // my_elo/my_quiz are defaulted at the point of use so a payload from an
   // older backend that omits them degrades to placeholders, not a crash.
   const knowledgeBlock = (
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-3 gap-3">
-        <StatCard label="Global Score" value={data.my_elo?.global_rating ?? "â€”"} />
+        <StatCard label="Global Score" value={data.my_elo?.global_rating ?? "—"} />
         <StatCard label="Answered" value={data.my_quiz?.answered ?? 0} />
         <StatCard label="Accuracy" value={`${data.my_quiz?.accuracy ?? 0}%`} />
       </div>
@@ -124,7 +124,7 @@ function MyStatsTab({
     </ResponsiveContainer>
   )
 
-  // 7. Avg read time per format (convert ms â†’ s)
+  // 7. Avg read time per format (convert ms → s)
   const readTimeArr = data.my_avg_read_time_per_format.map(d => ({
     format: d.format,
     avg_sec: Math.round(d.avg_duration_ms / 100) / 10,
@@ -186,7 +186,7 @@ function MyStatsTab({
           type="category"
           tick={{ ...AXIS, fontSize: 9 }}
           width={76}
-          tickFormatter={(v: string) => (v.length > 14 ? v.slice(0, 14) + "â€¦" : v)}
+          tickFormatter={(v: string) => (v.length > 14 ? v.slice(0, 14) + "…" : v)}
         />
         <Tooltip {...TT} />
         <Bar dataKey="like_count" fill="#c47dcc" radius={[0, 3, 3, 0]} />
@@ -207,7 +207,7 @@ function MyStatsTab({
           {myTopByLikes.map(r => (
             <tr key={r.post_id} className="border-b border-edge">
               <td className="py-2 pr-2 text-ink">
-                {r.title.length > 28 ? r.title.slice(0, 28) + "â€¦" : r.title}
+                {r.title.length > 28 ? r.title.slice(0, 28) + "…" : r.title}
               </td>
               <td className="py-2 pr-2"><FormatChip format={r.format} /></td>
               <td className="py-2 text-right text-ink-body">{r.like_count}</td>
@@ -230,7 +230,7 @@ function MyStatsTab({
           type="category"
           tick={{ ...AXIS, fontSize: 9 }}
           width={76}
-          tickFormatter={(v: string) => (v.length > 14 ? v.slice(0, 14) + "â€¦" : v)}
+          tickFormatter={(v: string) => (v.length > 14 ? v.slice(0, 14) + "…" : v)}
         />
         <Tooltip {...TT} />
         <Bar dataKey="comment_count" fill="#72bb80" radius={[0, 3, 3, 0]} />
@@ -251,7 +251,7 @@ function MyStatsTab({
           {myTopByComments.map(r => (
             <tr key={r.post_id} className="border-b border-edge">
               <td className="py-2 pr-2 text-ink">
-                {r.title.length > 28 ? r.title.slice(0, 28) + "â€¦" : r.title}
+                {r.title.length > 28 ? r.title.slice(0, 28) + "…" : r.title}
               </td>
               <td className="py-2 pr-2"><FormatChip format={r.format} /></td>
               <td className="py-2 text-right text-ink-body">{r.comment_count}</td>
@@ -351,9 +351,9 @@ function MyStatsTab({
               }`}
             >
               {m.achieved ? (
-                <span className="text-lamp">âœ“</span>
+                <span className="text-lamp">✓</span>
               ) : (
-                <span className="text-ink-faint">â—‹</span>
+                <span className="text-ink-faint">○</span>
               )}
             </div>
             <div className={`text-[10px] text-center leading-tight ${m.achieved ? "text-ink-body" : "text-ink-faint"}`}>

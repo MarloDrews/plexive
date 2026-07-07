@@ -155,7 +155,7 @@ export function ActivityHeatmap({
                     backgroundColor:
                       count === 0 ? "#1a1a1a" : `rgba(${color},${0.15 + intensity * 0.85})`,
                   }}
-                  title={`${days[wd]} ${hr}:00 â€” ${count}`}
+                  title={`${days[wd]} ${hr}:00 — ${count}`}
                 />
               )
             })}

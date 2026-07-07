@@ -24,7 +24,7 @@ interface FeedHeaderProps {
   tabStripRef: RefObject<HTMLDivElement | null>
 }
 
-// Stage feed header â€” a floating frosted capsule detached from the top edge,
+// Stage feed header — a floating frosted capsule detached from the top edge,
 // with a separate frosted search circle to its right. The sliding indicator
 // is the active pill fill itself: the useSwipeTabs scroll-sync interpolates
 // its left and width between tab buttons. The capsule stays neutral; the only
@@ -61,7 +61,7 @@ export default function FeedHeader({
           </svg>
         </button>
 
-        {/* Capsule tab strip â€” right margin leaves room for the search
+        {/* Capsule tab strip — right margin leaves room for the search
             circle, center padding keeps edge tabs snappable. */}
         <div
           ref={tabStripRef}
@@ -96,7 +96,7 @@ export default function FeedHeader({
               </button>
             )
           })}
-          {/* Sliding indicator â€” the neutral active pill fill, positioned in
+          {/* Sliding indicator — the neutral active pill fill, positioned in
               scroll-content space. JS owns inline left and width. */}
           <div
             ref={indicatorRef}
