@@ -1,11 +1,14 @@
 import { TOKEN_KEY } from "@/lib/storage"
+import { markLikeSent, unmarkLikeSent } from "@/lib/likedPosts"
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
 interface QueuedEvent {
   post_id: number
-  event_type: "view" | "like"
+  event_type: "view" | "like" | "unlike"
   duration_ms?: number
+  // How many flush attempts this event has survived; bounds retry growth.
+  _retries?: number
 }
 
 const queue: QueuedEvent[] = []
@@ -13,10 +16,14 @@ let timer: ReturnType<typeof setTimeout> | null = null
 
 const BATCH_SIZE = 5
 const FLUSH_INTERVAL_MS = 5000
+const MAX_FLUSH_RETRIES = 3
 
 function flush() {
-  if (queue.length === 0) return
+  // Null the (possibly already-fired) timer handle FIRST. Returning on an empty
+  // queue before this left the fired handle set, so scheduleFlush's `if (timer)`
+  // guard saw it and never scheduled again for the page's lifetime.
   if (timer) { clearTimeout(timer); timer = null }
+  if (queue.length === 0) return
   const batch = queue.splice(0)
   // Attach the auth token so the backend can attribute likes/views to the user
   // (enables per-user like dedup and the liked flag on GET /likes).
@@ -28,7 +35,28 @@ function flush() {
     headers,
     body: JSON.stringify(batch),
     keepalive: true,
-  }).catch(() => {})
+  })
+    .then((r) => {
+      if (!r.ok) throw new Error(String(r.status))
+      // Confirm delivery of the optimistically-marked likes so the reconcile
+      // formula can trust the sent marker.
+      for (const e of batch) if (e.event_type === "like") markLikeSent(e.post_id)
+    })
+    .catch(() => {
+      // The batch never landed: unmark its likes (so they are not treated as
+      // on-server) and re-queue for a bounded number of attempts, so a transient
+      // failure loses neither views nor likes without unbounded growth.
+      const retry: QueuedEvent[] = []
+      for (const e of batch) {
+        if (e.event_type === "like") unmarkLikeSent(e.post_id)
+        const attempts = (e._retries ?? 0) + 1
+        if (attempts <= MAX_FLUSH_RETRIES) retry.push({ ...e, _retries: attempts })
+      }
+      if (retry.length) {
+        queue.unshift(...retry)
+        scheduleFlush()
+      }
+    })
 }
 
 function scheduleFlush() {

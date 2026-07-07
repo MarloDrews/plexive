@@ -68,11 +68,28 @@ def create_events(
                 ).all()
             }
 
+    # Unlike: an authed user retracting a like that already reached the server.
+    # Delete their like row(s) for the post so GET /likes decrements; the unlike
+    # itself is not stored as a row (only "like" rows count).
+    if optional_user:
+        unlike_ids = {
+            e.post_id for e in events
+            if e.event_type == "unlike" and e.post_id in valid_ids
+        }
+        if unlike_ids:
+            db.query(Event).filter(
+                Event.post_id.in_(unlike_ids),
+                Event.event_type == "like",
+                Event.user_id == optional_user.id,
+            ).delete(synchronize_session=False)
+
     new_events = []
     batch_liked_post_ids: set[int] = set()
     for e in events:
         if e.post_id not in valid_ids:
             continue
+        if e.event_type == "unlike":
+            continue  # handled above by the delete; never stored as a row
         if e.event_type == "like" and optional_user:
             # Dedup within this batch as well as against stored events
             if e.post_id in batch_liked_post_ids or e.post_id in already_liked_ids:

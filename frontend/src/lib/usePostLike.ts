@@ -92,7 +92,13 @@ export function usePostLike(postId: number, serverLikeCount: number | null) {
         return n
       })
       if (hasPendingLike(postId)) {
+        // The like never left the queue: just drop it before it flushes.
         cancelPendingLike(postId)
+        unmarkLikeSent(postId)
+      } else if (isLikeSent(postId)) {
+        // The like already reached the server; queue an unlike so the server
+        // decrements, and clear the marker so reconcile stops counting it.
+        queueEvent({ post_id: postId, event_type: "unlike" })
         unmarkLikeSent(postId)
       }
       return "unliked"
