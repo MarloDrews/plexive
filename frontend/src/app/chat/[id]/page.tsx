@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { memo, useCallback, useEffect, useRef, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import useSWR from "swr"
@@ -18,6 +18,103 @@ import {
 // history may exist, a short page means we have reached the start.
 const MESSAGE_PAGE = 50
 
+// Memoized bubble list: it re-renders only when the messages array (or the
+// group/user identity) changes, not on socket-status flips or other page
+// state. The DOM stays bounded by the before_id pagination (50 per page,
+// older pages load only on an explicit scroll to the top), so no separate
+// windowing layer is needed.
+const MessageList = memo(function MessageList({
+  messages,
+  currentUsername,
+  isGroup,
+}: {
+  messages: ChatMessage[]
+  currentUsername: string | undefined
+  isGroup: boolean
+}) {
+  return (
+    <>
+      {messages.map((m, i) => {
+        const own = m.sender_username === currentUsername
+        const showSender =
+          !own &&
+          isGroup &&
+          (i === 0 || messages[i - 1].sender_username !== m.sender_username)
+        return (
+          <div key={m.id} className={`flex flex-col ${own ? "items-end" : "items-start"}`}>
+            {showSender && (
+              <p className="text-ink-muted text-xs px-2 pt-1">@{m.sender_username}</p>
+            )}
+            <div
+              className={`max-w-[80%] rounded-2xl px-3.5 py-2 text-sm whitespace-pre-wrap break-words ${
+                own ? "bg-white/[0.14] text-ink" : "bg-surface-2 text-ink-body"
+              }`}
+            >
+              {m.body}
+            </div>
+          </div>
+        )
+      })}
+    </>
+  )
+})
+
+// The composer owns the draft, so typing re-renders this bar alone instead of
+// the page and every message bubble with it.
+function Composer({
+  canSend,
+  error,
+  onSend,
+}: {
+  canSend: boolean
+  error: string | null
+  onSend: (body: string) => boolean
+}) {
+  const [draft, setDraft] = useState("")
+
+  function handleSend() {
+    const body = draft.trim()
+    if (!body || body.length > MESSAGE_MAX_CHARS) return
+    if (onSend(body)) setDraft("")
+  }
+
+  return (
+    <div
+      className="px-3 py-2"
+      style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 8px)" }}
+    >
+      {error && <p className="text-bad text-xs pb-1.5">{error}</p>}
+      <div className="flex items-end gap-2">
+        <textarea
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault()
+              handleSend()
+            }
+          }}
+          placeholder="Message…"
+          rows={1}
+          maxLength={MESSAGE_MAX_CHARS}
+          className="field flex-1 text-sm py-2.5 resize-none max-h-32"
+        />
+        <button
+          onClick={handleSend}
+          disabled={!draft.trim() || !canSend}
+          className={`btn-icon shrink-0${draft.trim() && canSend ? " btn-icon-active" : ""}`}
+          aria-label="Send message"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+            <path d="M22 2L11 13" />
+            <path d="M22 2l-7 20-4-9-9-4 20-7z" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  )
+}
+
 export default function ConversationPage() {
   const router = useRouter()
   const params = useParams<{ id: string }>()
@@ -32,7 +129,6 @@ export default function ConversationPage() {
     !authLoading && user ? "/api/chat/conversations" : null
   )
   const conversation = convList?.find((c) => c.id === conversationId) ?? null
-  const [draft, setDraft] = useState("")
   const [notFound, setNotFound] = useState(false)
   // Older-history pagination: hasMore stays true until a page comes back short.
   const [loadingOlder, setLoadingOlder] = useState(false)
@@ -115,14 +211,18 @@ export default function ConversationPage() {
     if (c && c.scrollTop < 48) loadOlder()
   }
 
-  function handleSend() {
-    const body = draft.trim()
-    if (!body || body.length > MESSAGE_MAX_CHARS) return
-    if (send(conversationId, body)) {
-      setDraft("")
-      clearError()
-    }
-  }
+  // Stable send hook for the composer: returns whether the draft was accepted
+  // (the composer clears itself only then).
+  const handleSend = useCallback(
+    (body: string) => {
+      if (send(conversationId, body)) {
+        clearError()
+        return true
+      }
+      return false
+    },
+    [send, conversationId, clearError]
+  )
 
   if (!authLoading && !user) {
     return (
@@ -199,65 +299,21 @@ export default function ConversationPage() {
               <p className="text-ink-muted text-sm">Say hello</p>
             </div>
           ) : (
-            messages.map((m, i) => {
-              const own = m.sender_username === user?.username
-              const showSender =
-                !own &&
-                conversation?.is_group &&
-                (i === 0 || messages[i - 1].sender_username !== m.sender_username)
-              return (
-                <div key={m.id} className={`flex flex-col ${own ? "items-end" : "items-start"}`}>
-                  {showSender && (
-                    <p className="text-ink-muted text-xs px-2 pt-1">@{m.sender_username}</p>
-                  )}
-                  <div
-                    className={`max-w-[80%] rounded-2xl px-3.5 py-2 text-sm whitespace-pre-wrap break-words ${
-                      own ? "bg-white/[0.14] text-ink" : "bg-surface-2 text-ink-body"
-                    }`}
-                  >
-                    {m.body}
-                  </div>
-                </div>
-              )
-            })
+            <MessageList
+              messages={messages}
+              currentUsername={user?.username}
+              isGroup={!!conversation?.is_group}
+            />
           )}
           <div ref={bottomRef} />
         </div>
 
         {/* Input — borderless bar, safe-area aware */}
-        <div
-          className="px-3 py-2"
-          style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 8px)" }}
-        >
-          {error && <p className="text-bad text-xs pb-1.5">{error}</p>}
-          <div className="flex items-end gap-2">
-            <textarea
-              value={draft}
-              onChange={(e) => setDraft(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault()
-                  handleSend()
-                }
-              }}
-              placeholder="Message…"
-              rows={1}
-              maxLength={MESSAGE_MAX_CHARS}
-              className="field flex-1 text-sm py-2.5 resize-none max-h-32"
-            />
-            <button
-              onClick={handleSend}
-              disabled={!draft.trim() || status !== "open" || notFound}
-              className={`btn-icon shrink-0${draft.trim() && status === "open" && !notFound ? " btn-icon-active" : ""}`}
-              aria-label="Send message"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-                <path d="M22 2L11 13" />
-                <path d="M22 2l-7 20-4-9-9-4 20-7z" />
-              </svg>
-            </button>
-          </div>
-        </div>
+        <Composer
+          canSend={status === "open" && !notFound}
+          error={error}
+          onSend={handleSend}
+        />
       </div>
     </div>
   )
