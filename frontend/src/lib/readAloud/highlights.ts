@@ -65,10 +65,17 @@ export function rangeFromOffsets(
   }
 
   if (!startNode || !endNode) return null
-  const range = document.createRange()
-  range.setStart(startNode, startOffset)
-  range.setEnd(endNode, endOffset)
-  return range
+  try {
+    const range = document.createRange()
+    // Clamp to the node's current length and guard setStart/setEnd: the Text
+    // nodes were captured at start(), and a re-render (comment count, like) can
+    // shrink or replace one, which would throw IndexSizeError and kill playback.
+    range.setStart(startNode, Math.min(startOffset, startNode.length))
+    range.setEnd(endNode, Math.min(endOffset, endNode.length))
+    return range
+  } catch {
+    return null
+  }
 }
 
 export function setHighlight(name: string, range: Range | null) {

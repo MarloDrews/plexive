@@ -34,10 +34,6 @@ function synth(): SpeechSynthesis | null {
     : null
 }
 
-function unlockAudio(audio: HTMLAudioElement) {
-  audio.src = SILENT_WAV
-  void audio.play().catch(() => {})
-}
 
 export function useReadAloud(rootRef: RefObject<HTMLElement | null>) {
   const [status, setStatus] = useState<ReadAloudStatus>("idle")
@@ -232,10 +228,15 @@ export function useReadAloud(rootRef: RefObject<HTMLElement | null>) {
       speakFrom(0)
     }
 
-    // Unlock the audio element while (possibly) inside a user gesture.
+    // Unlock the audio element while (possibly) inside a user gesture. Latch the
+    // flag ONLY when the silent play actually resolves: on strict-autoplay
+    // browsers the non-gesture autostart path rejects, and latching regardless
+    // used to leave a later gesture-driven start unable to retry the unlock, so
+    // the reader stayed silent for the page.
     if (!unlockedRef.current) {
-      unlockedRef.current = true
-      unlockAudio(audioRef.current ?? (audioRef.current = new Audio()))
+      const audio = audioRef.current ?? (audioRef.current = new Audio())
+      audio.src = SILENT_WAV
+      void audio.play().then(() => { unlockedRef.current = true }).catch(() => {})
     }
 
     // "loading" covers the one-time model download/initialization; the
