@@ -48,6 +48,17 @@ export function useReadAloud(rootRef: RefObject<HTMLElement | null>) {
   const modeRef = useRef<"piper" | "browser">("browser")
   const pausedRef = useRef(false)
   const unlockedRef = useRef(false)
+  // The object URL currently loaded into the audio element. Tracked so stop()
+  // can revoke it: removing the src attribute alone stranded one WAV blob per
+  // mid-sentence stop until page unload.
+  const currentUrlRef = useRef<string | null>(null)
+
+  const releaseCurrentUrl = useCallback(() => {
+    if (currentUrlRef.current) {
+      URL.revokeObjectURL(currentUrlRef.current)
+      currentUrlRef.current = null
+    }
+  }, [])
 
   const stop = useCallback(() => {
     sessionRef.current++
@@ -63,9 +74,10 @@ export function useReadAloud(rootRef: RefObject<HTMLElement | null>) {
       audio.pause()
       audio.removeAttribute("src")
     }
+    releaseCurrentUrl()
     clearHighlights()
     setStatus("idle")
-  }, [])
+  }, [releaseCurrentUrl])
 
   const start = useCallback(() => {
     const root = rootRef.current
@@ -135,17 +147,27 @@ export function useReadAloud(rootRef: RefObject<HTMLElement | null>) {
         void synthesize(index + 2)
         if (!blob) {
           // Generation failed: skip the sentence instead of dying mid-post.
+          cache.delete(index)
           void playFrom(index + 1)
           return
         }
         const url = URL.createObjectURL(blob)
+        currentUrlRef.current = url
+        // Playback only moves forward, so a sentence's WAV can leave the cache
+        // once it played (uncompressed PCM: a long post used to accumulate
+        // tens of MB until the run ended).
+        const releaseSentence = () => {
+          if (currentUrlRef.current === url) currentUrlRef.current = null
+          URL.revokeObjectURL(url)
+          cache.delete(index)
+        }
         audio.src = url
         audio.onended = () => {
-          URL.revokeObjectURL(url)
+          releaseSentence()
           void playFrom(index + 1)
         }
         audio.onerror = () => {
-          URL.revokeObjectURL(url)
+          releaseSentence()
           if (session === sessionRef.current) void playFrom(index + 1)
         }
         // If the user paused while this sentence was being generated, leave
@@ -153,7 +175,7 @@ export function useReadAloud(rootRef: RefObject<HTMLElement | null>) {
         if (!pausedRef.current) {
           audio.play().catch(() => {
             // Autoplay blocked (no user gesture on this page yet).
-            URL.revokeObjectURL(url)
+            releaseSentence()
             if (session === sessionRef.current) finish()
           })
         }

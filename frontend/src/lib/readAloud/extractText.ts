@@ -53,21 +53,41 @@ function isReadable(node: Text): boolean {
 }
 
 // One sentence = the shortest run ending in .!?… followed by whitespace
-// (so "3.14" or "e.g." inside a run does not split it), or the trailing
-// fragment without a terminator (headings, list items).
+// (so "3.14" inside a run does not split it), or the trailing fragment
+// without a terminator (headings, list items).
 const SENTENCE_RE = /.*?[.!?…]+["')\]]*(?:\s+|$)|.+/g
+
+// Common abbreviations whose period is followed by whitespace but does not
+// end the sentence ("e.g. a lemur", "Dr. Julius"). A chunk ending in one is
+// merged with the chunk after it. Conservative on purpose: words like "etc."
+// or "no." often DO end sentences and stay split.
+const ABBREVIATION_END_RE = /\b(?:e\.g|i\.e|vs|cf|ca|dr|mr|mrs|ms|prof|st|fig)\.$/i
 
 function splitSentences(combined: string): Sentence[] {
   const sentences: Sentence[] = []
   let blockStart = 0
   for (const block of combined.split("\n")) {
+    const chunks: Sentence[] = []
     for (const m of block.matchAll(SENTENCE_RE)) {
+      const start = blockStart + m.index
+      chunks.push({ text: m[0], start, end: start + m[0].length })
+    }
+    // Abbreviation guard: a chunk whose terminator is an abbreviation period
+    // is not a sentence end; rejoin it with the next chunk.
+    const merged: Sentence[] = []
+    for (const chunk of chunks) {
+      const prev = merged[merged.length - 1]
+      if (prev && prev.end === chunk.start && ABBREVIATION_END_RE.test(prev.text.trimEnd())) {
+        prev.text = combined.slice(prev.start, chunk.end)
+        prev.end = chunk.end
+      } else {
+        merged.push({ ...chunk })
+      }
+    }
+    for (const chunk of merged) {
       // Only queue chunks containing at least one letter or digit; bare
       // punctuation/separator chunks are not worth an utterance.
-      if (/[\p{L}\p{N}]/u.test(m[0])) {
-        const start = blockStart + m.index
-        sentences.push({ text: m[0], start, end: start + m[0].length })
-      }
+      if (/[\p{L}\p{N}]/u.test(chunk.text)) sentences.push(chunk)
     }
     blockStart += block.length + 1 // +1 for the "\n" block separator
   }
@@ -78,18 +98,30 @@ export function extractReadableText(root: HTMLElement): ReadableText {
   const segments: TextSegment[] = []
   let combined = ""
   let lastBlock: Element | null = null
+  let pendingSpace = false
 
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT)
   for (let n = walker.nextNode(); n; n = walker.nextNode()) {
     const node = n as Text
+    if (!isReadable(node)) continue
     const text = node.textContent ?? ""
-    if (!text.trim() || !isReadable(node)) continue
+    if (!text.trim()) {
+      // A whitespace-only node between kept siblings still separates words;
+      // dropping it silently used to hand the synthesizer concatenations
+      // like "fastthinking". Remember it and emit one unmapped space below.
+      if (segments.length > 0) pendingSpace = true
+      continue
+    }
 
     const block = closestBlock(node, root)
     if (lastBlock && block !== lastBlock) {
       // Separator is not mapped to any node; rangeFromOffsets skips it.
       combined += "\n"
+    } else if (pendingSpace) {
+      // Unmapped like the block separator above.
+      combined += " "
     }
+    pendingSpace = false
     lastBlock = block
 
     const start = combined.length
