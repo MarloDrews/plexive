@@ -57,8 +57,13 @@ export function queueEvent(event: QueuedEvent) {
 }
 
 if (typeof window !== "undefined") {
-  window.addEventListener("visibilitychange", () => {
+  // visibilitychange is specced on document (it only reached window by
+  // bubbling, which some older engines never deliver), and pagehide replaces
+  // beforeunload as the termination flush: a beforeunload listener makes the
+  // page ineligible for the back/forward cache in Safari and some Chromium
+  // configurations, and iOS often skips beforeunload entirely.
+  document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "hidden") flush()
   })
-  window.addEventListener("beforeunload", flush)
+  window.addEventListener("pagehide", flush)
 }
