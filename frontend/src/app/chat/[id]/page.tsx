@@ -18,6 +18,15 @@ import {
 // history may exist, a short page means we have reached the start.
 const MESSAGE_PAGE = 50
 
+// Insert a message by id: dedupe, and keep ascending id order so an out-of-order
+// socket delivery (two senders' broadcasts interleaving) never shows a newer
+// message above an older one after a refresh reorders them.
+function mergeMessage(list: ChatMessage[], m: ChatMessage): ChatMessage[] {
+  if (list.some((x) => x.id === m.id)) return list
+  const idx = list.findIndex((x) => x.id > m.id)
+  return idx === -1 ? [...list, m] : [...list.slice(0, idx), m, ...list.slice(idx)]
+}
+
 // Memoized bubble list: it re-renders only when the messages array (or the
 // group/user identity) changes, not on socket-status flips or other page
 // state. The DOM stays bounded by the before_id pagination (50 per page,
@@ -71,11 +80,24 @@ function Composer({
   onSend: (body: string) => boolean
 }) {
   const [draft, setDraft] = useState("")
+  // The last body that left the client. Without per-message correlation (a later
+  // batch) the draft is cleared optimistically when the frame is sent; if the
+  // server then rejects it (rate limit / participant check) the error frame
+  // arrives here, and we restore the text so the user does not lose it.
+  const lastSentRef = useRef("")
+
+  useEffect(() => {
+    if (error && !draft) setDraft(lastSentRef.current)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [error])
 
   function handleSend() {
     const body = draft.trim()
     if (!body || body.length > MESSAGE_MAX_CHARS) return
-    if (onSend(body)) setDraft("")
+    if (onSend(body)) {
+      lastSentRef.current = body
+      setDraft("")
+    }
   }
 
   return (
@@ -138,14 +160,23 @@ export default function ConversationPage() {
   const [hasMore, setHasMore] = useState(true)
   const bottomRef = useRef<HTMLDivElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
+  // Socket messages that arrive before the history snapshot has loaded are
+  // buffered here and drained by loadInitial, so a message sent in the first
+  // seconds of opening the conversation is never silently dropped.
+  const pendingRef = useRef<ChatMessage[]>([])
+  // Whether the user is scrolled near the bottom; gates auto-scroll so an
+  // incoming message does not yank the viewport while they read older history.
+  const atBottomRef = useRef(true)
 
   const onSocketMessage = useCallback(
     (m: ChatMessage) => {
       if (m.conversation_id !== conversationId) return
       setMessages((prev) => {
-        if (prev === null) return prev
-        if (prev.some((existing) => existing.id === m.id)) return prev
-        return [...prev, m]
+        if (prev === null) {
+          if (!pendingRef.current.some((x) => x.id === m.id)) pendingRef.current.push(m)
+          return prev
+        }
+        return mergeMessage(prev, m)
       })
     },
     [conversationId]
@@ -156,6 +187,7 @@ export default function ConversationPage() {
     setNotFound(false)
     setLoadError(false)
     setMessages(null)
+    pendingRef.current = []
     try {
       const r = await apiFetch(`/api/chat/conversations/${conversationId}/messages`)
       // Only a real 404 is "not found"; any other non-ok (401/500) is a
@@ -169,7 +201,10 @@ export default function ConversationPage() {
         return
       }
       const page: ChatMessage[] = await r.json()
-      setMessages(page)
+      // Merge any socket messages buffered while the snapshot was loading.
+      const buffered = pendingRef.current
+      pendingRef.current = []
+      setMessages(buffered.reduce(mergeMessage, page))
       // A short first page means there is no older history to page back to.
       setHasMore(page.length >= MESSAGE_PAGE)
     } catch {
@@ -190,11 +225,19 @@ export default function ConversationPage() {
     loadInitial()
   }, [authLoading, user, conversationId, loadInitial])
 
-  // Auto-scroll to the bottom only when the newest message changes (initial
-  // load or a message appended live), never when older history is prepended.
-  const lastMessageId = messages && messages.length ? messages[messages.length - 1].id : null
+  // Auto-scroll to the bottom when the newest message changes, but only for the
+  // user's own sends or when they are already near the bottom (atBottomRef,
+  // which starts true so the initial load scrolls). An incoming message while
+  // the user reads older history no longer yanks them away.
+  const lastMessage = messages && messages.length ? messages[messages.length - 1] : null
+  const lastMessageId = lastMessage ? lastMessage.id : null
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "instant", block: "end" })
+    if (!lastMessage) return
+    const own = lastMessage.sender_username === user?.username
+    if (own || atBottomRef.current) {
+      bottomRef.current?.scrollIntoView({ behavior: "instant", block: "end" })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lastMessageId])
 
   // Load the previous page of history and prepend it, preserving the scroll
@@ -235,7 +278,9 @@ export default function ConversationPage() {
 
   function handleScroll() {
     const c = listRef.current
-    if (c && c.scrollTop < 48) loadOlder()
+    if (!c) return
+    if (c.scrollTop < 48) loadOlder()
+    atBottomRef.current = c.scrollHeight - c.scrollTop - c.clientHeight < 120
   }
 
   // Stable send hook for the composer: returns whether the draft was accepted
