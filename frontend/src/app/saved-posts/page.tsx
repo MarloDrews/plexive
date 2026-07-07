@@ -6,6 +6,7 @@ import PostCard, { type Post } from "@/components/PostCard"
 import { getSavedPostIds } from "@/lib/savedPosts"
 import { fetchPostsByIds } from "@/lib/fetchPosts"
 import BottomNav from "@/components/BottomNav"
+import ToastHost from "@/components/ToastHost"
 import { BookmarkIcon } from "@/components/icons"
 
 export default function SavedPostsPage() {
@@ -89,6 +90,8 @@ export default function SavedPostsPage() {
         )}
 
         <BottomNav activeTab="profile" />
+        {/* The one toast element for every card's share feedback. */}
+        <ToastHost />
       </div>
     </div>
   )

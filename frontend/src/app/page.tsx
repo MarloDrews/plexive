@@ -7,6 +7,7 @@ import useSWR from "swr"
 import dynamic from "next/dynamic"
 import PostCard from "@/components/PostCard"
 import BottomNav from "@/components/BottomNav"
+import ToastHost from "@/components/ToastHost"
 import FeedHeader, { type FeedTab } from "@/components/FeedHeader"
 import type { Post } from "@/types/post"
 import { useAuth, hasToken } from "@/lib/auth"
@@ -268,6 +269,8 @@ export default function Home() {
         })}
       </div>
       <BottomNav activeTab="feed" />
+      {/* The one toast element for every card's share feedback. */}
+      <ToastHost />
     </PhoneFrame>
   )
 }

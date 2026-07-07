@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import CommentsBottomSheet from "./CommentsBottomSheet"
-import Toast from "./Toast"
+import { showToast } from "@/lib/toastBus"
+import { observeCard } from "@/lib/sharedObserver"
 import { queueEvent } from "@/lib/eventQueue"
 import { savePost, unsavePost, isPostSaved } from "@/lib/savedPosts"
 import { requestAutoRead } from "@/lib/readAloud/autostart"
@@ -134,7 +135,6 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
   const [animatingLike, setAnimatingLike] = useState(false)
   const [showComments, setShowComments] = useState(false)
   const [showHeartAnim, setShowHeartAnim] = useState(false)
-  const [toastVisible, setToastVisible] = useState(false)
 
   const style = formatStyle(post.format)
   const fc = post.feed_card
@@ -148,31 +148,28 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
     const el = cardRef.current
     if (!el) return
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          viewStartRef.current = Date.now()
-          if (!reduceMotion) setVisible(true)
-          syncFromStorage()
-          // Reconcile the like count against the server on first view (the hook
-          // fetches at most once), so the feed no longer fires one /likes
-          // request per mounted card the instant a tab opens.
-          reconcile()
-        } else {
-          if (viewStartRef.current !== null) {
-            const duration_ms = Date.now() - viewStartRef.current
-            if (duration_ms >= MIN_DWELL_MS) {
-              queueEvent({ post_id: post.id, event_type: "view", duration_ms })
-            }
-            viewStartRef.current = null
+    // One shared IntersectionObserver serves every card (same threshold);
+    // this registers the per-card callback and returns its cleanup.
+    return observeCard(el, (entry) => {
+      if (entry.isIntersecting) {
+        viewStartRef.current = Date.now()
+        if (!reduceMotion) setVisible(true)
+        syncFromStorage()
+        // Reconcile the like count against the server on first view (the hook
+        // fetches at most once), so the feed no longer fires one /likes
+        // request per mounted card the instant a tab opens.
+        reconcile()
+      } else {
+        if (viewStartRef.current !== null) {
+          const duration_ms = Date.now() - viewStartRef.current
+          if (duration_ms >= MIN_DWELL_MS) {
+            queueEvent({ post_id: post.id, event_type: "view", duration_ms })
           }
-          if (!reduceMotion) setVisible(false)
+          viewStartRef.current = null
         }
-      },
-      { threshold: 0.6 }
-    )
-    observer.observe(el)
-    return () => observer.disconnect()
+        if (!reduceMotion) setVisible(false)
+      }
+    })
   }, [post.id, syncFromStorage, reconcile])
 
   // A fresh like fires the heart animation; an unlike does not. The like/unlike
@@ -238,8 +235,8 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
         await navigator.share({ title: post.title, text: fcStr(fc, "essence"), url })
       } else {
         await navigator.clipboard.writeText(url)
-        setToastVisible(true)
-        setTimeout(() => setToastVisible(false), 2000)
+        // Raised on the page-level ToastHost; the hide timer lives there.
+        showToast("Link copied!")
       }
     } catch {
       // User cancelled share or clipboard failed
@@ -669,8 +666,6 @@ export default function PostCard({ post, activeTabId }: { post: Post; activeTabI
           }}
         />
       )}
-
-      <Toast message="Link copied!" visible={toastVisible} />
     </div>
   )
 }
