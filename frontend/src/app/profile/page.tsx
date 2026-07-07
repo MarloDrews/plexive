@@ -6,6 +6,7 @@ import Link from "next/link"
 import useSWR from "swr"
 import { useAuth } from "@/lib/auth"
 import { apiFetch } from "@/lib/api"
+import { detailToMessage } from "@/lib/errorMessage"
 import BottomNav from "@/components/BottomNav"
 import VerifiedBadge from "@/components/VerifiedBadge"
 import Avatar from "@/components/Avatar"
@@ -120,7 +121,7 @@ export default function ProfilePage() {
       form.append("file", file)
       const r = await apiFetch("/api/auth/me/avatar", { method: "POST", body: form })
       const data = await r.json()
-      if (!r.ok) throw new Error(data.detail ?? "Failed to upload picture.")
+      if (!r.ok) throw new Error(detailToMessage(data.detail, "Failed to upload picture."))
       updateUser(data)
     } catch (err) {
       setAvatarError(err instanceof Error ? err.message : "Failed to upload picture.")
@@ -150,7 +151,7 @@ export default function ProfilePage() {
         body: JSON.stringify({ username: newUsername }),
       })
       const data = await r.json()
-      if (!r.ok) throw new Error(data.detail ?? "Failed to update username.")
+      if (!r.ok) throw new Error(detailToMessage(data.detail, "Failed to update username."))
       updateUser(data)
       setOpen(null)
     } catch (err) {
@@ -170,7 +171,7 @@ export default function ProfilePage() {
         body: JSON.stringify({ current_password: currentPw, new_password: newPw }),
       })
       const data = await r.json()
-      if (!r.ok) throw new Error(data.detail ?? "Failed to change password.")
+      if (!r.ok) throw new Error(detailToMessage(data.detail, "Failed to change password."))
       setOpen(null)
     } catch (err) {
       setPasswordError(err instanceof Error ? err.message : "Failed to change password.")
@@ -190,7 +191,7 @@ export default function ProfilePage() {
       })
       if (!r.ok) {
         const data = await r.json()
-        throw new Error(data.detail ?? "Failed to delete account.")
+        throw new Error(detailToMessage(data.detail, "Failed to delete account."))
       }
       logout()
       router.replace("/")
@@ -210,7 +211,7 @@ export default function ProfilePage() {
         body: JSON.stringify({ bio }),
       })
       const data = await r.json()
-      if (!r.ok) throw new Error(data.detail ?? "Failed to save bio.")
+      if (!r.ok) throw new Error(detailToMessage(data.detail, "Failed to save bio."))
       updateUser(data)
     } catch (err) {
       setBioError(err instanceof Error ? err.message : "Failed to save bio.")
@@ -229,7 +230,7 @@ export default function ProfilePage() {
         body: JSON.stringify({ is_private: !user.is_private }),
       })
       const data = await r.json()
-      if (!r.ok) throw new Error(data.detail ?? "Failed to update privacy.")
+      if (!r.ok) throw new Error(detailToMessage(data.detail, "Failed to update privacy."))
       updateUser(data)
     } catch (err) {
       // Without this catch the throw escaped the handler with no feedback.

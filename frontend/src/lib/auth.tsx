@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react"
 import { clearApiCache } from "./swr"
 import { TOKEN_KEY } from "@/lib/storage"
+import { detailToMessage } from "@/lib/errorMessage"
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
@@ -46,17 +47,6 @@ async function safeJson(r: Response): Promise<Record<string, unknown>> {
   } catch {
     return {}
   }
-}
-
-// FastAPI returns detail as a string for HTTPException but as an array of
-// objects for 422 validation errors; both must become a readable message.
-function detailToMessage(detail: unknown, fallback: string): string {
-  if (typeof detail === "string") return detail
-  if (Array.isArray(detail)) {
-    const first = detail[0]
-    if (first && typeof first.msg === "string") return first.msg.replace(/^Value error, /, "")
-  }
-  return fallback
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {

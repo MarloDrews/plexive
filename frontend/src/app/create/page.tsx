@@ -6,6 +6,7 @@ import useSWR from "swr"
 import { useAuth } from "@/lib/auth"
 import { apiFetch } from "@/lib/api"
 import { invalidateFeedCaches } from "@/lib/swr"
+import { detailToMessage } from "@/lib/errorMessage"
 import { FORMAT_IDS, FORMAT_STYLES, type FormatId } from "@/lib/formats"
 import { fcStr, type Post } from "@/types/post"
 import { CATEGORIES } from "@/lib/interests"
@@ -173,7 +174,7 @@ export default function CreatePage() {
       fd.append("file", file)
       const res = await apiFetch("/api/upload/image", { method: "POST", body: fd })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.detail ?? "Upload failed")
+      if (!res.ok) throw new Error(detailToMessage(data.detail, "Upload failed"))
       setFcField("cover_url", data.url)
     } catch (err) {
       setErrors((prev) => ({ ...prev, cover: err instanceof Error ? err.message : "Upload failed" }))
@@ -448,7 +449,7 @@ export default function CreatePage() {
         // Cached feed lists may now be missing the new post; drop them so the
         // next feed visit fetches fresh.
         if (res.status === 201) { invalidateFeedCaches(); setStep("success") }
-        else { const data = await res.json(); setServerError(data.detail ?? "Something went wrong.") }
+        else { const data = await res.json(); setServerError(detailToMessage(data.detail, "Something went wrong.")) }
       } catch { setServerError("Network error. Please try again.") }
       finally { setSubmitting(false) }
       return
@@ -488,7 +489,7 @@ export default function CreatePage() {
         setStep("success")
       } else {
         const data = await res.json()
-        setServerError(data.detail ?? "Something went wrong.")
+        setServerError(detailToMessage(data.detail, "Something went wrong."))
       }
     } catch {
       setServerError("Network error. Please try again.")
