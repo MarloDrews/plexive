@@ -1,6 +1,7 @@
 import SectionLabel from "../SectionLabel"
 import type { MisconceptionItem } from "../../types/post"
 import MathText from "../MathText"
+import { asArray } from "@/lib/asArray"
 
 interface Props {
   content: MisconceptionItem[]
@@ -11,7 +12,7 @@ export default function MisconceptionsSection({ content }: Props) {
     <div className="px-6 py-8">
       <SectionLabel className="mb-4">Common Misconceptions</SectionLabel>
       <div className="flex flex-col gap-4">
-        {content.map((item, i) => (
+        {asArray(content).map((item, i) => (
           <div key={i} className="flex flex-col gap-2">
             <div className="flex items-start gap-2">
               <span className="text-bad text-xs mt-0.5 shrink-0 font-bold">✕</span>

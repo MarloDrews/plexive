@@ -3,6 +3,7 @@ import SvgBlock from "../SvgBlock"
 import Prose from "../Prose"
 import MathText from "../MathText"
 import { unescapeDollar } from "@/lib/prose"
+import { asArray } from "@/lib/asArray"
 
 interface Step {
   step_number: number
@@ -20,7 +21,7 @@ export default function HowItWorksSection({ content, isUserContent }: Props) {
   return (
     <div className="px-6 py-8 flex flex-col gap-8">
       <SectionLabel className="-mb-4">How It Works</SectionLabel>
-      {content.map((step, i) => (
+      {asArray(content).map((step, i) => (
         <div key={i} className="flex gap-4">
           <span className="shrink-0 w-6 h-6 rounded-full bg-(--accent)/15 border border-(--accent)/40 text-(--accent) text-xs flex items-center justify-center font-bold mt-0.5">
             {step.step_number}

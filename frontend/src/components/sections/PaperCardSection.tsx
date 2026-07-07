@@ -1,5 +1,6 @@
 import type { PaperCardContent } from "../../types/post"
 import { unescapeDollar } from "@/lib/prose"
+import { asArray } from "@/lib/asArray"
 
 interface Props {
   content: PaperCardContent
@@ -13,7 +14,7 @@ export default function PaperCardSection({ content }: Props) {
           record only: authors + affiliations, venue/year, and the locators. */}
       <div className="border border-edge-strong rounded-card px-4 py-4 flex flex-col gap-3">
         <div className="flex flex-col gap-1">
-          {content.authors.map((a, i) => (
+          {asArray(content.authors).map((a, i) => (
             <div key={i}>
               <span className="text-xs text-ink-body font-medium">{unescapeDollar(a.name)}</span>
               {a.affiliation && (

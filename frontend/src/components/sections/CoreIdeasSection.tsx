@@ -4,6 +4,7 @@ import SectionLabel from "../SectionLabel"
 import Prose from "../Prose"
 import MathText from "../MathText"
 import { unescapeDollar } from "@/lib/prose"
+import { asArray } from "@/lib/asArray"
 
 interface Props {
   content: CoreIdeaItem[]
@@ -15,7 +16,7 @@ export default function CoreIdeasSection({ content, isUserContent }: Props) {
     <div className="px-6 py-8">
       <SectionLabel className="mb-4">The Core Ideas</SectionLabel>
       <div className="flex flex-col gap-10">
-      {content.map((idea, i) => (
+      {asArray(content).map((idea, i) => (
         <div key={i} className="flex flex-col gap-3">
           <h2 className="text-lg font-semibold text-(--accent) leading-snug">{unescapeDollar(idea.title)}</h2>
           <Prose><MathText text={idea.body} /></Prose>

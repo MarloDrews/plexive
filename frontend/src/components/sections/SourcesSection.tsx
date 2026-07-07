@@ -1,5 +1,6 @@
 import type { SourceItem } from "../../types/post"
 import { unescapeDollar } from "@/lib/prose"
+import { asArray } from "@/lib/asArray"
 
 interface Props {
   content: SourceItem[]
@@ -25,7 +26,7 @@ export default function SourcesSection({ content }: Props) {
   return (
     <div className="px-6 py-8">
       <ul className="flex flex-col gap-2">
-        {content.map((source, i) => (
+        {asArray(content).map((source, i) => (
           <li key={i}>
             <a
               href={source.url}

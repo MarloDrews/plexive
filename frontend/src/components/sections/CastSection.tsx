@@ -2,6 +2,7 @@ import SectionLabel from "../SectionLabel"
 import type { CastMember } from "../../types/post"
 import MathText from "../MathText"
 import { unescapeDollar } from "@/lib/prose"
+import { asArray } from "@/lib/asArray"
 
 interface Props {
   content: CastMember[]
@@ -15,7 +16,7 @@ export default function CastSection({ content }: Props) {
         {/* Person cards, the shared key-figures kit (LAYOUT_STANDARD s7); same
             card shape as OriginSection's key thinkers, with an optional portrait
             and its required credit (IMAGE_STANDARD s3). */}
-        {content.map((member, i) => (
+        {asArray(content).map((member, i) => (
           <div key={i} className="border border-edge rounded-card px-4 py-3 flex flex-col gap-2">
             <div className="flex gap-3">
               {member.image_url && (

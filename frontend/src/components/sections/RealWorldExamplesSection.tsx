@@ -4,6 +4,7 @@ import ContentImage from "./ContentImage"
 import Prose from "../Prose"
 import MathText from "../MathText"
 import { unescapeDollar } from "@/lib/prose"
+import { asArray } from "@/lib/asArray"
 
 interface Example {
   title: string
@@ -24,7 +25,7 @@ export default function RealWorldExamplesSection({ content, isUserContent }: Pro
   return (
     <div className="px-6 py-8 flex flex-col gap-8">
       <SectionLabel className="-mb-4">Real-World Examples</SectionLabel>
-      {content.map((example, i) => (
+      {asArray(content).map((example, i) => (
         <div key={i} className="flex flex-col gap-2">
           <div>
             <h3 className="text-sm font-semibold text-ink leading-snug">{unescapeDollar(example.title)}</h3>

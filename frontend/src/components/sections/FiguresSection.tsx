@@ -2,6 +2,7 @@ import SectionLabel from "../SectionLabel"
 import ContentImage from "./ContentImage"
 import MathText from "../MathText"
 import { unescapeDollar } from "@/lib/prose"
+import { asArray } from "@/lib/asArray"
 import type { FigureItem } from "../../types/post"
 
 interface Props {
@@ -16,7 +17,7 @@ export default function FiguresSection({ content }: Props) {
   return (
     <div className="px-6 py-8 flex flex-col gap-5">
       <SectionLabel>Figures</SectionLabel>
-      {content.map((fig, i) => (
+      {asArray(content).map((fig, i) => (
         <div key={i} className="flex flex-col gap-1.5">
           {fig.figure_label && (
             <p className="text-xs font-semibold text-(--accent) uppercase tracking-wide">

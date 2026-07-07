@@ -5,6 +5,7 @@ import ContentImage from "./ContentImage"
 import MathText from "../MathText"
 import Prose from "../Prose"
 import { unescapeDollar } from "@/lib/prose"
+import { asArray } from "@/lib/asArray"
 
 interface Props {
   content: KeyFindingItem[]
@@ -18,7 +19,7 @@ export default function KeyFindingsSection({ content, isUserContent }: Props) {
     // treatment Facts uses on surprises and Concepts on how_to_apply.
     <div className="px-6 py-8 flex flex-col gap-5 border-l-2 border-(--accent) bg-(--accent)/[0.06]">
       <SectionLabel>Key Findings</SectionLabel>
-      {content.map((item, i) => (
+      {asArray(content).map((item, i) => (
         <div key={i} className="flex flex-col gap-2">
           <p className="text-sm font-semibold text-ink">{unescapeDollar(item.title)}</p>
           <Prose className="text-ink-dim">

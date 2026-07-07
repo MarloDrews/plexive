@@ -16,11 +16,13 @@ export default function VisualExplanationSection({ content, isUserContent }: Pro
   return (
     <div className="px-6 py-8 flex flex-col gap-3">
       <SectionLabel>Visual Explanation</SectionLabel>
-      <SvgBlock
-        svg={content.visual_svg}
-        isUserContent={isUserContent}
-        className="w-full max-w-[400px] mx-auto"
-      />
+      {content.visual_svg && (
+        <SvgBlock
+          svg={content.visual_svg}
+          isUserContent={isUserContent}
+          className="w-full max-w-[400px] mx-auto"
+        />
+      )}
       {content.image_caption && (
         <p className="text-xs text-ink-muted text-center leading-snug"><MathText text={content.image_caption} /></p>
       )}
