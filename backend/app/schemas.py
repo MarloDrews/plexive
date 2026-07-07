@@ -393,6 +393,17 @@ class PostOut(BaseModel):
     # label the same slug identically. None when tags[0] is absent/unmapped.
     primary_category_name: str | None = None
 
+    @field_validator("tags", mode="before")
+    @classmethod
+    def clean_tags(cls, v):
+        # tags is arbitrary JSON on seed/legacy rows. Without this, a row whose
+        # tags is not a list of strings raises ResponseValidationError, which
+        # 500s the ENTIRE list response (feed/search/etc.), not just that post.
+        # Coerce to a clean list[str] so one bad row cannot take down the list.
+        if not isinstance(v, list):
+            return []
+        return [t for t in v if isinstance(t, str)]
+
     @field_validator("interests", mode="before")
     @classmethod
     def extract_interest_names(cls, v):
