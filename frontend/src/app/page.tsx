@@ -4,14 +4,27 @@ import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import useSWR from "swr"
+import dynamic from "next/dynamic"
 import PostCard from "@/components/PostCard"
 import BottomNav from "@/components/BottomNav"
 import FeedHeader, { type FeedTab } from "@/components/FeedHeader"
-import Marathon from "@/components/Marathon"
-import Battle from "@/components/Battle"
 import type { Post } from "@/types/post"
 import { useAuth, hasToken } from "@/lib/auth"
 import { useSwipeTabs } from "@/lib/useSwipeTabs"
+
+// Train and Battle ship as their own lazy chunks: their whole import graphs
+// (stage kit, sockets, question pools, Elo math) otherwise sit in the entry
+// chunk of the app's most-visited route while rendering is already gated on
+// tab activation. The loading fallback is the same empty surface the
+// non-activated tab shows, so nothing changes visually while the chunk loads.
+const Marathon = dynamic(() => import("@/components/Marathon"), {
+  ssr: false,
+  loading: () => <div className="h-full bg-surface-0" />,
+})
+const Battle = dynamic(() => import("@/components/Battle"), {
+  ssr: false,
+  loading: () => <div className="h-full bg-surface-0" />,
+})
 
 const TABS: FeedTab[] = [
   // The feed has no format-specific tabs (books, people, etc.); format filtering
