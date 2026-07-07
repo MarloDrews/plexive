@@ -139,7 +139,7 @@ export default function SearchPage() {
     inputRef.current?.focus()
   }, [])
 
-  // Posts search — depends on the format filter.
+  // Posts search - depends on the format filter.
   useEffect(() => {
     const trimmed = query.trim()
     if (!trimmed) {
@@ -167,7 +167,7 @@ export default function SearchPage() {
     return () => clearTimeout(timer)
   }, [query, formatFilter])
 
-  // User search — keyed on the query only, so format-chip taps do not refire it.
+  // User search - keyed on the query only, so format-chip taps do not refire it.
   useEffect(() => {
     const trimmed = query.trim()
     if (!trimmed) {
