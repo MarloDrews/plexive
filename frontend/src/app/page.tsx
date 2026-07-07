@@ -28,6 +28,21 @@ const TABS: FeedTab[] = [
 
 const DEFAULT_TAB_INDEX = TABS.findIndex((t) => t.id === "for-you")
 
+// A per-session feed seed, generated once and reused for the whole session.
+// The backend jitters For You order per request but is deterministic under a
+// fixed seed, so pinning one seed makes the order stable across refetches --
+// which is what lets feed revalidation be turned back on without the feed
+// visibly reshuffling under the user.
+function getFeedSeed(): string {
+  if (typeof window === "undefined") return "0"
+  let s = sessionStorage.getItem("feedSeed")
+  if (!s) {
+    s = Math.floor(Math.random() * 1_000_000_000).toString()
+    sessionStorage.setItem("feedSeed", s)
+  }
+  return s
+}
+
 function PhoneFrame({ children }: { children: React.ReactNode }) {
   return (
     <div className="h-[100dvh] bg-surface-0 flex justify-center">
@@ -48,12 +63,14 @@ function TabPage({
   const scrollRef = useRef<HTMLDivElement>(null)
   const { user, loading: authLoading } = useAuth()
   const isFollowingTab = tab.id === "following"
+  // Stable for the whole session; the same value across every tab and refetch.
+  const [seed] = useState(getFeedSeed)
 
   // SWR key; null reproduces the old fetch gating (not activated yet, no
-  // interests, or following tab before auth resolves). revalidateIfStale:
-  // false serves a revisited tab from cache with no background refetch —
-  // feed order is jittered per request server-side, so a silent revalidate
-  // would visibly reshuffle posts under the user.
+  // interests, or following tab before auth resolves). The For You feed pins a
+  // per-session seed so its order stays stable under revalidation; feed lists
+  // now revalidate when stale again (SWR default), picking up new posts and
+  // fresh counts without reshuffling the order under the user.
   let key: string | null = null
   if (isActivated) {
     if (isFollowingTab) {
@@ -63,12 +80,12 @@ function TabPage({
       // AuthProvider, which then shows the logged-out state.
       if (hasToken()) key = "/api/feed/following"
     } else if (slugs.length > 0) {
-      const params = new URLSearchParams({ interests: slugs.join(",") })
+      const params = new URLSearchParams({ interests: slugs.join(","), seed })
       if (tab.format) params.set("format", tab.format)
       key = `/api/feed?${params}`
     }
   }
-  const { data, error, mutate } = useSWR<Post[]>(key, { revalidateIfStale: false })
+  const { data, error, mutate } = useSWR<Post[]>(key)
   // The following tab still treats a failure as an empty feed (its empty and
   // error states read the same). The other tabs used to leave posts at null on
   // error, which is indistinguishable from loading, so they now branch on error
