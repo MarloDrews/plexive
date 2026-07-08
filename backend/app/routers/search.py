@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, Request
-from sqlalchemy import Text, cast, or_
+from sqlalchemy import Text, case, cast, func, or_
 from sqlalchemy.orm import Session
 
 from ..auth import get_optional_user
@@ -34,11 +34,16 @@ def _sql_prefilter_ok(q_lower: str) -> bool:
     return q_lower.isascii() and '"' not in q_lower and "\\" not in q_lower
 
 
+def _like_escape(q_lower: str) -> str:
+    """Escape LIKE wildcards so % and _ in the query match literally (paired with
+    escape='\\' on the ilike calls). Underscore matters for usernames, where _ is
+    a valid character (SEC-028)."""
+    return q_lower.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+
+
 def _like_pattern(q_lower: str) -> str:
-    """A contains-pattern with LIKE wildcards in the query escaped so they match
-    literally (paired with escape='\\' on the ilike calls)."""
-    escaped = q_lower.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
-    return f"%{escaped}%"
+    """A contains-pattern with LIKE wildcards escaped."""
+    return f"%{_like_escape(q_lower)}%"
 
 
 def _lower(value) -> str:
@@ -154,14 +159,20 @@ def search_users(
     limit = max(1, min(limit, 50))
     _limit_search(request, current_user, "search_users")
 
+    # Escape LIKE wildcards (SEC-028) and rank IN SQL before the limit (BE-030):
+    # ranking after a Python .limit() would pick an arbitrary window of rows and
+    # then reorder only those, dropping better prefix matches that sit past it.
+    q_lower = q.lower()
+    contains = _like_pattern(q_lower)
+    prefix = f"{_like_escape(q_lower)}%"
+    prefix_rank = case((User.username.ilike(prefix, escape="\\"), 0), else_=1)
     matches = (
         db.query(User)
-        .filter(User.is_active == True, User.username.ilike(f"%{q}%"))
+        .filter(User.is_active == True, User.username.ilike(contains, escape="\\"))
+        .order_by(prefix_rank, func.lower(User.username))
         .limit(limit)
         .all()
     )
-    # Prefix matches first, then alphabetical.
-    matches.sort(key=lambda u: (0 if u.username.lower().startswith(q.lower()) else 1, u.username.lower()))
 
     follow_lookup: dict[int, str] = {}
     if current_user is not None and matches:

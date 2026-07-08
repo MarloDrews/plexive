@@ -530,6 +530,28 @@ under_status, under_reached = _asyncio.run(_drive_body_limit(1024))
 check("small chunked body passes through to the app (M131)",
       under_status == 200 and under_reached is True, f"status={under_status} reached={under_reached}")
 
+# --- user search: LIKE escape + rank-before-limit (M134/SEC-028, BE-030) -----
+reset_rate_limits()
+
+# SEC-028: an underscore in the query (a valid username char) must match
+# literally, not as a LIKE single-char wildcard.
+register("foo_bar@example.com", "foo_bar")
+register("fooxbar@example.com", "fooxbar")
+_names = [u["username"] for u in client.get("/api/search/users", params={"q": "foo_bar"}).json()]
+check("underscore in user search matches literally, not as a wildcard (M134/SEC-028)",
+      "foo_bar" in _names and "fooxbar" not in _names, str(_names))
+
+# BE-030: ranking happens in SQL before the limit. The prefix match is
+# registered LAST; with limit=1 it must still win over the earlier
+# contains-only matches (the old code limited first, then reordered).
+register("zrankone@example.com", "zrankone")
+register("zranktwo@example.com", "zranktwo")
+register("ranklead@example.com", "ranklead")
+_top = client.get("/api/search/users", params={"q": "rank", "limit": 1}).json()
+check("user search ranks prefix match before applying the limit (M134/BE-030)",
+      len(_top) == 1 and _top[0]["username"] == "ranklead", str(_top))
+
+
 # --- SVG sanitize consistency (M133/SEC-025, SEC-027) ------------------------
 from app.routers.posts import _sanitize_json_svgs as _sanitize_fc  # noqa: E402
 from app.sanitize import sanitize_svg_text as _sanitize_svg  # noqa: E402
