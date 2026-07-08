@@ -164,6 +164,14 @@ class User(Base):
     knowledge_rating         = Column(Float, nullable=True)
     knowledge_answered_count = Column(Integer, nullable=False, default=0)
 
+    # Monotonic token version embedded in each JWT as the "ver" claim and checked
+    # on decode (M126/SEC-012). Bumped on password change so existing tokens stop
+    # validating -- a stolen token dies when the victim changes their password.
+    # A token minted before the claim existed carries ver 0, matching the
+    # default, so nobody is logged out by adding the column. Added to the live DB
+    # by scripts/add_token_version.py.
+    token_version            = Column(Integer, nullable=False, default=0)
+
     posts = relationship("Post", back_populates="author", foreign_keys="Post.author_id")
 
 

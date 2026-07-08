@@ -420,7 +420,7 @@ async def chat_websocket(websocket: WebSocket):
         return
 
     try:
-        user_id = decode_access_token(first["token"])
+        user_id, token_version = decode_access_token(first["token"])
     except HTTPException:
         await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
         return
@@ -430,7 +430,8 @@ async def chat_websocket(websocket: WebSocket):
         user = db.query(User).filter(User.id == user_id, User.is_active == True).first()
     finally:
         db.close()
-    if not user:
+    # Reject a token whose version was revoked by a password change (M126).
+    if not user or user.token_version != token_version:
         await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
         return
 

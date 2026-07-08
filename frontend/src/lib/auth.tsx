@@ -37,6 +37,9 @@ interface AuthContextType {
   register: (email: string, username: string, password: string) => Promise<void>
   logout: () => void
   updateUser: (user: AuthUser) => void
+  // Persist a re-minted token for the current session (e.g. after a password
+  // change bumps the token version server-side and invalidates the old token).
+  applyFreshToken: (token: string) => void
 }
 
 const AuthContext = createContext<AuthContextType | null>(null)
@@ -154,9 +157,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(updated)
   }, [])
 
+  const applyFreshToken = useCallback((token: string): void => {
+    try {
+      localStorage.setItem(TOKEN_KEY, token)
+    } catch {}
+  }, [])
+
   const value = useMemo(
-    () => ({ user, loading, login, register, logout, updateUser }),
-    [user, loading, login, register, logout, updateUser]
+    () => ({ user, loading, login, register, logout, updateUser, applyFreshToken }),
+    [user, loading, login, register, logout, updateUser, applyFreshToken]
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

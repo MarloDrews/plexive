@@ -61,6 +61,14 @@ class TokenResponse(BaseModel):
     user: UserOut
 
 
+class PatchMeResponse(UserOut):
+    # UserOut plus an optional fresh token: a password change bumps the user's
+    # token_version (revoking every other session), so the caller's own token
+    # would also be invalidated; return a re-minted one so this session stays
+    # signed in (M126). None when the password did not change.
+    access_token: str | None = None
+
+
 @router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
 def register(body: RegisterRequest, request: Request, db: Session = Depends(get_db)):
     check_rate_limit(f"ip:{_client_ip(request)}", "register", 10, 3600)
@@ -82,7 +90,7 @@ def register(body: RegisterRequest, request: Request, db: Session = Depends(get_
     db.commit()
     db.refresh(user)
 
-    token = create_access_token(user.id)
+    token = create_access_token(user.id, user.token_version)
     return TokenResponse(access_token=token, user=UserOut.model_validate(user))
 
 
@@ -101,7 +109,7 @@ def login(body: LoginRequest, request: Request, db: Session = Depends(get_db)):
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    token = create_access_token(user.id)
+    token = create_access_token(user.id, user.token_version)
     return TokenResponse(access_token=token, user=UserOut.model_validate(user))
 
 
@@ -146,7 +154,7 @@ class PatchMeRequest(BaseModel):
         return v
 
 
-@router.patch("/me", response_model=UserOut)
+@router.patch("/me", response_model=PatchMeResponse)
 def patch_me(
     body: PatchMeRequest,
     current_user: User = Depends(get_current_user),
@@ -158,6 +166,7 @@ def patch_me(
             detail="Provide at least one field to update.",
         )
 
+    password_changed = False
     if body.new_password is not None:
         if not body.current_password:
             raise HTTPException(
@@ -170,6 +179,9 @@ def patch_me(
                 detail="Current password is incorrect.",
             )
         current_user.password_hash = hash_password(body.new_password)
+        # Revoke every existing token by bumping the version (M126).
+        current_user.token_version = (current_user.token_version or 0) + 1
+        password_changed = True
 
     if body.username is not None:
         conflict = (
@@ -192,7 +204,12 @@ def patch_me(
 
     db.commit()
     db.refresh(current_user)
-    return UserOut.model_validate(current_user)
+    resp = PatchMeResponse.model_validate(current_user)
+    if password_changed:
+        # Keep THIS session alive with a token carrying the new version; every
+        # other outstanding token is now invalid.
+        resp.access_token = create_access_token(current_user.id, current_user.token_version)
+    return resp
 
 
 @router.post("/me/avatar", response_model=UserOut)

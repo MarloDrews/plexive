@@ -19,7 +19,7 @@ interface EloData {
 }
 
 export default function ProfilePage() {
-  const { user, loading, logout, updateUser } = useAuth()
+  const { user, loading, logout, updateUser, applyFreshToken } = useAuth()
   const router = useRouter()
 
   // Which settings panel is open: "username" | "password" | "delete" | null
@@ -172,6 +172,9 @@ export default function ProfilePage() {
       })
       const data = await r.json()
       if (!r.ok) throw new Error(detailToMessage(data.detail, "Failed to change password."))
+      // The server bumped the token version, revoking every other session; keep
+      // this one signed in with the re-minted token it returned (M126).
+      if (data.access_token) applyFreshToken(data.access_token)
       setOpen(null)
     } catch (err) {
       setPasswordError(err instanceof Error ? err.message : "Failed to change password.")

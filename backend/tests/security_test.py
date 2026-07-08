@@ -24,6 +24,14 @@ from sqlalchemy import func  # noqa: E402
 from app.database import Base, SessionLocal, engine  # noqa: E402
 from app.main import app  # noqa: E402
 from app.models import Event, Interest, Post  # noqa: E402
+from app.rate_limit import _counters as _rl_counters  # noqa: E402
+
+
+def reset_rate_limits():
+    # The register (10/hr) and login (per-IP) limits accumulate across the many
+    # accounts this suite creates; clear the in-memory counters between sections
+    # that need a fresh budget (never during the block that asserts a limit).
+    _rl_counters.clear()
 
 Base.metadata.create_all(bind=engine)
 client = TestClient(app)
@@ -418,5 +426,28 @@ ok_source_payload = {
 }
 r = client.post("/api/posts", json=ok_source_payload, headers=auth(admin_user["access_token"]))
 check("source url with an https scheme accepted (M123)", r.status_code == 201, r.text)
+
+# --- token revocation on password change (M126) ----------------------------------
+reset_rate_limits()
+pw_user = register("pwchange@example.com", "pwchanger")
+old_token = pw_user["access_token"]
+# a second concurrent session for the same account
+r = client.post("/api/auth/login", json={"email": "pwchange@example.com", "password": "password123"})
+second_token = r.json()["access_token"]
+check("token valid before password change",
+      client.get("/api/auth/me", headers=auth(old_token)).status_code == 200)
+
+r = client.patch("/api/auth/me",
+                 json={"current_password": "password123", "new_password": "newpassword123"},
+                 headers=auth(old_token))
+check("password change returns a fresh token",
+      r.status_code == 200 and bool(r.json().get("access_token")), r.text)
+fresh_token = r.json()["access_token"]
+check("old token revoked after password change",
+      client.get("/api/auth/me", headers=auth(old_token)).status_code == 401)
+check("other session token revoked after password change",
+      client.get("/api/auth/me", headers=auth(second_token)).status_code == 401)
+check("fresh token still valid after password change",
+      client.get("/api/auth/me", headers=auth(fresh_token)).status_code == 200)
 
 print(f"\nAll {PASS} security checks passed.")
