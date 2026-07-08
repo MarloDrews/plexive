@@ -450,4 +450,16 @@ check("other session token revoked after password change",
 check("fresh token still valid after password change",
       client.get("/api/auth/me", headers=auth(fresh_token)).status_code == 200)
 
+# --- content size caps (M127) ----------------------------------------------------
+big_body = "x" * (5 * 1024 * 1024 + 200_000)  # just over the 5 MB sections cap
+big_payload = {
+    "format": "facts",
+    "title": "Too big",
+    "feed_card": {"headline": "Too big", "essence": "e"},
+    "sections": [{"type": "heart", "order": 1, "content": big_body}],
+    "interests": ["philosophy"],
+}
+r = client.post("/api/posts", json=big_payload, headers=auth(admin_user["access_token"]))
+check("oversized sections rejected (M127)", r.status_code == 422, r.text)
+
 print(f"\nAll {PASS} security checks passed.")

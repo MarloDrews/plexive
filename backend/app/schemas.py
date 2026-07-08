@@ -1,8 +1,30 @@
+import json
 import os
 from datetime import datetime
 from typing import Annotated, List, Literal, Union
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+
+# Shape caps on user-submitted post content (M127/SEC-013). Generous bounds that
+# stop a single post carrying multi-MB deeply nested JSON (which reading-time,
+# SVG re-sanitization, search and scoring would then walk repeatedly), without
+# constraining the content model. Seed content bypasses the API and these caps.
+MAX_SECTIONS = 40
+MAX_JSON_DEPTH = 12
+MAX_FEED_CARD_BYTES = 1 * 1024 * 1024
+MAX_SECTIONS_BYTES = 5 * 1024 * 1024
+
+
+def _json_depth(obj, _depth: int = 1) -> int:
+    """Nesting depth of a JSON-like value; stops descending once the cap is
+    exceeded so a pathological payload cannot make this itself expensive."""
+    if _depth > MAX_JSON_DEPTH:
+        return _depth
+    if isinstance(obj, dict):
+        return max((_json_depth(v, _depth + 1) for v in obj.values()), default=_depth)
+    if isinstance(obj, list):
+        return max((_json_depth(v, _depth + 1) for v in obj), default=_depth)
+    return _depth
 
 
 # ---------------------------------------------------------------------------
@@ -359,16 +381,27 @@ class PostCreate(BaseModel):
         # No format allows two sections of the same type: consumers read the
         # first match (quiz answering, search), so questions in a duplicate
         # section would render but never be answerable.
+        if len(self.sections) > MAX_SECTIONS:
+            raise ValueError(f"too many sections (max {MAX_SECTIONS})")
         types = [s.type for s in self.sections]
         duplicates = sorted({t for t in types if types.count(t) > 1})
         if duplicates:
             raise ValueError(f"duplicate section type(s): {', '.join(duplicates)}")
+        # Serialize sections once and reuse for the size/depth caps and the
+        # image_url check below.
+        section_dicts = [s.model_dump() for s in self.sections]
+        # Size + depth caps (M127/SEC-013): bound abuse without touching the model.
+        if len(json.dumps(self.feed_card, default=str).encode("utf-8")) > MAX_FEED_CARD_BYTES:
+            raise ValueError("feed_card is too large")
+        if len(json.dumps(section_dicts, default=str).encode("utf-8")) > MAX_SECTIONS_BYTES:
+            raise ValueError("sections are too large")
+        if _json_depth(self.feed_card) > MAX_JSON_DEPTH or _json_depth(section_dicts) > MAX_JSON_DEPTH:
+            raise ValueError("content is nested too deeply")
         # Validate image_url in sections for EVERY format (M122/SEC-008): user
         # content must reference our upload storage, not arbitrary external hosts.
         # This used to run only in the books branch below, leaving the other six
         # formats able to embed any image_url.
-        for section in self.sections:
-            section_dict = section.model_dump()
+        for section_dict in section_dicts:
             _check_image_urls(section_dict)
         if self.format != "books":
             return self
