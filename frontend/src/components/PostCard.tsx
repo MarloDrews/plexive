@@ -13,6 +13,7 @@ import { updatePostInFeedCaches } from "@/lib/swr"
 import { fcNum, fcStr, type Post } from "@/types/post"
 import { formatStyle } from "@/lib/formats"
 import { unescapeDollar } from "@/lib/prose"
+import { sizedImageUrl } from "@/lib/imageUrl"
 import AppImage from "@/components/AppImage"
 import Avatar from "@/components/Avatar"
 import BookCover from "@/components/BookCover"
@@ -388,7 +389,7 @@ function PostCard({ post, activeTabId }: { post: Post; activeTabId: string }) {
                 {(fc.portrait as { image_url?: string } | undefined)?.image_url && (
                   <div className="shrink-0 w-20 h-20 rounded-full overflow-hidden bg-white/[0.06]">
                     <AppImage
-                      src={(fc.portrait as { image_url: string }).image_url}
+                      src={sizedImageUrl((fc.portrait as { image_url: string }).image_url, 160)}
                       alt=""
                       width={80}
                       height={80}
@@ -522,7 +523,7 @@ function PostCard({ post, activeTabId }: { post: Post; activeTabId: string }) {
                   on a slim crop of a near-square image. */}
               {fcStr(fc, "lead_image_url") && (
                 <AppImage
-                  src={fcStr(fc, "lead_image_url")}
+                  src={sizedImageUrl(fcStr(fc, "lead_image_url"), 860)}
                   alt=""
                   width={860}
                   height={256}

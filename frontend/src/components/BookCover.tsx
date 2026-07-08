@@ -13,6 +13,7 @@
 import { useEffect, useState } from "react"
 import { resolveBookCover, generatedCoverStyle, bakedCoverSvg } from "@/lib/bookCover"
 import { toBase64Utf8 } from "@/lib/svg"
+import { sizedImageUrl } from "@/lib/imageUrl"
 import { fcStr } from "@/types/post"
 import GeneratedBookCover from "./GeneratedBookCover"
 
@@ -92,7 +93,7 @@ export default function BookCover({
     cover = (
       <div className={className}>
         <img
-          src={decision.url}
+          src={sizedImageUrl(decision.url, 400)}
           alt=""
           loading="lazy"
           decoding="async"

@@ -2,6 +2,7 @@ import type { HeadlineFigureContent } from "../../types/post"
 import SvgBlock from "../SvgBlock"
 import MathText from "../MathText"
 import { unescapeDollar } from "@/lib/prose"
+import { sizedImageUrl } from "@/lib/imageUrl"
 
 interface Props {
   content: HeadlineFigureContent
@@ -22,7 +23,7 @@ export default function HeadlineFigureSection({ content, isUserContent }: Props)
               next/image size painted a dark placeholder before load. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={content.image_url}
+            src={sizedImageUrl(content.image_url, 720)}
             alt=""
             loading="lazy"
             decoding="async"

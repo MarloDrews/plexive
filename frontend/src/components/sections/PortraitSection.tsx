@@ -1,5 +1,6 @@
 import MathText from "../MathText"
 import { unescapeDollar } from "@/lib/prose"
+import { sizedImageUrl } from "@/lib/imageUrl"
 
 interface PortraitContent {
   image_url: string
@@ -18,7 +19,7 @@ export default function PortraitSection({ content }: Props) {
           next/image size painted a large dark placeholder before load. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src={content.image_url}
+        src={sizedImageUrl(content.image_url, 860)}
         alt=""
         loading="lazy"
         decoding="async"

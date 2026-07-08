@@ -4,6 +4,7 @@
 
 import MathText from "../MathText"
 import { unescapeDollar } from "@/lib/prose"
+import { sizedImageUrl } from "@/lib/imageUrl"
 
 interface Props {
   url: string
@@ -22,7 +23,7 @@ export default function ContentImage({ url, caption, attribution, className = "w
           only fixed-slot images (avatars, bands, portraits) use AppImage. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src={url}
+        src={sizedImageUrl(url, 720)}
         alt=""
         loading="lazy"
         decoding="async"

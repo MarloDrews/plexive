@@ -5,6 +5,7 @@ import Prose from "../Prose"
 import MathText from "../MathText"
 import { unescapeDollar } from "@/lib/prose"
 import { asArray } from "@/lib/asArray"
+import { sizedImageUrl } from "@/lib/imageUrl"
 
 interface Props {
   content: CoreIdeaItem[]
@@ -31,7 +32,7 @@ export default function CoreIdeasSection({ content, isUserContent }: Props) {
                   next/image size painted a dark placeholder before load. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={idea.image_url}
+                src={sizedImageUrl(idea.image_url, 720)}
                 alt=""
                 loading="lazy"
                 decoding="async"

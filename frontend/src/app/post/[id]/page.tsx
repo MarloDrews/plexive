@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { formatStyle } from "@/lib/formats"
 import { unescapeDollar } from "@/lib/prose"
+import { sizedImageUrl } from "@/lib/imageUrl"
 import { fcNum, fcStr, type Post } from "@/types/post"
 import SectionRenderer from "@/components/SectionRenderer"
 import SectionLabel from "@/components/SectionLabel"
@@ -457,7 +458,7 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                       {(post.feed_card as { portrait?: { image_url?: string } }).portrait?.image_url && (
                         <div className="shrink-0 w-24 h-24 rounded-full overflow-hidden bg-white/[0.06]">
                           <AppImage
-                            src={(post.feed_card as { portrait: { image_url: string } }).portrait.image_url}
+                            src={sizedImageUrl((post.feed_card as { portrait: { image_url: string } }).portrait.image_url, 192)}
                             alt=""
                             width={96}
                             height={96}
@@ -546,7 +547,7 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                          image viewer. object-position keeps the central scene
                          (faces and table) in frame on the slim crop. */
                       <AppImage
-                        src={fcStr(post.feed_card, "lead_image_url")}
+                        src={sizedImageUrl(fcStr(post.feed_card, "lead_image_url"), 860)}
                         alt=""
                         width={860}
                         height={352}
