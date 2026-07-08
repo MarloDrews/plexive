@@ -1,4 +1,5 @@
 import SectionLabel from "../SectionLabel"
+import { safeImageSrc } from "@/lib/safeUrl"
 interface Episode {
   title: string
   year_or_period: string
@@ -43,7 +44,7 @@ export default function DefiningMomentsSection({ content, isUserContent }: Props
           {episode.image_url && (
             <div className="flex flex-col">
               <img
-                src={episode.image_url}
+                src={safeImageSrc(episode.image_url)}
                 alt=""
                 loading="lazy"
                 className="w-full rounded-lg object-cover max-h-[280px]"

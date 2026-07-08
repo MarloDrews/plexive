@@ -392,4 +392,31 @@ external_img_payload = {
 r = client.post("/api/posts", json=external_img_payload, headers=auth(admin_user["access_token"]))
 check("non-books external image_url rejected (M122)", r.status_code == 422, r.text)
 
+# --- source/wikipedia URL scheme allowlist (M123) --------------------------------
+js_source_payload = {
+    "format": "facts",
+    "title": "Bad source scheme",
+    "feed_card": {"headline": "Bad source scheme", "essence": "e"},
+    "sections": [{
+        "type": "sources", "order": 1,
+        "content": [{"label": "x", "url": "javascript:alert(1)", "type": "article"}],
+    }],
+    "interests": ["philosophy"],
+}
+r = client.post("/api/posts", json=js_source_payload, headers=auth(admin_user["access_token"]))
+check("source url with a javascript: scheme rejected (M123)", r.status_code == 422, r.text)
+
+ok_source_payload = {
+    "format": "facts",
+    "title": "Good source scheme",
+    "feed_card": {"headline": "Good source scheme", "essence": "e"},
+    "sections": [{
+        "type": "sources", "order": 1,
+        "content": [{"label": "x", "url": "https://example.org/a", "type": "article"}],
+    }],
+    "interests": ["philosophy"],
+}
+r = client.post("/api/posts", json=ok_source_payload, headers=auth(admin_user["access_token"]))
+check("source url with an https scheme accepted (M123)", r.status_code == 201, r.text)
+
 print(f"\nAll {PASS} security checks passed.")

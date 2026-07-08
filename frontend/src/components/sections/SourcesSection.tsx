@@ -1,6 +1,7 @@
 import type { SourceItem } from "../../types/post"
 import { unescapeDollar } from "@/lib/prose"
 import { asArray } from "@/lib/asArray"
+import { safeHref } from "@/lib/safeUrl"
 
 interface Props {
   content: SourceItem[]
@@ -29,7 +30,7 @@ export default function SourcesSection({ content }: Props) {
         {asArray(content).map((source, i) => (
           <li key={i}>
             <a
-              href={source.url}
+              href={safeHref(source.url)}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 text-sm text-ink-dim hover:text-ink transition-colors group"

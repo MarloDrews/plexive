@@ -1,4 +1,5 @@
 import SectionLabel from "../SectionLabel"
+import { safeImageSrc } from "@/lib/safeUrl"
 interface GreatestWorkContent {
   title: string
   body: string
@@ -32,7 +33,7 @@ export default function GreatestWorkSection({ content, isUserContent }: Props) {
       {content.image_url && (
         <div className="flex flex-col mt-2">
           <img
-            src={content.image_url}
+            src={safeImageSrc(content.image_url)}
             alt=""
             loading="lazy"
             className="w-full rounded-lg object-cover"

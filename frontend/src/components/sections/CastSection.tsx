@@ -1,6 +1,7 @@
 import SectionLabel from "../SectionLabel"
 import type { CastMember } from "../../types/post"
 import MathText from "../MathText"
+import { safeImageSrc } from "@/lib/safeUrl"
 import { unescapeDollar } from "@/lib/prose"
 import { asArray } from "@/lib/asArray"
 
@@ -21,7 +22,7 @@ export default function CastSection({ content }: Props) {
             <div className="flex gap-3">
               {member.image_url && (
                 <img
-                  src={member.image_url}
+                  src={safeImageSrc(member.image_url)}
                   alt=""
                   loading="lazy"
                   decoding="async"

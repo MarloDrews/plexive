@@ -4,6 +4,7 @@ import SectionLabel from "../SectionLabel"
 import Prose from "../Prose"
 import MathText from "../MathText"
 import { unescapeDollar } from "@/lib/prose"
+import { safeHref } from "@/lib/safeUrl"
 
 interface Props {
   content: AuthorContextContent
@@ -44,7 +45,7 @@ export default function AuthorContextSection({ content }: Props) {
           <Prose className="text-ink-dim"><MathText text={content.body} /></Prose>
           {content.wikipedia_url && (
             <a
-              href={content.wikipedia_url}
+              href={safeHref(content.wikipedia_url)}
               target="_blank"
               rel="noopener noreferrer"
               className="text-xs text-(--accent) hover:text-(--accent) transition-colors"

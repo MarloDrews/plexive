@@ -69,14 +69,18 @@ function MathText({ text, className }: Props) {
             </span>
           )
         if (!katex) return <span key={i}>{seg.content}</span>
-        const html = (() => {
-          try {
-            return katex.renderToString(seg.content, { throwOnError: false, output: "html" })
-          } catch {
-            return seg.content
-          }
-        })()
-        return <span key={i} dangerouslySetInnerHTML={{ __html: html }} />
+        // On a KaTeX failure, render the raw string as a plain text node, never
+        // through __html (M124/SEC-010): the raw math is user-controlled, so
+        // injecting it as HTML would be stored XSS.
+        let html: string | null = null
+        try {
+          html = katex.renderToString(seg.content, { throwOnError: false, output: "html" })
+        } catch {
+          html = null
+        }
+        return html !== null
+          ? <span key={i} dangerouslySetInnerHTML={{ __html: html }} />
+          : <span key={i}>{seg.content}</span>
       }),
     [segments, katex]
   )

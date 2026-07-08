@@ -126,10 +126,26 @@ class QuizItem(BaseModel):
         return v
 
 
+def _require_web_url(value: str) -> str:
+    """Allow only http(s) URLs for user-controlled links (M123/SEC-009), so a
+    javascript:/data: scheme can never be stored and later rendered into an href.
+    """
+    v = value.strip()
+    low = v.lower()
+    if not (low.startswith("http://") or low.startswith("https://")):
+        raise ValueError("url must start with http:// or https://")
+    return v
+
+
 class SourceItem(BaseModel):
     label: str
     url: str
     type: Literal["wikipedia", "paper", "book", "article", "database"]
+
+    @field_validator("url")
+    @classmethod
+    def validate_url(cls, v: str) -> str:
+        return _require_web_url(v)
 
 
 class AuthorContextContent(BaseModel):
@@ -137,6 +153,11 @@ class AuthorContextContent(BaseModel):
     image_url: str | None = None
     image_attribution: str | None = None
     wikipedia_url: str | None = None
+
+    @field_validator("wikipedia_url")
+    @classmethod
+    def validate_wikipedia_url(cls, v: str | None) -> str | None:
+        return _require_web_url(v) if v else v
 
 
 # ---------------------------------------------------------------------------

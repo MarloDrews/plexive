@@ -7,6 +7,7 @@ import { asArray } from "../src/lib/asArray.ts"
 import { relativeTime } from "../src/lib/relativeTime.ts"
 import { detailToMessage } from "../src/lib/errorMessage.ts"
 import { numericMatch } from "../src/lib/train/numeric.ts"
+import { safeHref, safeImageSrc } from "../src/lib/safeUrl.ts"
 
 // asArray: the guard every array-shaped section leans on so a malformed row
 // renders empty instead of throwing on .map / .length.
@@ -78,4 +79,25 @@ test("numericMatch rejects values a step or more apart", () => {
 test("numericMatch falls back to strict equality when step is not positive", () => {
   assert.equal(numericMatch(5, 5, 0, 0), true)
   assert.equal(numericMatch(5, 6, 0, 0), false)
+})
+
+// safeHref / safeImageSrc: the scheme allowlist for user-controlled URLs
+// (M123). Only http(s) and same-origin relative paths pass; a javascript:/data:
+// scheme is refused (undefined href, "" src) so it never reaches the DOM.
+test("safeHref keeps http(s) and relative URLs, drops dangerous schemes", () => {
+  assert.equal(safeHref("https://example.org/a"), "https://example.org/a")
+  assert.equal(safeHref("http://example.org"), "http://example.org")
+  assert.equal(safeHref("/profile/me"), "/profile/me")
+  assert.equal(safeHref("javascript:alert(1)"), undefined)
+  assert.equal(safeHref("data:text/html,x"), undefined)
+  assert.equal(safeHref(null), undefined)
+  assert.equal(safeHref(""), undefined)
+})
+
+test("safeImageSrc keeps http(s) and relative URLs, blanks dangerous schemes", () => {
+  assert.equal(safeImageSrc("https://cdn.example/x.png"), "https://cdn.example/x.png")
+  assert.equal(safeImageSrc("/uploads/x.png"), "/uploads/x.png")
+  assert.equal(safeImageSrc("javascript:alert(1)"), "")
+  assert.equal(safeImageSrc("data:image/svg+xml,x"), "")
+  assert.equal(safeImageSrc(null), "")
 })

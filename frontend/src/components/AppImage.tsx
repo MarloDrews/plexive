@@ -1,6 +1,7 @@
 "use client"
 
 import Image from "next/image"
+import { safeImageSrc } from "@/lib/safeUrl"
 
 // Shared raster-image element for post/profile imagery. URLs on the hosts
 // configured in next.config.ts images.remotePatterns render through
@@ -54,6 +55,8 @@ export default function AppImage({
   draggable,
   onError,
 }: Props) {
+  // Scheme allowlist (M123/SEC-024): a non-http(s) src never reaches the DOM.
+  src = safeImageSrc(src)
   if (canOptimize(src)) {
     return (
       <Image

@@ -1,6 +1,7 @@
 import SectionLabel from "../SectionLabel"
 import MathText from "../MathText"
 import type { AuthorsContextItem } from "../../types/post"
+import { safeImageSrc } from "@/lib/safeUrl"
 import { unescapeDollar } from "@/lib/prose"
 import { asArray } from "@/lib/asArray"
 
@@ -23,7 +24,7 @@ export default function AuthorsContextSection({ content }: Props) {
             <div className="flex gap-3">
               {author.image_url && (
                 <img
-                  src={author.image_url}
+                  src={safeImageSrc(author.image_url)}
                   alt=""
                   loading="lazy"
                   decoding="async"

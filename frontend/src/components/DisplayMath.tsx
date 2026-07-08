@@ -16,11 +16,17 @@ export default function DisplayMath({
   if (!katex) {
     return <div className={`overflow-x-auto py-1 ${className}`}>{latex}</div>
   }
-  let html = latex
+  // On a KaTeX failure, render the raw LaTeX as a plain text node, never through
+  // __html (M124/SEC-010): the latex is user-controlled, so injecting it as HTML
+  // would be stored XSS.
+  let html: string | null = null
   try {
     html = katex.renderToString(latex, { displayMode: true, throwOnError: false, output: "html" })
   } catch {
-    // fall through to the raw string
+    html = null
+  }
+  if (html === null) {
+    return <div className={`overflow-x-auto py-1 ${className}`}>{latex}</div>
   }
   return (
     <div
