@@ -114,6 +114,7 @@ def unfollow_user(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    check_rate_limit(current_user.id, "unfollow", 60, 3600)
     target = get_target_user(username, db)
     follow = db.query(Follow).filter(
         Follow.follower_id == current_user.id,
@@ -132,6 +133,7 @@ def accept_follow_request(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    check_rate_limit(current_user.id, "follow_accept", 60, 3600)
     # current_user is the target; {username} is the requester
     requester = get_target_user(username, db)
     follow = _find_pending_request(requester.id, current_user.id, db)
@@ -146,6 +148,7 @@ def reject_follow_request(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    check_rate_limit(current_user.id, "follow_reject", 60, 3600)
     # current_user is the target; {username} is the requester
     requester = get_target_user(username, db)
     follow = _find_pending_request(requester.id, current_user.id, db)

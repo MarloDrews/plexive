@@ -462,4 +462,25 @@ big_payload = {
 r = client.post("/api/posts", json=big_payload, headers=auth(admin_user["access_token"]))
 check("oversized sections rejected (M127)", r.status_code == 422, r.text)
 
+# --- create_post daily slot only after validation passes (BUG-081/M130) ----------
+reset_rate_limits()
+bad_slug_payload = {
+    "format": "facts", "title": "Bad slug",
+    "feed_card": {"headline": "Bad slug", "essence": "e"},
+    "sections": [{"type": "heart", "order": 1, "content": "body"}],
+    "interests": ["nonexistent-slug"],
+}
+for _ in range(20):
+    r = client.post("/api/posts", json=bad_slug_payload, headers=auth(admin_user["access_token"]))
+    assert r.status_code == 400, r.text
+good_after_fail = {
+    "format": "facts", "title": "Valid after failures",
+    "feed_card": {"headline": "Valid after failures", "essence": "e"},
+    "sections": [{"type": "heart", "order": 1, "content": "body"}],
+    "interests": ["philosophy"],
+}
+r = client.post("/api/posts", json=good_after_fail, headers=auth(admin_user["access_token"]))
+check("failed create_post validation does not burn the daily slot (BUG-081)",
+      r.status_code == 201, r.text)
+
 print(f"\nAll {PASS} security checks passed.")

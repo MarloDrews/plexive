@@ -178,6 +178,7 @@ def patch_me(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    check_rate_limit(current_user.id, "patch_me", 20, 3600)
     if all(v is None for v in [body.username, body.new_password, body.is_private, body.bio]):
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -273,6 +274,7 @@ def delete_me(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    check_rate_limit(current_user.id, "delete_me", 5, 3600)
     if not verify_password(body.current_password, current_user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

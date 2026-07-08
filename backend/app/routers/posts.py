@@ -72,8 +72,6 @@ def create_post(
     current_user=Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    check_rate_limit(current_user.id, "create_post", 20, 86400)
-
     # Validate every interest slug exists (one IN query instead of one
     # query per slug; the first unknown slug in request order is reported,
     # matching the old per-slug loop)
@@ -94,6 +92,11 @@ def create_post(
         sections_list = _sanitize_sections_svgs(sections_list)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=f"Invalid SVG in sections: {exc}")
+
+    # Record the daily slot only AFTER validation passes (BUG-081/M130): a client
+    # bug looping on a 400 must not exhaust the 20/day budget and lock a user out
+    # of posting for a day.
+    check_rate_limit(current_user.id, "create_post", 20, 86400)
 
     post = Post(
         format=data.format,

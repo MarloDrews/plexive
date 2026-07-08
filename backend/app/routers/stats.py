@@ -12,6 +12,7 @@ from ..auth import get_current_user
 from ..database import engine, get_db
 from ..elo import elo_summary
 from ..models import Comment, Event, Post, QuizAnswer, User
+from ..rate_limit import check_rate_limit
 
 router = APIRouter(tags=["stats"])
 
@@ -489,6 +490,10 @@ def get_my_stats(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    # /stats/me runs many aggregate queries against the remote DB per call; a
+    # modest per-user limit keeps it from being a cheap resource-exhaustion
+    # vector on the single worker (M130/SEC-020).
+    check_rate_limit(current_user.id, "stats_me", 30, 60)
     uid = current_user.id
 
     # --- Overview ---
