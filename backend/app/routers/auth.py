@@ -26,6 +26,14 @@ def _client_ip(request: Request) -> str:
     return request.client.host if request.client else "unknown"
 
 
+# A fixed bcrypt hash to compare against when the login email is unknown, so the
+# unknown-email branch still pays the deliberately-slow bcrypt cost and does not
+# return markedly faster than a known-email/wrong-password login. Removes the
+# timing oracle that distinguished registered emails (M129/SEC-015). Computed
+# once at import.
+_DUMMY_PASSWORD_HASH = hash_password("timing-oracle-dummy-password-not-a-real-secret")
+
+
 class RegisterRequest(BaseModel):
     email: EmailStr
     username: str
@@ -76,6 +84,11 @@ def register(body: RegisterRequest, request: Request, db: Session = Depends(get_
     # Bob@x.com and bob@x.com are one account and login is case-insensitive
     # (existing rows are normalized by scripts/lowercase_emails.py).
     email = body.email.lower()
+    # SEC-016 (accepted): this returns a definitive "email already registered"
+    # signal, a minor account-existence oracle. Removing it would require an
+    # email-verification flow (registration would not synchronously confirm the
+    # account), which is a feature, not a launch fix. Documented as accepted;
+    # revisit with email verification.
     if db.query(User).filter(User.email == email).first():
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered.")
     if db.query(User).filter(User.username == body.username).first():
@@ -100,9 +113,14 @@ def login(body: LoginRequest, request: Request, db: Session = Depends(get_db)):
     check_rate_limit(f"ip:{_client_ip(request)}", "login", 30, 300)
     check_rate_limit(f"email:{body.email.lower()}", "login", 10, 300)
     user = db.query(User).filter(User.email == body.email.lower(), User.is_active == True).first()
-    # use the same error whether the email is unknown or the password is wrong
-    # to avoid leaking which field was incorrect
-    if not user or not verify_password(body.password, user.password_hash):
+    # Always run a bcrypt comparison (against a fixed dummy hash when the email is
+    # unknown) so both branches spend equal time -- no timing oracle for whether
+    # an email is registered (M129/SEC-015). Use the same generic error for an
+    # unknown email and a wrong password so neither the message nor the latency
+    # leaks which field was incorrect.
+    password_hash = user.password_hash if user else _DUMMY_PASSWORD_HASH
+    password_ok = verify_password(body.password, password_hash)
+    if not user or not password_ok:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid credentials.",
