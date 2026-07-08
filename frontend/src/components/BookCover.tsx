@@ -25,7 +25,9 @@ interface Props {
   // readable size (the detail header). Off for small thumbnails.
   showCredit?: boolean
   // The post's content origin, for the SVG security split on the baked cover.
-  isUserContent?: boolean
+  // Required (SEC-026): an omitted flag must never silently default a user
+  // submission to the dangerouslySetInnerHTML path.
+  isUserContent: boolean
 }
 
 // Render the baked cover SVG with the SVG security split, and without the legacy
@@ -66,7 +68,7 @@ export default function BookCover({
   feedCard,
   className,
   showCredit = false,
-  isUserContent = false,
+  isUserContent,
 }: Props) {
   // If a real cover image fails to load, fall back to the generated cover so the
   // book is never blank. The credit is dropped in that case too, so a credit line

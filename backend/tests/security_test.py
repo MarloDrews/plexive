@@ -530,6 +530,30 @@ under_status, under_reached = _asyncio.run(_drive_body_limit(1024))
 check("small chunked body passes through to the app (M131)",
       under_status == 200 and under_reached is True, f"status={under_status} reached={under_reached}")
 
+# --- SVG sanitize consistency (M133/SEC-025, SEC-027) ------------------------
+from app.routers.posts import _sanitize_json_svgs as _sanitize_fc  # noqa: E402
+from app.sanitize import sanitize_svg_text as _sanitize_svg  # noqa: E402
+
+# SEC-027: <use> is no longer whitelisted, so it is stripped from any SVG.
+_use_svg = (
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10">'
+    '<defs><rect id="r" width="4" height="4"/></defs>'
+    '<use href="#r"/></svg>'
+)
+check("<use> element is stripped from sanitized SVG (M133/SEC-027)",
+      "<use" not in _sanitize_svg(_use_svg))
+
+# SEC-025: feed_card SVG fields are re-sanitized just like the sections array.
+# A script smuggled into cover.svg is removed by the create-time pass.
+_fc = {"title": "T", "cover": {"svg": (
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10">'
+    '<script>alert(1)</script><rect width="4" height="4"/></svg>'
+)}}
+_clean_fc = _sanitize_fc(_fc)
+check("feed_card cover SVG is re-sanitized at create time (M133/SEC-025)",
+      "<script" not in _clean_fc["cover"]["svg"], _clean_fc["cover"]["svg"])
+
+
 # --- image decode hardening (M132/SEC-023, BUG-015/016/017) ------------------
 import io as _io  # noqa: E402
 from PIL import Image as _PILImage  # noqa: E402

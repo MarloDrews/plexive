@@ -39,7 +39,10 @@ ALLOWED_ELEMENTS = {
     "svg", "g", "path", "circle", "ellipse", "rect", "line",
     "polyline", "polygon", "text", "tspan", "defs", "title",
     "desc", "linearGradient", "radialGradient", "stop",
-    "clipPath", "mask", "pattern", "symbol", "use",
+    # <use> dropped (SEC-027): its href can pull in and re-render another
+    # element (in-document or, in some renderers, external), an unnecessary
+    # indirection vector. No legitimate content relies on it.
+    "clipPath", "mask", "pattern", "symbol",
     "marker", "filter", "feGaussianBlur", "feColorMatrix",
     "feComposite", "feMerge", "feMergeNode",
 }

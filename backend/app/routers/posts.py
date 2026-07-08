@@ -18,6 +18,31 @@ from ._shared import POST_EAGER, POST_LIST_EAGER, blank_sections, can_view_post
 router = APIRouter()
 
 
+# feed_card / section keys whose string value is a full SVG document.
+_SVG_KEYS = {"svg", "visual_svg"}
+
+
+def _sanitize_json_svgs(value):
+    """Recursively re-sanitize every SVG-bearing field in a JSON value (SEC-025).
+
+    The sections array has its own dedicated pass below; this covers feed_card,
+    where the book cover SVG lives at cover.svg. Any dict key named svg or
+    visual_svg with a non-empty string value is re-run through the SVG
+    sanitizer, so a smuggled script in feed_card is stripped at create time
+    exactly like the sections array (raises ValueError on an invalid SVG)."""
+    if isinstance(value, dict):
+        out = {}
+        for key, val in value.items():
+            if key in _SVG_KEYS and isinstance(val, str) and val.strip():
+                out[key] = sanitize_svg_text(val)
+            else:
+                out[key] = _sanitize_json_svgs(val)
+        return out
+    if isinstance(value, list):
+        return [_sanitize_json_svgs(item) for item in value]
+    return value
+
+
 def _sanitize_sections_svgs(sections: list) -> list:
     """Re-sanitize any visual_svg strings found anywhere in the sections array."""
     sanitized = []
@@ -93,6 +118,13 @@ def create_post(
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=f"Invalid SVG in sections: {exc}")
 
+    # Re-sanitize the feed_card SVGs too (SEC-025): the book cover SVG at
+    # cover.svg was previously stored unsanitized.
+    try:
+        feed_card = _sanitize_json_svgs(data.feed_card)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=f"Invalid SVG in feed card: {exc}")
+
     # Record the daily slot only AFTER validation passes (BUG-081/M130): a client
     # bug looping on a 400 must not exhaust the 20/day budget and lock a user out
     # of posting for a day.
@@ -101,8 +133,8 @@ def create_post(
     post = Post(
         format=data.format,
         title=data.title,
-        identity_key=post_identity_key(data.format, data.feed_card),
-        feed_card=data.feed_card,
+        identity_key=post_identity_key(data.format, feed_card),
+        feed_card=feed_card,
         sections=sections_list,
         reading_minutes=compute_reading_minutes(sections_list),
         author_id=current_user.id,
