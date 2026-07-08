@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Index, Integer, JSON, String, Table, Text, UniqueConstraint
+from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Index, Integer, JSON, String, Table, Text, UniqueConstraint, text
 from sqlalchemy.orm import relationship
 
 from .database import Base
@@ -110,6 +110,18 @@ class Event(Base):
     # existing one.
     __table_args__ = (
         Index("ix_events_post_id_event_type", "post_id", "event_type"),
+        # Structural like dedup (M119): at most one like per (user, post). Partial
+        # so views/unlikes and anonymous rows are unconstrained. create_all adds
+        # it on fresh DBs; scripts/add_like_unique_index.py applies it to the
+        # live one (after removing anonymous likes and existing duplicates).
+        Index(
+            "uq_events_user_like",
+            "user_id",
+            "post_id",
+            unique=True,
+            postgresql_where=text("event_type = 'like' AND user_id IS NOT NULL"),
+            sqlite_where=text("event_type = 'like' AND user_id IS NOT NULL"),
+        ),
     )
 
     id          = Column(Integer, primary_key=True)

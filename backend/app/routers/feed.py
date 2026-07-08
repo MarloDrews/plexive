@@ -134,7 +134,7 @@ def get_feed(
     # gives different users different orders. No salt = no seed = per-request
     # random jitter (the pre-pagination behavior for clients that never page).
     effective_seed = f"{user_id if user_id is not None else 'anon'}:{seed}" if seed else None
-    ordered_ids = rank_post_ids(records, slugs, db, tier_map, effective_seed)
+    ordered_ids = rank_post_ids(records, slugs, db, tier_map, effective_seed, user_id=user_id)
 
     if cursor is not None:
         try:

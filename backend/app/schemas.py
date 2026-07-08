@@ -34,10 +34,26 @@ class PublicUserOut(BaseModel):
     bio: str | None
 
 
+# Upper bound on a single view's dwell (4 hours in ms). A forged duration_ms
+# cannot overflow the Integer column or dominate the engagement average (M119).
+MAX_DURATION_MS = 4 * 60 * 60 * 1000
+
+
 class EventIn(BaseModel):
     post_id: int
-    event_type: str
+    # Allowlist: only the three events the client ever sends. A free-form string
+    # let junk event types into the stats aggregations (M119/SEC-005).
+    event_type: Literal["view", "like", "unlike"]
     duration_ms: int | None = None
+
+    @field_validator("duration_ms")
+    @classmethod
+    def clamp_duration(cls, v: int | None) -> int | None:
+        # Clamp rather than reject so one odd value does not 422 the whole batch,
+        # while still bounding storage and the feed-scoring average.
+        if v is None:
+            return v
+        return max(0, min(v, MAX_DURATION_MS))
 
 
 class InterestOut(BaseModel):

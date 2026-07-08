@@ -19,9 +19,11 @@ os.environ.setdefault("JWT_SECRET", "security-test-secret")
 
 from fastapi.testclient import TestClient  # noqa: E402
 
+from sqlalchemy import func  # noqa: E402
+
 from app.database import Base, SessionLocal, engine  # noqa: E402
 from app.main import app  # noqa: E402
-from app.models import Interest, Post  # noqa: E402
+from app.models import Event, Interest, Post  # noqa: E402
 
 Base.metadata.create_all(bind=engine)
 client = TestClient(app)
@@ -272,5 +274,49 @@ check("admin verify succeeds", r.status_code == 200, r.text)
 check("verify response is a public projection (no email/id)",
       "email" not in body and "id" not in body, str(body))
 check("verify does not downgrade a level-2 user", body.get("is_verified") == 2, str(body))
+
+# --- events lockdown (M119) ------------------------------------------------------
+# A published, public post to like/view against.
+db = SessionLocal()
+public_post = Post(
+    format="facts", title="Public likeable fact",
+    feed_card={"essence": "e"}, sections=[],
+    author_id=admin_user["user"]["id"], status="published", is_user_content=True,
+)
+db.add(public_post)
+db.commit()
+pub_post_id = public_post.id
+db.close()
+
+# anonymous like is rejected, not stored
+r = client.post("/api/events", json=[{"post_id": pub_post_id, "event_type": "like"}])
+check("anonymous like is rejected (not stored)",
+      r.status_code == 200 and r.json()["stored"] == 0 and r.json()["rejected"] == 1, r.text)
+r = client.get(f"/api/posts/{pub_post_id}/likes")
+check("anonymous like did not increment the count", r.json()["count"] == 0, r.text)
+
+# anonymous view is still accepted
+r = client.post("/api/events", json=[{"post_id": pub_post_id, "event_type": "view"}])
+check("anonymous view is still stored", r.status_code == 200 and r.json()["stored"] == 1, r.text)
+
+# unknown event_type is rejected by the schema
+r = client.post("/api/events", json=[{"post_id": pub_post_id, "event_type": "boost"}])
+check("unknown event_type rejected by the allowlist", r.status_code == 422, r.text)
+
+# duration_ms above int32 is clamped, not a 500
+r = client.post("/api/events", json=[{"post_id": pub_post_id, "event_type": "view", "duration_ms": 5_000_000_000}])
+check("oversized duration_ms is clamped, not a 500", r.status_code == 200 and r.json()["stored"] == 1, r.text)
+db = SessionLocal()
+max_dur = db.query(func.max(Event.duration_ms)).scalar()
+db.close()
+check("stored duration_ms is within the clamp", max_dur is not None and max_dur <= 4 * 60 * 60 * 1000, str(max_dur))
+
+# authenticated like counts once even when submitted twice (structural dedup)
+r = client.post("/api/events", json=[{"post_id": pub_post_id, "event_type": "like"}], headers=auth(stranger["access_token"]))
+check("authenticated like stored once", r.status_code == 200 and r.json()["stored"] == 1, r.text)
+r = client.post("/api/events", json=[{"post_id": pub_post_id, "event_type": "like"}], headers=auth(stranger["access_token"]))
+check("repeat authenticated like is deduped", r.status_code == 200 and r.json()["stored"] == 0, r.text)
+r = client.get(f"/api/posts/{pub_post_id}/likes", headers=auth(stranger["access_token"]))
+check("like count reflects exactly one like", r.json()["count"] == 1 and r.json()["liked"] is True, r.text)
 
 print(f"\nAll {PASS} security checks passed.")

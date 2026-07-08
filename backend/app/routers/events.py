@@ -2,6 +2,7 @@ from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy import case, func
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from ..auth import get_optional_user
@@ -89,27 +90,63 @@ def create_events(
                 Event.user_id == optional_user.id,
             ).delete(synchronize_session=False)
 
-    new_events = []
+    # Like events require authentication (M119): anonymous likes/unlikes are
+    # dropped so they cannot inflate counts, and reported back as rejected.
+    stored = 0
+    rejected = 0
+    view_events = []
+    like_post_ids = []
     batch_liked_post_ids: set[int] = set()
     for e in events:
         if e.post_id not in valid_ids:
             continue
         if e.event_type == "unlike":
-            continue  # handled above by the delete; never stored as a row
-        if e.event_type == "like" and optional_user:
-            # Dedup within this batch as well as against stored events
+            # Authed unlikes were handled by the delete above; an anonymous
+            # unlike has no row to remove and is a rejected like-family event.
+            if optional_user is None:
+                rejected += 1
+            continue
+        if e.event_type == "like":
+            if optional_user is None:
+                rejected += 1
+                continue
+            # Dedup within this batch as well as against stored events; the
+            # partial unique index is the structural backstop below.
             if e.post_id in batch_liked_post_ids or e.post_id in already_liked_ids:
                 continue
             batch_liked_post_ids.add(e.post_id)
-        new_events.append(Event(
+            like_post_ids.append(e.post_id)
+            continue
+        # view
+        view_events.append(Event(
             post_id=e.post_id,
-            event_type=e.event_type,
+            event_type="view",
             duration_ms=e.duration_ms,
             user_id=optional_user.id if optional_user else None,
         ))
-    db.add_all(new_events)
+
+    # Views carry no unique constraint: bulk insert.
+    if view_events:
+        db.add_all(view_events)
+        db.commit()
+        stored += len(view_events)
+
+    # Likes: each guarded by the partial unique index. A concurrent duplicate
+    # (double-tap plus retry, two tabs) hits the index; the savepoint swallows
+    # it so the batch neither 500s nor double-counts.
+    for pid in like_post_ids:
+        try:
+            with db.begin_nested():
+                db.add(Event(
+                    post_id=pid, event_type="like", duration_ms=None,
+                    user_id=optional_user.id,
+                ))
+            stored += 1
+        except IntegrityError:
+            pass  # the like already exists; nothing to store
     db.commit()
-    return {"stored": len(new_events)}
+
+    return {"stored": stored, "rejected": rejected}
 
 
 @router.get("/posts/{post_id}/likes")

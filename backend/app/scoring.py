@@ -35,12 +35,19 @@ def _jitter(seed: Optional[str], post_id: int) -> float:
     return 0.85 + 0.30 * (int.from_bytes(digest, "big") / 2**64)
 
 
+# The repeat penalty counts at most this many of a viewer's own views per post,
+# so no single post can be driven far negative and no client can grow the penalty
+# without bound (M119/BUG-032).
+_MAX_REPEAT_VIEWS = 5
+
+
 def rank_post_ids(
     records: Sequence[Tuple[int, str, Set[str]]],
     interest_slugs: List[str],
     db: Session,
     tier_map: Optional[dict] = None,
     seed: Optional[str] = None,
+    user_id: Optional[int] = None,
 ) -> List[int]:
     """Order post ids by score, best first (ties broken by id, newest first).
 
@@ -51,10 +58,11 @@ def rank_post_ids(
     tier_map: post_id -> tier (1 = direct match, 2 = related, 3 = fallback).
     Tier 1 gets full interest bonus, Tier 2 gets half, Tier 3 gets none.
     seed: session seed for the jitter (see _jitter); None = fresh per request.
+    user_id: the requesting user, if any. The repeat penalty counts only THIS
+    user's own recent views (clamped) instead of every user's, so a few
+    anonymous views can no longer bury a post platform-wide (M119/BUG-031/032);
+    an anonymous caller (None) gets no repeat penalty at all.
     """
-    # TODO: once per-user engagement matters, pass user_id here and filter
-    # events to that user so bonuses reflect individual rather than global engagement.
-
     cutoff = datetime.utcnow() - timedelta(days=30)
     # Two grouped queries instead of fetching every raw event row of the last
     # 30 days: the aggregates are a handful of rows however much activity the
@@ -75,12 +83,21 @@ def rank_post_ids(
         .group_by(Post.format)
         .all()
     )
-    post_view_counts: dict[int, int] = dict(
-        db.query(Event.post_id, func.count(Event.id))
-        .filter(Event.created_at >= cutoff, Event.event_type == "view")
-        .group_by(Event.post_id)
-        .all()
-    )
+    # Repeat penalty is per-viewer: only the requesting user's own views count,
+    # so another user's (or an anonymous flood's) views never penalize a post in
+    # this feed. Anonymous callers get no penalty (no identity to attribute).
+    post_view_counts: dict[int, int] = {}
+    if user_id is not None:
+        post_view_counts = dict(
+            db.query(Event.post_id, func.count(Event.id))
+            .filter(
+                Event.created_at >= cutoff,
+                Event.event_type == "view",
+                Event.user_id == user_id,
+            )
+            .group_by(Event.post_id)
+            .all()
+        )
 
     # Raw engagement score per format: avg view duration (ms) + like count.
     # Units differ but normalisation below makes the scale irrelevant.
@@ -110,8 +127,8 @@ def rank_post_ids(
         # Format engagement bonus.
         score += format_bonus.get(post_format, 0.0)
 
-        # Repeat penalty.
-        score -= post_view_counts.get(post_id, 0) * 1.0
+        # Repeat penalty (this viewer's own views only, clamped).
+        score -= min(post_view_counts.get(post_id, 0), _MAX_REPEAT_VIEWS) * 1.0
         score = max(score, 0.0)
 
         # Jitter keeps the feed fresh across sessions (see _jitter).
