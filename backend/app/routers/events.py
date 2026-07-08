@@ -9,7 +9,7 @@ from ..database import get_db
 from ..models import Event, Post, User
 from ..rate_limit import check_rate_limit
 from ..schemas import EventIn
-from ._shared import get_visible_post
+from ._shared import get_visible_post, visible_posts_filter
 
 router = APIRouter()
 
@@ -43,11 +43,17 @@ def create_events(
     if requested_ids:
         query = db.query(Post.id).filter(Post.id.in_(requested_ids))
         if optional_user:
+            # Own posts (any status) plus published posts the caller may see,
+            # so a private author's post is not a target for non-followers and
+            # the stored-count response stays useless as an existence oracle.
             query = query.filter(
-                (Post.status == "published") | (Post.author_id == optional_user.id)
+                (Post.author_id == optional_user.id)
+                | ((Post.status == "published") & visible_posts_filter(optional_user))
             )
         else:
-            query = query.filter(Post.status == "published")
+            query = query.filter(
+                Post.status == "published", visible_posts_filter(None)
+            )
         valid_ids = {row[0] for row in query.all()}
 
     # Dedup likes against stored events with one IN query for the whole

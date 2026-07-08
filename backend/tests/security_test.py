@@ -161,4 +161,58 @@ row = r.json()[0]
 check("user search leaks no email or password hash",
       "email" not in row and "password_hash" not in row, str(row))
 
+# --- private account CONTENT privacy (M117) --------------------------------------
+# author is private (set above) and stranger (now "stranger.2") is an accepted
+# follower. A published post by a private author must be reachable only to the
+# owner and accepted followers, and must be absent from For You and search.
+db = SessionLocal()
+private_post = Post(
+    format="facts", title="Private author secret fact",
+    feed_card={"essence": "a uniquely findable phrase zqxjk"}, sections=[],
+    author_id=author["user"]["id"], status="published", is_user_content=True,
+)
+db.add(private_post)
+db.commit()
+priv_id = private_post.id
+db.close()
+
+outsider = register("outsider@example.com", "outsider")
+
+# by id
+r = client.get(f"/api/posts/{priv_id}")
+check("anon cannot fetch a private author's post by id", r.status_code == 404, r.text)
+r = client.get(f"/api/posts/{priv_id}", headers=auth(outsider["access_token"]))
+check("non-follower cannot fetch a private author's post by id", r.status_code == 404, r.text)
+r = client.get(f"/api/posts/{priv_id}", headers=auth(stranger["access_token"]))
+check("accepted follower can fetch a private author's post by id", r.status_code == 200, r.text)
+r = client.get(f"/api/posts/{priv_id}", headers=auth(author["access_token"]))
+check("owner can fetch own private post by id", r.status_code == 200, r.text)
+
+# single-user feed
+r = client.get("/api/feed/user/author", headers=auth(outsider["access_token"]))
+check("non-follower gets no private-author posts in the single-user feed",
+      r.status_code == 200 and all(p["id"] != priv_id for p in r.json()), r.text)
+r = client.get("/api/feed/user/author", headers=auth(stranger["access_token"]))
+check("accepted follower sees the private author's single-user feed",
+      r.status_code == 200 and any(p["id"] == priv_id for p in r.json()), r.text)
+
+# For You
+r = client.get("/api/feed", headers=auth(outsider["access_token"]))
+check("private author's post absent from For You for a non-follower",
+      r.status_code == 200 and all(p["id"] != priv_id for p in r.json()), r.text)
+r = client.get("/api/feed", headers=auth(author["access_token"]))
+check("owner sees own private post in For You",
+      r.status_code == 200 and any(p["id"] == priv_id for p in r.json()), r.text)
+
+# search
+r = client.get("/api/search", params={"q": "zqxjk"}, headers=auth(outsider["access_token"]))
+check("private author's post absent from search for a non-follower",
+      r.status_code == 200 and all(p["id"] != priv_id for p in r.json()), r.text)
+r = client.get("/api/search", params={"q": "zqxjk"}, headers=auth(stranger["access_token"]))
+check("accepted follower can find the private author's post in search",
+      r.status_code == 200 and any(p["id"] == priv_id for p in r.json()), r.text)
+r = client.get("/api/search", params={"q": "zqxjk"})
+check("private author's post absent from search for anon",
+      r.status_code == 200 and all(p["id"] != priv_id for p in r.json()), r.text)
+
 print(f"\nAll {PASS} security checks passed.")

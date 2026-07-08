@@ -3,14 +3,20 @@ from typing import Dict, List, Optional, Set
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
 
-from ..auth import get_current_user, get_optional_user, get_optional_user_id
+from ..auth import get_current_user, get_optional_user
 from ..database import get_db
 from ..models import Follow, Interest, Post, User, post_interests
 from ..post_counts import attach_counts
 from ..rate_limit import check_rate_limit
 from ..schemas import PostListOut
 from ..scoring import rank_post_ids
-from ._shared import POST_LIST_EAGER, blank_sections, get_target_user
+from ._shared import (
+    POST_LIST_EAGER,
+    blank_sections,
+    can_view_user_posts,
+    get_target_user,
+    visible_posts_filter,
+)
 
 router = APIRouter()
 
@@ -58,7 +64,7 @@ def get_feed(
     limit: int = 50,
     cursor: Optional[int] = None,
     seed: Optional[str] = None,
-    user_id: Optional[int] = Depends(get_optional_user_id),
+    viewer: Optional[User] = Depends(get_optional_user),
     db: Session = Depends(get_db),
 ):
     """The For You feed: every published post is ranked (interests only affect
@@ -74,6 +80,7 @@ def get_feed(
     and tier terms, which dominate, are fixed by the seed.
     """
     limit = max(1, min(limit, 100))
+    user_id = viewer.id if viewer is not None else None
     identity = user_id if user_id is not None else (
         f"ip:{request.client.host if request.client else 'unknown'}"
     )
@@ -82,13 +89,16 @@ def get_feed(
 
     # Scoring inputs only (id, format, interest slugs), never full rows: the
     # whole corpus is ranked but only the returned page pays the json-typed
-    # feed_card/sections columns and the ORM hydration.
-    id_base = db.query(Post.id, Post.format).filter(Post.status == "published")
+    # feed_card/sections columns and the ORM hydration. A private account's posts
+    # are excluded from For You for everyone but the author and accepted
+    # followers (visible_posts_filter), so privacy holds on the ranking inputs.
+    privacy = visible_posts_filter(viewer)
+    id_base = db.query(Post.id, Post.format).filter(Post.status == "published", privacy)
     slug_base = (
         db.query(post_interests.c.post_id, Interest.slug)
         .join(Interest, Interest.id == post_interests.c.interest_id)
         .join(Post, Post.id == post_interests.c.post_id)
-        .filter(Post.status == "published")
+        .filter(Post.status == "published", privacy)
     )
     if format:
         id_base = id_base.filter(Post.format == format)
@@ -167,10 +177,14 @@ def get_user_feed(
     username: str,
     before_id: Optional[int] = None,
     limit: int = 50,
-    _current_user: Optional[User] = Depends(get_optional_user),
+    viewer: Optional[User] = Depends(get_optional_user),
     db: Session = Depends(get_db),
 ):
     limit = max(1, min(limit, 100))
     target = get_target_user(username, db)
+    # A private account's posts are visible only to the owner and accepted
+    # followers; everyone else sees an empty list (same shape, no leak).
+    if not can_view_user_posts(viewer, target, db):
+        return []
     posts = _recent_published_posts(db, Post.author_id == target.id, limit, before_id)
     return attach_counts(posts, db)

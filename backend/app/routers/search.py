@@ -10,7 +10,7 @@ from ..models import Follow, Post, User
 from ..post_counts import attach_counts
 from ..rate_limit import check_rate_limit
 from ..schemas import PostListOut
-from ._shared import POST_EAGER
+from ._shared import POST_EAGER, visible_posts_filter
 
 router = APIRouter()
 
@@ -106,7 +106,7 @@ def search_posts(
     query = (
         db.query(Post)
         .options(*POST_EAGER)
-        .filter(Post.status == "published")
+        .filter(Post.status == "published", visible_posts_filter(current_user))
     )
     if format:
         query = query.filter(Post.format == format)

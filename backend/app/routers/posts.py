@@ -13,7 +13,7 @@ from ..rate_limit import check_rate_limit
 from ..reading_time import compute_reading_minutes
 from ..sanitize import sanitize_svg_text
 from ..schemas import PostCreate, PostListOut, PostOut
-from ._shared import POST_EAGER, POST_LIST_EAGER, blank_sections
+from ._shared import POST_EAGER, POST_LIST_EAGER, blank_sections, can_view_post
 
 router = APIRouter()
 
@@ -146,9 +146,10 @@ def get_post(
     if post is None:
         raise HTTPException(status_code=404, detail="Post not found")
 
-    # A non-published post is visible only to its author (same rule as the shared
-    # get_visible_post; kept inline here so the eager-loaded row is not re-queried).
-    if post.status != "published" and (current_user is None or post.author_id != current_user.id):
+    # Shared visibility rule over the already eager-loaded row (author included
+    # in POST_EAGER, so can_view_post reads it without a re-query): a pending
+    # post is author-only, and a private account's post is author-or-follower.
+    if not can_view_post(post, current_user, db):
         raise HTTPException(status_code=404, detail="Post not found")
 
     # Resolved "read next" set so the frontend resolves nothing itself.

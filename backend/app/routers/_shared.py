@@ -8,10 +8,11 @@ inline copies these replaced.
 from typing import List, Optional
 
 from fastapi import HTTPException, status
-from sqlalchemy.orm import Session, defer, selectinload
+from sqlalchemy import and_, exists, or_
+from sqlalchemy.orm import Session, defer, joinedload, selectinload
 from sqlalchemy.orm.attributes import set_committed_value
 
-from ..models import Post, User
+from ..models import Follow, Post, User
 
 # Eager-load a post's interests and author. Both are load-bearing:
 # PostOut.interests and the author_* properties would otherwise lazy-load per
@@ -44,14 +45,87 @@ def get_target_user(username: str, db: Session, detail: str = "User not found.")
     return user
 
 
+def accepted_follow_exists(db: Session, follower_id: Optional[int], following_id: Optional[int]) -> bool:
+    """Whether follower -> following is an accepted follow. Shared by the
+    content-privacy gate; mirrors follows._has_accepted_follow."""
+    if follower_id is None or following_id is None:
+        return False
+    return db.query(Follow.id).filter(
+        Follow.follower_id == follower_id,
+        Follow.following_id == following_id,
+        Follow.status == "accepted",
+    ).first() is not None
+
+
+def can_view_post(post: Post, viewer: Optional[User], db: Session) -> bool:
+    """The shared read-visibility rule for a single post row.
+
+    - A non-published post is visible only to its author (existence hidden
+      from everyone else).
+    - A published post by a PRIVATE account is visible only to the author and
+      accepted followers; a public or authorless post is visible to everyone.
+    Reads post.author, so the caller should have it loaded (eager or lazy)."""
+    viewer_id = viewer.id if viewer is not None else None
+    if post.status != "published":
+        return viewer_id is not None and post.author_id == viewer_id
+    author = post.author
+    if author is None or not author.is_private:
+        return True
+    if viewer_id is not None and post.author_id == viewer_id:
+        return True
+    return accepted_follow_exists(db, viewer_id, post.author_id)
+
+
+def visible_posts_filter(viewer: Optional[User]):
+    """A SQLAlchemy clause for LIST queries over Post: drop posts whose author is
+    a private account, unless the viewer is that author or an accepted follower.
+    Public and authorless posts always pass. Correlated EXISTS so it composes
+    onto any query that already selects from Post; callers keep their own status
+    filter. This is the query-side twin of can_view_post's privacy branch."""
+    private_author = exists().where(
+        and_(User.id == Post.author_id, User.is_private == True)
+    )
+    clause = ~private_author
+    if viewer is not None:
+        clause = or_(
+            clause,
+            Post.author_id == viewer.id,
+            exists().where(
+                and_(
+                    Follow.follower_id == viewer.id,
+                    Follow.following_id == Post.author_id,
+                    Follow.status == "accepted",
+                )
+            ),
+        )
+    return clause
+
+
+def can_view_user_posts(viewer: Optional[User], target: User, db: Session) -> bool:
+    """Whether the viewer may see a user's published posts as a set (the
+    single-user feed). Public account: always. Private account: owner or an
+    accepted follower only."""
+    if not target.is_private:
+        return True
+    if viewer is not None and viewer.id == target.id:
+        return True
+    return viewer is not None and accepted_follow_exists(db, viewer.id, target.id)
+
+
 def get_visible_post(post_id: int, db: Session, current_user: Optional[User]) -> Post:
     """Fetch a post, enforcing the shared visibility rule: a non-published post
     is visible only to its author (so a pending post 404s for everyone else,
-    hiding its existence). The single copy of the rule that the comments, events,
-    quiz and post-detail endpoints share."""
-    post = db.query(Post).filter(Post.id == post_id).first()
+    hiding its existence), and a published post by a private account is visible
+    only to the author and accepted followers. The single copy of the rule that
+    the comments, events, quiz and post-detail endpoints share."""
+    post = (
+        db.query(Post)
+        .options(joinedload(Post.author))
+        .filter(Post.id == post_id)
+        .first()
+    )
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found.")
-    if post.status != "published" and (current_user is None or post.author_id != current_user.id):
+    if not can_view_post(post, current_user, db):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found.")
     return post
