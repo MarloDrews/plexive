@@ -104,7 +104,10 @@ def create_post(
         reading_minutes=compute_reading_minutes(sections_list),
         author_id=current_user.id,
         is_user_content=True,
-        status="published" if current_user.is_verified else "pending",
+        # Publishing is gated by the can_publish capability (M116), no longer by
+        # the cosmetic verified badge. Users verified before the split were
+        # granted can_publish in the migration, so behavior is unchanged.
+        status="published" if current_user.can_publish else "pending",
     )
     post.interests = interest_objects
     db.add(post)

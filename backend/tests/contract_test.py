@@ -100,7 +100,11 @@ def main():
 
     db = SessionLocal()
     db.add(Interest(name="Physics", slug="physics"))
-    db.query(User).filter(User.id == alice["user"]["id"]).update({"is_verified": 1})
+    # Publishing is gated by can_publish now, not the verified badge (M116);
+    # grant it so alice's posts auto-publish as this contract expects.
+    db.query(User).filter(User.id == alice["user"]["id"]).update(
+        {"is_verified": 1, "can_publish": True}
+    )
     db.commit()
     db.close()
 

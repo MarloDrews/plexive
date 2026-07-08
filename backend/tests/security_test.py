@@ -21,10 +21,17 @@ from fastapi.testclient import TestClient  # noqa: E402
 
 from app.database import Base, SessionLocal, engine  # noqa: E402
 from app.main import app  # noqa: E402
-from app.models import Post  # noqa: E402
+from app.models import Interest, Post  # noqa: E402
 
 Base.metadata.create_all(bind=engine)
 client = TestClient(app)
+
+# One interest so create_post's slug validation has something to accept.
+_seed_db = SessionLocal()
+if not _seed_db.query(Interest).filter_by(slug="philosophy").first():
+    _seed_db.add(Interest(name="Philosophy", slug="philosophy"))
+    _seed_db.commit()
+_seed_db.close()
 
 PASS = 0
 
@@ -214,5 +221,56 @@ check("accepted follower can find the private author's post in search",
 r = client.get("/api/search", params={"q": "zqxjk"})
 check("private author's post absent from search for anon",
       r.status_code == 200 and all(p["id"] != priv_id for p in r.json()), r.text)
+
+# --- verified badge no longer grants publish or admin (M116) ---------------------
+# A fresh user with only the cosmetic badge (is_verified) must NOT be able to
+# publish immediately or verify others; those are the can_publish / is_admin
+# capabilities now.
+badge_only = register("badge@example.com", "badgeonly")
+db = SessionLocal()
+from app.models import User as _User  # noqa: E402
+bu = db.query(_User).filter(_User.id == badge_only["user"]["id"]).first()
+bu.is_verified = 2  # badge only, no can_publish, no is_admin
+db.commit()
+db.close()
+
+# badge-only user's post lands in pending (can_publish is False). A facts post
+# with a body validates without the full Books section set.
+facts_payload = {
+    "format": "facts",
+    "title": "Badge only fact",
+    "feed_card": {"headline": "Badge only fact", "essence": "e"},
+    "sections": [{"type": "heart", "order": 1, "content": "Some body text here."}],
+    "interests": ["philosophy"],
+}
+r = client.post("/api/posts", json=facts_payload, headers=auth(badge_only["access_token"]))
+check("badge-only user's post is created", r.status_code == 201, r.text)
+check("badge alone does not grant immediate publish (post is pending)",
+      r.status_code == 201 and r.json()["status"] == "pending", r.text)
+
+# badge-only user cannot verify others (admin capability required)
+r = client.patch(f"/api/admin/users/{stranger['user']['id']}/verify",
+                 headers=auth(badge_only["access_token"]))
+check("badge alone does not grant admin verify (403)", r.status_code == 403, r.text)
+
+# an admin CAN verify, the response carries no email/id, and level is not downgraded
+db = SessionLocal()
+# promote a separate account to admin for the positive path
+admin_user = register("adminuser@example.com", "adminuser")
+au = db.query(_User).filter(_User.id == admin_user["user"]["id"]).first()
+au.is_admin = True
+# make the target a level-2 user to prove verify does not downgrade
+target2 = db.query(_User).filter(_User.id == outsider["user"]["id"]).first()
+target2.is_verified = 2
+db.commit()
+db.close()
+
+r = client.patch(f"/api/admin/users/{outsider['user']['id']}/verify",
+                 headers=auth(admin_user["access_token"]))
+body = r.json()
+check("admin verify succeeds", r.status_code == 200, r.text)
+check("verify response is a public projection (no email/id)",
+      "email" not in body and "id" not in body, str(body))
+check("verify does not downgrade a level-2 user", body.get("is_verified") == 2, str(body))
 
 print(f"\nAll {PASS} security checks passed.")

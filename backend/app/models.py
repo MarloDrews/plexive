@@ -129,7 +129,18 @@ class User(Base):
     password_hash = Column(String, nullable=False)
     created_at    = Column(DateTime, default=datetime.utcnow)
     is_active     = Column(Boolean, default=True, nullable=False)
+    # Cosmetic verification badge ONLY (0/1/2). Split from the two capabilities
+    # below in M116 so the badge no longer implies publish or admin rights.
+    # Added to the live DB by scripts/add_capability_columns.py.
     is_verified   = Column(Integer, default=0, nullable=False)
+    # can_publish: this user's posts publish immediately instead of landing in
+    # the pending queue (consumed only by posts.create_post). Granted
+    # deliberately, back-filled to already-verified users by the migration so
+    # their behavior does not change. is_admin: may verify other users and
+    # release pending posts (admin router only); the owner is the sole admin at
+    # launch. Both added to the live DB by scripts/add_capability_columns.py.
+    can_publish   = Column(Boolean, default=False, nullable=False)
+    is_admin      = Column(Boolean, default=False, nullable=False)
     is_private    = Column(Boolean, default=False, nullable=False)
     bio           = Column(String, nullable=True)
     avatar_url    = Column(String, nullable=True)

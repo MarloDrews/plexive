@@ -105,6 +105,10 @@ export default function CreatePage() {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [submitting, setSubmitting] = useState(false)
   const [serverError, setServerError] = useState("")
+  // The status of the just-created post ("published" or "pending"), read from
+  // the POST /api/posts response so the success message reflects what actually
+  // happened -- publishing is gated by can_publish now, not the verified badge.
+  const [createdStatus, setCreatedStatus] = useState<string | null>(null)
 
   const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   // Guards against a slow response for an earlier query landing after a later one.
@@ -448,7 +452,7 @@ export default function CreatePage() {
         const res = await apiFetch("/api/posts", { method: "POST", body: JSON.stringify(payload) })
         // Cached feed lists may now be missing the new post; drop them so the
         // next feed visit fetches fresh.
-        if (res.status === 201) { invalidateFeedCaches(); setStep("success") }
+        if (res.status === 201) { const data = await res.json().catch(() => null); setCreatedStatus(data?.status ?? null); invalidateFeedCaches(); setStep("success") }
         else { const data = await res.json(); setServerError(detailToMessage(data.detail, "Something went wrong.")) }
       } catch { setServerError("Network error. Please try again.") }
       finally { setSubmitting(false) }
@@ -485,6 +489,8 @@ export default function CreatePage() {
       }
       const res = await apiFetch("/api/posts", { method: "POST", body: JSON.stringify(payload) })
       if (res.status === 201) {
+        const data = await res.json().catch(() => null)
+        setCreatedStatus(data?.status ?? null)
         invalidateFeedCaches()
         setStep("success")
       } else {
@@ -524,6 +530,7 @@ export default function CreatePage() {
     setStep(1)
     setSelectedFormat(null)
     setSelectedInterests([])
+    setCreatedStatus(null)
   }
 
   // Switching formats at step 1 discards the authored content so nothing
@@ -566,7 +573,7 @@ export default function CreatePage() {
           <div className="card px-8 py-10 text-center w-full max-w-xs flex flex-col items-center gap-4">
             <p className="font-serif text-ink text-2xl font-medium">Post submitted</p>
             <p className="text-ink-dim text-sm">
-              {user?.is_verified ? "It is now live in the feed." : "It will appear once approved."}
+              {createdStatus === "published" ? "It is now live in the feed." : "It will appear once approved."}
             </p>
             <div className="flex flex-col gap-3 w-full mt-4">
               <button onClick={resetForm} className="btn btn-primary h-12 w-full">Create another</button>

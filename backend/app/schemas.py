@@ -22,6 +22,18 @@ class UserOut(BaseModel):
     avatar_url: str | None
 
 
+class PublicUserOut(BaseModel):
+    # A projection of another user's record with no email or internal id, for
+    # responses ABOUT a non-self user (e.g. the admin verify endpoint). UserOut
+    # with its email stays for self-scoped responses only (M116/SEC-002).
+    model_config = ConfigDict(from_attributes=True)
+
+    username: str
+    is_verified: int
+    avatar_url: str | None
+    bio: str | None
+
+
 class EventIn(BaseModel):
     post_id: int
     event_type: str
