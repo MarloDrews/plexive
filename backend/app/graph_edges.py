@@ -98,9 +98,14 @@ def _connection_key(fmt, ref):
 def _edge_specs(post):
     """Yield (target_format, target_identity_key, featured) for a post's edges.
 
-    Skips anything unresolvable (legacy string ref, missing parts, no birth_year)
-    without raising and without ever producing a partial key.
+    Deduplicated per (target_format, target_identity_key) so the same person in
+    two section lists (or the same connection twice) yields ONE edge row, not
+    duplicates (BE-037/M128); featured is OR-ed, so a featured mention anywhere
+    keeps the edge featured. Skips anything unresolvable (legacy string ref,
+    missing parts, no birth_year) without raising and without ever producing a
+    partial key.
     """
+    specs: dict[tuple[str, str], bool] = {}
     connections = post.connections if isinstance(post.connections, list) else []
     for conn in connections:
         if not isinstance(conn, dict):
@@ -109,7 +114,7 @@ def _edge_specs(post):
         key = _connection_key(fmt, conn.get("ref"))
         if key is None:
             continue
-        yield fmt, key, bool(conn.get("featured"))
+        specs[(fmt, key)] = specs.get((fmt, key), False) or bool(conn.get("featured"))
 
     for person in _iter_person_entries(post.sections):
         key = _key_from_parts(
@@ -117,7 +122,10 @@ def _edge_specs(post):
         )
         if key is None:
             continue
-        yield "people", key, bool(person.get("featured"))
+        specs[("people", key)] = specs.get(("people", key), False) or bool(person.get("featured"))
+
+    for (fmt, key), featured in specs.items():
+        yield fmt, key, featured
 
 
 # Pairs per resolve query. Each pair is 2 bind params, so this keeps a query
@@ -149,13 +157,23 @@ def _resolve_live_targets(db, pairs):
 
 
 def _relatent_incoming(db, post_id):
-    """Set target_post_id NULL on every edge pointing at this post (re-latent).
+    """Detach every edge pointing at this post when it stops being a live node.
 
-    Used both when the target is deleted and when it stops being a live node.
+    Only a PERSON edge may be stored latent (the module invariant, _latent_allowed),
+    so a person edge is re-latented (target_post_id NULL) while a non-person edge
+    is DELETED rather than left as a latent row the invariant forbids (BE-014/M128).
+    A discarded non-person edge is re-derived when its source post is next written,
+    which matches rebuild's own rule that an unresolved non-person edge is never
+    stored latent. Used when the target is deleted and when it goes non-live.
     """
-    db.query(PostEdge).filter(PostEdge.target_post_id == post_id).update(
-        {PostEdge.target_post_id: None}, synchronize_session=False
-    )
+    db.query(PostEdge).filter(
+        PostEdge.target_post_id == post_id,
+        PostEdge.target_format != "people",
+    ).delete(synchronize_session=False)
+    db.query(PostEdge).filter(
+        PostEdge.target_post_id == post_id,
+        PostEdge.target_format == "people",
+    ).update({PostEdge.target_post_id: None}, synchronize_session=False)
 
 
 def rebuild_post_edges(db, post):
@@ -218,16 +236,38 @@ def rebuild_post_edges(db, post):
 
 
 def activate_edges_for(db, post):
-    """Point every edge whose target identity matches this post at it.
+    """Point every LATENT edge whose target identity matches this post at it.
 
     The single indexed statement that activates latent edges when their target
     is inserted or published -- no re-scan, no backfill job.
+
+    Two guards close the identity-key hijack (SEC-014/M128):
+    - A user-generated post never activates onto an identity key already owned by
+      a live seed/official post, so a crafted feed_card whose key collides with a
+      popular work/person cannot capture the read-next edges pointing there.
+    - Only LATENT edges (target_post_id NULL) are activated, so a second post with
+      a colliding key never steals edges already resolved to another post.
     """
     if not is_live_node(post) or post.identity_key is None:
         return
+    if getattr(post, "is_user_content", False):
+        owner_exists = (
+            db.query(Post.id)
+            .filter(
+                Post.status == LIVE_STATUS,
+                Post.format == post.format,
+                Post.identity_key == post.identity_key,
+                Post.is_user_content == False,
+                Post.id != post.id,
+            )
+            .first()
+        )
+        if owner_exists is not None:
+            return
     db.query(PostEdge).filter(
         PostEdge.target_format == post.format,
         PostEdge.target_identity_key == post.identity_key,
+        PostEdge.target_post_id.is_(None),
     ).update({PostEdge.target_post_id: post.id}, synchronize_session=False)
 
 

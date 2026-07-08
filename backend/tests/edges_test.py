@@ -42,7 +42,7 @@ def check(name: str, condition: bool, detail: str = ""):
 db = SessionLocal()
 
 
-def add_post(fmt, feed_card, *, status="published", connections=None, sections=None):
+def add_post(fmt, feed_card, *, status="published", connections=None, sections=None, is_user=False):
     """Create a post in the structured shape and run the edge hook."""
     post = Post(
         format=fmt,
@@ -52,7 +52,7 @@ def add_post(fmt, feed_card, *, status="published", connections=None, sections=N
         sections=sections or [],
         connections=connections or [],
         status=status,
-        is_user_content=False,
+        is_user_content=is_user,
     )
     db.add(post)
     db.commit()
@@ -151,9 +151,13 @@ t2.status = "pending"
 db.commit()
 on_post_written(db, t2)
 check("un-published node drops its outgoing edges", len(edges_from(t2)) == 0)
-db.refresh(edges_from(a)[0])
-check("edges pointing at an un-published node go latent", edges_from(a)[0].target_post_id is None)
-check("no live edge references the un-published node",
+# A's edge into T2 is a NON-PERSON (books) edge. The module invariant allows only
+# person edges to be latent, so an incoming non-person edge to an un-published
+# node is DELETED, not re-latented (BE-014/M128). Person re-latenting on teardown
+# is covered by the person-edge section above.
+check("a non-person edge to an un-published node is deleted, not latented",
+      len(edges_from(a)) == 0)
+check("no edge references the un-published node",
       db.query(PostEdge).filter_by(target_post_id=t2_id).count() == 0)
 
 # --- read-next: cap at 3, person latent marked not dropped -----------------
@@ -340,10 +344,10 @@ check(
     str(rn_items),
 )
 
-# Rebuild semantics: a post that currently holds a NON-person latent edge (made
-# latent by the unchanged re-latent path when its target is deleted) ends, on the
-# next rebuild, with that non-person latent edge GONE and its person latent edge
-# intact -- the one rule purges it via rebuild's delete-and-re-derive.
+# Teardown semantics (BE-014/M128): deleting a book target deletes the incoming
+# NON-person edge outright (the invariant forbids a latent non-person edge), while
+# the holder's person latent edge is untouched. A later rebuild re-derives the same
+# person latent edge and still casts no book edge (target gone).
 ephemeral_book = add_post("books", {"title": "Ephemeral", "author": "Soon Gone"})
 holder = add_post(
     "facts",
@@ -363,24 +367,49 @@ check(
     and held["people"].target_post_id is None,
     str([(e.target_format, e.target_post_id) for e in edges_from(holder)]),
 )
-# Delete the book target: the unchanged re-latent path turns the book edge latent,
-# producing a (transient) non-person latent edge in the DB.
+# Delete the book target: the incoming non-person edge is DELETED (not latented),
+# so no transient non-person latent row is left in the DB (BE-014/M128).
 on_post_deleted(db, ephemeral_book)
-book_edge = db.query(PostEdge).filter_by(source_post_id=holder.id, target_format="books").one()
-check("deleting the book target leaves a transient non-person latent edge", book_edge.target_post_id is None)
-# Rebuild the holder: the one rule purges the non-person latent edge, person stays.
-on_post_written(db, holder)
+check(
+    "deleting the book target deletes the incoming non-person edge outright",
+    db.query(PostEdge).filter_by(source_post_id=holder.id, target_format="books").count() == 0,
+)
 after = edges_from(holder)
 check(
-    "rebuild purges the non-person latent edge",
-    all(e.target_format != "books" for e in after),
-    str([(e.target_format, e.target_post_id) for e in after]),
-)
-check(
-    "rebuild keeps the person latent edge intact",
+    "the holder keeps only its person latent edge after the book target is deleted",
     len(after) == 1 and after[0].target_format == "people" and after[0].target_post_id is None,
     str([(e.target_format, e.target_post_id) for e in after]),
 )
+# Rebuild the holder: still just the person latent edge (the book target is gone,
+# so its non-person edge is discarded, never stored latent).
+on_post_written(db, holder)
+after = edges_from(holder)
+check(
+    "rebuild keeps the person latent edge and casts no book edge",
+    len(after) == 1 and after[0].target_format == "people" and after[0].target_post_id is None,
+    str([(e.target_format, e.target_post_id) for e in after]),
+)
+
+# --- identity-key hijack is blocked for user content (SEC-014/M128) --------
+# An official concept owns an identity key; a linker resolves to it. A user post
+# crafted with the SAME key must NOT capture that resolved edge.
+official = add_post("concepts", {"concept_name": "Shared Key Idea", "title": "Shared Key Idea"})
+linker = add_post(
+    "facts",
+    {"headline": "Points at the shared key"},
+    connections=[conn("concepts", {"title": "Shared Key Idea"})],
+)
+link_edge = edges_from(linker)[0]
+check("linker resolves to the official post", link_edge.target_post_id == official.id)
+
+hijacker = add_post(
+    "concepts",
+    {"concept_name": "Shared Key Idea", "title": "Shared Key Idea"},
+    is_user=True,
+)
+db.refresh(link_edge)
+check("a user post cannot hijack an official post's identity-key edge",
+      link_edge.target_post_id == official.id)
 
 db.close()
 
