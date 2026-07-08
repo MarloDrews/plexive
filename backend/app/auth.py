@@ -14,10 +14,26 @@ from .models import User
 
 load_dotenv()
 
-# JWT_SECRET must be set in .env before starting the server — see .env.example
+# JWT_SECRET must be set in .env before starting the server — see .env.example.
+# HS256 makes the secret the ONLY barrier to forging a token for any user id, so
+# reject a missing, placeholder, or weak (short) secret at startup rather than
+# accepting one that can be guessed or brute-forced (M118/SEC-003).
 JWT_SECRET = os.getenv("JWT_SECRET")
+_PLACEHOLDER_SECRET = "your-secret-key-here"  # the .env.example default
+_MIN_SECRET_LENGTH = 32
 if not JWT_SECRET:
     raise RuntimeError("JWT_SECRET environment variable is not set. See backend/.env.example.")
+if JWT_SECRET == _PLACEHOLDER_SECRET:
+    raise RuntimeError(
+        "JWT_SECRET is still the example placeholder. Generate a real one: "
+        'python -c "import secrets; print(secrets.token_hex(32))"'
+    )
+if len(JWT_SECRET) < _MIN_SECRET_LENGTH:
+    raise RuntimeError(
+        f"JWT_SECRET is too short ({len(JWT_SECRET)} chars); use at least "
+        f"{_MIN_SECRET_LENGTH}. Generate one: "
+        'python -c "import secrets; print(secrets.token_hex(32))"'
+    )
 
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_DAYS = 30

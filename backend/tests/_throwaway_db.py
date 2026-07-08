@@ -26,6 +26,11 @@ os.environ["DATABASE_URL"] = "sqlite:///" + os.path.join(tmp_dir, "test.db").rep
 # reach the real storage bucket; tests that exercise uploads install a fake.
 os.environ["SUPABASE_URL"] = ""
 os.environ["SUPABASE_SERVICE_KEY"] = ""
+# A strong test secret so the app's startup strength check (M118) passes without
+# depending on the developer's real .env. setdefault so a CI-provided secret
+# still wins; it runs before any app import, so weaker per-test setdefaults after
+# it are no-ops.
+os.environ.setdefault("JWT_SECRET", "test-only-jwt-secret-not-for-production-0123456789")
 
 # Tests historically ran from a temp dir so stray relative paths stay out of
 # the repo; keep that behavior.
