@@ -1,5 +1,6 @@
 import asyncio
 import json
+import time
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect, status
@@ -11,7 +12,15 @@ from ..auth import decode_access_token, get_current_user
 from ..database import SessionLocal, get_db
 from ..models import Conversation, ConversationParticipant, Follow, Message, User
 from ..rate_limit import check_rate_limit
-from ..ws_security import is_secure_or_local
+from ..ws_security import (
+    WS_REVALIDATE_SECONDS,
+    connection_attempt_allowed,
+    is_secure_or_local,
+    leave_unauthenticated,
+    token_still_valid,
+    try_enter_unauthenticated,
+    user_still_active,
+)
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
@@ -25,6 +34,7 @@ WS_AUTH_TIMEOUT_SECONDS = 10
 # WebSocket close codes (4xxx range is reserved for applications).
 WS_CLOSE_UNAUTHORIZED = 4401
 WS_CLOSE_INSECURE = 4403
+WS_CLOSE_TRY_AGAIN = 4429  # too many handshake attempts, or the pre-auth pool is full
 
 
 # ---------------------------------------------------------------------------
@@ -382,42 +392,74 @@ async def chat_websocket(websocket: WebSocket):
         await websocket.close(code=WS_CLOSE_INSECURE)
         return
 
+    # Pre-auth per-IP handshake throttle (M137/SEC-021): closing before accept()
+    # rejects the handshake without allocating a socket.
+    host = websocket.client.host if websocket.client else "unknown"
+    if not connection_attempt_allowed(host):
+        await websocket.close(code=WS_CLOSE_TRY_AGAIN)
+        return
+
     await websocket.accept()
 
+    # Cap concurrent sockets that have connected but not yet authenticated, so a
+    # client cannot hold many idle pre-auth sockets open (M137/SEC-021).
+    if not try_enter_unauthenticated():
+        await websocket.close(code=WS_CLOSE_TRY_AGAIN)
+        return
+
     # First frame must be {"type": "auth", "token": "<jwt>"}. The token is
-    # never put in the URL so it cannot end up in access logs.
+    # never put in the URL so it cannot end up in access logs. The slot is held
+    # only for the pre-auth phase and released once we know the outcome.
     try:
-        raw = await asyncio.wait_for(websocket.receive_text(), timeout=WS_AUTH_TIMEOUT_SECONDS)
-        first = json.loads(raw)
-    except (asyncio.TimeoutError, ValueError, WebSocketDisconnect):
-        await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
-        return
+        try:
+            raw = await asyncio.wait_for(websocket.receive_text(), timeout=WS_AUTH_TIMEOUT_SECONDS)
+            first = json.loads(raw)
+        except (asyncio.TimeoutError, ValueError, WebSocketDisconnect):
+            await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
+            return
 
-    if not isinstance(first, dict) or first.get("type") != "auth" or not isinstance(first.get("token"), str):
-        await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
-        return
+        if not isinstance(first, dict) or first.get("type") != "auth" or not isinstance(first.get("token"), str):
+            await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
+            return
 
-    try:
-        user_id, token_version = decode_access_token(first["token"])
-    except HTTPException:
-        await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
-        return
+        token = first["token"]
+        try:
+            user_id, token_version = decode_access_token(token)
+        except HTTPException:
+            await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
+            return
 
-    db = SessionLocal()
-    try:
-        user = db.query(User).filter(User.id == user_id, User.is_active == True).first()
+        db = SessionLocal()
+        try:
+            user = db.query(User).filter(User.id == user_id, User.is_active == True).first()
+        finally:
+            db.close()
+        # Reject a token whose version was revoked by a password change (M126).
+        if not user or user.token_version != token_version:
+            await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
+            return
     finally:
-        db.close()
-    # Reject a token whose version was revoked by a password change (M126).
-    if not user or user.token_version != token_version:
-        await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
-        return
+        leave_unauthenticated()
 
     await manager.connect(user_id, websocket)
     try:
         await websocket.send_json({"type": "auth_ok", "user_id": user_id})
+        next_recheck = time.monotonic() + WS_REVALIDATE_SECONDS
         while True:
             raw = await websocket.receive_text()
+            # Re-validate the session on each frame (M137/BUG-037): the token must
+            # still decode (catches expiry / a revoked version) every frame, and
+            # is_active/token_version are re-checked in the DB at most once per
+            # interval so a deactivated account cannot keep using a live socket.
+            if not token_still_valid(token, user_id, token_version):
+                await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
+                break
+            now = time.monotonic()
+            if now >= next_recheck:
+                if not user_still_active(user_id, token_version):
+                    await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
+                    break
+                next_recheck = now + WS_REVALIDATE_SECONDS
             if len(raw) > WS_FRAME_MAX_BYTES:
                 await _ws_error(websocket, "Frame too large.")
                 continue

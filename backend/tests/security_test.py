@@ -585,6 +585,41 @@ finally:
     _wss.TRUSTED_PROXY_IPS = _saved_proxies
 
 
+# --- WS pre-auth throttle + revalidation (M137/SEC-021, BUG-037) -------------
+reset_rate_limits()
+
+# Per-IP handshake throttle: 30/min, then blocked.
+_allowed = sum(1 for _ in range(30) if _wss.connection_attempt_allowed("198.51.100.9"))
+check("first 30 WS handshakes from an IP are allowed (M137/SEC-021)", _allowed == 30)
+check("the 31st WS handshake from the same IP is throttled (M137/SEC-021)",
+      _wss.connection_attempt_allowed("198.51.100.9") is False)
+
+# Concurrent unauthenticated-socket cap.
+_saved_unauth = _wss._unauthenticated_sockets
+try:
+    _wss._unauthenticated_sockets = 0
+    _entered = sum(1 for _ in range(_wss.MAX_UNAUTHENTICATED_SOCKETS)
+                   if _wss.try_enter_unauthenticated())
+    check("pre-auth socket pool fills exactly to the cap (M137/SEC-021)",
+          _entered == _wss.MAX_UNAUTHENTICATED_SOCKETS)
+    check("a socket past the pre-auth cap is refused (M137/SEC-021)",
+          _wss.try_enter_unauthenticated() is False)
+    _wss.leave_unauthenticated()
+    check("leaving frees a pre-auth slot (M137)", _wss.try_enter_unauthenticated() is True)
+finally:
+    _wss._unauthenticated_sockets = _saved_unauth
+
+# Per-frame token revalidation: a live socket rejects an expired/revoked token.
+from app.auth import create_access_token as _mint  # noqa: E402
+_tok = _mint(999, token_version=3)
+check("a valid token re-validates for its own user/version (M137/BUG-037)",
+      _wss.token_still_valid(_tok, 999, 3) is True)
+check("a token whose version was bumped no longer re-validates (M137/BUG-037)",
+      _wss.token_still_valid(_tok, 999, 4) is False)
+check("a garbage token does not re-validate (M137)",
+      _wss.token_still_valid("not-a-jwt", 999, 3) is False)
+
+
 # --- SVG sanitize consistency (M133/SEC-025, SEC-027) ------------------------
 from app.routers.posts import _sanitize_json_svgs as _sanitize_fc  # noqa: E402
 from app.sanitize import sanitize_svg_text as _sanitize_svg  # noqa: E402

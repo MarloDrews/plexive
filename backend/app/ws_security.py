@@ -7,7 +7,12 @@ carried an identical copy of this logic).
 import ipaddress
 import os
 
-from fastapi import WebSocket
+from fastapi import HTTPException, WebSocket
+
+from .auth import decode_access_token
+from .database import SessionLocal
+from .models import User
+from .rate_limit import check_rate_limit
 
 # Tailscale's CGNAT range (RFC 6598 shared address space). It backs a tailnet
 # but is NOT covered by ipaddress.is_private, so allow it explicitly for a plain
@@ -84,3 +89,68 @@ def is_secure_or_local(websocket: WebSocket) -> bool:
         or ip.is_link_local
         or ip in _TAILSCALE_CGNAT
     )
+
+
+# --- pre-auth abuse controls (M137/SEC-021, BUG-037) -------------------------
+# A client can open sockets and sit before authenticating, tying up resources.
+# Two cheap, in-memory guards bound that: a per-IP handshake-attempt rate and a
+# global cap on sockets accepted-but-not-yet-authenticated (single-worker
+# invariant, same as rate_limit.py).
+WS_CONNECT_ATTEMPTS_PER_MIN = 30
+MAX_UNAUTHENTICATED_SOCKETS = 32
+# How often an established socket re-checks is_active / token_version in the DB.
+WS_REVALIDATE_SECONDS = 60
+
+_unauthenticated_sockets = 0
+
+
+def connection_attempt_allowed(host: str) -> bool:
+    """Per-IP handshake throttle. Reuses the shared in-memory limiter; returns
+    False instead of raising so the caller can close the socket cleanly."""
+    try:
+        check_rate_limit(f"ws:{host}", "ws_connect", WS_CONNECT_ATTEMPTS_PER_MIN, 60)
+        return True
+    except HTTPException:
+        return False
+
+
+def try_enter_unauthenticated() -> bool:
+    """Reserve one of the limited pre-auth slots. Check-then-increment with no
+    await between, so it is atomic under the single-worker event loop. Pair every
+    True return with exactly one leave_unauthenticated()."""
+    global _unauthenticated_sockets
+    if _unauthenticated_sockets >= MAX_UNAUTHENTICATED_SOCKETS:
+        return False
+    _unauthenticated_sockets += 1
+    return True
+
+
+def leave_unauthenticated() -> None:
+    global _unauthenticated_sockets
+    if _unauthenticated_sockets > 0:
+        _unauthenticated_sockets -= 1
+
+
+def token_still_valid(token: str, expected_user_id: int, expected_version: int) -> bool:
+    """Re-decode the token (no DB): catches expiry and any version mismatch on a
+    long-lived socket. False when it no longer decodes to the same user/version."""
+    try:
+        user_id, version = decode_access_token(token)
+    except Exception:
+        return False
+    return user_id == expected_user_id and version == expected_version
+
+
+def user_still_active(expected_user_id: int, expected_version: int) -> bool:
+    """DB re-check that the account is still active and its token_version is
+    unchanged (a password change / deactivation revokes a live socket)."""
+    db = SessionLocal()
+    try:
+        user = (
+            db.query(User)
+            .filter(User.id == expected_user_id, User.is_active == True)
+            .first()
+        )
+    finally:
+        db.close()
+    return bool(user) and user.token_version == expected_version
