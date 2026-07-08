@@ -346,4 +346,34 @@ r = client.post("/api/train/answer",
                 headers=auth(trainer["access_token"]))
 check("train unknown question id rejected", r.status_code == 400, r.text)
 
+# --- anonymous quiz answer withholds the key (M121) ------------------------------
+# A published post with a real quiz item authored by an admin (can publish).
+db = SessionLocal()
+quiz_post = Post(
+    format="facts", title="Quiz post",
+    feed_card={"essence": "e"},
+    sections=[{"type": "quiz", "order": 1, "content": [
+        {"question": "Q?", "options": ["a", "b", "c", "d"], "answer_index": 2, "explanation": "because c"},
+    ]}],
+    author_id=admin_user["user"]["id"], status="published", is_user_content=True,
+)
+db.add(quiz_post)
+db.commit()
+quiz_post_id = quiz_post.id
+db.close()
+
+# anonymous caller gets their own correctness but NOT the correct index or explanation
+r = client.post("/api/quiz/answer", json={"post_id": quiz_post_id, "question_index": 0, "chosen_index": 0})
+body = r.json()
+check("anon quiz answer returns own correctness", r.status_code == 200 and body["correct"] is False, r.text)
+check("anon quiz answer withholds correct_index", body["correct_index"] is None, str(body))
+check("anon quiz answer withholds explanation", body["explanation"] is None, str(body))
+
+# an authenticated caller still gets the key + explanation
+r = client.post("/api/quiz/answer", json={"post_id": quiz_post_id, "question_index": 0, "chosen_index": 0},
+                headers=auth(trainer["access_token"]))
+body = r.json()
+check("authed quiz answer reveals correct_index", body["correct_index"] == 2, str(body))
+check("authed quiz answer reveals explanation", body["explanation"] == "because c", str(body))
+
 print(f"\nAll {PASS} security checks passed.")

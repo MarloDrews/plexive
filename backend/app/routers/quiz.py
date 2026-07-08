@@ -1,6 +1,6 @@
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
@@ -46,6 +46,7 @@ def _elo_payload(user: User, fmt: str, delta: float) -> dict:
 @router.post("/quiz/answer")
 def answer_quiz_question(
     body: QuizAnswerIn,
+    request: Request,
     # Strict: a stale/expired token 401s (the client re-authenticates) rather
     # than silently scoring the answer as an anonymous guest.
     current_user: Optional[User] = Depends(get_optional_user_strict),
@@ -76,6 +77,14 @@ def answer_quiz_question(
     }
 
     if current_user is None:
+        # Anonymous callers are rate-limited by IP (as search is) and never
+        # receive the answer key or explanation (M121/SEC-018): they learn only
+        # whether their own pick was right, so quiz answer keys are not freely
+        # scrapable without an account.
+        ip = f"ip:{request.client.host if request.client else 'unknown'}"
+        check_rate_limit(ip, "quiz_answer", 60, 60)
+        result["correct_index"] = None
+        result["explanation"] = None
         return result
 
     check_rate_limit(current_user.id, "quiz_answer", 60, 60)
