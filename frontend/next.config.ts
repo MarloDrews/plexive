@@ -1,9 +1,87 @@
 import type { NextConfig } from "next";
 
+// The CSP is applied for production builds only. `next dev` relies on inline
+// eval, HMR and the React refresh runtime, which a strict policy breaks; those
+// never run in `next build`/`next start`.
+const isProd = process.env.NODE_ENV === "production";
+
+// The backend origin the client actually talks to, derived from the same
+// build-time env var it uses (storage.ts). Both the http(s) fetch origin and its
+// ws(s) form are returned so connect-src covers REST and the chat/battle sockets
+// -- http+ws on the Tailscale box, https+wss behind TLS.
+function apiOrigins(): { http: string | null; ws: string | null } {
+  const raw = process.env.NEXT_PUBLIC_API_URL;
+  if (!raw) return { http: null, ws: null };
+  try {
+    const http = new URL(raw).origin;
+    return { http, ws: http.replace(/^http/, "ws") };
+  } catch {
+    return { http: null, ws: null };
+  }
+}
+
+const { http: apiHttp, ws: apiWs } = apiOrigins();
+
+// Hosts the in-browser TTS (onnxruntime-web via @diffusionstudio/vits-web)
+// reaches: the voice model on huggingface.co and the WASM runtime on the two
+// CDNs. Everything else the app loads is same-origin or an allowlisted image.
+const TTS_HOSTS = ["https://huggingface.co", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"];
+
+const connectSrc = ["'self'", apiHttp, apiWs, ...TTS_HOSTS].filter(Boolean).join(" ");
+const imgSrc = [
+  "'self'",
+  "data:",
+  "blob:",
+  apiHttp,
+  "https://*.supabase.co",
+  "https://commons.wikimedia.org",
+  "https://upload.wikimedia.org",
+]
+  .filter(Boolean)
+  .join(" ");
+
+const csp = [
+  "default-src 'self'",
+  // 'unsafe-inline': Next injects inline bootstrap scripts without a nonce.
+  // 'wasm-unsafe-eval' + the CDNs: the TTS runtime instantiates WASM from them.
+  "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net",
+  // 'unsafe-inline': styled-jsx and inline style attributes. KaTeX CSS is
+  // bundled and served from 'self'.
+  "style-src 'self' 'unsafe-inline'",
+  `img-src ${imgSrc}`,
+  "font-src 'self' data:",
+  // TTS audio and the onnxruntime worker are blob: URLs.
+  "media-src 'self' blob:",
+  "worker-src 'self' blob:",
+  `connect-src ${connectSrc}`,
+  "frame-ancestors 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "object-src 'none'",
+].join("; ");
+
 const nextConfig: NextConfig = {
   // The floating dev-tools badge sits bottom-right at phone width, exactly
   // over the comment send button — hide it so dev matches what users see.
   devIndicators: false,
+
+  // Security response headers, production only (SEC-011/M125). The CSP allows
+  // same-origin plus the few external hosts the app genuinely needs (the API
+  // origin + its ws form, the allowlisted image hosts, and the TTS model/runtime
+  // hosts). Kept alongside nosniff and a conservative referrer policy.
+  async headers() {
+    if (!isProd) return [];
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "Content-Security-Policy", value: csp },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+        ],
+      },
+    ];
+  },
 
   // Hosts allowed through the next/image optimizer: Supabase Storage
   // (uploads), Wikimedia (official content imagery) and localhost (legacy
