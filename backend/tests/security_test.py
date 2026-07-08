@@ -376,4 +376,20 @@ body = r.json()
 check("authed quiz answer reveals correct_index", body["correct_index"] == 2, str(body))
 check("authed quiz answer reveals explanation", body["explanation"] == "because c", str(body))
 
+# --- image_url upload-prefix enforced for all formats (M122) ----------------------
+# A non-books (facts) post with an external image_url must be rejected, proving
+# the check is no longer books-only.
+external_img_payload = {
+    "format": "facts",
+    "title": "External image fact",
+    "feed_card": {"headline": "External image fact", "essence": "e"},
+    "sections": [{
+        "type": "core_ideas", "order": 1,
+        "content": [{"title": "t", "body": "b", "image_url": "https://evil.example/x.png"}],
+    }],
+    "interests": ["philosophy"],
+}
+r = client.post("/api/posts", json=external_img_payload, headers=auth(admin_user["access_token"]))
+check("non-books external image_url rejected (M122)", r.status_code == 422, r.text)
+
 print(f"\nAll {PASS} security checks passed.")

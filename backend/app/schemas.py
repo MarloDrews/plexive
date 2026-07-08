@@ -342,6 +342,13 @@ class PostCreate(BaseModel):
         duplicates = sorted({t for t in types if types.count(t) > 1})
         if duplicates:
             raise ValueError(f"duplicate section type(s): {', '.join(duplicates)}")
+        # Validate image_url in sections for EVERY format (M122/SEC-008): user
+        # content must reference our upload storage, not arbitrary external hosts.
+        # This used to run only in the books branch below, leaving the other six
+        # formats able to embed any image_url.
+        for section in self.sections:
+            section_dict = section.model_dump()
+            _check_image_urls(section_dict)
         if self.format != "books":
             return self
         # Validate feed card shape for books
@@ -352,10 +359,6 @@ class PostCreate(BaseModel):
         if missing:
             missing_list = ", ".join(sorted(missing))
             raise ValueError(f"section(s) required for Books format: {missing_list}")
-        # Validate image_url in sections: user content must use /uploads/ prefix
-        for section in self.sections:
-            section_dict = section.model_dump()
-            _check_image_urls(section_dict)
         return self
 
 
