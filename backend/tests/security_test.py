@@ -530,4 +530,68 @@ under_status, under_reached = _asyncio.run(_drive_body_limit(1024))
 check("small chunked body passes through to the app (M131)",
       under_status == 200 and under_reached is True, f"status={under_status} reached={under_reached}")
 
+# --- image decode hardening (M132/SEC-023, BUG-015/016/017) ------------------
+import io as _io  # noqa: E402
+from PIL import Image as _PILImage  # noqa: E402
+from app import sanitize as _sanitize  # noqa: E402
+
+
+class _Upload:
+    """Minimal stand-in for FastAPI's UploadFile: validate_image only touches
+    the sync .file.read() of the underlying spooled file."""
+
+    def __init__(self, data: bytes):
+        self.file = _io.BytesIO(data)
+
+
+def _png_bytes(img) -> bytes:
+    buf = _io.BytesIO()
+    img.save(buf, format="PNG")
+    return buf.getvalue()
+
+
+# Decompression-bomb guard: temporarily lower the pixel cap and feed an image
+# whose header dimensions exceed it. Rejection must happen before the decode.
+_orig_cap = _sanitize.MAX_IMAGE_PIXELS
+try:
+    _sanitize.MAX_IMAGE_PIXELS = 100
+    try:
+        _sanitize.validate_image(_Upload(_png_bytes(_PILImage.new("RGB", (50, 50)))))
+        _bomb_rejected = False
+    except ValueError:
+        _bomb_rejected = True
+finally:
+    _sanitize.MAX_IMAGE_PIXELS = _orig_cap
+check("oversized image dimensions rejected before decode (M132)", _bomb_rejected)
+
+# Transparency preserved for PNG: a fully transparent RGBA input stays RGBA
+# instead of being flattened onto a black background (BUG-016).
+_rgba = _PILImage.new("RGBA", (16, 16), (255, 0, 0, 0))
+_out, _mt = _sanitize.validate_image(_Upload(_png_bytes(_rgba)))
+_reopened = _PILImage.open(_io.BytesIO(_out))
+check("PNG transparency is preserved, not flattened to black (M132)",
+      _mt == "image/png" and _reopened.mode == "RGBA", f"mode={_reopened.mode}")
+
+# EXIF orientation is baked in so the stored image is upright (BUG-017): a
+# 40x20 landscape tagged orientation=6 (rotate 90) is stored transposed as 20x40.
+_land = _PILImage.new("RGB", (40, 20), (0, 128, 0))
+_exif = _PILImage.Exif()
+_exif[0x0112] = 6
+_jbuf = _io.BytesIO()
+_land.save(_jbuf, format="JPEG", exif=_exif.tobytes())
+_out2, _mt2 = _sanitize.validate_image(_Upload(_jbuf.getvalue()))
+_re2 = _PILImage.open(_io.BytesIO(_out2))
+check("EXIF orientation is applied so stored size is transposed (M132)",
+      _re2.size == (20, 40), f"size={_re2.size}")
+
+# A file with a valid magic prefix but a corrupt body raises ValueError (which
+# the endpoint turns into a 400), never an unhandled 500 (BUG-015).
+try:
+    _sanitize.validate_image(_Upload(b"\x89PNG\r\n\x1a\n" + b"garbage" * 4))
+    _corrupt_rejected = False
+except ValueError:
+    _corrupt_rejected = True
+check("corrupt image body raises ValueError, not an unhandled error (M132)",
+      _corrupt_rejected)
+
 print(f"\nAll {PASS} security checks passed.")
