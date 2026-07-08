@@ -483,4 +483,51 @@ r = client.post("/api/posts", json=good_after_fail, headers=auth(admin_user["acc
 check("failed create_post validation does not burn the daily slot (BUG-081)",
       r.status_code == 201, r.text)
 
+# --- streaming body cap without a Content-Length (M131/SEC-022) -------------------
+# Drive the ASGI middleware directly with a chunked body (no Content-Length) so
+# the streamed-byte cap is exercised, not just the header fast-reject.
+import asyncio as _asyncio  # noqa: E402
+from app.main import BodySizeLimitMiddleware, MAX_BODY_BYTES  # noqa: E402
+
+
+async def _drive_body_limit(total_bytes):
+    app_reached = {"v": False}
+
+    async def app(scope, receive, send):
+        app_reached["v"] = True
+        while True:
+            m = await receive()
+            if not m.get("more_body", False):
+                break
+        await send({"type": "http.response.start", "status": 200, "headers": []})
+        await send({"type": "http.response.body", "body": b"ok"})
+
+    mw = BodySizeLimitMiddleware(app, MAX_BODY_BYTES)
+    remaining = {"v": total_bytes}
+    chunk = 1024 * 1024
+
+    async def receive():
+        if remaining["v"] <= 0:
+            return {"type": "http.request", "body": b"", "more_body": False}
+        n = min(chunk, remaining["v"])
+        remaining["v"] -= n
+        return {"type": "http.request", "body": b"x" * n, "more_body": remaining["v"] > 0}
+
+    status = {"v": None}
+
+    async def send(message):
+        if message["type"] == "http.response.start":
+            status["v"] = message["status"]
+
+    await mw({"type": "http", "headers": []}, receive, send)
+    return status["v"], app_reached["v"]
+
+
+over_status, over_reached = _asyncio.run(_drive_body_limit(MAX_BODY_BYTES + 5 * 1024 * 1024))
+check("chunked body over the cap is rejected 413, app never reached (M131)",
+      over_status == 413 and over_reached is False, f"status={over_status} reached={over_reached}")
+under_status, under_reached = _asyncio.run(_drive_body_limit(1024))
+check("small chunked body passes through to the app (M131)",
+      under_status == 200 and under_reached is True, f"status={under_status} reached={under_reached}")
+
 print(f"\nAll {PASS} security checks passed.")

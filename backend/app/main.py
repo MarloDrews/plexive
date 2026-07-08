@@ -43,33 +43,84 @@ MAX_BODY_BYTES = 10 * 1024 * 1024
 
 
 class BodySizeLimitMiddleware:
-    """Reject oversized request bodies by Content-Length before dispatch.
+    """Reject oversized request bodies before the app buffers them.
 
     Pure ASGI on purpose: a BaseHTTPMiddleware (@app.middleware("http")) would
     wrap every request -- including /health and every GET -- in an extra
-    task/stream layer just to compare one header. This does the header check
-    directly and otherwise passes the request straight through.
+    task/stream layer just to compare one header.
+
+    Two layers:
+    - A valid Content-Length over the cap is rejected outright; a valid one
+      within the cap is trusted (the ASGI server delivers no more than that
+      many body bytes), so the common path pays only one header check.
+    - A request with NO trustworthy Content-Length (Transfer-Encoding: chunked,
+      or a malformed/spoofed length) is counted as it streams and rejected the
+      moment it crosses the cap, so the chunked bypass cannot buffer an unbounded
+      body in the app (SEC-022/BUG-023). Only these requests pay the streaming
+      cost, so normal traffic keeps the header-only fast path.
     """
 
     def __init__(self, app, max_bytes: int):
         self.app = app
         self.max_bytes = max_bytes
 
+    async def _reject(self, send) -> None:
+        await send({
+            "type": "http.response.start",
+            "status": 413,
+            "headers": [(b"content-type", b"application/json")],
+        })
+        await send({
+            "type": "http.response.body",
+            "body": b'{"detail":"Request body too large."}',
+        })
+
     async def __call__(self, scope, receive, send):
-        if scope["type"] == "http":
-            for name, value in scope["headers"]:
-                if name == b"content-length" and value.isdigit() and int(value) > self.max_bytes:
-                    await send({
-                        "type": "http.response.start",
-                        "status": 413,
-                        "headers": [(b"content-type", b"application/json")],
-                    })
-                    await send({
-                        "type": "http.response.body",
-                        "body": b'{"detail":"Request body too large."}',
-                    })
-                    return
-        await self.app(scope, receive, send)
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+
+        content_length = None
+        for name, value in scope["headers"]:
+            if name == b"content-length":
+                content_length = value
+                break
+
+        if content_length is not None and content_length.isdigit():
+            if int(content_length) > self.max_bytes:
+                await self._reject(send)
+                return
+            # Trustworthy length within the cap: the server will not deliver more,
+            # so no per-request stream counting (keeps the fast path fast).
+            await self.app(scope, receive, send)
+            return
+
+        # No trustworthy Content-Length: enforce the cap on the streamed bytes.
+        # Buffer up to the cap; reject the moment the total crosses it, so no more
+        # than one chunk past the limit is ever held.
+        buffered = []
+        total = 0
+        while True:
+            message = await receive()
+            if message["type"] != "http.request":
+                buffered.append(message)
+                break
+            total += len(message.get("body", b""))
+            if total > self.max_bytes:
+                await self._reject(send)
+                return
+            buffered.append(message)
+            if not message.get("more_body", False):
+                break
+
+        sent = iter(buffered)
+
+        async def replay():
+            for message in sent:
+                return message
+            return await receive()
+
+        await self.app(scope, replay, send)
 
 
 app.add_middleware(BodySizeLimitMiddleware, max_bytes=MAX_BODY_BYTES)
