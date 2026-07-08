@@ -552,6 +552,39 @@ check("user search ranks prefix match before applying the limit (M134/BE-030)",
       len(_top) == 1 and _top[0]["username"] == "ranklead", str(_top))
 
 
+# --- WebSocket TLS gate: proxy-header trust (M136/SEC-004, SEC-029, BUG-012) --
+import ipaddress as _ipaddr  # noqa: E402
+from app import ws_security as _wss  # noqa: E402
+
+
+def _fake_ws(scheme="ws", host="", xfp=None):
+    ws = type("WS", (), {})()
+    ws.url = type("U", (), {"scheme": scheme})()
+    ws.client = None if host is None else type("C", (), {"host": host})()
+    ws.headers = {"x-forwarded-proto": xfp} if xfp else {}
+    return ws
+
+
+# SEC-004/029: a public client cannot spoof x-forwarded-proto over plain ws.
+check("spoofed x-forwarded-proto from an untrusted peer is not trusted (M136/SEC-004)",
+      _wss.is_secure_or_local(_fake_ws(scheme="ws", host="8.8.8.8", xfp="https")) is False)
+check("native wss handshake is allowed (M136)",
+      _wss.is_secure_or_local(_fake_ws(scheme="wss", host="8.8.8.8")) is True)
+check("plain ws from a public IP is rejected (M136)",
+      _wss.is_secure_or_local(_fake_ws(scheme="ws", host="8.8.8.8")) is False)
+# BUG-012: plain ws over the Tailscale CGNAT range is allowed.
+check("plain ws from the Tailscale CGNAT range is allowed (M136/BUG-012)",
+      _wss.is_secure_or_local(_fake_ws(scheme="ws", host="100.64.140.55")) is True)
+# SEC-029: a configured trusted proxy's forwarded scheme IS honored.
+_saved_proxies = _wss.TRUSTED_PROXY_IPS
+try:
+    _wss.TRUSTED_PROXY_IPS = [_ipaddr.ip_network("8.8.8.8/32")]
+    check("x-forwarded-proto from a trusted proxy is honored (M136/SEC-029)",
+          _wss.is_secure_or_local(_fake_ws(scheme="ws", host="8.8.8.8", xfp="https")) is True)
+finally:
+    _wss.TRUSTED_PROXY_IPS = _saved_proxies
+
+
 # --- SVG sanitize consistency (M133/SEC-025, SEC-027) ------------------------
 from app.routers.posts import _sanitize_json_svgs as _sanitize_fc  # noqa: E402
 from app.sanitize import sanitize_svg_text as _sanitize_svg  # noqa: E402

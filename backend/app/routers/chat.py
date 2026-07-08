@@ -1,5 +1,4 @@
 import asyncio
-import ipaddress
 import json
 from typing import List, Optional
 
@@ -12,6 +11,7 @@ from ..auth import decode_access_token, get_current_user
 from ..database import SessionLocal, get_db
 from ..models import Conversation, ConversationParticipant, Follow, Message, User
 from ..rate_limit import check_rate_limit
+from ..ws_security import is_secure_or_local
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
@@ -322,28 +322,6 @@ class ConnectionManager:
 manager = ConnectionManager()
 
 
-def _is_secure_or_local(websocket: WebSocket) -> bool:
-    """Require wss outside local development. TLS usually terminates at a
-    reverse proxy, so x-forwarded-proto counts as secure too. Plain ws is also
-    allowed from loopback and private LAN ranges (RFC1918 / link-local) so dev
-    clients -- the Android emulator or a phone reaching the dev machine by its
-    192.168.x.x address -- can connect; those addresses are never publicly
-    routable, so the "force TLS on the public internet" guarantee stands.
-    Mirrors the same gate in routers/battle.py."""
-    if websocket.url.scheme == "wss":
-        return True
-    if websocket.headers.get("x-forwarded-proto", "").lower() in ("https", "wss"):
-        return True
-    host = websocket.client.host if websocket.client else ""
-    if host in ("localhost", "testclient"):
-        return True
-    try:
-        ip = ipaddress.ip_address(host)
-    except ValueError:
-        return False
-    return ip.is_loopback or ip.is_private or ip.is_link_local
-
-
 async def _ws_error(websocket: WebSocket, detail: str) -> None:
     await websocket.send_json({"type": "error", "detail": detail})
 
@@ -399,7 +377,7 @@ async def _handle_send(websocket: WebSocket, user_id: int, data: dict) -> None:
 
 @router.websocket("/ws")
 async def chat_websocket(websocket: WebSocket):
-    if not _is_secure_or_local(websocket):
+    if not is_secure_or_local(websocket):
         # Reject the handshake outright: chat must run over wss in production.
         await websocket.close(code=WS_CLOSE_INSECURE)
         return

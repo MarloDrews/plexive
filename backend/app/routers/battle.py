@@ -1,5 +1,4 @@
 import asyncio
-import ipaddress
 import json
 import random
 from typing import Optional
@@ -10,6 +9,7 @@ from ..auth import decode_access_token
 from ..database import SessionLocal
 from ..models import User
 from ..rate_limit import check_rate_limit
+from ..ws_security import is_secure_or_local
 
 router = APIRouter(prefix="/battle", tags=["battle"])
 
@@ -25,28 +25,6 @@ WS_CLOSE_INSECURE = 4403
 # sequence from the shared seed (mobile/src/lib/battle/seededQuestions.ts), so
 # the server only needs to agree on the length.
 BATTLE_QUESTION_COUNT = 7
-
-
-def _is_secure_or_local(websocket: WebSocket) -> bool:
-    """Require wss outside local development. TLS usually terminates at a
-    reverse proxy, so x-forwarded-proto counts as secure too. Plain ws is also
-    allowed from loopback and private LAN ranges (RFC1918 / link-local) so dev
-    clients -- the Android emulator or a phone reaching the dev machine by its
-    192.168.x.x address -- can connect; those addresses are never publicly
-    routable, so the "force TLS on the public internet" guarantee stands.
-    Mirrors the same gate in routers/chat.py."""
-    if websocket.url.scheme == "wss":
-        return True
-    if websocket.headers.get("x-forwarded-proto", "").lower() in ("https", "wss"):
-        return True
-    host = websocket.client.host if websocket.client else ""
-    if host in ("localhost", "testclient"):
-        return True
-    try:
-        ip = ipaddress.ip_address(host)
-    except ValueError:
-        return False
-    return ip.is_loopback or ip.is_private or ip.is_link_local
 
 
 class BattleManager:
@@ -190,7 +168,7 @@ async def _relay_to_opponent(websocket: WebSocket, user_id: int, payload: dict) 
 
 @router.websocket("/ws")
 async def battle_websocket(websocket: WebSocket):
-    if not _is_secure_or_local(websocket):
+    if not is_secure_or_local(websocket):
         # Reject the handshake outright: battle must run over wss in production.
         await websocket.close(code=WS_CLOSE_INSECURE)
         return
