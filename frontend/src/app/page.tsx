@@ -11,6 +11,7 @@ import ToastHost from "@/components/ToastHost"
 import FeedHeader, { FEED_TABS_ID, type FeedTab } from "@/components/FeedHeader"
 import type { Post } from "@/types/post"
 import { useAuth, hasToken } from "@/lib/auth"
+import { scrollBehavior } from "@/lib/motion"
 import { tabPanelProps } from "@/lib/tablist"
 import { useSwipeTabs } from "@/lib/useSwipeTabs"
 import { useWindowedFeed } from "@/lib/useWindowedFeed"
@@ -261,7 +262,7 @@ export default function Home() {
     const button = tabRefs.current[activeIndex]
     if (!button) return
     const strip = tabStripRef.current
-    const behavior: ScrollBehavior = isFirstTabCenter.current ? "instant" : "smooth"
+    const behavior: ScrollBehavior = isFirstTabCenter.current ? "instant" : scrollBehavior()
     isFirstTabCenter.current = false
 
     if (activeIndex === 0) {

@@ -1,6 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
+import { scrollBehavior } from "./motion"
 
 // Shared swipe-to-switch-tabs mechanic, extracted from the home feed.
 //
@@ -156,7 +157,7 @@ export function useSwipeTabs({ count, initialIndex = 0, onSettle }: UseSwipeTabs
     activeIndexRef.current = index
     setActiveIndex(index)
     setActivatedIndices((prev) => new Set([...prev, index]))
-    const behavior = opts?.behavior ?? "smooth"
+    const behavior = scrollBehavior(opts?.behavior ?? "smooth")
     if (behavior === "instant") {
       // Instant jumps (e.g. restoring a saved tab on mount) wait one frame
       // so the pager has its final layout before the raw scrollLeft write.

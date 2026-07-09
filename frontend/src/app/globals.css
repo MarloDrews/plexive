@@ -118,7 +118,12 @@ body::before {
 /* Hide scrollbars app-wide, both axes, for a clean surface (LAYOUT_STANDARD s.5).
    Per-container utilities missed the root html/body bars on Windows; this is the
    cross-browser catch-all. Real horizontal overflow is still fixed at its source,
-   never only masked here. */
+   never only masked here.
+
+   A11Y-026, decision 13: hiding the bars removes a scroll affordance and a
+   position cue for low-vision and motor-impaired users. Keeping them hidden is
+   a deliberate product choice, not an oversight. A user-facing setting that
+   restores visible scrollbars is planned; it is not built in this batch. */
 * {
   scrollbar-width: none; /* Firefox */
 }

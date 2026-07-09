@@ -27,6 +27,7 @@ import { useAuth } from "@/lib/auth"
 import { apiFetch } from "@/lib/api"
 import { usePostLike } from "@/lib/usePostLike"
 import { useComments } from "@/lib/useComments"
+import { scrollBehavior } from "@/lib/motion"
 import { findPostInFeedCaches, updatePostInFeedCaches } from "@/lib/swr"
 import { useSWRConfig } from "swr"
 
@@ -215,7 +216,7 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
   // (invoked by CommentBar after a successful post).
   const scrollToComments = useCallback(() => {
     setTimeout(() => {
-      commentsTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
+      commentsTopRef.current?.scrollIntoView({ behavior: scrollBehavior(), block: "start" })
     }, 50)
   }, [])
 
