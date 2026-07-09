@@ -85,7 +85,11 @@ def get_feed(
         f"ip:{request.client.host if request.client else 'unknown'}"
     )
     check_rate_limit(identity, "feed", 60, 60)
-    slugs: List[str] = [s.strip() for s in interests.split(",")] if interests else []
+    # Drop empty entries: interests="," used to yield ["", ""], a truthy list
+    # that ran the tier path with nothing selected, silently disabling the
+    # interest ordering instead of falling back to the no-interests branch
+    # (BUG-080/M152).
+    slugs: List[str] = [s.strip() for s in interests.split(",") if s.strip()] if interests else []
 
     # Scoring inputs only (id, format, interest slugs), never full rows: the
     # whole corpus is ranked but only the returned page pays the json-typed
