@@ -24,6 +24,9 @@ interface Props {
   showResult?: boolean
   correct?: boolean
   correctValue?: number
+  // Accessible name; the visible readout is aria-hidden because the slider
+  // announces its own value through aria-valuetext.
+  ariaLabel?: string
 }
 
 // Round a raw value to the nearest step within [min, max].
@@ -51,6 +54,7 @@ export default function NumberSlider({
   showResult,
   correct,
   correctValue,
+  ariaLabel = "Numeric answer",
 }: Props) {
   const trackRef = useRef<HTMLDivElement>(null)
   const [dragging, setDragging] = useState(false)
@@ -107,6 +111,40 @@ export default function NumberSlider({
     }
   }
 
+  // Keyboard drive (A11Y-002). There is no release event to commit on, so each
+  // keypress commits straight through onChange; the drag path keeps its
+  // commit-on-release contract. PageUp/PageDown move ten steps.
+  function onKeyDown(e: React.KeyboardEvent) {
+    if (locked || max <= min) return
+    let next: number
+    switch (e.key) {
+      case "ArrowRight":
+      case "ArrowUp":
+        next = snap(shown + step, min, max, step)
+        break
+      case "ArrowLeft":
+      case "ArrowDown":
+        next = snap(shown - step, min, max, step)
+        break
+      case "PageUp":
+        next = snap(shown + step * 10, min, max, step)
+        break
+      case "PageDown":
+        next = snap(shown - step * 10, min, max, step)
+        break
+      case "Home":
+        next = min
+        break
+      case "End":
+        next = max
+        break
+      default:
+        return
+    }
+    e.preventDefault()
+    if (next !== value) onChange(next)
+  }
+
   // Result coloring: green when right, the brand lamp while answering, red ring
   // for a wrong locked-in value.
   const accent = showResult ? (correct ? "var(--color-good)" : "var(--color-bad)") : "var(--color-lamp)"
@@ -117,9 +155,9 @@ export default function NumberSlider({
 
   return (
     <div className="flex flex-col gap-3.5">
-      {/* Big live value readout. */}
+      {/* Big live value readout. aria-hidden: the slider announces the value. */}
       <div className="flex flex-col items-center">
-        <span className="font-mono text-[40px] leading-none" style={{ color: accent }}>
+        <span aria-hidden="true" className="font-mono text-[40px] leading-none" style={{ color: accent }}>
           {format(shown, step, unit)}
         </span>
         {showResult && correctValue !== undefined && !correct && (
@@ -129,9 +167,19 @@ export default function NumberSlider({
         )}
       </div>
 
-      {/* Tall padded row so the whole area is grabbable. */}
+      {/* Tall padded row so the whole area is grabbable, and the focusable
+          slider itself: the ring then wraps the same area the pointer uses. */}
       <div
-        className={`relative py-4 select-none ${locked ? "" : "cursor-pointer touch-none"}`}
+        role="slider"
+        aria-label={ariaLabel}
+        aria-valuemin={min}
+        aria-valuemax={max}
+        aria-valuenow={shown}
+        aria-valuetext={format(shown, step, unit)}
+        aria-disabled={locked || undefined}
+        tabIndex={locked ? -1 : 0}
+        onKeyDown={onKeyDown}
+        className={`relative py-4 select-none rounded-lg ${locked ? "" : "cursor-pointer touch-none"}`}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}

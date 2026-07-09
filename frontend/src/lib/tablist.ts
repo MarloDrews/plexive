@@ -43,10 +43,17 @@ export const tabId = (base: string, i: number) => `${base}-tab-${i}`
 export const tabPanelId = (base: string, i: number) => `${base}-panel-${i}`
 
 // Spread onto a pager page so it is announced as the panel its tab controls.
-export function tabPanelProps(base: string, i: number) {
+//
+// isActive drives `inert` (A11Y-013): the pagers keep every activated page
+// mounted and merely translate them off screen, so without this a Tab press
+// walks into a page the user never chose and drags the scroll position with
+// it. inert is applied on settle, which is exactly when the hook commits
+// activeIndex, so an in-flight swipe is never blocked.
+export function tabPanelProps(base: string, i: number, isActive: boolean) {
   return {
     role: "tabpanel",
     id: tabPanelId(base, i),
     "aria-labelledby": tabId(base, i),
+    inert: !isActive,
   } as const
 }

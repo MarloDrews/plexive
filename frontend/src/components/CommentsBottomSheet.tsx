@@ -94,8 +94,21 @@ export default function CommentsBottomSheet({ postId, onClose, onCountChange }: 
       >
         {/* Drag handle zone */}
         <div ref={dragRef} className="flex-none pt-3 pb-2 relative touch-none select-none">
-          {/* Pill */}
-          <div className="w-10 h-1 bg-edge-strong rounded-full mx-auto mb-2" />
+          {/* Pill. Also a real button (A11Y-029): the swipe-up expand gesture
+              was touch-only, so keyboard and mouse users could never reach the
+              expanded height. The gesture above still works. */}
+          {/* py-2 -mt-2 grows the hit target without moving the pill: the top
+              padding cancels against the negative margin, the bottom padding
+              replaces the pill's old mb-2. */}
+          <button
+            type="button"
+            onClick={() => setExpanded((v) => !v)}
+            aria-expanded={expanded}
+            aria-label={expanded ? "Collapse comments" : "Expand comments"}
+            className="block mx-auto py-2 -mt-2 cursor-pointer"
+          >
+            <span className="block w-10 h-1 bg-edge-strong rounded-full" />
+          </button>
 
           {/* Comment count (blank until the list loads so it never asserts 0) */}
           <p className="text-sm text-ink-dim text-center">

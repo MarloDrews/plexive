@@ -11,7 +11,7 @@ import ToastHost from "@/components/ToastHost"
 import FeedHeader, { FEED_TABS_ID, type FeedTab } from "@/components/FeedHeader"
 import type { Post } from "@/types/post"
 import { useAuth, hasToken } from "@/lib/auth"
-import { tabId, tabPanelId } from "@/lib/tablist"
+import { tabPanelProps } from "@/lib/tablist"
 import { useSwipeTabs } from "@/lib/useSwipeTabs"
 import { useWindowedFeed } from "@/lib/useWindowedFeed"
 
@@ -77,11 +77,13 @@ function TabPage({
   index,
   slugs,
   isActivated,
+  isActive,
 }: {
   tab: (typeof TABS)[number]
   index: number
   slugs: string[]
   isActivated: boolean
+  isActive: boolean
 }) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const { user, loading: authLoading } = useAuth()
@@ -141,9 +143,7 @@ function TabPage({
     // pb-24 clears the floating dock (12px inset + 56px tall).
     <div
       ref={scrollRef}
-      role="tabpanel"
-      id={tabPanelId(FEED_TABS_ID, index)}
-      aria-labelledby={tabId(FEED_TABS_ID, index)}
+      {...tabPanelProps(FEED_TABS_ID, index, isActive)}
       className="w-full shrink-0 snap-start h-[100dvh] overflow-y-scroll snap-y snap-mandatory overscroll-y-contain pb-24"
     >
       {!isActivated ? (
@@ -303,9 +303,7 @@ export default function Home() {
             return (
               <div
                 key={tab.id}
-                role="tabpanel"
-                id={tabPanelId(FEED_TABS_ID, i)}
-                aria-labelledby={tabId(FEED_TABS_ID, i)}
+                {...tabPanelProps(FEED_TABS_ID, i, activeIndex === i)}
                 className="w-full shrink-0 snap-start h-[100dvh] bg-surface-0"
               >
                 {!isActivated ? (
@@ -328,6 +326,7 @@ export default function Home() {
               index={i}
               slugs={slugs}
               isActivated={isActivated}
+              isActive={activeIndex === i}
             />
           )
         })}

@@ -334,13 +334,13 @@ export default function PublicProfilePage() {
                 ref={pagerRef}
                 className="flex items-start overflow-x-scroll overflow-y-hidden snap-x snap-mandatory"
               >
-                <div ref={(el) => { pageRefs.current[0] = el }} {...tabPanelProps(PROFILE_TABS_ID, 0)} className="w-full shrink-0 snap-start px-4 pt-3 min-h-[160px]">
+                <div ref={(el) => { pageRefs.current[0] = el }} {...tabPanelProps(PROFILE_TABS_ID, 0, activeIndex === 0)} className="w-full shrink-0 snap-start px-4 pt-3 min-h-[160px]">
                   <PostsTab posts={posts} />
                 </div>
-                <div ref={(el) => { pageRefs.current[1] = el }} {...tabPanelProps(PROFILE_TABS_ID, 1)} className="w-full shrink-0 snap-start px-4 pt-3 min-h-[160px]">
+                <div ref={(el) => { pageRefs.current[1] = el }} {...tabPanelProps(PROFILE_TABS_ID, 1, activeIndex === 1)} className="w-full shrink-0 snap-start px-4 pt-3 min-h-[160px]">
                   <PostList posts={savedPosts} emptyMessage="Nothing here yet." />
                 </div>
-                <div ref={(el) => { pageRefs.current[2] = el }} {...tabPanelProps(PROFILE_TABS_ID, 2)} className="w-full shrink-0 snap-start px-4 pt-3 min-h-[160px]">
+                <div ref={(el) => { pageRefs.current[2] = el }} {...tabPanelProps(PROFILE_TABS_ID, 2, activeIndex === 2)} className="w-full shrink-0 snap-start px-4 pt-3 min-h-[160px]">
                   <PostList posts={likedPosts} emptyMessage="Nothing here yet." />
                 </div>
               </div>

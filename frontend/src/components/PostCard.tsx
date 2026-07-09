@@ -2,6 +2,7 @@
 
 import { memo, useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import CommentsBottomSheet from "./CommentsBottomSheet"
 import { showToast } from "@/lib/toastBus"
 import { observeCard } from "@/lib/sharedObserver"
@@ -299,6 +300,26 @@ function PostCard({ post, activeTabId }: { post: Post; activeTabId: string }) {
       {/* Format glow — behind the z-10 content, clipped by the card's own
           overflow-hidden so it never reaches neighboring posts or chrome. */}
       <SlabGlow />
+
+      {/* The card's keyboard entry point (A11Y-001). The slab stays a div with
+          onClick because the double-tap-to-like timer needs the raw pointer
+          path; this anchor adds the missing role, name and Enter activation.
+          pointer-events-none means it never intercepts a mouse or touch click,
+          so every pointer interaction behaves exactly as before. It is the
+          first child so Tab reaches the post before the read-aloud and rail
+          buttons. Enter navigates immediately rather than waiting out the
+          300ms double-tap window. */}
+      <Link
+        href={`/post/${post.id}`}
+        onClick={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          navigate()
+        }}
+        className="absolute inset-2 z-10 rounded-3xl pointer-events-none"
+      >
+        <span className="sr-only">{post.title}</span>
+      </Link>
 
       {/* Double-tap heart overlay */}
       {showHeartAnim && (

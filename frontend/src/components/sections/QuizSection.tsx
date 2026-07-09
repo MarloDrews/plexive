@@ -244,8 +244,11 @@ export default function QuizSection({ content, postId }: Props) {
           className="flex items-start transition-transform duration-300 ease-out"
           style={{ transform: `translateX(-${current * 100}%)` }}
         >
+          {/* inert on the off-screen slides (A11Y-013): they stay mounted, so
+              without it Tab reaches a future question's options and a keyboard
+              user answers out of order, bypassing the no-advance gating. */}
           {items.map((item, i) => (
-            <div key={i} className="w-full shrink-0">
+            <div key={i} className="w-full shrink-0" inert={i !== current}>
               <QuizCard
                 item={item}
                 index={i}
@@ -258,7 +261,7 @@ export default function QuizSection({ content, postId }: Props) {
           ))}
           {/* Result summary — Elo is a placeholder for now: the score only, no
               rating math. */}
-          <div className="w-full shrink-0">
+          <div className="w-full shrink-0" inert={current !== items.length}>
             <div className="card px-4 py-6 flex flex-col items-center gap-1 text-center">
               <p className="label-caps text-(--accent)">Quiz complete</p>
               <p className="text-lg text-ink font-semibold">

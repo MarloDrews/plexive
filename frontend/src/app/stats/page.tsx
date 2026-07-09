@@ -90,7 +90,7 @@ export default function StatsPage() {
         {/* Per-tab error boundaries (inside the page-level one): a render
             crash in one tab degrades that tab alone; the switcher keeps
             working and the other tabs stay usable. */}
-        <div className={pageClass} {...tabPanelProps(STATS_TABS_ID, 0)}>
+        <div className={pageClass} {...tabPanelProps(STATS_TABS_ID, 0, activeIndex === 0)}>
           {activatedIndices.has(0) && (
             <StatsErrorBoundary>
               {globalLoading ? (
@@ -106,7 +106,7 @@ export default function StatsPage() {
           )}
         </div>
 
-        <div className={pageClass} {...tabPanelProps(STATS_TABS_ID, 1)}>
+        <div className={pageClass} {...tabPanelProps(STATS_TABS_ID, 1, activeIndex === 1)}>
           {activatedIndices.has(1) && (
             <StatsErrorBoundary>
               {!user ? (
@@ -131,7 +131,7 @@ export default function StatsPage() {
           )}
         </div>
 
-        <div className={pageClass} {...tabPanelProps(STATS_TABS_ID, 2)}>
+        <div className={pageClass} {...tabPanelProps(STATS_TABS_ID, 2, activeIndex === 2)}>
           {activatedIndices.has(2) && (
             <StatsErrorBoundary>
               {!user ? (
