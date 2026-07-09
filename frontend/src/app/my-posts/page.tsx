@@ -83,58 +83,59 @@ export default function MyPostsPage() {
 
           {/* Post list */}
           {posts !== null && posts.length > 0 && (
-            <div className="flex flex-col gap-2 px-4 pt-2">
+            <ul className="flex flex-col gap-2 px-4 pt-2">
               {posts.map((post) => {
                 const style = FORMAT_STYLES[post.format as FormatId]
                 return (
-                  <button
-                    key={post.id}
-                    onClick={() => router.push(`/post/${post.id}`)}
-                    className="w-full text-left card px-4 py-3 flex items-start gap-3 cursor-pointer hover:bg-white/[0.07] transition-colors duration-150"
-                  >
-                    {/* Cover thumbnail. Books use the two-tier cover (real or
-                        generated), resolved the same way as the feed and detail;
-                        other formats keep the format-color fill. */}
-                    {post.format === "books" ? (
-                      <BookCover
-                        feedCard={post.feed_card}
-                        isUserContent={post.is_user_content}
-                        className="shrink-0 w-10 h-14 rounded-lg overflow-hidden bg-white/[0.06]"
-                      />
-                    ) : (
-                      <div className="shrink-0 w-10 h-14 rounded-lg overflow-hidden bg-white/[0.06]">
-                        <span className={`w-full h-full flex items-center justify-center text-lg ${style?.dot ?? "bg-fmt-neutral"}`} />
-                      </div>
-                    )}
+                  <li key={post.id}>
+                    <button
+                      onClick={() => router.push(`/post/${post.id}`)}
+                      className="w-full text-left card px-4 py-3 flex items-start gap-3 cursor-pointer hover:bg-white/[0.07] transition-colors duration-150"
+                    >
+                      {/* Cover thumbnail. Books use the two-tier cover (real or
+                          generated), resolved the same way as the feed and detail;
+                          other formats keep the format-color fill. */}
+                      {post.format === "books" ? (
+                        <BookCover
+                          feedCard={post.feed_card}
+                          isUserContent={post.is_user_content}
+                          className="shrink-0 w-10 h-14 rounded-lg overflow-hidden bg-white/[0.06]"
+                        />
+                      ) : (
+                        <div className="shrink-0 w-10 h-14 rounded-lg overflow-hidden bg-white/[0.06]">
+                          <span className={`w-full h-full flex items-center justify-center text-lg ${style?.dot ?? "bg-fmt-neutral"}`} />
+                        </div>
+                      )}
 
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        {style && (
-                          <span className={`label-caps ${style.text}`}>{style.badge}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          {style && (
+                            <span className={`label-caps ${style.text}`}>{style.badge}</span>
+                          )}
+                          {post.status === "pending" && (
+                            <span className="bg-lamp/15 text-lamp rounded-full px-2 py-0.5 text-xs">
+                              Pending review
+                            </span>
+                          )}
+                          {post.status === "published" && (
+                            <span className="bg-good/15 text-good rounded-full px-2 py-0.5 text-xs">
+                              Published
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-ink font-serif font-medium text-[15px] mt-0.5 line-clamp-2">{post.title}</p>
+                        {fcStr(post.feed_card, "author") && (
+                          <p className="text-ink-muted text-xs mt-0.5 truncate">{fcStr(post.feed_card, "author")}</p>
                         )}
-                        {post.status === "pending" && (
-                          <span className="bg-lamp/15 text-lamp rounded-full px-2 py-0.5 text-xs">
-                            Pending review
-                          </span>
-                        )}
-                        {post.status === "published" && (
-                          <span className="bg-good/15 text-good rounded-full px-2 py-0.5 text-xs">
-                            Published
-                          </span>
+                        {post.created_at && (
+                          <p className="text-ink-faint text-xs font-mono mt-1">{relativeTime(post.created_at)}</p>
                         )}
                       </div>
-                      <p className="text-ink font-serif font-medium text-[15px] mt-0.5 line-clamp-2">{post.title}</p>
-                      {fcStr(post.feed_card, "author") && (
-                        <p className="text-ink-muted text-xs mt-0.5 truncate">{fcStr(post.feed_card, "author")}</p>
-                      )}
-                      {post.created_at && (
-                        <p className="text-ink-faint text-xs font-mono mt-1">{relativeTime(post.created_at)}</p>
-                      )}
-                    </div>
-                  </button>
+                    </button>
+                  </li>
                 )
               })}
-            </div>
+            </ul>
           )}
         </div>
 

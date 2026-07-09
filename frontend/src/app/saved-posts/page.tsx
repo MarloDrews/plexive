@@ -35,6 +35,8 @@ export default function SavedPostsPage() {
   return (
     <div className="h-[100dvh] bg-surface-0 flex justify-center">
       <div className="w-full max-w-[430px] h-[100dvh] relative overflow-hidden">
+        {/* Card feed, no visual title; sr-only h1 names the page. */}
+        <h1 className="sr-only">Saved posts</h1>
 
         {/* Loading: pulsing slabs where the card slab would sit */}
         {posts === null && (

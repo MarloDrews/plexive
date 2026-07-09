@@ -380,7 +380,7 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                         <FieldGlyph slug={post.tags?.[0]} reach="-bottom-3" />
                       </div>
                     </div>
-                    <HeadlineSection content={post.title} />
+                    <HeadlineSection content={post.title} as="h1" />
                     {/* Dek — the one-line plain-language gloss from the feed card,
                         repeated under the headline (LAYOUT_STANDARD s3). Concepts
                         carries one_line; facts has none, so this stays facts-free. */}
@@ -414,7 +414,7 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                         <FieldGlyph slug={post.tags?.[0]} reach="-bottom-3" />
                       </div>
                     </div>
-                    <HeadlineSection content={post.title} accentNumbers={false} />
+                    <HeadlineSection content={post.title} accentNumbers={false} as="h1" />
                     {/* Context line: authors_compact already carries the year
                         (e.g. "Friston, 2010"), so published_year is not printed
                         here; it stays in the data for sorting only. */}
@@ -516,7 +516,7 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                         </p>
                       </div>
                     )}
-                    <HeadlineSection content={post.title} />
+                    <HeadlineSection content={post.title} as="h1" />
                     {fcStr(post.feed_card, "author") && (
                       <p className="px-6 -mt-1 text-ink-dim text-sm font-medium">
                         {fcStr(post.feed_card, "author")}
@@ -575,7 +575,7 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                         </div>
                       </div>
                     )}
-                    <HeadlineSection content={post.title} />
+                    <HeadlineSection content={post.title} as="h1" />
                     <HeaderMeta post={post} />
                   </div>
                 ) : (

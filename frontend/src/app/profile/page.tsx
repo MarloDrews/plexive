@@ -319,10 +319,10 @@ export default function ProfilePage() {
             />
           </div>
           {avatarError && <p className="text-bad text-xs mb-2">{avatarError}</p>}
-          <p className="flex items-center gap-1.5 font-serif text-ink text-2xl font-medium">
+          <h1 className="flex items-center gap-1.5 font-serif text-ink text-2xl font-medium">
             @{user.username}
             {user.is_verified > 0 && <VerifiedBadge size={20} level={user.is_verified} />}
-          </p>
+          </h1>
 
           {/* Followers / Following / Posts row */}
           <div className="flex gap-6 mt-3 mb-1">

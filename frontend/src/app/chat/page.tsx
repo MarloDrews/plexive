@@ -259,27 +259,30 @@ export default function ChatPage() {
               </div>
             </div>
           ) : (
-            conversations.map((conv) => (
-              <button
-                key={conv.id}
-                onClick={() => router.push(`/chat/${conv.id}`)}
-                className="w-full flex items-center gap-3 px-4 py-3 text-left cursor-pointer active:bg-white/[0.05] hover:bg-white/[0.05] transition-colors duration-150"
-              >
-                <ConversationAvatar conv={conv} me={user?.username ?? ""} />
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-baseline justify-between gap-2">
-                    <p className="text-ink text-sm font-semibold truncate">{conv.name}</p>
-                    {conv.last_message?.created_at && (
-                      <span className="text-ink-faint text-xs shrink-0 font-mono">{relativeTime(conv.last_message.created_at)}</span>
-                    )}
-                  </div>
-                  <p className="text-ink-muted text-xs truncate">{preview(conv)}</p>
-                  {conv.is_group && (
-                    <p className="text-ink-faint text-xs truncate">{subtitle(conv.participants)}</p>
-                  )}
-                </div>
-              </button>
-            ))
+            <ul>
+              {conversations.map((conv) => (
+                <li key={conv.id}>
+                  <button
+                    onClick={() => router.push(`/chat/${conv.id}`)}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-left cursor-pointer active:bg-white/[0.05] hover:bg-white/[0.05] transition-colors duration-150"
+                  >
+                    <ConversationAvatar conv={conv} me={user?.username ?? ""} />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-baseline justify-between gap-2">
+                        <p className="text-ink text-sm font-semibold truncate">{conv.name}</p>
+                        {conv.last_message?.created_at && (
+                          <span className="text-ink-faint text-xs shrink-0 font-mono">{relativeTime(conv.last_message.created_at)}</span>
+                        )}
+                      </div>
+                      <p className="text-ink-muted text-xs truncate">{preview(conv)}</p>
+                      {conv.is_group && (
+                        <p className="text-ink-faint text-xs truncate">{subtitle(conv.participants)}</p>
+                      )}
+                    </div>
+                  </button>
+                </li>
+              ))}
+            </ul>
           )}
         </div>
 

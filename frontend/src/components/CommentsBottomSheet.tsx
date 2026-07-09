@@ -133,15 +133,17 @@ export default function CommentsBottomSheet({ postId, onClose, onCountChange }: 
           ) : comments!.length === 0 ? (
             <p className="text-sm text-ink-faint text-center py-6">No comments yet</p>
           ) : (
-            comments!.map((comment) => (
-              <CommentRow
-                key={comment.id}
-                comment={comment}
-                isOwn={user?.username === comment.username}
-                deleting={deletingId === comment.id}
-                onDelete={deleteComment}
-              />
-            ))
+            <ul>
+              {comments!.map((comment) => (
+                <CommentRow
+                  key={comment.id}
+                  comment={comment}
+                  isOwn={user?.username === comment.username}
+                  deleting={deletingId === comment.id}
+                  onDelete={deleteComment}
+                />
+              ))}
+            </ul>
           )}
         </div>
 

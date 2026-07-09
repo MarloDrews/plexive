@@ -334,7 +334,7 @@ export default function ConversationPage() {
             <Avatar username={headerAvatarUser.username} avatarUrl={headerAvatarUser.avatar_url} size={32} verified={headerAvatarUser.is_verified} />
           )}
           <div className="flex-1 min-w-0">
-            <p className="text-ink text-sm font-semibold truncate">{conversation?.name ?? "Chat"}</p>
+            <h1 className="text-ink text-sm font-semibold truncate">{conversation?.name ?? "Chat"}</h1>
             {conversation?.is_group && (
               <p className="text-ink-faint text-xs truncate">
                 {conversation.participants.map((p) => `@${p.username}`).join(", ")}

@@ -62,6 +62,8 @@ export default function StatsPage() {
   return (
     <StatsErrorBoundary>
     <div className="relative max-w-[430px] mx-auto bg-surface-0 h-[100dvh] flex flex-col">
+      {/* No visual page title here; the tab capsule is the header. */}
+      <h1 className="sr-only">Stats</h1>
       {/* Tab switcher — floating frosted segmented capsule */}
       <div className="z-20 px-3 pt-3 pb-2">
         <SegmentedTabs

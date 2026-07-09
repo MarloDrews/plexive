@@ -41,26 +41,29 @@ export default function FollowListSheet({
             </svg>
           </button>
         </div>
-        <div className="overflow-y-auto px-3 py-3 flex flex-col gap-1 pb-[max(env(safe-area-inset-bottom),12px)]">
+        <div className="overflow-y-auto px-3 py-3 pb-[max(env(safe-area-inset-bottom),12px)]">
           {users === null ? (
             <div className="flex justify-center py-8"><Spinner /></div>
           ) : users.length === 0 ? (
             <p className="text-ink-muted text-sm text-center py-8">{emptyMessage}</p>
           ) : (
-            users.map((u) => (
-              <Link
-                key={u.username}
-                href={`/profile/${u.username}`}
-                onClick={onClose}
-                className="flex items-center gap-3 px-2 py-2 rounded-2xl hover:bg-white/[0.06] transition-colors duration-150"
-              >
-                <Avatar username={u.username} avatarUrl={u.avatar_url} size={40} verified={u.is_verified} />
-                <span className="flex items-center gap-1.5 text-ink text-sm font-medium">
-                  @{u.username}
-                  {u.is_verified > 0 && <VerifiedBadge size={14} level={u.is_verified} />}
-                </span>
-              </Link>
-            ))
+            <ul className="flex flex-col gap-1">
+              {users.map((u) => (
+                <li key={u.username}>
+                  <Link
+                    href={`/profile/${u.username}`}
+                    onClick={onClose}
+                    className="flex items-center gap-3 px-2 py-2 rounded-2xl hover:bg-white/[0.06] transition-colors duration-150"
+                  >
+                    <Avatar username={u.username} avatarUrl={u.avatar_url} size={40} verified={u.is_verified} />
+                    <span className="flex items-center gap-1.5 text-ink text-sm font-medium">
+                      @{u.username}
+                      {u.is_verified > 0 && <VerifiedBadge size={14} level={u.is_verified} />}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
           )}
         </div>
       </div>

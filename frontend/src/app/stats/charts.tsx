@@ -288,9 +288,9 @@ export function CategorySection({ title, charts }: { title: string; charts: Char
   const [selected, setSelected] = useState(0)
   return (
     <div className="card mx-3 mb-3 px-4 py-4">
-      <div className="label-caps text-ink-dim mb-3">
+      <h2 className="label-caps text-ink-dim mb-3">
         {title}
-      </div>
+      </h2>
       {charts.length > 1 && (
         <div className="flex gap-1.5 mb-4 overflow-x-auto overscroll-x-contain pb-1">
           {charts.map((c, i) => (

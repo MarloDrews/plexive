@@ -279,6 +279,9 @@ export default function SearchPage() {
     <div className="h-[100dvh] bg-surface-0 flex justify-center">
       <div className="w-full max-w-[430px] h-[100dvh] relative flex flex-col">
 
+        {/* The search field is the header; sr-only h1 names the page. */}
+        <h1 className="sr-only">Search</h1>
+
         {/* Top bar: back + search input + post-search switcher */}
         <div className="shrink-0 z-20 bg-surface-0 px-3 pt-3 pb-2">
           <div className="flex items-center gap-2">

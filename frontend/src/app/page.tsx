@@ -266,6 +266,9 @@ export default function Home() {
 
   return (
     <PhoneFrame>
+      {/* The feed has no visual title; the tab strip is the whole header. An
+          sr-only h1 gives the page a document title for heading navigation. */}
+      <h1 className="sr-only">Feed</h1>
       <FeedHeader
         tabs={TABS}
         activeTab={activeTab}

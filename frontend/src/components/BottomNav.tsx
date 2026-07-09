@@ -85,7 +85,8 @@ export default function BottomNav({ activeTab }: { activeTab: ActiveTab }) {
   ]
 
   return (
-    <div
+    <nav
+      aria-label="Primary"
       className="absolute left-4 right-4 z-30"
       style={{ bottom: "calc(env(safe-area-inset-bottom) + 12px)" }}
     >
@@ -95,6 +96,7 @@ export default function BottomNav({ activeTab }: { activeTab: ActiveTab }) {
             key={item.id}
             onClick={item.onClick}
             aria-label={item.label}
+            aria-current={item.active ? "page" : undefined}
             className={`w-11 h-11 rounded-full flex items-center justify-center cursor-pointer transition-all duration-150 active:scale-95 ${
               item.active ? "bg-white/[0.12] text-ink" : "text-ink-muted hover:text-ink-dim"
             }`}
@@ -113,6 +115,6 @@ export default function BottomNav({ activeTab }: { activeTab: ActiveTab }) {
           </button>
         ))}
       </div>
-    </div>
+    </nav>
   )
 }

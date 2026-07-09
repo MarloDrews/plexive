@@ -41,15 +41,17 @@ export default function CommentsSection({ comments, error, currentUsername, onDe
       ) : comments!.length === 0 ? (
         <p className="text-sm text-ink-faint">No comments yet</p>
       ) : (
-        comments!.map((comment) => (
-          <CommentRow
-            key={comment.id}
-            comment={comment}
-            isOwn={currentUsername === comment.username}
-            deleting={deletingId === comment.id}
-            onDelete={onDelete}
-          />
-        ))
+        <ul>
+          {comments!.map((comment) => (
+            <CommentRow
+              key={comment.id}
+              comment={comment}
+              isOwn={currentUsername === comment.username}
+              deleting={deletingId === comment.id}
+              onDelete={onDelete}
+            />
+          ))}
+        </ul>
       )}
     </section>
   )

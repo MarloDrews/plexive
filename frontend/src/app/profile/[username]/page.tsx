@@ -237,7 +237,7 @@ export default function PublicProfilePage() {
 
           {/* Username + verified */}
           <div className="flex items-center gap-1.5 mb-0.5">
-            <span className="font-serif text-ink text-2xl font-medium">{username}</span>
+            <h1 className="font-serif text-ink text-2xl font-medium">{username}</h1>
             {profile.is_verified > 0 && <VerifiedBadge size={18} level={profile.is_verified} />}
           </div>
 
