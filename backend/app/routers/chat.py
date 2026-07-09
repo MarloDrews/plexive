@@ -8,6 +8,7 @@ import anyio.to_thread
 from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect, status
 from pydantic import BaseModel, field_validator
 from sqlalchemy import and_, func, or_
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, selectinload
 
 from ..auth import decode_access_token, get_current_user
@@ -113,6 +114,25 @@ def _serialize_conversation(c: Conversation, viewer_id: int, last_message: Optio
     }
 
 
+def _conversation_response(db: Session, conversation_id: int, viewer_id: int) -> dict:
+    """An existing conversation serialized with participants + last message.
+    Shared by the DM-dedupe hit and the concurrent-create loser (M145)."""
+    conv = (
+        db.query(Conversation)
+        .options(selectinload(Conversation.participants).selectinload(ConversationParticipant.user))
+        .filter(Conversation.id == conversation_id)
+        .first()
+    )
+    last = (
+        db.query(Message)
+        .options(selectinload(Message.sender))
+        .filter(Message.conversation_id == conversation_id)
+        .order_by(Message.id.desc())
+        .first()
+    )
+    return _serialize_conversation(conv, viewer_id, last)
+
+
 # ---------------------------------------------------------------------------
 # REST: conversation list / create / message history
 # ---------------------------------------------------------------------------
@@ -216,6 +236,22 @@ def create_conversation(
     if not targets:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No valid recipients.")
 
+    # A request shaped like a group (2+ usernames, or a name) that collapses
+    # to a single recipient after dropping the caller and duplicates is an
+    # error, never silently degraded into a DM (M145/BUG-088, decision 11):
+    # the caller asked for a group and would otherwise get an old DM back with
+    # the name dropped and no signal.
+    if len(body.usernames) >= 2 and len(targets) < 2:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="A group needs at least 2 other people; remove yourself and duplicates from the list.",
+        )
+    if body.name and len(targets) < 2:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Only group conversations can be named.",
+        )
+
     # One batched follow query for all targets; the first non-messageable
     # target in request order is still the one reported.
     messageable = _messageable_ids(db, current_user.id, [t.id for t in targets])
@@ -228,9 +264,13 @@ def create_conversation(
 
     is_group = len(targets) > 1
 
+    dm_key = None
     if not is_group:
         # One DM per user pair: return the existing conversation if present.
+        # The lookup goes via participants (not dm_key) so pre-migration rows
+        # without a key still dedupe; the key makes the race structural below.
         target = targets[0]
+        dm_key = f"{min(current_user.id, target.id)}:{max(current_user.id, target.id)}"
         my_conv_ids = db.query(ConversationParticipant.conversation_id).filter(
             ConversationParticipant.user_id == current_user.id
         )
@@ -245,31 +285,33 @@ def create_conversation(
             .first()
         )
         if existing:
-            existing = (
-                db.query(Conversation)
-                .options(selectinload(Conversation.participants).selectinload(ConversationParticipant.user))
-                .filter(Conversation.id == existing.id)
-                .first()
-            )
-            last = (
-                db.query(Message)
-                .options(selectinload(Message.sender))
-                .filter(Message.conversation_id == existing.id)
-                .order_by(Message.id.desc())
-                .first()
-            )
-            return _serialize_conversation(existing, current_user.id, last)
+            return _conversation_response(db, existing.id, current_user.id)
 
     conv = Conversation(
         is_group=is_group,
         name=body.name if is_group else None,
+        dm_key=dm_key,
         created_by=current_user.id,
     )
     db.add(conv)
-    db.flush()
-    for user in [current_user, *targets]:
-        db.add(ConversationParticipant(conversation_id=conv.id, user_id=user.id))
-    db.commit()
+    try:
+        db.flush()
+        for user in [current_user, *targets]:
+            db.add(ConversationParticipant(conversation_id=conv.id, user_id=user.id))
+        db.commit()
+    except IntegrityError:
+        # Both users tapped "message" at once (M145/BUG-036): the unique
+        # dm_key means the other request won; return its conversation instead
+        # of forking the pair into two histories.
+        db.rollback()
+        winner = (
+            db.query(Conversation).filter(Conversation.dm_key == dm_key).first()
+            if dm_key is not None
+            else None
+        )
+        if winner is None:
+            raise
+        return _conversation_response(db, winner.id, current_user.id)
 
     conv = (
         db.query(Conversation)
@@ -312,21 +354,38 @@ class ConnectionManager:
     """In-memory registry of open sockets per user id. Single-process only,
     consistent with the in-memory rate limiter; a multi-worker deployment
     would need a shared broker (e.g. Redis pub/sub) instead. Protected by the
-    single-worker deployment invariant (M138, see backend/railway.toml)."""
+    single-worker deployment invariant (M138, see backend/railway.toml).
+
+    Sockets per user are CAPPED (M147/ARCH-011): the registry held every
+    authenticated socket a single account opened, so one scripted account
+    could hold thousands, each a registry entry every broadcast iterates.
+    Insertion order is kept (list, not set) so the oldest is the one evicted."""
+
+    MAX_SOCKETS_PER_USER = 4
 
     def __init__(self) -> None:
-        self._connections: dict[int, set[WebSocket]] = {}
+        self._connections: dict[int, list[WebSocket]] = {}
         self._lock = asyncio.Lock()
 
     async def connect(self, user_id: int, websocket: WebSocket) -> None:
         async with self._lock:
-            self._connections.setdefault(user_id, set()).add(websocket)
+            sockets = self._connections.setdefault(user_id, [])
+            sockets.append(websocket)
+            evicted = sockets.pop(0) if len(sockets) > self.MAX_SOCKETS_PER_USER else None
+        if evicted is not None:
+            # Close outside the lock; the evicted socket's own handler runs
+            # the disconnect cleanup.
+            try:
+                await asyncio.wait_for(evicted.close(), timeout=1)
+            except Exception:
+                pass
 
     async def disconnect(self, user_id: int, websocket: WebSocket) -> None:
         async with self._lock:
             sockets = self._connections.get(user_id)
             if sockets:
-                sockets.discard(websocket)
+                if websocket in sockets:
+                    sockets.remove(websocket)
                 if not sockets:
                     self._connections.pop(user_id, None)
 

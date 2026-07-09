@@ -198,4 +198,79 @@ check("list includes last message preview", r.json()[0]["last_message"]["body"] 
 r = client.get("/api/chat/conversations", headers=auth(carol["access_token"]))
 check("carol sees only her own conversation", len(r.json()) == 1 and r.json()[0]["id"] != dm["id"])
 
+# --- M145: group requests never silently degrade to a DM (decision 11) --------
+
+r = client.post(
+    "/api/chat/conversations",
+    json={"usernames": ["alice", "bob", "bob"], "name": "Study group"},
+    headers=auth(alice["access_token"]),
+)
+check("group collapsing to one recipient is a 400", r.status_code == 400, r.text)
+
+r = client.post(
+    "/api/chat/conversations",
+    json={"usernames": ["bob"], "name": "Just us"},
+    headers=auth(alice["access_token"]),
+)
+check("named DM request is a 400", r.status_code == 400, r.text)
+
+# --- M145: the DM pair key is structurally unique (BUG-036) --------------------
+
+from sqlalchemy.exc import IntegrityError  # noqa: E402
+
+from app.database import SessionLocal  # noqa: E402
+from app.models import Conversation  # noqa: E402
+
+db = SessionLocal()
+dm_row = db.query(Conversation).filter(Conversation.id == dm["id"]).first()
+check("created DM carries the canonical pair key", bool(dm_row.dm_key) and ":" in dm_row.dm_key)
+db.add(Conversation(is_group=False, dm_key=dm_row.dm_key, created_by=dm_row.created_by))
+try:
+    db.commit()
+    forked = True
+except IntegrityError:
+    db.rollback()
+    forked = False
+check("second conversation for the same pair violates the unique key", not forked)
+db.close()
+
+# --- M141: the send broadcast echoes the client correlation tag ---------------
+
+with client.websocket_connect("/api/chat/ws") as ws_alice:
+    ws_auth(ws_alice, alice["access_token"])
+    ws_alice.send_text(json.dumps({"type": "send", "conversation_id": dm["id"], "body": "tagged", "tag": "tmp-42"}))
+    echo = ws_alice.receive_json()
+    check("broadcast echoes the client tag", echo.get("tag") == "tmp-42", str(echo))
+
+# --- M147: per-user socket cap + registry cleanup on disconnect ---------------
+
+from app.routers.chat import manager as chat_manager  # noqa: E402
+
+alice_id = ws_auth_user_id = None
+with client.websocket_connect("/api/chat/ws") as w1:
+    ws_auth_user_id = ws_auth(w1, alice["access_token"])["user_id"]
+check(
+    "registry entry removed when the socket disconnects",
+    ws_auth_user_id not in chat_manager._connections,
+)
+
+sockets = []
+from contextlib import ExitStack  # noqa: E402
+
+with ExitStack() as stack:
+    for i in range(chat_manager.MAX_SOCKETS_PER_USER + 1):
+        ws = stack.enter_context(client.websocket_connect("/api/chat/ws"))
+        ws_auth(ws, alice["access_token"])
+        sockets.append(ws)
+    registered = len(chat_manager._connections.get(ws_auth_user_id, []))
+    check(
+        "per-user sockets capped with oldest evicted",
+        registered == chat_manager.MAX_SOCKETS_PER_USER,
+        f"registered={registered}",
+    )
+check(
+    "registry entry removed after all sockets close",
+    ws_auth_user_id not in chat_manager._connections,
+)
+
 print(f"\nAll {PASS} chat checks passed.")

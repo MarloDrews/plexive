@@ -221,6 +221,12 @@ class Conversation(Base):
     is_group   = Column(Boolean, nullable=False, default=False)
     # Group display name; NULL for direct messages (name derived from the other user).
     name       = Column(String, nullable=True)
+    # Canonical DM pair key "loUserId:hiUserId", NULL for groups. Unique so two
+    # concurrent "message X" taps cannot fork a pair into two conversations
+    # (M145/BUG-036): the loser's INSERT hits the constraint and returns the
+    # winner's conversation. Added to the live DB (plus backfill) by
+    # scripts/add_conversation_dm_key.py.
+    dm_key     = Column(String, nullable=True, unique=True)
     created_by = Column(Integer, ForeignKey("users.id"), nullable=False)
     created_at = Column(DateTime, default=utcnow)
 
