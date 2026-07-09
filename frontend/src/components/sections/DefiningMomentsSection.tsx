@@ -34,7 +34,7 @@ export default function DefiningMomentsSection({ content, isUserContent }: Props
               <span className="text-xs text-ink-muted">{unescapeDollar(episode.location)}</span>
             )}
           </div>
-          <h4 className="text-lg font-semibold text-ink leading-snug">{unescapeDollar(episode.title)}</h4>
+          <h3 className="text-lg font-semibold text-ink leading-snug">{unescapeDollar(episode.title)}</h3>
           <Prose><MathText text={episode.body} /></Prose>
 
           {episode.visual_svg && episode.visual_svg.length > 0 && (
