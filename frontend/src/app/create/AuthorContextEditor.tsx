@@ -23,7 +23,7 @@ const AuthorContextEditor = memo(function AuthorContextEditor({
   return (
     <Accordion title="Author Context">
       <textarea aria-label="About the author" value={value.body} onChange={(e) => onChange({ ...value, body: e.target.value })} rows={3} placeholder="About the author..." className={`${inputCls} resize-none mb-2`} />
-      <label htmlFor={`${uid}-wikipedia`} className="text-ink-faint text-xs mb-1 block">Wikipedia URL</label>
+      <label htmlFor={`${uid}-wikipedia`} className="text-ink-muted text-xs mb-1 block">Wikipedia URL</label>
       <input id={`${uid}-wikipedia`} type="url" value={value.wikipedia_url} onChange={(e) => onChange({ ...value, wikipedia_url: e.target.value })} placeholder="https://en.wikipedia.org/wiki/..." className={inputCls} />
     </Accordion>
   )

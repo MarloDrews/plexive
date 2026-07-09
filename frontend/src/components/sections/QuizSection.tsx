@@ -29,7 +29,7 @@ function optionClass(i: number, result: AnswerResult | undefined): string {
   if (i === result.chosenIndex) {
     return "border-bad bg-bad/10 text-bad"
   }
-  return "border-edge text-ink-faint font-sans"
+  return "border-edge text-ink-muted font-sans"
 }
 
 // memo: every slide stays mounted in the translateX pager, so advancing a

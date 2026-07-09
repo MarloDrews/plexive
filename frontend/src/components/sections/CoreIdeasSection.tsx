@@ -52,7 +52,7 @@ export default function CoreIdeasSection({ content, isUserContent }: Props) {
                     <p className="text-sm text-ink-dim leading-snug"><MathText text={idea.image_caption} /></p>
                   )}
                   {idea.image_attribution && (
-                    <p className="text-xs text-ink-faint mt-1">{unescapeDollar(idea.image_attribution)}</p>
+                    <p className="text-xs text-ink-muted mt-1">{unescapeDollar(idea.image_attribution)}</p>
                   )}
                 </div>
               )}

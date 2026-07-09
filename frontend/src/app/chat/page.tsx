@@ -288,12 +288,12 @@ export default function ChatPage() {
                       <div className="flex items-baseline justify-between gap-2">
                         <p className="text-ink text-sm font-semibold truncate">{conv.name}</p>
                         {conv.last_message?.created_at && (
-                          <span className="text-ink-faint text-xs shrink-0 font-mono">{relativeTime(conv.last_message.created_at)}</span>
+                          <span className="text-ink-muted text-xs shrink-0 font-mono">{relativeTime(conv.last_message.created_at)}</span>
                         )}
                       </div>
                       <p className="text-ink-muted text-xs truncate">{preview(conv)}</p>
                       {conv.is_group && (
-                        <p className="text-ink-faint text-xs truncate">{subtitle(conv.participants)}</p>
+                        <p className="text-ink-muted text-xs truncate">{subtitle(conv.participants)}</p>
                       )}
                     </div>
                   </button>

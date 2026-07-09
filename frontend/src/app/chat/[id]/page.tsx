@@ -337,13 +337,13 @@ export default function ConversationPage() {
           <div className="flex-1 min-w-0">
             <h1 className="text-ink text-sm font-semibold truncate">{conversation?.name ?? "Chat"}</h1>
             {conversation?.is_group && (
-              <p className="text-ink-faint text-xs truncate">
+              <p className="text-ink-muted text-xs truncate">
                 {conversation.participants.map((p) => `@${p.username}`).join(", ")}
               </p>
             )}
           </div>
           {status !== "open" && (
-            <span className="text-ink-faint text-xs shrink-0">
+            <span className="text-ink-muted text-xs shrink-0">
               {status === "connecting" ? "connecting…" : "offline"}
             </span>
           )}
@@ -356,7 +356,7 @@ export default function ConversationPage() {
           className="flex-1 overflow-y-auto px-3 py-3 flex flex-col gap-1.5"
         >
           {loadingOlder && (
-            <p className="text-ink-faint text-xs text-center py-1 shrink-0">Loading earlier messages…</p>
+            <p className="text-ink-muted text-xs text-center py-1 shrink-0">Loading earlier messages…</p>
           )}
           {notFound ? (
             <div className="flex-1 flex items-center justify-center">

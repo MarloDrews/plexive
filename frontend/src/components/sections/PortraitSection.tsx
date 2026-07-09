@@ -34,7 +34,7 @@ export default function PortraitSection({ content }: Props) {
             <p className="text-sm text-ink-dim leading-snug"><MathText text={content.image_caption} /></p>
           )}
           {content.image_attribution && (
-            <p className="text-xs text-ink-faint mt-1">{unescapeDollar(content.image_attribution)}</p>
+            <p className="text-xs text-ink-muted mt-1">{unescapeDollar(content.image_attribution)}</p>
           )}
         </div>
       )}

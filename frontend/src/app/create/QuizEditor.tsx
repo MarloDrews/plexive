@@ -24,7 +24,7 @@ const QuizEditor = memo(function QuizEditor({
       {items.map((q, i) => (
         <div key={i} className="mb-4 bg-white/[0.04] rounded-2xl p-3">
           <p className="text-ink-muted text-xs mb-2">Question {i + 1}</p>
-          <label htmlFor={`${uid}-q${i}-text`} className="text-ink-faint text-xs mb-1 block">Question text *</label>
+          <label htmlFor={`${uid}-q${i}-text`} className="text-ink-muted text-xs mb-1 block">Question text *</label>
           <textarea id={`${uid}-q${i}-text`} value={q.question} onChange={(e) => { const n = [...items]; n[i] = { ...n[i], question: e.target.value }; onChange(n) }} rows={2} className={`${inputCls} resize-none mb-2`} />
           {(["A", "B", "C", "D"] as const).map((opt, j) => (
             <div key={j} className="flex items-center gap-2 mb-1.5">
@@ -46,7 +46,7 @@ const QuizEditor = memo(function QuizEditor({
               />
             </div>
           ))}
-          <label htmlFor={`${uid}-q${i}-explanation`} className="text-ink-faint text-xs mb-1 block mt-2">Explanation *</label>
+          <label htmlFor={`${uid}-q${i}-explanation`} className="text-ink-muted text-xs mb-1 block mt-2">Explanation *</label>
           <textarea id={`${uid}-q${i}-explanation`} value={q.explanation} onChange={(e) => { const n = [...items]; n[i] = { ...n[i], explanation: e.target.value }; onChange(n) }} rows={2} placeholder="Why this is the correct answer..." className={`${inputCls} resize-none`} />
         </div>
       ))}

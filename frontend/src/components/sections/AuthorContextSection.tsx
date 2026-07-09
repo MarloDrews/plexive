@@ -35,7 +35,7 @@ export default function AuthorContextSection({ content }: Props) {
               onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none" }}
             />
             {content.image_attribution && (
-              <p className="text-xs text-ink-faint mt-1 text-center max-w-[4rem]">
+              <p className="text-xs text-ink-muted mt-1 text-center max-w-[4rem]">
                 {unescapeDollar(content.image_attribution)}
               </p>
             )}

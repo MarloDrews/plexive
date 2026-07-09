@@ -405,7 +405,7 @@ export default function ProfilePage() {
             className="field text-sm py-3 resize-none"
           />
           <div className="flex items-center justify-between mt-1">
-            <span className="text-ink-faint text-xs font-mono">{bio.length}/160</span>
+            <span className="text-ink-muted text-xs font-mono">{bio.length}/160</span>
             <button
               onClick={handleSaveBio}
               disabled={bioLoading}

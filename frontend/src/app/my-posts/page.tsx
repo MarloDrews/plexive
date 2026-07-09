@@ -128,7 +128,7 @@ export default function MyPostsPage() {
                           <p className="text-ink-muted text-xs mt-0.5 truncate">{fcStr(post.feed_card, "author")}</p>
                         )}
                         {post.created_at && (
-                          <p className="text-ink-faint text-xs font-mono mt-1">{relativeTime(post.created_at)}</p>
+                          <p className="text-ink-muted text-xs font-mono mt-1">{relativeTime(post.created_at)}</p>
                         )}
                       </div>
                     </button>

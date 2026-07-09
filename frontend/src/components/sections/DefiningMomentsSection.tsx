@@ -31,7 +31,7 @@ export default function DefiningMomentsSection({ content, isUserContent }: Props
           <div className="flex items-baseline gap-2 flex-wrap">
             <span className="text-xs font-mono text-(--accent) shrink-0">{unescapeDollar(episode.year_or_period)}</span>
             {episode.location && (
-              <span className="text-xs text-ink-faint">{unescapeDollar(episode.location)}</span>
+              <span className="text-xs text-ink-muted">{unescapeDollar(episode.location)}</span>
             )}
           </div>
           <h4 className="text-lg font-semibold text-ink leading-snug">{unescapeDollar(episode.title)}</h4>
@@ -54,7 +54,7 @@ export default function DefiningMomentsSection({ content, isUserContent }: Props
                 <p className="text-xs text-ink-muted mt-2 leading-snug"><MathText text={episode.image_caption} /></p>
               )}
               {episode.image_attribution && (
-                <p className="text-xs text-ink-faint mt-0.5">{unescapeDollar(episode.image_attribution)}</p>
+                <p className="text-xs text-ink-muted mt-0.5">{unescapeDollar(episode.image_attribution)}</p>
               )}
             </div>
           )}

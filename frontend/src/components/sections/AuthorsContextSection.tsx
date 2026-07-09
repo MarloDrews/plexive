@@ -39,12 +39,12 @@ export default function AuthorsContextSection({ content }: Props) {
                   <p className="text-sm text-ink-dim leading-snug mt-1"><MathText text={author.one_line} /></p>
                 )}
                 {author.affiliation && (
-                  <p className="text-xs text-ink-faint mt-0.5">{unescapeDollar(author.affiliation)}</p>
+                  <p className="text-xs text-ink-muted mt-0.5">{unescapeDollar(author.affiliation)}</p>
                 )}
               </div>
             </div>
             {author.image_url && author.image_attribution && (
-              <p className="text-[10px] text-ink-faint leading-snug">{unescapeDollar(author.image_attribution)}</p>
+              <p className="text-[10px] text-ink-muted leading-snug">{unescapeDollar(author.image_attribution)}</p>
             )}
           </div>
         ))}

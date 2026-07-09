@@ -386,9 +386,9 @@ export default function Battle({ onExit, active = true }: Props) {
       return { borderColor: "var(--color-good)", background: "rgb(106 191 132 / 0.10)", color: "var(--color-good)" }
     }
     if (i === selected) {
-      return { borderColor: "var(--color-bad)", background: "rgb(192 88 112 / 0.10)", color: "var(--color-bad)" }
+      return { borderColor: "var(--color-bad)", background: "color-mix(in srgb, var(--color-bad) 10%, transparent)", color: "var(--color-bad)" }
     }
-    return { borderColor: "var(--color-edge)", background: "rgb(255 255 255 / 0.06)", color: "var(--color-ink-faint)" }
+    return { borderColor: "var(--color-edge)", background: "rgb(255 255 255 / 0.06)", color: "var(--color-ink-muted)" }
   }
 
   function renderStrip() {

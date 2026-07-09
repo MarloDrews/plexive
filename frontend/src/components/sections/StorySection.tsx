@@ -60,7 +60,7 @@ export default function StorySection({ content, isUserContent }: Props) {
                   <p className="text-sm text-ink-body leading-relaxed mt-1"><MathText text={fig.one_line} /></p>
                 )}
                 {fig.image_url && fig.image_attribution && (
-                  <p className="text-[10px] text-ink-faint leading-snug mt-1">{unescapeDollar(fig.image_attribution)}</p>
+                  <p className="text-[10px] text-ink-muted leading-snug mt-1">{unescapeDollar(fig.image_attribution)}</p>
                 )}
               </div>
             </div>

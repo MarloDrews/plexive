@@ -21,11 +21,11 @@ const SourcesEditor = memo(function SourcesEditor({
       <FieldError msg={error} />
       {items.map((s, i) => (
         <div key={i} className="mb-3 bg-white/[0.04] rounded-2xl p-3">
-          <label htmlFor={`${uid}-${i}-label`} className="text-ink-faint text-xs mb-1 block">Label *</label>
+          <label htmlFor={`${uid}-${i}-label`} className="text-ink-muted text-xs mb-1 block">Label *</label>
           <input id={`${uid}-${i}-label`} type="text" value={s.label} onChange={(e) => { const n = [...items]; n[i] = { ...n[i], label: e.target.value }; onChange(n) }} placeholder={labelPlaceholder} className={`${inputCls} mb-2`} />
-          <label htmlFor={`${uid}-${i}-url`} className="text-ink-faint text-xs mb-1 block">URL *</label>
+          <label htmlFor={`${uid}-${i}-url`} className="text-ink-muted text-xs mb-1 block">URL *</label>
           <input id={`${uid}-${i}-url`} type="url" value={s.url} onChange={(e) => { const n = [...items]; n[i] = { ...n[i], url: e.target.value }; onChange(n) }} placeholder="https://..." className={`${inputCls} mb-2`} />
-          <label htmlFor={`${uid}-${i}-type`} className="text-ink-faint text-xs mb-1 block">Type</label>
+          <label htmlFor={`${uid}-${i}-type`} className="text-ink-muted text-xs mb-1 block">Type</label>
           <select id={`${uid}-${i}-type`} value={s.type} onChange={(e) => { const n = [...items]; n[i] = { ...n[i], type: e.target.value }; onChange(n) }} className={inputCls}>
             {SOURCE_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
           </select>

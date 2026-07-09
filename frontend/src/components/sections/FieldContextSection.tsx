@@ -18,7 +18,7 @@ export default function FieldContextSection({ content }: Props) {
       </Prose>
       {asArray(content.key_priors).length > 0 && (
         <div className="flex flex-col gap-3">
-          <p className="text-xs uppercase tracking-widest text-ink-faint">Key prior work</p>
+          <p className="text-xs uppercase tracking-widest text-ink-muted">Key prior work</p>
           {asArray(content.key_priors).map((prior, i) => (
             <div key={i} className="border-l-2 border-edge-strong pl-3 flex flex-col gap-0.5">
               <p className="text-xs text-ink-muted font-medium">{unescapeDollar(prior.citation)}</p>

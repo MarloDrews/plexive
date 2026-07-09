@@ -97,7 +97,7 @@ function UserRow({ user, loggedIn }: { user: UserResult; loggedIn: boolean }) {
           {user.is_verified > 0 && <VerifiedBadge size={14} level={user.is_verified} />}
         </p>
         {user.bio && <p className="text-ink-muted text-xs truncate">{user.bio}</p>}
-        {user.is_private && !user.bio && <p className="text-ink-faint text-xs">Private account</p>}
+        {user.is_private && !user.bio && <p className="text-ink-muted text-xs">Private account</p>}
       </div>
       {loggedIn && !user.is_self && (
         <button
@@ -140,7 +140,7 @@ const PostResultsList = memo(function PostResultsList({ results }: { results: Po
               {post.title}
             </Link>
           </p>
-          <p className="flex items-center gap-1 text-ink-faint text-xs mt-0.5">
+          <p className="flex items-center gap-1 text-ink-muted text-xs mt-0.5">
             {post.is_user_content && post.author_username ? (
               <Link href={`/profile/${post.author_username}`} className="relative z-10 hover:text-ink-dim transition-colors">
                 @{post.author_username}

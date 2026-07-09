@@ -80,7 +80,7 @@ export function WaffleChart({ data }: { data: { label: string; value: number; co
 
 export function CalendarHeatmap({ data }: { data: { period: string; count: number }[] }) {
   if (!data || data.length === 0) {
-    return <div className="text-ink-faint text-sm p-4">No data</div>
+    return <div className="text-ink-muted text-sm p-4">No data</div>
   }
   const lookup = new Map(data.map(d => [d.period, d.count]))
   const maxCount = Math.max(...data.map(d => d.count), 1)
@@ -126,7 +126,7 @@ export function ActivityHeatmap({
   color?: string
 }) {
   if (!data || data.length === 0) {
-    return <div className="text-ink-faint text-sm p-4">No data</div>
+    return <div className="text-ink-muted text-sm p-4">No data</div>
   }
   const lookup = new Map(data.map(d => [`${d.weekday}:${d.hour}`, d.count]))
   const maxCount = Math.max(...data.map(d => d.count), 1)
@@ -248,7 +248,7 @@ export function GaugeChart({
 
 export function NoData() {
   return (
-    <div className="flex items-center justify-center h-16 text-ink-faint text-sm">No data yet</div>
+    <div className="flex items-center justify-center h-16 text-ink-muted text-sm">No data yet</div>
   )
 }
 

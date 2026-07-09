@@ -43,7 +43,7 @@ export default function GreatestWorkSection({ content, isUserContent }: Props) {
             <p className="text-xs text-ink-muted mt-2"><MathText text={content.image_caption} /></p>
           )}
           {content.image_attribution && (
-            <p className="text-xs text-ink-faint mt-0.5">{unescapeDollar(content.image_attribution)}</p>
+            <p className="text-xs text-ink-muted mt-0.5">{unescapeDollar(content.image_attribution)}</p>
           )}
         </div>
       )}

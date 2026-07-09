@@ -132,7 +132,7 @@ const GenericFeedCardFields = memo(function GenericFeedCardFields({
 
       {format !== "academy" && (
         <>
-          <label htmlFor={`${uid}-essence`} className={labelCls}>Essence * <span className="normal-case text-ink-faint">(why this matters)</span></label>
+          <label htmlFor={`${uid}-essence`} className={labelCls}>Essence * <span className="normal-case text-ink-muted">(why this matters)</span></label>
           <textarea id={`${uid}-essence`} value={value.essence} onChange={e => onField("essence", e.target.value)} maxLength={300} rows={3} placeholder="In one or two sentences..." className={`${inputCls} resize-none`} />
           <FieldError msg={errors.gfc_essence} />
         </>

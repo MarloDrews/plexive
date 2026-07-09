@@ -360,16 +360,16 @@ function MyStatsTab({
                 </>
               ) : (
                 <>
-                  <span className="text-ink-faint" aria-hidden="true">○</span>
+                  <span className="text-ink-muted" aria-hidden="true">○</span>
                   <span className="sr-only">Not yet achieved:</span>
                 </>
               )}
             </div>
-            <div className={`text-[10px] text-center leading-tight ${m.achieved ? "text-ink-body" : "text-ink-faint"}`}>
+            <div className={`text-[10px] text-center leading-tight ${m.achieved ? "text-ink-body" : "text-ink-muted"}`}>
               {m.label}
             </div>
             {m.achieved_at && (
-              <div className="text-ink-faint text-[9px] text-center">{m.achieved_at}</div>
+              <div className="text-ink-muted text-[9px] text-center">{m.achieved_at}</div>
             )}
           </div>
         ))}

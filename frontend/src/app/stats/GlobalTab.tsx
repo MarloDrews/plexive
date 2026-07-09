@@ -372,7 +372,7 @@ function GlobalTab({ data }: { data: GlobalStats }) {
               {fmt}
             </div>
             {fmtData.length === 0 ? (
-              <div className="text-ink-faint text-[10px]">No data</div>
+              <div className="text-ink-muted text-[10px]">No data</div>
             ) : (
               fmtData.map((r, i) => (
                 <div key={r.username} className="flex items-center gap-1 mb-0.5">

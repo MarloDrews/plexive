@@ -42,11 +42,11 @@ const BooksFeedCardBlock = memo(function BooksFeedCardBlock({
       <input id={`${uid}-author`} type="text" value={value.author} onChange={(e) => onField("author", e.target.value)} placeholder="Daniel Kahneman" className={inputCls} />
       <FieldError msg={errors.fc_author} />
 
-      <label htmlFor={`${uid}-essence`} className={labelCls}>Essence * <span className="normal-case text-ink-faint">(~200 chars, why this book matters)</span></label>
+      <label htmlFor={`${uid}-essence`} className={labelCls}>Essence * <span className="normal-case text-ink-muted">(~200 chars, why this book matters)</span></label>
       <textarea id={`${uid}-essence`} value={value.essence} onChange={(e) => onField("essence", e.target.value)} maxLength={300} rows={3} placeholder="The core insight in one or two sentences..." className={`${inputCls} resize-none`} />
       <FieldError msg={errors.fc_essence} />
 
-      <label htmlFor={`${uid}-teaser1`} className={labelCls}>Teaser 1 * <span className="normal-case text-ink-faint">(~40 chars)</span></label>
+      <label htmlFor={`${uid}-teaser1`} className={labelCls}>Teaser 1 * <span className="normal-case text-ink-muted">(~40 chars)</span></label>
       <input id={`${uid}-teaser1`} type="text" value={value.teaser1} onChange={(e) => onField("teaser1", e.target.value)} maxLength={80} placeholder="What you'll learn..." className={inputCls} />
       <FieldError msg={errors.fc_teaser1} />
       <label htmlFor={`${uid}-teaser2`} className={labelCls}>Teaser 2 *</label>
@@ -88,7 +88,7 @@ const BooksFeedCardBlock = memo(function BooksFeedCardBlock({
         {value.cover_url && (
           <img src={`${API_URL}${value.cover_url}`} alt="Cover preview" className="w-10 h-14 object-cover rounded" />
         )}
-        {!value.cover_url && <span className="text-ink-faint text-xs">or type /uploads/… URL</span>}
+        {!value.cover_url && <span className="text-ink-muted text-xs">or type /uploads/… URL</span>}
       </div>
       <FieldError msg={errors.cover} />
     </div>

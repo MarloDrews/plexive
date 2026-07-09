@@ -127,7 +127,7 @@ export default function BookCover({
     return (
       <div className="flex flex-col items-center gap-1.5">
         {cover}
-        <p className="text-[10px] text-ink-faint leading-snug text-center max-w-[240px]">
+        <p className="text-[10px] text-ink-muted leading-snug text-center max-w-[240px]">
           {decision.attribution}
         </p>
       </div>

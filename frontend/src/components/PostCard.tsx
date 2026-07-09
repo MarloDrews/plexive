@@ -567,7 +567,7 @@ function PostCard({ post, activeTabId }: { post: Post; activeTabId: string }) {
                       <span className="label-caps text-(--accent)">{fcStr(fc, "era_label")}</span>
                     )}
                     {post.primary_category_name && (
-                      <span className="label-caps text-ink-faint">{post.primary_category_name}</span>
+                      <span className="label-caps text-ink-muted">{post.primary_category_name}</span>
                     )}
                   </div>
                   {!fcStr(fc, "lead_image_url") && (

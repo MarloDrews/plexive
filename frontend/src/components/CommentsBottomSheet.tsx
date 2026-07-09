@@ -140,9 +140,9 @@ export default function CommentsBottomSheet({ postId, onClose, onCountChange }: 
               <div className="stage-pulse h-10 w-4/5 rounded-2xl bg-white/[0.04]" />
             </div>
           ) : error ? (
-            <p className="text-sm text-ink-faint text-center py-6">Could not load comments.</p>
+            <p className="text-sm text-ink-muted text-center py-6">Could not load comments.</p>
           ) : comments!.length === 0 ? (
-            <p className="text-sm text-ink-faint text-center py-6">No comments yet</p>
+            <p className="text-sm text-ink-muted text-center py-6">No comments yet</p>
           ) : (
             <ul>
               {comments!.map((comment) => (
