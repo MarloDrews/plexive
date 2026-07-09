@@ -2,6 +2,7 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from ..auth import get_current_user, get_optional_user_strict
@@ -123,7 +124,26 @@ def answer_quiz_question(
         is_correct=correct,
         rating_delta=delta,
     ))
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        # Concurrent replay of the same question: uq_quiz_answer caught the
+        # second insert and the Elo mutation rolled back with it. Report the
+        # stored attempt exactly like the pre-checked replay path, not a 500
+        # (BE-015/M148).
+        db.rollback()
+        existing = db.query(QuizAnswer).filter(
+            QuizAnswer.user_id == current_user.id,
+            QuizAnswer.post_id == post.id,
+            QuizAnswer.question_index == body.question_index,
+        ).first()
+        if existing is None:
+            raise
+        result["correct"] = existing.is_correct
+        result["already_answered"] = True
+        result["scored"] = existing.rating_delta != 0.0
+        result["elo"] = _elo_payload(current_user, post.format, 0.0)
+        return result
 
     result["elo"] = _elo_payload(current_user, post.format, delta)
     return result

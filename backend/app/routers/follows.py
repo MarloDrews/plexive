@@ -3,6 +3,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy import text
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, selectinload
 
 from ..auth import get_current_user, get_optional_user
@@ -104,7 +105,14 @@ def follow_user(
     follow_status = "pending" if target.is_private else "accepted"
     follow = Follow(follower_id=current_user.id, following_id=target.id, status=follow_status)
     db.add(follow)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        # Concurrent double-tap: both requests passed the pre-check; uq_follow
+        # caught the second. Same answer as the pre-check, not a 500
+        # (BE-015/M148).
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Already following.")
     return {"status": follow_status}
 
 

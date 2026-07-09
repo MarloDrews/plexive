@@ -4,6 +4,7 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, File, HTTPException, Request, Response, UploadFile, status
 from pydantic import BaseModel, EmailStr, field_validator
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from ..auth import create_access_token, get_current_user, hash_password, verify_password
@@ -100,7 +101,16 @@ def register(body: RegisterRequest, request: Request, db: Session = Depends(get_
         password_hash=hash_password(body.password),
     )
     db.add(user)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        # Concurrent registration passed both pre-checks; the unique
+        # constraint caught the second one. Report which field collided, the
+        # same 400s as the pre-checks, not a 500 (BE-015/M148).
+        db.rollback()
+        if db.query(User).filter(User.email == email).first():
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered.")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Username already taken.")
     db.refresh(user)
 
     token = create_access_token(user.id, user.token_version)
@@ -221,7 +231,13 @@ def patch_me(
     if body.bio is not None:
         current_user.bio = body.bio
 
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        # Concurrent username change to the same value: the unique constraint
+        # caught what the pre-check let through (BE-015/M148).
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Username already taken.")
     db.refresh(current_user)
     resp = PatchMeResponse.model_validate(current_user)
     if password_changed:
