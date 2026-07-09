@@ -1,0 +1,209 @@
+{
+  "tags": [
+    "neuroscience",
+    "microbiology",
+    "human-body"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Gut-brain axis"
+      },
+      "featured": true
+    },
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Enteric nervous system"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "About 80% of the vagus nerve's fibers carry signals up to the brain, not down to the gut.",
+    "teasers": [
+      "The organ that keeps briefing your brain",
+      "Cut this nerve and digestion keeps going",
+      "What a gut feeling is made of"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "About 80% of the vagus nerve's fibers carry signals up to the brain, not down to the gut."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><rect x='128' y='20' width='144' height='48' rx='16' stroke='currentColor' stroke-width='2.5'/><text x='200' y='50' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='16' font-weight='700' text-anchor='middle'>Brain</text><rect x='128' y='232' width='144' height='48' rx='16' stroke='currentColor' stroke-width='2.5'/><text x='200' y='262' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='16' font-weight='700' text-anchor='middle'>Gut</text><g stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M150 228 V82'/><path d='M150 82 l-6 12 m6 -12 l6 12'/><path d='M172 228 V82'/><path d='M172 82 l-6 12 m6 -12 l6 12'/><path d='M194 228 V82'/><path d='M194 82 l-6 12 m6 -12 l6 12'/><path d='M216 228 V82'/><path d='M216 82 l-6 12 m6 -12 l6 12'/></g><g stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' opacity='0.55'><path d='M252 72 V218'/><path d='M252 218 l-6 -12 m6 12 l6 -12'/></g><text x='90' y='148' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='700' text-anchor='middle'>~80%</text><text x='90' y='168' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle'>up to brain</text><text x='308' y='148' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='700' text-anchor='middle' opacity='0.75'>~20%</text><text x='308' y='168' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle' opacity='0.7'>down to gut</text></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "Run a nerve between the brain and the gut and you would expect it to carry orders down. The brain, you assume, steers digestion. In the vagus, roughly four in five fibers run the other way, carrying word up from the gut, heart, and lungs. Only a minority send commands back down. The brain spends most of this channel listening."
+    },
+    {
+      "type": "tangible",
+      "order": 4,
+      "content": {
+        "items": [
+          "The gut is wrapped in its own nervous system, with more neurons than the whole spinal cord holds.",
+          "Sever the vagus and digestion keeps running, guided from inside the gut wall."
+        ],
+        "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><circle cx='200' cy='40' r='24' stroke='currentColor' stroke-width='2.5'/><text x='200' y='45' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>Brain</text><path d='M200 64 V150' stroke='currentColor' stroke-width='2' stroke-linecap='round' opacity='0.55'/><text x='214' y='110' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.7' text-anchor='start'>vagus</text><rect x='60' y='150' width='280' height='120' rx='28' stroke='currentColor' stroke-width='2' opacity='0.4'/><g stroke='var(--accent)' stroke-width='2' stroke-linecap='round' opacity='0.85'><path d='M110 190 L160 175 L210 200 L262 178 L300 205'/><path d='M120 235 L165 218 L205 240 L255 220 L296 242'/><path d='M110 190 L120 235'/><path d='M160 175 L165 218'/><path d='M210 200 L205 240'/><path d='M262 178 L255 220'/><path d='M300 205 L296 242'/></g><g fill='var(--accent)'><circle cx='110' cy='190' r='4.5'/><circle cx='160' cy='175' r='4.5'/><circle cx='210' cy='200' r='4.5'/><circle cx='262' cy='178' r='4.5'/><circle cx='300' cy='205' r='4.5'/><circle cx='120' cy='235' r='4.5'/><circle cx='165' cy='218' r='4.5'/><circle cx='205' cy='240' r='4.5'/><circle cx='255' cy='220' r='4.5'/><circle cx='296' cy='242' r='4.5'/></g><text x='200' y='288' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>the gut's own network</text></svg>"
+      }
+    },
+    {
+      "type": "how_we_know",
+      "order": 5,
+      "content": "The number comes from counting axons. One at a time. In 1957 four physiologists cut across a cat's vagus and counted the fibers under a microscope, about 30,000 in all. Roughly 24,000 were sensory. Later counts in other animals fell in the same range."
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "The gut reports far more than fullness",
+          "body": "Push on a full stomach and the vagus feels the stretch. It senses far more than fullness, though. Cells lining the gut release hormones like CCK and GLP-1, and vagal endings read them within seconds. Microbes add their own chemistry: the short-chain fatty acids they make from fiber, and even fragments of bacterial coats that flag an immune threat. What travels up is a running chemical report of the gut's state.",
+          "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><circle cx='200' cy='44' r='24' stroke='currentColor' stroke-width='2.5'/><text x='200' y='49' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>Brain</text><g stroke='var(--accent)' stroke-width='2' stroke-linecap='round' opacity='0.8'><path d='M70 244 Q160 200 196 152'/><path d='M135 246 Q175 205 199 152'/><path d='M200 248 V152'/><path d='M265 246 Q225 205 201 152'/><path d='M330 244 Q240 200 204 152'/></g><path d='M200 150 V80' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><path d='M200 80 l-7 13 m7 -13 l7 13' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle' opacity='0.8'><text x='70' y='266'>stretch</text><text x='135' y='266'>nutrients</text><text x='200' y='266'>hormones</text><text x='265' y='266'>microbes</text><text x='330' y='266'>immune</text></g></svg>"
+        },
+        {
+          "title": "Doctors learned to talk back on it",
+          "body": "Because so much rides this nerve, medicine learned to send signals into it. A small implant pulses the vagus. It has eased hard-to-control epilepsy since 1997, and treatment-resistant depression since 2005. Even a mostly-sensory nerve, driven from outside, shifts activity across the brain.",
+          "visual_svg": "<svg viewBox='0 96 400 96' xmlns='http://www.w3.org/2000/svg' fill='none'><line x1='60' y1='140' x2='360' y2='140' stroke='currentColor' stroke-width='2' stroke-linecap='round' opacity='0.5'/><circle cx='130' cy='140' r='6' fill='var(--accent)'/><circle cx='290' cy='140' r='6' fill='var(--accent)'/><g font-family='var(--font-mono), ui-monospace, monospace' font-size='15' font-weight='700' text-anchor='middle' fill='var(--accent)'><text x='130' y='118'>1997</text><text x='290' y='118'>2005</text></g><g font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle' fill='currentColor' opacity='0.8'><text x='130' y='170'>epilepsy</text><text x='290' y='170'>depression</text></g></svg>"
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "This flips the usual picture of a brain in command of an obedient body. For the inner organs, the traffic runs the other way. The brain's job is to stay briefed. It makes a “gut feeling” close to literal, a stream of signals from below that shapes mood and appetite before you notice. It is also why the microbiome draws such interest. Bacteria that can nudge that upward stream have a wire straight to the brain."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "In the vagus nerve, which way do most of the fibers carry signals?",
+          "options": [
+            "From the brain down to the organs",
+            "Evenly in both directions",
+            "From the organs up to the brain",
+            "Only between the heart and lungs"
+          ],
+          "answer_index": 2,
+          "explanation": "About four in five vagal fibers are sensory, carrying reports from the gut, heart, and lungs up to the brain. Only the minority send commands the other way."
+        },
+        {
+          "question": "What does the afferent majority suggest about the brain's role in digestion?",
+          "options": [
+            "The brain issues a detailed command for each step",
+            "The gut largely runs itself and keeps the brain informed",
+            "Digestion cannot happen without constant brain input",
+            "The brain and gut never exchange signals"
+          ],
+          "answer_index": 1,
+          "explanation": "Most of the traffic is the gut reporting up, not the brain directing down. The gut sets its own pace and briefs the brain rather than waiting for orders."
+        },
+        {
+          "question": "How was the roughly 80% afferent figure established?",
+          "options": [
+            "By asking people what they felt",
+            "By stimulating the nerve and timing reflexes",
+            "By brain scans alone",
+            "By counting the nerve's fibers under a microscope"
+          ],
+          "answer_index": 3,
+          "explanation": "Physiologists in 1957 counted the fibers in a cat's vagus one by one, about 30,000 in all, and found roughly 24,000 were sensory."
+        },
+        {
+          "question": "What happens to digestion if the vagus nerve is cut?",
+          "options": [
+            "It continues, run by the gut's own nervous system",
+            "It stops entirely",
+            "It speeds up permanently",
+            "The gut loses all of its neurons"
+          ],
+          "answer_index": 0,
+          "explanation": "The gut has its own network of neurons that drives digestion locally. Peristalsis carries on even in an isolated segment of gut, without any input from the brain."
+        },
+        {
+          "question": "Besides stretch, what else do vagal afferents report from the gut?",
+          "options": [
+            "Nothing beyond fullness",
+            "Only pain",
+            "Hormones, nutrients, and microbial chemicals",
+            "The color and shape of food"
+          ],
+          "answer_index": 2,
+          "explanation": "Vagal endings read gut hormones like CCK and GLP-1, incoming nutrients, and chemicals made by resident microbes, giving the brain a detailed readout."
+        },
+        {
+          "question": "What is the most accurate summary of the gut-bacteria-and-mood link?",
+          "options": [
+            "Gut bacteria fully control human mood",
+            "There is no real connection at all",
+            "Only the brain affects the gut, never the reverse",
+            "Microbial signals can ride the vagus and shift mouse behavior, but human evidence is still early"
+          ],
+          "answer_index": 3,
+          "explanation": "The vagus does carry microbial signals, and in mice, altering gut bacteria changed anxiety-like behavior through it. In people the link is real but still being mapped, so full control overstates it."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "The brain runs digestion, sending orders down to the gut.",
+          "reality": "It contributes, but the gut largely runs itself. Cut the vagus and digestion continues, driven by the gut's own network of neurons."
+        },
+        {
+          "myth": "A gut feeling is only a figure of speech.",
+          "reality": "Press on a full stomach, or feel your stomach knot before bad news, and that is the channel at work. Some of what we call intuition rides that upward stream."
+        },
+        {
+          "myth": "Gut bacteria control your mood.",
+          "reality": "The vagus does carry microbial signals, and in mice, altering gut bacteria changed anxiety-like behavior through it. In people the evidence is early, so control overstates a link that is real but still being mapped."
+        }
+      ]
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Bonaz B, Bazin T, Pellissier S. The Vagus Nerve at the Interface of the Microbiota-Gut-Brain Axis. Front Neurosci 2018;12:49",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5808284/",
+          "type": "paper"
+        },
+        {
+          "label": "Prescott SL, Liberles SD. Internal senses of the vagus nerve. Neuron 2022;110(4):579-599",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8857038/",
+          "type": "paper"
+        },
+        {
+          "label": "Purves et al. Neuroscience (2nd ed.), The Enteric Nervous System (NCBI Bookshelf)",
+          "url": "https://www.ncbi.nlm.nih.gov/books/NBK11097/",
+          "type": "book"
+        },
+        {
+          "label": "Bravo JA et al. Ingestion of Lactobacillus strain regulates emotional behavior... in a mouse via the vagus nerve. PNAS 2011;108(38):16050-16055",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/21876150/",
+          "type": "paper"
+        },
+        {
+          "label": "Vagus nerve stimulation",
+          "url": "https://en.wikipedia.org/wiki/Vagus_nerve_stimulation",
+          "type": "wikipedia"
+        }
+      ]
+    }
+  ]
+}
