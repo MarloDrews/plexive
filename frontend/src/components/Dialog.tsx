@@ -54,23 +54,28 @@ interface Props {
 export default function Dialog({ label, onClose, onBackdropClick, className = "", children }: Props) {
   const panelRef = useRef<HTMLDivElement>(null)
 
-  // Whatever opened the dialog, captured on the first render (before the
-  // portal exists), so an autoFocus'd field inside cannot be mistaken for it.
-  // Focus returns here on unmount.
+  // Whatever opened the dialog. Focus returns here on unmount.
   const invokerRef = useRef<HTMLElement | null>(null)
-  if (invokerRef.current === null && typeof document !== "undefined") {
-    invokerRef.current = document.activeElement as HTMLElement | null
-  }
 
   // Portals need document.body, which does not exist during SSR. Rendering
   // null on the first pass also keeps hydration in step.
   const [mounted, setMounted] = useState(false)
-  useEffect(() => { setMounted(true) }, [])
+  useEffect(() => {
+    // This runs on the first commit, while mounted is still false and the
+    // portal has therefore not rendered. The invoker is still the focused
+    // element, so an autoFocus'd field inside the dialog cannot be mistaken
+    // for it. Capturing here rather than during render keeps the ref write out
+    // of the render pass.
+    invokerRef.current = document.activeElement as HTMLElement | null
+    setMounted(true)
+  }, [])
 
   // Latest onClose without re-running the mount effect (callers pass a fresh
-  // closure each render).
+  // closure each render). Written after commit, never during render.
   const onCloseRef = useRef(onClose)
-  onCloseRef.current = onClose
+  useEffect(() => {
+    onCloseRef.current = onClose
+  })
 
   useEffect(() => {
     if (!mounted) return
