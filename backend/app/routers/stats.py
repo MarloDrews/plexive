@@ -311,6 +311,8 @@ def _compute_global_stats(db: Session) -> dict:
     # so they are derived in Python instead of re-querying. Left all-time on
     # purpose: the heatmap answers "when do people post, ever", so a date bound
     # would change its meaning (unlike the monthly series above).
+    # A NULL created_at (raw-SQL inserted row) yields wd/hr None; skip the row
+    # instead of 500ing on int(None) (BUG-076/M151).
     hm_lookup = {
         (int(r.wd), int(r.hr)): r.cnt
         for r in db.query(
@@ -323,6 +325,7 @@ def _compute_global_stats(db: Session) -> dict:
             _hour(Post.created_at),
         )
         .all()
+        if r.wd is not None and r.hr is not None
     }
     activity_heatmap = [
         {"weekday": _WD_REMAP[sw], "hour": hr, "count": hm_lookup.get((sw, hr), 0)}
@@ -591,7 +594,8 @@ def get_my_stats(
 
     # --- My activity heatmap ---
     # Weekday and hour series are marginals of this one query, derived in
-    # Python instead of re-querying.
+    # Python instead of re-querying. NULL created_at rows skipped, not
+    # int(None)-500ed (BUG-076/M151).
     my_hm_lookup = {
         (int(r.wd), int(r.hr)): r.cnt
         for r in db.query(
@@ -605,6 +609,7 @@ def get_my_stats(
             _hour(Post.created_at),
         )
         .all()
+        if r.wd is not None and r.hr is not None
     }
     my_activity_heatmap = [
         {"weekday": _WD_REMAP[sw], "hour": hr, "count": my_hm_lookup.get((sw, hr), 0)}

@@ -47,7 +47,13 @@ def hash_password(plain: str) -> str:
 
 
 def verify_password(plain: str, hashed: str) -> bool:
-    return _bcrypt_lib.checkpw(plain.encode("utf-8")[:72], hashed.encode("utf-8"))
+    # A malformed stored hash (legacy or hand-inserted row) raises ValueError
+    # inside checkpw; that must be "wrong password", not a 500 on the login
+    # path (BUG-075/M151).
+    try:
+        return _bcrypt_lib.checkpw(plain.encode("utf-8")[:72], hashed.encode("utf-8"))
+    except ValueError:
+        return False
 
 
 def create_access_token(user_id: int, token_version: int = 0) -> str:

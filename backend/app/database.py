@@ -7,7 +7,13 @@ from sqlalchemy.orm import sessionmaker
 
 load_dotenv()
 
-DATABASE_URL = os.environ["DATABASE_URL"]
+# Explicit, actionable boot error instead of a bare KeyError (BUG-077/M151),
+# matching the JWT_SECRET check in auth.py.
+DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+    raise RuntimeError(
+        "DATABASE_URL environment variable is not set. See backend/.env.example."
+    )
 
 
 def _engine_kwargs(url: str) -> dict:

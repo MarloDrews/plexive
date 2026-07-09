@@ -254,7 +254,8 @@ def get_follow_requests(
             "username": f.follower.username,
             "is_verified": f.follower.is_verified,
             "avatar_url": f.follower.avatar_url,
-            "created_at": f.created_at.isoformat(),
+            # NULL created_at possible on raw-SQL inserted rows (BUG-076).
+            "created_at": f.created_at.isoformat() if f.created_at else None,
         }
         for f in follows
     ]
