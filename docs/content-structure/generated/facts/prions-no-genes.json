@@ -1,0 +1,228 @@
+{
+  "tags": [
+    "microbiology",
+    "medicine",
+    "biology"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Protein folding"
+      },
+      "featured": true
+    },
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Central dogma of molecular biology"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "A prion has no DNA or RNA, yet it copies itself and kills by forcing your own proteins to misfold.",
+    "teasers": [
+      "A killer that copies itself without genes",
+      "Ridiculed for years, then handed a Nobel",
+      "Why it may explain Alzheimer's too"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "A prion has no DNA or RNA, yet it copies itself and kills by forcing your own proteins to misfold."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='26' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>One wrong shape forces the next</text><g stroke='currentColor' stroke-width='2' stroke-linecap='round' opacity='0.45'><path d='M200 76 L136 130'/><path d='M200 76 L264 130'/><path d='M124 160 L82 214'/><path d='M124 160 L166 214'/><path d='M276 160 L234 214'/><path d='M276 160 L318 214'/></g><g fill='var(--accent)'><circle cx='200' cy='62' r='14'/><circle cx='124' cy='144' r='14'/><circle cx='276' cy='144' r='14'/><circle cx='72' cy='228' r='14'/><circle cx='156' cy='228' r='14'/><circle cx='244' cy='228' r='14'/><circle cx='328' cy='228' r='14'/></g><text x='200' y='284' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='700' text-anchor='middle' opacity='0.85'>1  →  2  →  4  →  ...</text></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "The agent hollowing out those brains carried no genetic code. Everything else that copies itself runs on DNA or RNA: a virus, a bacterium, a cell. A prion runs on none. It is a single protein folded wrong, and it spreads by contact, pressing normal proteins of the same kind until they fold wrong too. What passes from one molecule to the next is the shape itself."
+    },
+    {
+      "type": "tangible",
+      "order": 4,
+      "content": {
+        "items": [
+          "Most infections show themselves in days. A prion can lurk for years, even decades, before the first symptom.",
+          "Kuru's last known case came in 2005, decades after the funerary custom that had spread it ended."
+        ],
+        "visual_svg": "<svg viewBox='0 40 400 200' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='62' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Time from infection to symptoms</text><rect x='70' y='96' width='40' height='18' rx='6' fill='currentColor' opacity='0.5'/><text x='120' y='110' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.8' text-anchor='start'>a flu: days</text><rect x='70' y='150' width='300' height='18' rx='6' fill='var(--accent)' opacity='0.9'/><text x='70' y='196' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='start'>a prion: years to decades</text></svg>"
+      }
+    },
+    {
+      "type": "how_we_know",
+      "order": 5,
+      "content": "How do you prove a germ has no genes? You try to destroy its genes and watch it survive. In the 1960s the radiation biologist Tikvah Alper blasted scrapie-infected tissue with radiation that shreds DNA and RNA. The infectivity held. Whatever was copying itself could not be nucleic acid, or the radiation would have stopped it. The mathematician John Griffith sketched how a lone protein might copy itself by reshaping its neighbors. That was years before anyone could name it."
+    },
+    {
+      "type": "story",
+      "order": 7,
+      "content": {
+        "body": "For years the idea made Stanley Prusiner an outcast in his own field. Diseases like scrapie in sheep and kuru in New Guinea had long defied explanation: their agent shrugged off the radiation and heat that kill any virus. Working at the University of California, San Francisco, Prusiner spent the 1970s purifying the scrapie agent. He kept finding protein where a virus should have been. In 1982 he named it the “prion,” a contraction of protein and infection, and argued it carried no genes. Many virologists thought he had missed a hidden virus, and the attacks turned personal. Evidence piled up anyway, from his lab and others. In 1997 the Nobel committee gave him the prize in medicine.",
+        "key_figures": [
+          {
+            "name": "Stanley B. Prusiner",
+            "role": "Proved the protein-only prion",
+            "one_line": "He purified the infectious agent, named it the prion in 1982, and showed it carried no genetic material.",
+            "lifespan": "born 1942",
+            "birth_year": 1942,
+            "featured": true,
+            "image_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Stanley_B._Prusiner_in_2024_(3x4_cropped).jpg",
+            "image_attribution": "Christopher Michel, “Stanley B. Prusiner in 2024”, CC BY 4.0 (Wikimedia Commons)"
+          }
+        ]
+      }
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "The decade mad cow crossed to people",
+          "body": "In 1980s Britain, cattle were fed the rendered remains of other animals, and a prion disease spread through the national herd. To stop it, 4.4 million cattle were slaughtered. Then it crossed the species barrier. Around 178 people in the UK died of variant CJD after eating infected beef, the first a 19-year-old named Stephen Churchill. A misfolded protein had traveled from a cow, through a meal, into a human brain.",
+          "visual_svg": "<svg viewBox='0 112 400 86' xmlns='http://www.w3.org/2000/svg' fill='none'><g stroke='currentColor' stroke-width='2.5'><rect x='18' y='138' width='92' height='44' rx='13'/><rect x='150' y='138' width='92' height='44' rx='13'/></g><rect x='282' y='138' width='100' height='44' rx='13' stroke='var(--accent)' stroke-width='2.5' fill='var(--accent)' fill-opacity='0.10'/><g stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' opacity='0.55'><path d='M110 160 h40'/><path d='M150 160 l-12 -6 m12 6 l-12 6'/><path d='M242 160 h40'/><path d='M282 160 l-12 -6 m12 6 l-12 6'/></g><g font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' text-anchor='middle' fill='currentColor'><text x='64' y='165'>sick cattle</text><text x='196' y='165'>beef</text></g><text x='332' y='157' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='16' font-weight='700' text-anchor='middle'>178</text><text x='332' y='174' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle'>UK deaths</text></svg>"
+        },
+        {
+          "title": "The same trick may drive Alzheimer's",
+          "body": "The templating idea has spread past prion diseases. In Alzheimer's, the proteins amyloid-beta and tau clump and seem to seed their misfolding from one brain region to the next. In Parkinson's, a protein called alpha-synuclein does much the same. These are not thought to pass between people, but inside a single brain they propagate in a prion-like way, one bad fold recruiting the next. If that holds, Prusiner's outcast mechanism touches some of the most common diseases of age.",
+          "visual_svg": "<svg viewBox='0 8 400 210' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='30' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>The same templating, other proteins</text><g stroke='var(--accent)' stroke-width='2' stroke-linecap='round' opacity='0.6'><path d='M70 100 L52 142'/><path d='M70 100 L88 142'/><path d='M200 100 L182 142'/><path d='M200 100 L218 142'/><path d='M330 100 L312 142'/><path d='M330 100 L348 142'/></g><g fill='var(--accent)'><circle cx='70' cy='92' r='9'/><circle cx='52' cy='152' r='9'/><circle cx='88' cy='152' r='9'/><circle cx='200' cy='92' r='9'/><circle cx='182' cy='152' r='9'/><circle cx='218' cy='152' r='9'/><circle cx='330' cy='92' r='9'/><circle cx='312' cy='152' r='9'/><circle cx='348' cy='152' r='9'/></g><g font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle' fill='currentColor' opacity='0.85'><text x='70' y='186'>amyloid-beta</text><text x='200' y='186'>tau</text><text x='330' y='186'>a-synuclein</text></g><g font-family='var(--font-sans), system-ui, sans-serif' font-size='13' text-anchor='middle' fill='currentColor' opacity='0.6'><text x='135' y='208'>Alzheimer's</text><text x='330' y='208'>Parkinson's</text></g></svg>"
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "For a century, the deepest assumption in biology was that life copies itself through a code. Only genes could carry a pattern forward. The prion breaks that quietly. A shape reproduces a shape, and the pattern lives in the fold rather than a string of letters. If the same templating turns out to drive Alzheimer's and Parkinson's, it may be one of nature's basic tricks. That is a strange thing to learn from an illness that leaves the brain full of holes."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "What makes a prion unlike a virus or a bacterium?",
+          "options": [
+            "It reproduces much faster than either",
+            "It carries no DNA or RNA, being only a misfolded protein",
+            "It lives only inside cattle",
+            "It is a bacterium that has lost its cell wall"
+          ],
+          "answer_index": 1,
+          "explanation": "A virus or bacterium copies itself from a genetic code. A prion has no genes at all. It is a protein stuck in the wrong shape."
+        },
+        {
+          "question": "How does a prion make more of itself?",
+          "options": [
+            "It hijacks the cell's DNA to print copies",
+            "It splits in two the way a bacterium does",
+            "It presses normal proteins of the same kind into the same wrong shape",
+            "It injects genes into nearby neurons"
+          ],
+          "answer_index": 2,
+          "explanation": "The misfolded protein acts as a template, forcing its normally folded neighbors to refold the same wrong way. The wrong shape spreads like a chain reaction."
+        },
+        {
+          "question": "What first convinced scientists the scrapie agent had no genes?",
+          "options": [
+            "Radiation that destroys DNA and RNA left it still infectious",
+            "It was easily grown in a dish like a virus",
+            "Its genome was fully sequenced",
+            "Common antibiotics failed to kill it"
+          ],
+          "answer_index": 0,
+          "explanation": "Tikvah Alper hit infected tissue with radiation doses that shred nucleic acids. The agent stayed infectious, so whatever copied itself could not be made of DNA or RNA."
+        },
+        {
+          "question": "Why is prion contamination so hard to remove from surgical instruments?",
+          "options": [
+            "The proteins dissolve in plain water",
+            "They evaporate at room temperature",
+            "Bleach makes them stronger",
+            "They resist heat and the usual sterilizing methods"
+          ],
+          "answer_index": 3,
+          "explanation": "Prions shrug off heat, radiation, and standard sterilizing that destroy ordinary germs, so hospitals need harsh chemical treatment or must discard the tools."
+        },
+        {
+          "question": "What did the UK mad cow episode reveal about prions?",
+          "options": [
+            "That prions cannot infect mammals at all",
+            "That prions can pass from cattle to people through food",
+            "That normal cooking reliably destroys them",
+            "That only sheep can be affected"
+          ],
+          "answer_index": 1,
+          "explanation": "The cattle disease crossed the species barrier: 178 people in the UK died of variant CJD after eating infected beef, showing prions can move from cow to human."
+        },
+        {
+          "question": "Why do prions interest researchers far beyond a few rare brain diseases?",
+          "options": [
+            "They can be turned into antibiotics",
+            "They appear to reverse aging",
+            "The same templated misfolding may spread proteins in Alzheimer's and Parkinson's",
+            "They are completely harmless in humans"
+          ],
+          "answer_index": 2,
+          "explanation": "In Alzheimer's and Parkinson's, misfolded proteins seem to seed more of the same shape, cell to cell, in a prion-like way, which could make the mechanism widely important."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "A prion is a kind of virus.",
+          "reality": "A virus is a set of genes wrapped in protein. A prion is the misfolded protein alone, carrying no genes at all, and that absence is what made the idea so hard to accept."
+        },
+        {
+          "myth": "Cooking your food destroys any prions in it.",
+          "reality": "Roast it, boil it, autoclave it: prions shrug off the heat that kills ordinary germs. Hospitals treat suspect instruments with harsh chemicals or destroy them outright."
+        },
+        {
+          "myth": "Mad cow disease was overblown and never reached people.",
+          "reality": "It crossed the species barrier. In the UK, 178 people died of variant CJD from infected beef, and 4.4 million cattle were slaughtered to end the outbreak."
+        }
+      ]
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Prion",
+          "url": "https://en.wikipedia.org/wiki/Prion",
+          "type": "wikipedia"
+        },
+        {
+          "label": "The Nobel Prize in Physiology or Medicine 1997 (Stanley B. Prusiner), press release",
+          "url": "https://www.nobelprize.org/prizes/medicine/1997/press-release/",
+          "type": "article"
+        },
+        {
+          "label": "Prion disease and the protein-only hypothesis: review of the mechanism and the Alper and Griffith experiments (PMC6760854)",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6760854/",
+          "type": "paper"
+        },
+        {
+          "label": "Kuru (disease)",
+          "url": "https://en.wikipedia.org/wiki/Kuru_(disease)",
+          "type": "wikipedia"
+        },
+        {
+          "label": "United Kingdom BSE outbreak",
+          "url": "https://en.wikipedia.org/wiki/United_Kingdom_BSE_outbreak",
+          "type": "wikipedia"
+        }
+      ]
+    }
+  ]
+}
