@@ -50,7 +50,10 @@ const TAB_ORDER: Tab[] = ["posts", "saved", "liked"]
 
 export default function PublicProfilePage() {
   const params = useParams()
-  const username = params.username as string
+  // useParams returns the percent-encoded route segment; without decoding, a
+  // legacy username with encodable characters breaks isOwnProfile and every
+  // API path built from it (BUG-107/M152).
+  const username = decodeURIComponent(params.username as string)
   const router = useRouter()
   const { user } = useAuth()
 
