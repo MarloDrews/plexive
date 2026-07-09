@@ -4,6 +4,7 @@ import random
 import time
 from typing import Optional
 
+import anyio.to_thread
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 
 from ..auth import decode_access_token
@@ -117,6 +118,27 @@ async def _error(websocket: WebSocket, detail: str) -> None:
     await websocket.send_json({"type": "error", "detail": detail})
 
 
+def _load_active_user(user_id: int) -> Optional[User]:
+    """Auth-time user lookup. Sync on purpose: runs via anyio.to_thread so the
+    remote round trip never blocks the event loop (BE-012/M140)."""
+    db = SessionLocal()
+    try:
+        return db.query(User).filter(User.id == user_id, User.is_active == True).first()
+    finally:
+        db.close()
+
+
+def _load_target(username: str):
+    """Challenge-target lookup, threadpool-bound like _load_active_user (M140).
+    Returns (id, username) or (None, None)."""
+    db = SessionLocal()
+    try:
+        target = db.query(User).filter(User.username == username, User.is_active == True).first()
+        return (target.id, target.username) if target else (None, None)
+    finally:
+        db.close()
+
+
 async def _handle_challenge(websocket: WebSocket, user_id: int, username: str, data: dict) -> None:
     target_username = data.get("username")
     if not isinstance(target_username, str) or not target_username.strip():
@@ -131,15 +153,9 @@ async def _handle_challenge(websocket: WebSocket, user_id: int, username: str, d
         await _error(websocket, "Too many challenges. Slow down.")
         return
 
-    # Resolve the opponent account. Short-lived session per event; the
-    # connection itself holds no session.
-    db = SessionLocal()
-    try:
-        target = db.query(User).filter(User.username == target_username, User.is_active == True).first()
-        target_id = target.id if target else None
-        target_name = target.username if target else None
-    finally:
-        db.close()
+    # Resolve the opponent account: short-lived session per event, run in the
+    # threadpool so the round trip never blocks the loop (BE-012/M140).
+    target_id, target_name = await anyio.to_thread.run_sync(_load_target, target_username)
 
     if target_id is None:
         await _error(websocket, "User not found.")
@@ -219,12 +235,9 @@ async def battle_websocket(websocket: WebSocket):
             await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
             return
 
-        db = SessionLocal()
-        try:
-            user = db.query(User).filter(User.id == user_id, User.is_active == True).first()
-            username = user.username if user else None
-        finally:
-            db.close()
+        # Threadpool lookup: the auth round trip must not stall the loop (M140).
+        user = await anyio.to_thread.run_sync(_load_active_user, user_id)
+        username = user.username if user else None
         # Reject a token whose version was revoked by a password change (M126).
         if not user or username is None or user.token_version != token_version:
             await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
@@ -245,7 +258,8 @@ async def battle_websocket(websocket: WebSocket):
                 break
             now = time.monotonic()
             if now >= next_recheck:
-                if not user_still_active(user_id, token_version):
+                # Threadpool: the periodic DB re-check must not stall the loop (M140).
+                if not await anyio.to_thread.run_sync(user_still_active, user_id, token_version):
                     await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
                     break
                 next_recheck = now + WS_REVALIDATE_SECONDS

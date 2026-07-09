@@ -3,6 +3,7 @@ import json
 import time
 from typing import List, Optional
 
+import anyio.to_thread
 from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect, status
 from pydantic import BaseModel, field_validator
 from sqlalchemy import and_, func, or_
@@ -337,6 +338,50 @@ async def _ws_error(websocket: WebSocket, detail: str) -> None:
     await websocket.send_json({"type": "error", "detail": detail})
 
 
+def _load_active_user(user_id: int) -> Optional[User]:
+    """Auth-time user lookup. Sync on purpose: runs via anyio.to_thread so the
+    remote round trip never blocks the event loop (BE-004/M140)."""
+    db = SessionLocal()
+    try:
+        return db.query(User).filter(User.id == user_id, User.is_active == True).first()
+    finally:
+        db.close()
+
+
+def _persist_message(conversation_id: int, user_id: int, body: str):
+    """Participant check + insert + participant list, one short-lived session.
+
+    Sync on purpose: the websocket handler awaits this via anyio.to_thread so
+    the sequential remote round trips run in the threadpool like every REST
+    handler instead of stalling the event loop for all sockets (BE-004/M140).
+    Returns (message, participant_ids); message is None when the sender is not
+    a participant.
+    """
+    db = SessionLocal()
+    try:
+        # Participant check on every send — never trust the client.
+        if not _get_participant(db, conversation_id, user_id):
+            return None, []
+        message = Message(conversation_id=conversation_id, sender_id=user_id, body=body)
+        db.add(message)
+        db.commit()
+        message = (
+            db.query(Message)
+            .options(selectinload(Message.sender))
+            .filter(Message.id == message.id)
+            .first()
+        )
+        participant_ids = [
+            p.user_id
+            for p in db.query(ConversationParticipant).filter(
+                ConversationParticipant.conversation_id == conversation_id
+            ).all()
+        ]
+        return message, participant_ids
+    finally:
+        db.close()
+
+
 async def _handle_send(websocket: WebSocket, user_id: int, data: dict) -> None:
     conversation_id = data.get("conversation_id")
     body = data.get("body")
@@ -357,32 +402,14 @@ async def _handle_send(websocket: WebSocket, user_id: int, data: dict) -> None:
         await _ws_error(websocket, "Rate limit exceeded. Slow down.")
         return
 
-    # Short-lived session per event; the connection itself holds no session.
-    db = SessionLocal()
-    try:
-        # Participant check on every send — never trust the client.
-        if not _get_participant(db, conversation_id, user_id):
-            await _ws_error(websocket, "Conversation not found.")
-            return
-        message = Message(conversation_id=conversation_id, sender_id=user_id, body=body)
-        db.add(message)
-        db.commit()
-        message = (
-            db.query(Message)
-            .options(selectinload(Message.sender))
-            .filter(Message.id == message.id)
-            .first()
-        )
-        participant_ids = [
-            p.user_id
-            for p in db.query(ConversationParticipant).filter(
-                ConversationParticipant.conversation_id == conversation_id
-            ).all()
-        ]
-        payload = {"type": "message", "message": _serialize_message(message)}
-    finally:
-        db.close()
+    message, participant_ids = await anyio.to_thread.run_sync(
+        _persist_message, conversation_id, user_id, body
+    )
+    if message is None:
+        await _ws_error(websocket, "Conversation not found.")
+        return
 
+    payload = {"type": "message", "message": _serialize_message(message)}
     await manager.send_to_users(participant_ids, payload)
 
 
@@ -430,11 +457,8 @@ async def chat_websocket(websocket: WebSocket):
             await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
             return
 
-        db = SessionLocal()
-        try:
-            user = db.query(User).filter(User.id == user_id, User.is_active == True).first()
-        finally:
-            db.close()
+        # Threadpool lookup: the auth round trip must not stall the loop (M140).
+        user = await anyio.to_thread.run_sync(_load_active_user, user_id)
         # Reject a token whose version was revoked by a password change (M126).
         if not user or user.token_version != token_version:
             await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
@@ -457,7 +481,8 @@ async def chat_websocket(websocket: WebSocket):
                 break
             now = time.monotonic()
             if now >= next_recheck:
-                if not user_still_active(user_id, token_version):
+                # Threadpool: the periodic DB re-check must not stall the loop (M140).
+                if not await anyio.to_thread.run_sync(user_still_active, user_id, token_version):
                     await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
                     break
                 next_recheck = now + WS_REVALIDATE_SECONDS
