@@ -1,3 +1,5 @@
+import asyncio
+import contextlib
 import os
 from contextlib import asynccontextmanager
 
@@ -6,6 +8,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .database import Base, engine
+from .rate_limit import SWEEP_INTERVAL_SECONDS, sweep_idle_buckets
 
 load_dotenv()
 from . import models  # noqa: F401 — registers models with Base before create_all
@@ -34,11 +37,25 @@ def _assert_single_worker() -> None:
             )
 
 
+async def _limiter_sweep_loop() -> None:
+    """Periodic rate-limiter cleanup, run as a background task so the sweep
+    never executes inline in a request thread or on a websocket frame
+    (ARCH-009). The scan itself runs in a worker thread to keep the event
+    loop free even when the bucket dict is large."""
+    while True:
+        await asyncio.sleep(SWEEP_INTERVAL_SECONDS)
+        await asyncio.to_thread(sweep_idle_buckets)
+
+
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     _assert_single_worker()
     Base.metadata.create_all(bind=engine)
+    sweep_task = asyncio.create_task(_limiter_sweep_loop())
     yield
+    sweep_task.cancel()
+    with contextlib.suppress(asyncio.CancelledError):
+        await sweep_task
 
 
 app = FastAPI(lifespan=lifespan)
