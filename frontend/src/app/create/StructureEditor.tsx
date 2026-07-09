@@ -17,7 +17,7 @@ const StructureEditor = memo(function StructureEditor({
         <div key={i} className="flex gap-2 mb-2">
           <input type="text" aria-label={`Part ${i + 1}`} value={s} onChange={(e) => { const n = [...items]; n[i] = e.target.value; onChange(n) }} placeholder={`Part ${i + 1}...`} className={`${inputCls} flex-1`} />
           {items.length > 1 && (
-            <button onClick={() => onChange(items.filter((_, idx) => idx !== i))} className="text-ink-muted text-lg w-8 h-10 flex items-center justify-center shrink-0 cursor-pointer">×</button>
+            <button onClick={() => onChange(items.filter((_, idx) => idx !== i))} aria-label={`Remove part ${i + 1}`} className="text-ink-muted text-lg w-8 h-10 flex items-center justify-center shrink-0 cursor-pointer"><span aria-hidden="true">×</span></button>
           )}
         </div>
       ))}

@@ -38,6 +38,7 @@ export default function CommentRow({ comment, isOwn, deleting, onDelete }: Comme
             <button
               onClick={() => onDelete(comment.id)}
               disabled={deleting}
+              aria-label={`Delete comment by ${comment.username}`}
               className="ml-auto text-xs text-ink-muted hover:text-bad transition-colors duration-150 cursor-pointer disabled:opacity-45 disabled:cursor-default"
             >
               {deleting ? "Deleting..." : "Delete"}

@@ -670,7 +670,7 @@ function PostCard({ post, activeTabId }: { post: Post; activeTabId: string }) {
         <div className="flex flex-col items-center">
           <button
             onClick={(e) => { e.stopPropagation(); handleToggleLike() }}
-            aria-label={liked ? "Unlike" : "Like"}
+            aria-label={`${liked ? "Unlike" : "Like"}, ${likesCount} ${likesCount === 1 ? "like" : "likes"}`}
             className={`w-11 h-11 flex items-center justify-center cursor-pointer transition-all duration-150 active:scale-90 ${liked ? "text-like" : "text-ink-dim"}`}
           >
             <HeartIcon
@@ -679,26 +679,26 @@ function PostCard({ post, activeTabId }: { post: Post; activeTabId: string }) {
               onAnimationEnd={() => setAnimatingLike(false)}
             />
           </button>
-          <span className={`h-3 text-[11px] font-mono leading-none transition-colors duration-150 ${liked ? "text-like" : "text-ink-dim"} ${likesCount === 0 && !liked ? "invisible" : ""}`}>{likesCount}</span>
+          <span aria-hidden="true" className={`h-3 text-[11px] font-mono leading-none transition-colors duration-150 ${liked ? "text-like" : "text-ink-dim"} ${likesCount === 0 && !liked ? "invisible" : ""}`}>{likesCount}</span>
         </div>
 
         {/* Comment */}
         <div className="flex flex-col items-center">
           <button
             onClick={(e) => { e.stopPropagation(); setShowComments(true) }}
-            aria-label="Comments"
+            aria-label={`Comments, ${commentsCount} ${commentsCount === 1 ? "comment" : "comments"}`}
             className="w-11 h-11 flex items-center justify-center cursor-pointer transition-all duration-150 active:scale-90 text-ink-dim"
           >
             <CommentIcon className="w-7 h-7" />
           </button>
-          <span className={`h-3 text-[11px] font-mono text-ink-dim leading-none ${commentsCount === 0 ? "invisible" : ""}`}>{commentsCount}</span>
+          <span aria-hidden="true" className={`h-3 text-[11px] font-mono text-ink-dim leading-none ${commentsCount === 0 ? "invisible" : ""}`}>{commentsCount}</span>
         </div>
 
         {/* Save */}
         <div className="flex flex-col items-center">
           <button
             onClick={handleSaveClick}
-            aria-label={saved ? "Unsave" : "Save"}
+            aria-label={`${saved ? "Unsave" : "Save"}, ${saveCount} ${saveCount === 1 ? "save" : "saves"}`}
             className={`w-11 h-11 flex items-center justify-center cursor-pointer transition-all duration-150 active:scale-90 ${saved ? "text-save" : "text-ink-dim"}`}
           >
             <BookmarkIcon
@@ -707,7 +707,7 @@ function PostCard({ post, activeTabId }: { post: Post; activeTabId: string }) {
               onAnimationEnd={() => setAnimatingSave(false)}
             />
           </button>
-          <span className={`h-3 text-[11px] font-mono leading-none transition-colors duration-150 ${saved ? "text-save" : "text-ink-dim"} ${saveCount === 0 && !saved ? "invisible" : ""}`}>{saveCount}</span>
+          <span aria-hidden="true" className={`h-3 text-[11px] font-mono leading-none transition-colors duration-150 ${saved ? "text-save" : "text-ink-dim"} ${saveCount === 0 && !saved ? "invisible" : ""}`}>{saveCount}</span>
         </div>
 
         {/* Share */}

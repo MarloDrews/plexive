@@ -135,11 +135,12 @@ function NewChatOverlay({ onClose, onCreated }: { onClose: () => void; onCreated
               <button
                 key={u.username}
                 onClick={() => toggle(u)}
+                aria-label={`Remove @${u.username}`}
                 className="flex items-center gap-1.5 bg-white/[0.06] rounded-full pl-1 pr-2.5 py-1 text-xs text-ink cursor-pointer"
               >
                 <Avatar username={u.username} avatarUrl={u.avatar_url} size={20} />
                 @{u.username}
-                <span className="text-ink-muted">×</span>
+                <span className="text-ink-muted" aria-hidden="true">×</span>
               </button>
             ))}
           </div>
