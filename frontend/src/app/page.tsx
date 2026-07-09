@@ -8,9 +8,11 @@ import dynamic from "next/dynamic"
 import PostCard from "@/components/PostCard"
 import BottomNav from "@/components/BottomNav"
 import ToastHost from "@/components/ToastHost"
-import FeedHeader, { type FeedTab } from "@/components/FeedHeader"
+import FeedHeader, { FEED_TABS_ID, type FeedTab } from "@/components/FeedHeader"
 import type { Post } from "@/types/post"
 import { useAuth, hasToken } from "@/lib/auth"
+import { scrollBehavior } from "@/lib/motion"
+import { tabPanelProps } from "@/lib/tablist"
 import { useSwipeTabs } from "@/lib/useSwipeTabs"
 import { useWindowedFeed } from "@/lib/useWindowedFeed"
 
@@ -73,12 +75,16 @@ function PhoneFrame({ children }: { children: React.ReactNode }) {
 
 function TabPage({
   tab,
+  index,
   slugs,
   isActivated,
+  isActive,
 }: {
   tab: (typeof TABS)[number]
+  index: number
   slugs: string[]
   isActivated: boolean
+  isActive: boolean
 }) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const { user, loading: authLoading } = useAuth()
@@ -136,7 +142,11 @@ function TabPage({
 
   return (
     // pb-24 clears the floating dock (12px inset + 56px tall).
-    <div ref={scrollRef} className="w-full shrink-0 snap-start h-[100dvh] overflow-y-scroll snap-y snap-mandatory overscroll-y-contain pb-24">
+    <div
+      ref={scrollRef}
+      {...tabPanelProps(FEED_TABS_ID, index, isActive)}
+      className="w-full shrink-0 snap-start h-[100dvh] overflow-y-scroll snap-y snap-mandatory overscroll-y-contain pb-24"
+    >
       {!isActivated ? (
         <div className="h-full bg-surface-0" />
       ) : isFollowingTab && !authLoading && !user ? (
@@ -252,7 +262,7 @@ export default function Home() {
     const button = tabRefs.current[activeIndex]
     if (!button) return
     const strip = tabStripRef.current
-    const behavior: ScrollBehavior = isFirstTabCenter.current ? "instant" : "smooth"
+    const behavior: ScrollBehavior = isFirstTabCenter.current ? "instant" : scrollBehavior()
     isFirstTabCenter.current = false
 
     if (activeIndex === 0) {
@@ -266,6 +276,9 @@ export default function Home() {
 
   return (
     <PhoneFrame>
+      {/* The feed has no visual title; the tab strip is the whole header. An
+          sr-only h1 gives the page a document title for heading navigation. */}
+      <h1 className="sr-only">Feed</h1>
       <FeedHeader
         tabs={TABS}
         activeTab={activeTab}
@@ -289,7 +302,11 @@ export default function Home() {
           // empty page keeps swiping cheap, like TabPage's own placeholder).
           if (tab.id === "train" || tab.id === "battle") {
             return (
-              <div key={tab.id} className="w-full shrink-0 snap-start h-[100dvh] bg-surface-0">
+              <div
+                key={tab.id}
+                {...tabPanelProps(FEED_TABS_ID, i, activeIndex === i)}
+                className="w-full shrink-0 snap-start h-[100dvh] bg-surface-0"
+              >
                 {!isActivated ? (
                   <div className="h-full bg-surface-0" />
                 ) : tab.id === "train" ? (
@@ -307,8 +324,10 @@ export default function Home() {
             <TabPage
               key={tab.id}
               tab={tab}
+              index={i}
               slugs={slugs}
               isActivated={isActivated}
+              isActive={activeIndex === i}
             />
           )
         })}

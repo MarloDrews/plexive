@@ -21,18 +21,24 @@ function WithCyanNumbers({ text }: { text: string }) {
 // unit, LAYOUT_STANDARD s6) — right for a Facts headline whose claim IS a number.
 // Academy passes false: a number in a paper title (a year, a model size) is
 // incidental, not a designated emphasis, so the title renders with no accent.
+//
+// as: the detail page passes "h1" because the headline IS the page title there.
+// It defaults to "p" so a "headline" body section rendered through
+// SectionRenderer never becomes a second h1. Styling is identical either way.
 export default function HeadlineSection({
   content,
   accentNumbers = true,
+  as: Tag = "p",
 }: {
   content: string
   accentNumbers?: boolean
+  as?: "h1" | "p"
 }) {
   return (
     <div className="px-6 pt-3 pb-5">
-      <p className="font-serif text-headline font-medium tracking-tight text-ink leading-snug max-w-[24ch]">
+      <Tag className="font-serif text-headline font-medium tracking-tight text-ink leading-snug max-w-[24ch]">
         {accentNumbers ? <WithCyanNumbers text={unescapeDollar(content)} /> : unescapeDollar(content)}
-      </p>
+      </Tag>
     </div>
   )
 }

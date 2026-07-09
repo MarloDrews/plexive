@@ -6,6 +6,7 @@ import Link from "next/link"
 import useSWR from "swr"
 import BottomNav from "@/components/BottomNav"
 import Avatar from "@/components/Avatar"
+import Dialog from "@/components/Dialog"
 import VerifiedBadge from "@/components/VerifiedBadge"
 import { apiFetch } from "@/lib/api"
 import { useAuth, hasToken } from "@/lib/auth"
@@ -99,7 +100,17 @@ function NewChatOverlay({ onClose, onCreated }: { onClose: () => void; onCreated
   }
 
   return (
-    <div className="absolute inset-0 z-40 bg-surface-0 flex flex-col">
+    // Dialog portals to document.body, so the overlay can no longer position
+    // itself against the page's phone frame; the fixed layer plus the centered
+    // max-w column reproduce it exactly. onBackdropClick is a no-op because
+    // this overlay was opaque and never closed on an outside click.
+    <Dialog
+      label="New chat"
+      onClose={onClose}
+      onBackdropClick={() => {}}
+      className="fixed inset-0 z-40 bg-surface-0 flex justify-center"
+    >
+    <div className="w-full max-w-[430px] h-full flex flex-col">
       <div className="px-3 pt-3 pb-2">
         <div className="flex items-center gap-2">
           <button onClick={onClose} className="btn-icon shrink-0" aria-label="Close">
@@ -107,10 +118,11 @@ function NewChatOverlay({ onClose, onCreated }: { onClose: () => void; onCreated
               <path d="M18 6L6 18M6 6l12 12" />
             </svg>
           </button>
-          <p className="font-serif text-ink font-medium text-base">New chat</p>
+          <h2 className="font-serif text-ink font-medium text-base">New chat</h2>
         </div>
         <input
           type="search"
+          aria-label="Search people you follow"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search people you follow…"
@@ -123,11 +135,12 @@ function NewChatOverlay({ onClose, onCreated }: { onClose: () => void; onCreated
               <button
                 key={u.username}
                 onClick={() => toggle(u)}
+                aria-label={`Remove @${u.username}`}
                 className="flex items-center gap-1.5 bg-white/[0.06] rounded-full pl-1 pr-2.5 py-1 text-xs text-ink cursor-pointer"
               >
                 <Avatar username={u.username} avatarUrl={u.avatar_url} size={20} />
                 @{u.username}
-                <span className="text-ink-muted">×</span>
+                <span className="text-ink-muted" aria-hidden="true">×</span>
               </button>
             ))}
           </div>
@@ -135,6 +148,7 @@ function NewChatOverlay({ onClose, onCreated }: { onClose: () => void; onCreated
         {selected.length > 1 && (
           <input
             type="text"
+            aria-label="Group name (optional)"
             value={groupName}
             onChange={(e) => setGroupName(e.target.value)}
             placeholder="Group name (optional)"
@@ -142,16 +156,19 @@ function NewChatOverlay({ onClose, onCreated }: { onClose: () => void; onCreated
             className="field rounded-full mt-2 text-sm py-2.5"
           />
         )}
-        {error && <p className="text-bad text-xs mt-2">{error}</p>}
+        {error && <p role="alert" className="text-bad text-xs mt-2">{error}</p>}
       </div>
 
       <div className="flex-1 overflow-y-auto px-3">
         {results.map((u) => {
           const isSelected = selected.some((s) => s.username === u.username)
           return (
+            // Multi-select, so checkbox semantics rather than aria-pressed.
             <button
               key={u.username}
               onClick={() => toggle(u)}
+              role="checkbox"
+              aria-checked={isSelected}
               className="w-full flex items-center gap-3 py-2.5 text-left cursor-pointer"
             >
               <Avatar username={u.username} avatarUrl={u.avatar_url} size={40} verified={u.is_verified} />
@@ -159,7 +176,7 @@ function NewChatOverlay({ onClose, onCreated }: { onClose: () => void; onCreated
                 @{u.username}
                 {u.is_verified > 0 && <VerifiedBadge size={14} level={u.is_verified} />}
               </span>
-              <span className={`w-5 h-5 rounded-full border flex items-center justify-center ${isSelected ? "bg-lamp border-lamp" : "border-edge-strong"}`}>
+              <span aria-hidden="true" className={`w-5 h-5 rounded-full border flex items-center justify-center ${isSelected ? "bg-lamp border-lamp" : "border-edge-strong"}`}>
                 {isSelected && (
                   <svg viewBox="0 0 24 24" fill="none" stroke="var(--color-surface-0)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3">
                     <path d="M20 6L9 17l-5-5" />
@@ -184,6 +201,7 @@ function NewChatOverlay({ onClose, onCreated }: { onClose: () => void; onCreated
         </button>
       </div>
     </div>
+    </Dialog>
   )
 }
 
@@ -259,27 +277,30 @@ export default function ChatPage() {
               </div>
             </div>
           ) : (
-            conversations.map((conv) => (
-              <button
-                key={conv.id}
-                onClick={() => router.push(`/chat/${conv.id}`)}
-                className="w-full flex items-center gap-3 px-4 py-3 text-left cursor-pointer active:bg-white/[0.05] hover:bg-white/[0.05] transition-colors duration-150"
-              >
-                <ConversationAvatar conv={conv} me={user?.username ?? ""} />
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-baseline justify-between gap-2">
-                    <p className="text-ink text-sm font-semibold truncate">{conv.name}</p>
-                    {conv.last_message?.created_at && (
-                      <span className="text-ink-faint text-xs shrink-0 font-mono">{relativeTime(conv.last_message.created_at)}</span>
-                    )}
-                  </div>
-                  <p className="text-ink-muted text-xs truncate">{preview(conv)}</p>
-                  {conv.is_group && (
-                    <p className="text-ink-faint text-xs truncate">{subtitle(conv.participants)}</p>
-                  )}
-                </div>
-              </button>
-            ))
+            <ul>
+              {conversations.map((conv) => (
+                <li key={conv.id}>
+                  <button
+                    onClick={() => router.push(`/chat/${conv.id}`)}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-left cursor-pointer active:bg-white/[0.05] hover:bg-white/[0.05] transition-colors duration-150"
+                  >
+                    <ConversationAvatar conv={conv} me={user?.username ?? ""} />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-baseline justify-between gap-2">
+                        <p className="text-ink text-sm font-semibold truncate">{conv.name}</p>
+                        {conv.last_message?.created_at && (
+                          <span className="text-ink-muted text-xs shrink-0 font-mono">{relativeTime(conv.last_message.created_at)}</span>
+                        )}
+                      </div>
+                      <p className="text-ink-muted text-xs truncate">{preview(conv)}</p>
+                      {conv.is_group && (
+                        <p className="text-ink-muted text-xs truncate">{subtitle(conv.participants)}</p>
+                      )}
+                    </div>
+                  </button>
+                </li>
+              ))}
+            </ul>
           )}
         </div>
 

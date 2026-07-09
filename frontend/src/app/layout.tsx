@@ -77,7 +77,15 @@ export default function RootLayout({
       className={`${newsreader.variable} ${sourceSans.variable} ${geistMono.variable} ${coverSerif.variable} ${coverDidone.variable} ${coverGaramond.variable} ${coverSlab.variable} ${coverSans.variable} ${coverGeometric.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <Providers>{children}</Providers>
+        <Providers>
+          {/* The one main landmark. It repeats body's column-flex context so
+              page roots stay the flex items they were (the stats root uses
+              mx-auto, which shrink-wraps a flex item but not a block child).
+              Dialog.tsx marks this element inert while a modal is open, which
+              is why the id is stable and why sheets portal to document.body,
+              outside it. */}
+          <main id="app-root" className="flex-1 flex flex-col">{children}</main>
+        </Providers>
       </body>
     </html>
   );

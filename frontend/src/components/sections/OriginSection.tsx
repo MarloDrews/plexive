@@ -73,7 +73,7 @@ export default function OriginSection({ content }: Props) {
                 </div>
               </div>
               {thinker.image_url && thinker.image_attribution && (
-                <p className="text-[10px] text-ink-faint leading-snug">{unescapeDollar(thinker.image_attribution)}</p>
+                <p className="text-[10px] text-ink-muted leading-snug">{unescapeDollar(thinker.image_attribution)}</p>
               )}
             </div>
           ))}

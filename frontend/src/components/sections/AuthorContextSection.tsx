@@ -12,7 +12,7 @@ interface Props {
 
 function ExternalLinkIcon() {
   return (
-    <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="1.5" className="inline ml-1 mb-0.5">
+    <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true" className="inline ml-1 mb-0.5">
       <path d="M6 3H3a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-3M9 2h5m0 0v5m0-5L7 10" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
@@ -35,7 +35,7 @@ export default function AuthorContextSection({ content }: Props) {
               onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none" }}
             />
             {content.image_attribution && (
-              <p className="text-xs text-ink-faint mt-1 text-center max-w-[4rem]">
+              <p className="text-xs text-ink-muted mt-1 text-center max-w-[4rem]">
                 {unescapeDollar(content.image_attribution)}
               </p>
             )}

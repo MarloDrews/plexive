@@ -49,6 +49,13 @@ export default function SvgBlock({ svg, isUserContent, className = "w-full", col
     }
   }, [svg, isUserContent])
 
+  // ACCESSIBILITY (A11Y-005): every visual this renders is either captioned by
+  // its section (the caption is real text right below, so naming the graphic
+  // would read it twice) or is a field glyph with no text of its own. The
+  // content schema carries no alt field, so there is nothing left to name a
+  // diagram with. Both paths are therefore hidden from assistive tech rather
+  // than announced as an unlabelled graphic. Naming explanatory diagrams needs
+  // a new schema field; until then silence beats invented alt text.
   if (dataUrl) {
     return (
       <div className={className}>
@@ -60,6 +67,7 @@ export default function SvgBlock({ svg, isUserContent, className = "w-full", col
     <div
       className={className}
       style={{ color }}
+      aria-hidden="true"
       dangerouslySetInnerHTML={{ __html: themed }}
     />
   )

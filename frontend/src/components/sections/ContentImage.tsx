@@ -37,7 +37,7 @@ export default function ContentImage({ url, caption, attribution, className = "w
         <figcaption className="text-xs text-ink-muted leading-snug"><MathText text={caption} /></figcaption>
       )}
       {attribution && (
-        <p className="text-[10px] text-ink-faint leading-snug">{unescapeDollar(attribution)}</p>
+        <p className="text-[10px] text-ink-muted leading-snug">{unescapeDollar(attribution)}</p>
       )}
     </figure>
   )

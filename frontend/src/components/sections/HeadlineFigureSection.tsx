@@ -44,7 +44,7 @@ export default function HeadlineFigureSection({ content, isUserContent }: Props)
       {/* Attribution is required for a sourced figure (IMAGE_STANDARD); a
           self-built SVG carries none. */}
       {content.image_url && !content.visual_svg && content.image_attribution && (
-        <p className="text-[10px] text-ink-faint text-center leading-snug">
+        <p className="text-[10px] text-ink-muted text-center leading-snug">
           {unescapeDollar(content.image_attribution)}
         </p>
       )}

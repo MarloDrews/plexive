@@ -34,18 +34,25 @@
   --color-edge-strong: rgb(200 200 200 / 0.20); /* inputs, outline buttons */
 
   /* Ink (text) — neutral white/gray */
+  /* Rebased so every text token clears WCAG AA (4.5:1) on all three surfaces
+     it renders on: the base, the .card slab (white 4% over base) and the
+     .field fill (white 6% over the slab). The whole ramp moved together, so
+     the hierarchy is unchanged. */
   --color-ink: #eeeeee;                   /* headings, primary */
   --color-ink-body: #c5c5c5;              /* body prose */
-  --color-ink-dim: #8a8a8a;               /* secondary */
-  --color-ink-muted: #606060;             /* labels, meta */
-  --color-ink-faint: #3a3a3a;             /* fine print */
+  --color-ink-dim: #a3a3a3;               /* secondary */
+  --color-ink-muted: #8a8a8a;             /* labels, meta */
+  /* NOT a text token: 1.7:1 on the base, far below AA. All 57 former text uses
+     moved up to ink-muted, so it currently has no consumer. Kept defined for
+     hairline graphics; retiring it belongs to M097. */
+  --color-ink-faint: #3a3a3a;
 
   /* Brand + semantic */
   --color-lamp: #7c6fff;                  /* brand accent: links, focus, active */
   --color-like: #ff3a5c;                  /* liked state on action buttons */
   --color-save: #f5c542;                  /* saved state on action buttons */
   --color-good: #6abf84;                  /* success, correct answers */
-  --color-bad: #c05870;                   /* errors, wrong answers, destructive */
+  --color-bad: #c96a80;                   /* errors, wrong answers, destructive */
 
   /* Format inks — web source of truth for format colors. Hexes are mirrored by
      hand in src/lib/formats.ts (accent + rgb) and in mobile/src/theme/tokens.ts;
@@ -111,7 +118,12 @@ body::before {
 /* Hide scrollbars app-wide, both axes, for a clean surface (LAYOUT_STANDARD s.5).
    Per-container utilities missed the root html/body bars on Windows; this is the
    cross-browser catch-all. Real horizontal overflow is still fixed at its source,
-   never only masked here. */
+   never only masked here.
+
+   A11Y-026, decision 13: hiding the bars removes a scroll affordance and a
+   position cue for low-vision and motor-impaired users. Keeping them hidden is
+   a deliberate product choice, not an oversight. A user-facing setting that
+   restores visible scrollbars is planned; it is not built in this batch. */
 * {
   scrollbar-width: none; /* Firefox */
 }
@@ -185,11 +197,13 @@ body::before {
     color: var(--color-ink-body);
   }
   .btn-destructive {
-    background: rgb(192 88 112 / 0.12);
-    color: #c05870;
+    /* Points at the token instead of a copy of its old hex, so a rebase of
+       --color-bad reaches the button. */
+    background: color-mix(in srgb, var(--color-bad) 12%, transparent);
+    color: var(--color-bad);
   }
   .btn-destructive:hover:not(:disabled) {
-    background: rgb(192 88 112 / 0.18);
+    background: color-mix(in srgb, var(--color-bad) 18%, transparent);
   }
   .btn-icon {
     display: inline-flex;

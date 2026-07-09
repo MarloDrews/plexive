@@ -35,7 +35,7 @@ export default function FormalismSection({ content }: Props) {
 
       {asArray(content.notation_legend).length > 0 && (
         <div className="flex flex-col gap-2">
-          <p className="text-xs uppercase tracking-widest text-ink-faint">Notation</p>
+          <p className="text-xs uppercase tracking-widest text-ink-muted">Notation</p>
           <div className="flex flex-col divide-y divide-edge">
             {asArray(content.notation_legend).map((item, i) => (
               <div key={i} className="flex gap-4 py-2 items-baseline">

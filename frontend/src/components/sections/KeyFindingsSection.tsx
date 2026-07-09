@@ -46,7 +46,7 @@ export default function KeyFindingsSection({ content, isUserContent }: Props) {
             />
           )}
           {item.source_in_paper && (
-            <p className="text-xs text-ink-faint">Source: {unescapeDollar(item.source_in_paper)}</p>
+            <p className="text-xs text-ink-muted">Source: {unescapeDollar(item.source_in_paper)}</p>
           )}
         </div>
       ))}

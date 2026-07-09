@@ -28,16 +28,22 @@ function visible(rows: { label: string; value: ReactNode }[]) {
   return rows.filter((r) => r.value !== "" && r.value !== null && r.value !== undefined)
 }
 
+// A span carrying only aria-label has no role for the name to attach to, so the
+// name was dropped (A11Y-020). Each row already renders its own visible label
+// beside the dots, so the spoken equivalent is just the reading.
 function DotScale({ value, max = 3 }: { value: number; max?: number }) {
   return (
-    <span className="flex gap-0.5" aria-label={`${value} of ${max}`}>
-      {Array.from({ length: max }, (_, i) => (
-        <span
-          key={i}
-          className={`inline-block w-2 h-2 rounded-full ${i < value ? "bg-(--accent)" : "bg-surface-3"}`}
-        />
-      ))}
-    </span>
+    <>
+      <span className="flex gap-0.5" aria-hidden="true">
+        {Array.from({ length: max }, (_, i) => (
+          <span
+            key={i}
+            className={`inline-block w-2 h-2 rounded-full ${i < value ? "bg-(--accent)" : "bg-surface-3"}`}
+          />
+        ))}
+      </span>
+      <span className="sr-only">{`${value} of ${max}`}</span>
+    </>
   )
 }
 

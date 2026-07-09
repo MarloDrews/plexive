@@ -3,7 +3,7 @@
 // Shared form primitives for the create wizard, used by the page itself and the
 // extracted section editors (QuizEditor, SourcesEditor, InterestPickerBlock).
 
-import { useState } from "react"
+import { useId, useState } from "react"
 
 export interface Interest {
   id: number
@@ -14,9 +14,12 @@ export interface Interest {
 export const inputCls = "field text-sm py-3"
 export const labelCls = "label-caps mb-2 mt-4 block"
 
-export function FieldError({ msg }: { msg: string | undefined }) {
+// role="alert" so a validation message that appears after submit is announced
+// without moving focus (A11Y-016). The optional id lets a caller wire the
+// message to its input with aria-describedby.
+export function FieldError({ msg, id }: { msg: string | undefined; id?: string }) {
   if (!msg) return null
-  return <p className="text-bad text-xs mt-1">{msg}</p>
+  return <p id={id} role="alert" className="text-bad text-xs mt-1">{msg}</p>
 }
 
 export function Accordion({
@@ -25,10 +28,13 @@ export function Accordion({
   title: string; required?: boolean; children: React.ReactNode; defaultOpen?: boolean
 }) {
   const [open, setOpen] = useState(defaultOpen ?? false)
+  const panelId = useId()
   return (
     <div className="card overflow-hidden mb-3">
       <button
         onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        aria-controls={panelId}
         className="w-full flex items-center justify-between px-4 py-3 text-left cursor-pointer"
       >
         <span className="text-sm font-medium text-ink">{title}</span>
@@ -43,12 +49,12 @@ export function Accordion({
               Optional
             </span>
           )}
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" className={`text-ink-dim transition-transform ${open ? "rotate-180" : ""}`}>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true" className={`text-ink-dim transition-transform ${open ? "rotate-180" : ""}`}>
             <path d="M6 9l6 6 6-6" />
           </svg>
         </div>
       </button>
-      {open && <div className="px-4 pb-4 pt-3 bg-surface-0/40">{children}</div>}
+      {open && <div id={panelId} className="px-4 pb-4 pt-3 bg-surface-0/40">{children}</div>}
     </div>
   )
 }

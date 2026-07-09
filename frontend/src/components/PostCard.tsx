@@ -2,6 +2,7 @@
 
 import { memo, useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import CommentsBottomSheet from "./CommentsBottomSheet"
 import { showToast } from "@/lib/toastBus"
 import { observeCard } from "@/lib/sharedObserver"
@@ -300,6 +301,26 @@ function PostCard({ post, activeTabId }: { post: Post; activeTabId: string }) {
           overflow-hidden so it never reaches neighboring posts or chrome. */}
       <SlabGlow />
 
+      {/* The card's keyboard entry point (A11Y-001). The slab stays a div with
+          onClick because the double-tap-to-like timer needs the raw pointer
+          path; this anchor adds the missing role, name and Enter activation.
+          pointer-events-none means it never intercepts a mouse or touch click,
+          so every pointer interaction behaves exactly as before. It is the
+          first child so Tab reaches the post before the read-aloud and rail
+          buttons. Enter navigates immediately rather than waiting out the
+          300ms double-tap window. */}
+      <Link
+        href={`/post/${post.id}`}
+        onClick={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          navigate()
+        }}
+        className="absolute inset-2 z-10 rounded-3xl pointer-events-none"
+      >
+        <span className="sr-only">{post.title}</span>
+      </Link>
+
       {/* Double-tap heart overlay */}
       {showHeartAnim && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
@@ -546,7 +567,7 @@ function PostCard({ post, activeTabId }: { post: Post; activeTabId: string }) {
                       <span className="label-caps text-(--accent)">{fcStr(fc, "era_label")}</span>
                     )}
                     {post.primary_category_name && (
-                      <span className="label-caps text-ink-faint">{post.primary_category_name}</span>
+                      <span className="label-caps text-ink-muted">{post.primary_category_name}</span>
                     )}
                   </div>
                   {!fcStr(fc, "lead_image_url") && (
@@ -649,7 +670,7 @@ function PostCard({ post, activeTabId }: { post: Post; activeTabId: string }) {
         <div className="flex flex-col items-center">
           <button
             onClick={(e) => { e.stopPropagation(); handleToggleLike() }}
-            aria-label={liked ? "Unlike" : "Like"}
+            aria-label={`${liked ? "Unlike" : "Like"}, ${likesCount} ${likesCount === 1 ? "like" : "likes"}`}
             className={`w-11 h-11 flex items-center justify-center cursor-pointer transition-all duration-150 active:scale-90 ${liked ? "text-like" : "text-ink-dim"}`}
           >
             <HeartIcon
@@ -658,26 +679,26 @@ function PostCard({ post, activeTabId }: { post: Post; activeTabId: string }) {
               onAnimationEnd={() => setAnimatingLike(false)}
             />
           </button>
-          <span className={`h-3 text-[11px] font-mono leading-none transition-colors duration-150 ${liked ? "text-like" : "text-ink-dim"} ${likesCount === 0 && !liked ? "invisible" : ""}`}>{likesCount}</span>
+          <span aria-hidden="true" className={`h-3 text-[11px] font-mono leading-none transition-colors duration-150 ${liked ? "text-like" : "text-ink-dim"} ${likesCount === 0 && !liked ? "invisible" : ""}`}>{likesCount}</span>
         </div>
 
         {/* Comment */}
         <div className="flex flex-col items-center">
           <button
             onClick={(e) => { e.stopPropagation(); setShowComments(true) }}
-            aria-label="Comments"
+            aria-label={`Comments, ${commentsCount} ${commentsCount === 1 ? "comment" : "comments"}`}
             className="w-11 h-11 flex items-center justify-center cursor-pointer transition-all duration-150 active:scale-90 text-ink-dim"
           >
             <CommentIcon className="w-7 h-7" />
           </button>
-          <span className={`h-3 text-[11px] font-mono text-ink-dim leading-none ${commentsCount === 0 ? "invisible" : ""}`}>{commentsCount}</span>
+          <span aria-hidden="true" className={`h-3 text-[11px] font-mono text-ink-dim leading-none ${commentsCount === 0 ? "invisible" : ""}`}>{commentsCount}</span>
         </div>
 
         {/* Save */}
         <div className="flex flex-col items-center">
           <button
             onClick={handleSaveClick}
-            aria-label={saved ? "Unsave" : "Save"}
+            aria-label={`${saved ? "Unsave" : "Save"}, ${saveCount} ${saveCount === 1 ? "save" : "saves"}`}
             className={`w-11 h-11 flex items-center justify-center cursor-pointer transition-all duration-150 active:scale-90 ${saved ? "text-save" : "text-ink-dim"}`}
           >
             <BookmarkIcon
@@ -686,7 +707,7 @@ function PostCard({ post, activeTabId }: { post: Post; activeTabId: string }) {
               onAnimationEnd={() => setAnimatingSave(false)}
             />
           </button>
-          <span className={`h-3 text-[11px] font-mono leading-none transition-colors duration-150 ${saved ? "text-save" : "text-ink-dim"} ${saveCount === 0 && !saved ? "invisible" : ""}`}>{saveCount}</span>
+          <span aria-hidden="true" className={`h-3 text-[11px] font-mono leading-none transition-colors duration-150 ${saved ? "text-save" : "text-ink-dim"} ${saveCount === 0 && !saved ? "invisible" : ""}`}>{saveCount}</span>
         </div>
 
         {/* Share */}

@@ -313,16 +313,17 @@ export default function ProfilePage() {
             <input
               ref={avatarInputRef}
               type="file"
+              aria-label="Upload a profile picture"
               accept="image/png,image/jpeg,image/webp,image/gif"
               onChange={handleAvatarChange}
               className="hidden"
             />
           </div>
-          {avatarError && <p className="text-bad text-xs mb-2">{avatarError}</p>}
-          <p className="flex items-center gap-1.5 font-serif text-ink text-2xl font-medium">
+          {avatarError && <p role="alert" className="text-bad text-xs mb-2">{avatarError}</p>}
+          <h1 className="flex items-center gap-1.5 font-serif text-ink text-2xl font-medium">
             @{user.username}
             {user.is_verified > 0 && <VerifiedBadge size={20} level={user.is_verified} />}
-          </p>
+          </h1>
 
           {/* Followers / Following / Posts row */}
           <div className="flex gap-6 mt-3 mb-1">
@@ -393,8 +394,9 @@ export default function ProfilePage() {
 
         {/* Bio */}
         <div className="mx-6 mb-4 card px-5 py-4">
-          <label className="block label-caps mb-1.5">Bio</label>
+          <label htmlFor="profile-bio" className="block label-caps mb-1.5">Bio</label>
           <textarea
+            id="profile-bio"
             value={bio}
             onChange={(e) => setBio(e.target.value)}
             maxLength={160}
@@ -403,7 +405,7 @@ export default function ProfilePage() {
             className="field text-sm py-3 resize-none"
           />
           <div className="flex items-center justify-between mt-1">
-            <span className="text-ink-faint text-xs font-mono">{bio.length}/160</span>
+            <span className="text-ink-muted text-xs font-mono">{bio.length}/160</span>
             <button
               onClick={handleSaveBio}
               disabled={bioLoading}
@@ -412,7 +414,7 @@ export default function ProfilePage() {
               {bioLoading ? "Saving..." : "Save bio"}
             </button>
           </div>
-          {bioError && <p className="text-bad text-xs mt-1">{bioError}</p>}
+          {bioError && <p role="alert" className="text-bad text-xs mt-1">{bioError}</p>}
         </div>
 
         {/* Follow Requests (private accounts only) */}
@@ -420,6 +422,8 @@ export default function ProfilePage() {
           <div className="mx-6 mb-4 card overflow-hidden">
             <button
               onClick={() => setShowRequests((v) => !v)}
+              aria-expanded={showRequests}
+              aria-controls="follow-requests-panel"
               className="w-full px-5 py-4 flex items-center justify-between text-left"
             >
               <span className="text-ink text-sm font-medium flex items-center gap-2">
@@ -436,8 +440,8 @@ export default function ProfilePage() {
               </svg>
             </button>
             {showRequests && (
-              <div className="px-5 pb-5 flex flex-col gap-3">
-                {requestError && <p className="text-bad text-xs">{requestError}</p>}
+              <div id="follow-requests-panel" className="px-5 pb-5 flex flex-col gap-3">
+                {requestError && <p role="alert" className="text-bad text-xs">{requestError}</p>}
                 {pendingRequests.length === 0 ? (
                   <p className="text-ink-muted text-sm">No pending requests.</p>
                 ) : (
@@ -485,23 +489,27 @@ export default function ProfilePage() {
               <button
                 onClick={handleTogglePrivacy}
                 disabled={privacyLoading}
+                role="switch"
+                aria-checked={user.is_private}
                 className={`relative w-11 h-6 rounded-full transition-colors duration-200 disabled:opacity-50 ${
                   user.is_private ? "bg-lamp" : "bg-white/[0.10]"
                 }`}
-                aria-label="Toggle private account"
+                aria-label="Private account"
               >
                 <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-ink rounded-full transition-transform duration-200 ${
                   user.is_private ? "translate-x-5" : "translate-x-0"
                 }`} />
               </button>
             </div>
-            {privacyError && <p className="text-bad text-xs px-5 pb-3 -mt-1">{privacyError}</p>}
+            {privacyError && <p role="alert" className="text-bad text-xs px-5 pb-3 -mt-1">{privacyError}</p>}
           </div>
 
           {/* Change username */}
           <div className="border-b border-edge">
             <button
               onClick={() => togglePanel("username")}
+              aria-expanded={open === "username"}
+              aria-controls="settings-panel-username"
               className="w-full px-5 py-4 flex items-center justify-between text-left"
             >
               <span className="text-ink text-sm font-medium">Change username</span>
@@ -511,9 +519,10 @@ export default function ProfilePage() {
               </svg>
             </button>
             {open === "username" && (
-              <form onSubmit={handleChangeUsername} className="px-5 pb-5 flex flex-col gap-3">
+              <form id="settings-panel-username" onSubmit={handleChangeUsername} className="px-5 pb-5 flex flex-col gap-3">
                 <input
                   type="text"
+                  aria-label="New username"
                   placeholder="New username"
                   value={newUsername}
                   onChange={(e) => setNewUsername(e.target.value)}
@@ -521,7 +530,7 @@ export default function ProfilePage() {
                   required
                   className={inputClass}
                 />
-                {usernameError && <p className="text-bad text-sm">{usernameError}</p>}
+                {usernameError && <p role="alert" className="text-bad text-sm">{usernameError}</p>}
                 <button type="submit" disabled={usernameLoading} className={submitClass}>
                   {usernameLoading ? "Saving..." : "Save username"}
                 </button>
@@ -533,6 +542,8 @@ export default function ProfilePage() {
           <div className="border-b border-edge">
             <button
               onClick={() => togglePanel("password")}
+              aria-expanded={open === "password"}
+              aria-controls="settings-panel-password"
               className="w-full px-5 py-4 flex items-center justify-between text-left"
             >
               <span className="text-ink text-sm font-medium">Change password</span>
@@ -542,9 +553,10 @@ export default function ProfilePage() {
               </svg>
             </button>
             {open === "password" && (
-              <form onSubmit={handleChangePassword} className="px-5 pb-5 flex flex-col gap-3">
+              <form id="settings-panel-password" onSubmit={handleChangePassword} className="px-5 pb-5 flex flex-col gap-3">
                 <input
                   type="password"
+                  aria-label="Current password"
                   placeholder="Current password"
                   value={currentPw}
                   onChange={(e) => setCurrentPw(e.target.value)}
@@ -554,6 +566,7 @@ export default function ProfilePage() {
                 />
                 <input
                   type="password"
+                  aria-label="New password"
                   placeholder="New password"
                   value={newPw}
                   onChange={(e) => setNewPw(e.target.value)}
@@ -561,7 +574,7 @@ export default function ProfilePage() {
                   required
                   className={inputClass}
                 />
-                {passwordError && <p className="text-bad text-sm">{passwordError}</p>}
+                {passwordError && <p role="alert" className="text-bad text-sm">{passwordError}</p>}
                 <button type="submit" disabled={passwordLoading} className={submitClass}>
                   {passwordLoading ? "Saving..." : "Save password"}
                 </button>
@@ -583,6 +596,8 @@ export default function ProfilePage() {
           <div>
             <button
               onClick={() => togglePanel("delete")}
+              aria-expanded={open === "delete"}
+              aria-controls="settings-panel-delete"
               className="w-full px-5 py-4 flex items-center justify-between text-left"
             >
               <span className="text-bad text-sm">Delete account</span>
@@ -592,10 +607,11 @@ export default function ProfilePage() {
               </svg>
             </button>
             {open === "delete" && (
-              <form onSubmit={handleDeleteAccount} className="px-5 pb-5 flex flex-col gap-3">
+              <form id="settings-panel-delete" onSubmit={handleDeleteAccount} className="px-5 pb-5 flex flex-col gap-3">
                 <p className="text-ink-dim text-sm">This will permanently delete your account and all your data.</p>
                 <input
                   type="password"
+                  aria-label="Password, to confirm account deletion"
                   placeholder="Enter password to confirm"
                   value={deletePw}
                   onChange={(e) => setDeletePw(e.target.value)}
@@ -603,7 +619,7 @@ export default function ProfilePage() {
                   required
                   className={inputClass}
                 />
-                {deleteError && <p className="text-bad text-sm">{deleteError}</p>}
+                {deleteError && <p role="alert" className="text-bad text-sm">{deleteError}</p>}
                 <button
                   type="submit"
                   disabled={deleteLoading}

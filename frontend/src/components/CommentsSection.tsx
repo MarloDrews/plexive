@@ -37,19 +37,21 @@ export default function CommentsSection({ comments, error, currentUsername, onDe
           <div className="stage-pulse h-10 w-2/3 rounded-2xl bg-white/[0.04]" />
         </div>
       ) : error ? (
-        <p className="text-sm text-ink-faint">Could not load comments.</p>
+        <p className="text-sm text-ink-muted">Could not load comments.</p>
       ) : comments!.length === 0 ? (
-        <p className="text-sm text-ink-faint">No comments yet</p>
+        <p className="text-sm text-ink-muted">No comments yet</p>
       ) : (
-        comments!.map((comment) => (
-          <CommentRow
-            key={comment.id}
-            comment={comment}
-            isOwn={currentUsername === comment.username}
-            deleting={deletingId === comment.id}
-            onDelete={onDelete}
-          />
-        ))
+        <ul>
+          {comments!.map((comment) => (
+            <CommentRow
+              key={comment.id}
+              comment={comment}
+              isOwn={currentUsername === comment.username}
+              deleting={deletingId === comment.id}
+              onDelete={onDelete}
+            />
+          ))}
+        </ul>
       )}
     </section>
   )

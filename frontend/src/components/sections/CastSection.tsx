@@ -44,7 +44,7 @@ export default function CastSection({ content }: Props) {
               </div>
             </div>
             {member.image_url && member.image_attribution && (
-              <p className="text-[10px] text-ink-faint leading-snug">{unescapeDollar(member.image_attribution)}</p>
+              <p className="text-[10px] text-ink-muted leading-snug">{unescapeDollar(member.image_attribution)}</p>
             )}
           </div>
         ))}

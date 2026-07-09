@@ -35,7 +35,7 @@ function RelatedCard({ item }: { item: ReadNextItem }) {
   return (
     <div className="opacity-60 relative">
       {inner}
-      <span className="absolute bottom-2 right-3 text-xs text-ink-faint">Coming soon</span>
+      <span className="absolute bottom-2 right-3 text-xs text-ink-muted">Coming soon</span>
     </div>
   )
 }

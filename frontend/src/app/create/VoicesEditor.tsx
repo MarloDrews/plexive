@@ -23,8 +23,8 @@ const VoicesEditor = memo(function VoicesEditor({
       {items.map((v, i) => (
         <div key={i} className="mb-3 bg-white/[0.04] rounded-2xl p-3">
           <p className="text-ink-muted text-xs mb-2">Quote {i + 1}</p>
-          <textarea value={v.quote} onChange={(e) => { const n = [...items]; n[i] = { ...n[i], quote: e.target.value }; onChange(n) }} rows={2} placeholder="Quote text..." className={`${inputCls} resize-none mb-2`} />
-          <input type="text" value={v.attribution} onChange={(e) => { const n = [...items]; n[i] = { ...n[i], attribution: e.target.value }; onChange(n) }} placeholder="Attribution (name, role, page, etc.)" className={inputCls} />
+          <textarea aria-label={`Quote ${i + 1} text`} value={v.quote} onChange={(e) => { const n = [...items]; n[i] = { ...n[i], quote: e.target.value }; onChange(n) }} rows={2} placeholder="Quote text..." className={`${inputCls} resize-none mb-2`} />
+          <input type="text" aria-label={`Quote ${i + 1} attribution`} value={v.attribution} onChange={(e) => { const n = [...items]; n[i] = { ...n[i], attribution: e.target.value }; onChange(n) }} placeholder="Attribution (name, role, page, etc.)" className={inputCls} />
         </div>
       ))}
       {items.length < 4 && (

@@ -1,5 +1,6 @@
 import Link from "next/link"
 import Avatar from "@/components/Avatar"
+import Dialog from "@/components/Dialog"
 import Spinner from "@/components/Spinner"
 import VerifiedBadge from "@/components/VerifiedBadge"
 
@@ -27,7 +28,13 @@ export default function FollowListSheet({
 }) {
   if (!open) return null
   return (
-    <div className="fixed inset-0 z-40 flex justify-center" onClick={onClose}>
+    // Dialog portals this to document.body: rendered inline it would sit
+    // inside <main id="app-root">, which the dialog itself marks inert.
+    <Dialog
+      label={open === "followers" ? "Followers" : "Following"}
+      onClose={onClose}
+      className="fixed inset-0 z-40 flex justify-center"
+    >
       <div className="absolute inset-0 bg-surface-0/70" />
       <div
         className="stage-sheet-in absolute inset-x-3 bottom-3 max-w-[406px] mx-auto max-h-[70dvh] rounded-3xl bg-surface-1/95 backdrop-blur-xl flex flex-col overflow-hidden"
@@ -41,29 +48,32 @@ export default function FollowListSheet({
             </svg>
           </button>
         </div>
-        <div className="overflow-y-auto px-3 py-3 flex flex-col gap-1 pb-[max(env(safe-area-inset-bottom),12px)]">
+        <div className="overflow-y-auto px-3 py-3 pb-[max(env(safe-area-inset-bottom),12px)]">
           {users === null ? (
             <div className="flex justify-center py-8"><Spinner /></div>
           ) : users.length === 0 ? (
             <p className="text-ink-muted text-sm text-center py-8">{emptyMessage}</p>
           ) : (
-            users.map((u) => (
-              <Link
-                key={u.username}
-                href={`/profile/${u.username}`}
-                onClick={onClose}
-                className="flex items-center gap-3 px-2 py-2 rounded-2xl hover:bg-white/[0.06] transition-colors duration-150"
-              >
-                <Avatar username={u.username} avatarUrl={u.avatar_url} size={40} verified={u.is_verified} />
-                <span className="flex items-center gap-1.5 text-ink text-sm font-medium">
-                  @{u.username}
-                  {u.is_verified > 0 && <VerifiedBadge size={14} level={u.is_verified} />}
-                </span>
-              </Link>
-            ))
+            <ul className="flex flex-col gap-1">
+              {users.map((u) => (
+                <li key={u.username}>
+                  <Link
+                    href={`/profile/${u.username}`}
+                    onClick={onClose}
+                    className="flex items-center gap-3 px-2 py-2 rounded-2xl hover:bg-white/[0.06] transition-colors duration-150"
+                  >
+                    <Avatar username={u.username} avatarUrl={u.avatar_url} size={40} verified={u.is_verified} />
+                    <span className="flex items-center gap-1.5 text-ink text-sm font-medium">
+                      @{u.username}
+                      {u.is_verified > 0 && <VerifiedBadge size={14} level={u.is_verified} />}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
           )}
         </div>
       </div>
-    </div>
+    </Dialog>
   )
 }

@@ -382,18 +382,37 @@ export default function Marathon({ onExit }: Props) {
       return { borderColor: "var(--color-good)", background: "rgb(106 191 132 / 0.10)", color: "var(--color-good)" }
     }
     if (i === selected) {
-      return { borderColor: "var(--color-bad)", background: "rgb(192 88 112 / 0.10)", color: "var(--color-bad)" }
+      return { borderColor: "var(--color-bad)", background: "color-mix(in srgb, var(--color-bad) 10%, transparent)", color: "var(--color-bad)" }
     }
-    return { borderColor: "var(--color-edge)", background: "rgb(255 255 255 / 0.06)", color: "var(--color-ink-faint)" }
+    return { borderColor: "var(--color-edge)", background: "rgb(255 255 255 / 0.06)", color: "var(--color-ink-muted)" }
   }
+
+  // Color was the only marker of an answered option (A11Y-018): a glyph and a
+  // spoken suffix carry the same state without it.
+  function optionState(i: number): "correct" | "incorrect" | null {
+    if (stage !== "feedback" || !lastResult) return null
+    if (i === lastResult.correctIndex) return "correct"
+    if (i === selected) return "incorrect"
+    return null
+  }
+
+  const OPTION_GLYPH = { correct: "✓", incorrect: "✗" } as const
+  const OPTION_SUFFIX = { correct: ", correct answer", incorrect: ", your choice, incorrect" } as const
 
   // The top strip: rating + streak, rendered in both question and feedback.
   function renderStrip() {
     return (
-      <div className="flex items-center justify-around">
-        <Stat label="Rating" value={Math.round(sessionElo)} />
-        <StreakStat streak={streak} />
-      </div>
+      <>
+        {/* Settled values only. TickingNumber animates per frame and is kept
+            out of every live region (A11Y-018). */}
+        <div aria-live="polite" className="sr-only">
+          {`Rating ${Math.round(sessionElo)}, streak ${streak}`}
+        </div>
+        <div aria-hidden="true" className="flex items-center justify-around">
+          <Stat label="Rating" value={Math.round(sessionElo)} />
+          <StreakStat streak={streak} />
+        </div>
+      </>
     )
   }
 
@@ -433,10 +452,12 @@ export default function Marathon({ onExit }: Props) {
             key={i}
             onClick={interactive ? () => handleSelect(i) : undefined}
             disabled={!interactive || selected !== null || busy}
+            aria-label={optionState(i) ? `${opt}${OPTION_SUFFIX[optionState(i)!]}` : undefined}
             className="text-left rounded-3xl border px-5 py-4 text-base transition-colors duration-150 disabled:cursor-default"
             style={optionStyle(i)}
           >
             {opt}
+            {optionState(i) && <span aria-hidden="true" className="ml-2">{OPTION_GLYPH[optionState(i)!]}</span>}
           </button>
         ))}
       </div>

@@ -19,7 +19,7 @@ export default function CoreIdeasSection({ content, isUserContent }: Props) {
       <div className="flex flex-col gap-10">
       {asArray(content).map((idea, i) => (
         <div key={i} className="flex flex-col gap-3">
-          <h2 className="text-lg font-semibold text-(--accent) leading-snug">{unescapeDollar(idea.title)}</h2>
+          <h3 className="text-lg font-semibold text-(--accent) leading-snug">{unescapeDollar(idea.title)}</h3>
           <Prose><MathText text={idea.body} /></Prose>
 
           {idea.visual_svg && (
@@ -52,7 +52,7 @@ export default function CoreIdeasSection({ content, isUserContent }: Props) {
                     <p className="text-sm text-ink-dim leading-snug"><MathText text={idea.image_caption} /></p>
                   )}
                   {idea.image_attribution && (
-                    <p className="text-xs text-ink-faint mt-1">{unescapeDollar(idea.image_attribution)}</p>
+                    <p className="text-xs text-ink-muted mt-1">{unescapeDollar(idea.image_attribution)}</p>
                   )}
                 </div>
               )}

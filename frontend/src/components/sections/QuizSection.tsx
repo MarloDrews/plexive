@@ -29,8 +29,21 @@ function optionClass(i: number, result: AnswerResult | undefined): string {
   if (i === result.chosenIndex) {
     return "border-bad bg-bad/10 text-bad"
   }
-  return "border-edge text-ink-faint font-sans"
+  return "border-edge text-ink-muted font-sans"
 }
+
+// Green and red were the only thing marking an answered option (A11Y-018).
+// This drives both a glyph and a spoken suffix, so the state survives without
+// color vision and without sight.
+function optionState(i: number, result: AnswerResult | undefined): "correct" | "incorrect" | null {
+  if (!result) return null
+  if (i === result.correctIndex) return "correct"
+  if (i === result.chosenIndex) return "incorrect"
+  return null
+}
+
+const OPTION_GLYPH = { correct: "✓", incorrect: "✗" } as const
+const OPTION_SUFFIX = { correct: ", correct answer", incorrect: ", your choice, incorrect" } as const
 
 // memo: every slide stays mounted in the translateX pager, so advancing a
 // slide (or any page-level re-render reaching the quiz) re-renders only the
@@ -86,7 +99,9 @@ const QuizCard = memo(function QuizCard({
           <MathText text={item.question} />
         </p>
         <ol className="mt-3 flex flex-col gap-2">
-          {item.options.map((opt, i) => (
+          {item.options.map((opt, i) => {
+            const state = optionState(i, result)
+            return (
             <li key={i}>
               <button
                 onClick={() => answer(i)}
@@ -94,30 +109,38 @@ const QuizCard = memo(function QuizCard({
                 // tappable-looking while GET /quiz/state settles -- they used to
                 // swallow taps silently until it returned.
                 disabled={!!result || submitting || locked}
+                aria-label={state ? `${opt}${OPTION_SUFFIX[state]}` : undefined}
                 className={`w-full text-left px-4 py-3 rounded-field text-[15px] font-sans border transition-colors duration-150 disabled:cursor-default ${optionClass(i, result)} ${
                   (submitting || locked) && !result ? "opacity-60" : ""
                 }`}
               >
                 <MathText text={opt} />
+                {state && <span aria-hidden="true" className="ml-2">{OPTION_GLYPH[state]}</span>}
               </button>
             </li>
-          ))}
+            )
+          })}
         </ol>
-        {error && <p className="text-bad text-xs mt-2 font-sans">{error}</p>}
+        {error && <p role="alert" className="text-bad text-xs mt-2 font-sans">{error}</p>}
       </div>
 
-      {result && (
-        <div className="px-4 pb-4">
-          <p className={`label-caps mb-1 ${result.correct ? "text-good" : "text-bad"}`}>
-            {result.correct ? "Correct" : "Incorrect"}
-          </p>
-          {result.explanation && (
-            <p className="text-sm text-ink-dim leading-relaxed font-sans">
-              <MathText text={result.explanation} />
+      {/* The live region has to exist before the verdict lands, so the wrapper
+          is always rendered and the padding sits on the inner block. An empty
+          wrapper has no height, so nothing moves. */}
+      <div aria-live="polite">
+        {result && (
+          <div className="px-4 pb-4">
+            <p className={`label-caps mb-1 ${result.correct ? "text-good" : "text-bad"}`}>
+              {result.correct ? "Correct" : "Incorrect"}
             </p>
-          )}
-        </div>
-      )}
+            {result.explanation && (
+              <p className="text-sm text-ink-dim leading-relaxed font-sans">
+                <MathText text={result.explanation} />
+              </p>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   )
 })
@@ -244,8 +267,11 @@ export default function QuizSection({ content, postId }: Props) {
           className="flex items-start transition-transform duration-300 ease-out"
           style={{ transform: `translateX(-${current * 100}%)` }}
         >
+          {/* inert on the off-screen slides (A11Y-013): they stay mounted, so
+              without it Tab reaches a future question's options and a keyboard
+              user answers out of order, bypassing the no-advance gating. */}
           {items.map((item, i) => (
-            <div key={i} className="w-full shrink-0">
+            <div key={i} className="w-full shrink-0" inert={i !== current}>
               <QuizCard
                 item={item}
                 index={i}
@@ -258,7 +284,7 @@ export default function QuizSection({ content, postId }: Props) {
           ))}
           {/* Result summary — Elo is a placeholder for now: the score only, no
               rating math. */}
-          <div className="w-full shrink-0">
+          <div className="w-full shrink-0" inert={current !== items.length}>
             <div className="card px-4 py-6 flex flex-col items-center gap-1 text-center">
               <p className="label-caps text-(--accent)">Quiz complete</p>
               <p className="text-lg text-ink font-semibold">

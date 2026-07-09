@@ -66,6 +66,7 @@ export default function RegisterPage() {
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <input
               type="email"
+              aria-label="Email"
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -75,6 +76,7 @@ export default function RegisterPage() {
             />
             <input
               type="text"
+              aria-label="Username"
               placeholder="Username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
@@ -84,6 +86,7 @@ export default function RegisterPage() {
             />
             <input
               type="password"
+              aria-label="Password"
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -91,7 +94,7 @@ export default function RegisterPage() {
               required
               className="field rounded-full text-sm px-5 py-3.5"
             />
-            {error && <p className="text-bad text-sm px-2">{error}</p>}
+            {error && <p role="alert" className="text-bad text-sm px-2">{error}</p>}
             <button
               type="submit"
               disabled={submitting}
@@ -104,7 +107,8 @@ export default function RegisterPage() {
 
         <p className="text-ink-muted text-sm text-center mt-6">
           Already have an account?{" "}
-          <Link href="/login" className="text-lamp hover:text-ink transition-colors">
+          {/* Underlined for the same reason as the register link on /login. */}
+          <Link href="/login" className="text-lamp hover:text-ink underline transition-colors">
             Sign in
           </Link>
         </p>

@@ -27,6 +27,7 @@ import { useAuth } from "@/lib/auth"
 import { apiFetch } from "@/lib/api"
 import { usePostLike } from "@/lib/usePostLike"
 import { useComments } from "@/lib/useComments"
+import { scrollBehavior } from "@/lib/motion"
 import { findPostInFeedCaches, updatePostInFeedCaches } from "@/lib/swr"
 import { useSWRConfig } from "swr"
 
@@ -215,7 +216,7 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
   // (invoked by CommentBar after a successful post).
   const scrollToComments = useCallback(() => {
     setTimeout(() => {
-      commentsTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
+      commentsTopRef.current?.scrollIntoView({ behavior: scrollBehavior(), block: "start" })
     }, 50)
   }, [])
 
@@ -380,7 +381,7 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                         <FieldGlyph slug={post.tags?.[0]} reach="-bottom-3" />
                       </div>
                     </div>
-                    <HeadlineSection content={post.title} />
+                    <HeadlineSection content={post.title} as="h1" />
                     {/* Dek — the one-line plain-language gloss from the feed card,
                         repeated under the headline (LAYOUT_STANDARD s3). Concepts
                         carries one_line; facts has none, so this stays facts-free. */}
@@ -414,7 +415,7 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                         <FieldGlyph slug={post.tags?.[0]} reach="-bottom-3" />
                       </div>
                     </div>
-                    <HeadlineSection content={post.title} accentNumbers={false} />
+                    <HeadlineSection content={post.title} accentNumbers={false} as="h1" />
                     {/* Context line: authors_compact already carries the year
                         (e.g. "Friston, 2010"), so published_year is not printed
                         here; it stays in the data for sorting only. */}
@@ -516,7 +517,7 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                         </p>
                       </div>
                     )}
-                    <HeadlineSection content={post.title} />
+                    <HeadlineSection content={post.title} as="h1" />
                     {fcStr(post.feed_card, "author") && (
                       <p className="px-6 -mt-1 text-ink-dim text-sm font-medium">
                         {fcStr(post.feed_card, "author")}
@@ -575,7 +576,7 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                         </div>
                       </div>
                     )}
-                    <HeadlineSection content={post.title} />
+                    <HeadlineSection content={post.title} as="h1" />
                     <HeaderMeta post={post} />
                   </div>
                 ) : (

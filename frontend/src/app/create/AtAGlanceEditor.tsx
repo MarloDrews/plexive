@@ -1,6 +1,6 @@
 "use client"
 
-import { memo } from "react"
+import { memo, useId } from "react"
 import { Accordion, FieldError, inputCls } from "./formUi"
 
 export const emptyAtAGlance = () => ({
@@ -21,6 +21,7 @@ const AtAGlanceEditor = memo(function AtAGlanceEditor({
   onChange: (value: AtAGlanceState) => void
   error?: string
 }) {
+  const uid = useId()
   return (
     <Accordion title="At a Glance" required defaultOpen>
       <FieldError msg={error} />
@@ -33,19 +34,19 @@ const AtAGlanceEditor = memo(function AtAGlanceEditor({
           { key: "best_for" as const, label: "Best for", placeholder: "Curious minds" },
         ].map(({ key, label, placeholder }) => (
           <div key={key}>
-            <label className="text-ink-muted text-xs mb-1 block">{label}</label>
-            <input type="text" value={value[key]} onChange={(e) => onChange({ ...value, [key]: e.target.value })} placeholder={placeholder} className={inputCls} />
+            <label htmlFor={`${uid}-${key}`} className="text-ink-muted text-xs mb-1 block">{label}</label>
+            <input id={`${uid}-${key}`} type="text" value={value[key]} onChange={(e) => onChange({ ...value, [key]: e.target.value })} placeholder={placeholder} className={inputCls} />
           </div>
         ))}
         <div>
-          <label className="text-ink-muted text-xs mb-1 block">Reading ease</label>
-          <select value={value.reading_ease} onChange={(e) => onChange({ ...value, reading_ease: e.target.value as "1" | "2" | "3" })} className={inputCls}>
+          <label htmlFor={`${uid}-reading-ease`} className="text-ink-muted text-xs mb-1 block">Reading ease</label>
+          <select id={`${uid}-reading-ease`} value={value.reading_ease} onChange={(e) => onChange({ ...value, reading_ease: e.target.value as "1" | "2" | "3" })} className={inputCls}>
             <option value="1">1 — Easy</option><option value="2">2 — Moderate</option><option value="3">3 — Dense</option>
           </select>
         </div>
         <div>
-          <label className="text-ink-muted text-xs mb-1 block">Difficulty</label>
-          <select value={value.post_difficulty} onChange={(e) => onChange({ ...value, post_difficulty: e.target.value as "1" | "2" | "3" })} className={inputCls}>
+          <label htmlFor={`${uid}-difficulty`} className="text-ink-muted text-xs mb-1 block">Difficulty</label>
+          <select id={`${uid}-difficulty`} value={value.post_difficulty} onChange={(e) => onChange({ ...value, post_difficulty: e.target.value as "1" | "2" | "3" })} className={inputCls}>
             <option value="1">1 — Easy</option><option value="2">2 — Medium</option><option value="3">3 — Hard</option>
           </select>
         </div>

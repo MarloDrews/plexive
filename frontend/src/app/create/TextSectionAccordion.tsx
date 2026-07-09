@@ -1,6 +1,6 @@
 "use client"
 
-import { memo } from "react"
+import { memo, useId } from "react"
 import { Accordion, FieldError, inputCls } from "./formUi"
 
 // One memoized accordion for every plain-textarea section of the wizard
@@ -30,10 +30,14 @@ const TextSectionAccordion = memo(function TextSectionAccordion({
   onChange: (value: string) => void
   error?: string
 }) {
+  const fieldId = useId()
   return (
     <Accordion title={title} required={required} defaultOpen={defaultOpen}>
       {hint && <p className="text-ink-muted text-xs mb-2">{hint}</p>}
+      {/* The accordion title is the field's visible label. */}
+      <label htmlFor={fieldId} className="sr-only">{title}</label>
       <textarea
+        id={fieldId}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         rows={rows}

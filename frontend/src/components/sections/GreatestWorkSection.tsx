@@ -23,7 +23,7 @@ export default function GreatestWorkSection({ content, isUserContent }: Props) {
   return (
     <div className="px-6 py-8 flex flex-col gap-3">
       <SectionLabel>Their Greatest Work</SectionLabel>
-      <h2 className="text-lg font-semibold text-(--accent) leading-snug">{unescapeDollar(content.title)}</h2>
+      <h3 className="text-lg font-semibold text-(--accent) leading-snug">{unescapeDollar(content.title)}</h3>
       <Prose><MathText text={content.body} /></Prose>
 
       {content.visual_svg && (
@@ -43,7 +43,7 @@ export default function GreatestWorkSection({ content, isUserContent }: Props) {
             <p className="text-xs text-ink-muted mt-2"><MathText text={content.image_caption} /></p>
           )}
           {content.image_attribution && (
-            <p className="text-xs text-ink-faint mt-0.5">{unescapeDollar(content.image_attribution)}</p>
+            <p className="text-xs text-ink-muted mt-0.5">{unescapeDollar(content.image_attribution)}</p>
           )}
         </div>
       )}

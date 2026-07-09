@@ -15,9 +15,11 @@ interface CommentRowProps {
   onDelete: (id: number) => void
 }
 
+// Renders an <li>: both call sites (the comments sheet and the detail-page
+// list) wrap their rows in a <ul> so a screen reader announces "list, N items".
 export default function CommentRow({ comment, isOwn, deleting, onDelete }: CommentRowProps) {
   return (
-    <div className="flex items-start gap-2.5 mb-3">
+    <li className="flex items-start gap-2.5 mb-3">
       {/* Commenter avatar — real picture, initial-letter fallback */}
       <Avatar
         username={comment.username}
@@ -36,6 +38,7 @@ export default function CommentRow({ comment, isOwn, deleting, onDelete }: Comme
             <button
               onClick={() => onDelete(comment.id)}
               disabled={deleting}
+              aria-label={`Delete comment by ${comment.username}`}
               className="ml-auto text-xs text-ink-muted hover:text-bad transition-colors duration-150 cursor-pointer disabled:opacity-45 disabled:cursor-default"
             >
               {deleting ? "Deleting..." : "Delete"}
@@ -44,6 +47,6 @@ export default function CommentRow({ comment, isOwn, deleting, onDelete }: Comme
         </div>
         <p className="text-sm text-ink-body mt-1 leading-relaxed">{comment.body}</p>
       </div>
-    </div>
+    </li>
   )
 }

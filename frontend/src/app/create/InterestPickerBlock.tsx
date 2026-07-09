@@ -31,7 +31,7 @@ const InterestPickerBlock = memo(function InterestPickerBlock({
       <FieldError msg={error} />
       {sections.map((sec) => (
         <div key={sec.label} className="mb-3">
-          <p className="text-ink-faint text-xs mb-1.5">{sec.label}</p>
+          <p className="text-ink-muted text-xs mb-1.5">{sec.label}</p>
           <div className="flex flex-wrap gap-1.5">
             {sec.items.map((interest) => {
               const isSelected = selected.includes(interest.slug)
@@ -39,11 +39,12 @@ const InterestPickerBlock = memo(function InterestPickerBlock({
                 <button
                   key={interest.slug}
                   onClick={() => onToggle(interest.slug)}
+                  aria-pressed={isSelected}
                   className={`rounded-full px-2.5 py-1 text-xs font-medium transition-colors duration-150 ${
                     isSelected
                       ? "bg-white/[0.12] text-ink cursor-pointer"
                       : atMax
-                        ? "bg-white/[0.04] text-ink-faint opacity-50 cursor-default"
+                        ? "bg-white/[0.04] text-ink-muted opacity-50 cursor-default"
                         : "bg-white/[0.04] text-ink-dim cursor-pointer"
                   }`}
                 >

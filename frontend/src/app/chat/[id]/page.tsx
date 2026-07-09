@@ -105,9 +105,10 @@ function Composer({
       className="px-3 py-2"
       style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 8px)" }}
     >
-      {error && <p className="text-bad text-xs pb-1.5">{error}</p>}
+      {error && <p role="alert" className="text-bad text-xs pb-1.5">{error}</p>}
       <div className="flex items-end gap-2">
         <textarea
+          aria-label="Message"
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={(e) => {
@@ -334,18 +335,21 @@ export default function ConversationPage() {
             <Avatar username={headerAvatarUser.username} avatarUrl={headerAvatarUser.avatar_url} size={32} verified={headerAvatarUser.is_verified} />
           )}
           <div className="flex-1 min-w-0">
-            <p className="text-ink text-sm font-semibold truncate">{conversation?.name ?? "Chat"}</p>
+            <h1 className="text-ink text-sm font-semibold truncate">{conversation?.name ?? "Chat"}</h1>
             {conversation?.is_group && (
-              <p className="text-ink-faint text-xs truncate">
+              <p className="text-ink-muted text-xs truncate">
                 {conversation.participants.map((p) => `@${p.username}`).join(", ")}
               </p>
             )}
           </div>
-          {status !== "open" && (
-            <span className="text-ink-faint text-xs shrink-0">
-              {status === "connecting" ? "connecting…" : "offline"}
-            </span>
-          )}
+          {/* The wrapper is always present so the pill's arrival is announced. */}
+          <span aria-live="polite" className="shrink-0">
+            {status !== "open" && (
+              <span className="text-ink-muted text-xs">
+                {status === "connecting" ? "connecting…" : "offline"}
+              </span>
+            )}
+          </span>
         </div>
 
         {/* Messages */}
@@ -355,7 +359,7 @@ export default function ConversationPage() {
           className="flex-1 overflow-y-auto px-3 py-3 flex flex-col gap-1.5"
         >
           {loadingOlder && (
-            <p className="text-ink-faint text-xs text-center py-1 shrink-0">Loading earlier messages…</p>
+            <p className="text-ink-muted text-xs text-center py-1 shrink-0">Loading earlier messages…</p>
           )}
           {notFound ? (
             <div className="flex-1 flex items-center justify-center">

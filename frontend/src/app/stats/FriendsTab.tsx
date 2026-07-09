@@ -209,11 +209,12 @@ function FriendsTab({ username, verifiedLevel }: { username: string; verifiedLev
   const eloTable = eloSorted.length === 0 ? <NoData /> : (
     <div className="overflow-x-auto overscroll-x-contain">
       <table className="w-full text-xs">
+        <caption className="sr-only">Friends ranked by global Elo</caption>
         <thead>
           <tr className="text-ink-muted border-b border-edge">
-            <th className="text-left pb-2 pr-3">#</th>
-            <th className="text-left pb-2 pr-3">User</th>
-            <th className="text-right pb-2">Global Elo</th>
+            <th scope="col" className="text-left pb-2 pr-3">#</th>
+            <th scope="col" className="text-left pb-2 pr-3">User</th>
+            <th scope="col" className="text-right pb-2">Global Elo</th>
           </tr>
         </thead>
         <tbody>
@@ -225,7 +226,7 @@ function FriendsTab({ username, verifiedLevel }: { username: string; verifiedLev
                   {p.username === username ? "You" : p.username}
                 </Link>
                 {/* is_verified is a number; a bare && would render a literal 0. */}
-                {p.is_verified > 0 && p.username !== username && <span className="ml-1 text-lamp text-[10px]">✓</span>}
+                {p.is_verified > 0 && p.username !== username && <><span className="ml-1 text-lamp text-[10px]" aria-hidden="true">✓</span><span className="sr-only">verified</span></>}
               </td>
               <td className="py-2 text-right text-ink-body font-mono">{Math.round(p.global_rating ?? 0)}</td>
             </tr>
@@ -289,11 +290,12 @@ function FriendsTab({ username, verifiedLevel }: { username: string; verifiedLev
   const postTable = (
     <div className="overflow-x-auto overscroll-x-contain">
       <table className="w-full text-xs">
+        <caption className="sr-only">Friends ranked by posts published</caption>
         <thead>
           <tr className="text-ink-muted border-b border-edge">
-            <th className="text-left pb-2 pr-3">#</th>
-            <th className="text-left pb-2 pr-3">User</th>
-            <th className="text-right pb-2">Posts</th>
+            <th scope="col" className="text-left pb-2 pr-3">#</th>
+            <th scope="col" className="text-left pb-2 pr-3">User</th>
+            <th scope="col" className="text-right pb-2">Posts</th>
           </tr>
         </thead>
         <tbody>

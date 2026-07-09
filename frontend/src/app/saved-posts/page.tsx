@@ -35,6 +35,8 @@ export default function SavedPostsPage() {
   return (
     <div className="h-[100dvh] bg-surface-0 flex justify-center">
       <div className="w-full max-w-[430px] h-[100dvh] relative overflow-hidden">
+        {/* Card feed, no visual title; sr-only h1 names the page. */}
+        <h1 className="sr-only">Saved posts</h1>
 
         {/* Loading: pulsing slabs where the card slab would sit */}
         {posts === null && (
@@ -48,7 +50,7 @@ export default function SavedPostsPage() {
         {posts !== null && posts.length === 0 && (
           <div className="h-full flex items-center justify-center px-6 pb-24">
             <div className="card px-8 py-10 text-center max-w-xs flex flex-col items-center gap-4">
-              <BookmarkIcon strokeWidth={1.5} className="w-10 h-10 text-ink-faint" />
+              <BookmarkIcon strokeWidth={1.5} className="w-10 h-10 text-ink-muted" />
               <p className="text-ink-dim text-sm">
                 No saved posts yet. Tap the bookmark icon on any post to save it.
               </p>

@@ -65,6 +65,7 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <input
               type="email"
+              aria-label="Email"
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -74,6 +75,7 @@ export default function LoginPage() {
             />
             <input
               type="password"
+              aria-label="Password"
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -81,7 +83,7 @@ export default function LoginPage() {
               required
               className="field rounded-full text-sm px-5 py-3.5"
             />
-            {error && <p className="text-bad text-sm px-2">{error}</p>}
+            {error && <p role="alert" className="text-bad text-sm px-2">{error}</p>}
             <button
               type="submit"
               disabled={submitting}
@@ -94,7 +96,10 @@ export default function LoginPage() {
 
         <p className="text-ink-muted text-sm text-center mt-6">
           Don&apos;t have an account?{" "}
-          <Link href="/register" className="text-lamp hover:text-ink transition-colors">
+          {/* Underlined: inside a text block, color alone is not enough to mark
+              a link (A11Y-030, link-in-text-block). Matches the sign-in link in
+              CommentsBottomSheet. */}
+          <Link href="/register" className="text-lamp hover:text-ink underline transition-colors">
             Register
           </Link>
         </p>

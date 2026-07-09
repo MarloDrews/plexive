@@ -9,10 +9,13 @@ import { FORMAT_IDS, FORMAT_STYLES, type FormatId } from "@/lib/formats"
 import { apiFetch } from "@/lib/api"
 import { useAuth } from "@/lib/auth"
 import { useSwipeTabs } from "@/lib/useSwipeTabs"
+import { tabPanelProps } from "@/lib/tablist"
 import BottomNav from "@/components/BottomNav"
 import SegmentedTabs from "@/components/SegmentedTabs"
 import VerifiedBadge from "@/components/VerifiedBadge"
 import Avatar from "@/components/Avatar"
+
+const SEARCH_TABS_ID = "search-tabs"
 
 const FORMAT_CHIPS: { label: string; value: FormatId | "" }[] = [
   { label: "All", value: "" },
@@ -48,12 +51,10 @@ function FormatBadge({ format }: { format: string }) {
 }
 
 function UserRow({ user, loggedIn }: { user: UserResult; loggedIn: boolean }) {
-  const router = useRouter()
   const [followStatus, setFollowStatus] = useState(user.follow_status)
   const [busy, setBusy] = useState(false)
 
-  async function toggleFollow(e: React.MouseEvent) {
-    e.stopPropagation()
+  async function toggleFollow() {
     if (busy) return
     setBusy(true)
     try {
@@ -78,64 +79,79 @@ function UserRow({ user, loggedIn }: { user: UserResult; loggedIn: boolean }) {
   const following = followStatus === "accepted"
   const requested = followStatus === "pending"
 
+  // The row is a layout div with two discrete controls, not a button wrapping
+  // a button (A11Y-009). The profile link stretches across the row via the
+  // ::after overlay, so the whole card is still one click target, while the
+  // follow button sits above it and stays independently focusable.
   return (
-    <button
-      onClick={() => router.push(`/profile/${user.username}`)}
-      className="w-full text-left card px-4 py-3 flex items-center gap-3 cursor-pointer hover:bg-white/[0.07] transition-colors duration-150"
-    >
+    <div className="relative card px-4 py-3 flex items-center gap-3 hover:bg-white/[0.07] transition-colors duration-150">
       <Avatar username={user.username} avatarUrl={user.avatar_url} size={44} verified={user.is_verified} />
       <div className="flex-1 min-w-0">
         <p className="flex items-center gap-1.5 text-ink text-sm font-semibold truncate">
-          @{user.username}
+          <Link
+            href={`/profile/${user.username}`}
+            className="after:absolute after:inset-0 after:rounded-3xl hover:underline"
+          >
+            @{user.username}
+          </Link>
           {user.is_verified > 0 && <VerifiedBadge size={14} level={user.is_verified} />}
         </p>
         {user.bio && <p className="text-ink-muted text-xs truncate">{user.bio}</p>}
-        {user.is_private && !user.bio && <p className="text-ink-faint text-xs">Private account</p>}
+        {user.is_private && !user.bio && <p className="text-ink-muted text-xs">Private account</p>}
       </div>
       {loggedIn && !user.is_self && (
-        <span
+        <button
           onClick={toggleFollow}
-          role="button"
-          className={`btn shrink-0 px-3 py-1.5 text-xs ${busy ? "opacity-50" : ""} ${
+          disabled={busy}
+          aria-pressed={following || requested}
+          aria-label={`${following ? "Unfollow" : requested ? "Cancel follow request to" : "Follow"} @${user.username}`}
+          className={`btn relative z-10 shrink-0 px-3 py-1.5 text-xs ${busy ? "opacity-50" : ""} ${
             following || requested
               ? "btn-ghost"
               : "btn-primary"
           }`}
         >
           {following ? "Following" : requested ? "Requested" : "Follow"}
-        </span>
+        </button>
       )}
-    </button>
+    </div>
   )
 }
 
 // Memoized result lists: a keystroke re-renders the page (query state), but
 // these skip until their fetched arrays actually change, so rows (and the
 // UserRow follow state) are never remounted or reconciled mid-typing.
+//
+// The post link and the author link are siblings, not an anchor nested inside
+// a button (A11Y-009). The post link stretches over the whole card through its
+// ::after overlay; the author link sits above it on its own z-layer, so both
+// are focusable and neither swallows the other's activation.
 const PostResultsList = memo(function PostResultsList({ results }: { results: Post[] }) {
-  const router = useRouter()
   return (
-    <div className="flex flex-col gap-2 pt-2">
+    <ul className="flex flex-col gap-2 pt-2">
       {results.map((post) => (
-        <button
+        <li
           key={post.id}
-          onClick={() => router.push(`/post/${post.id}`)}
-          className="w-full text-left card px-4 py-3 cursor-pointer hover:bg-white/[0.07] transition-colors duration-150"
+          className="relative card px-4 py-3 hover:bg-white/[0.07] transition-colors duration-150"
         >
           <FormatBadge format={post.format} />
-          <p className="text-ink font-serif font-medium text-[15px] mt-0.5 line-clamp-2">{post.title}</p>
-          <p className="flex items-center gap-1 text-ink-faint text-xs mt-0.5">
+          <p className="text-ink font-serif font-medium text-[15px] mt-0.5 line-clamp-2">
+            <Link href={`/post/${post.id}`} className="after:absolute after:inset-0 after:rounded-3xl">
+              {post.title}
+            </Link>
+          </p>
+          <p className="flex items-center gap-1 text-ink-muted text-xs mt-0.5">
             {post.is_user_content && post.author_username ? (
-              <Link href={`/profile/${post.author_username}`} className="hover:text-ink-dim transition-colors" onClick={(e) => e.stopPropagation()}>
+              <Link href={`/profile/${post.author_username}`} className="relative z-10 hover:text-ink-dim transition-colors">
                 @{post.author_username}
               </Link>
             ) : "Deepscroll"}
             {post.is_user_content && post.author_is_verified != null && post.author_is_verified > 0 && <VerifiedBadge size={14} level={post.author_is_verified} />}
           </p>
           <Snippet post={post} />
-        </button>
+        </li>
       ))}
-    </div>
+    </ul>
   )
 })
 
@@ -147,11 +163,13 @@ const UserResultsList = memo(function UserResultsList({
   loggedIn: boolean
 }) {
   return (
-    <div className="flex flex-col gap-2 pt-2">
+    <ul className="flex flex-col gap-2 pt-2">
       {users.map((u) => (
-        <UserRow key={u.username} user={u} loggedIn={loggedIn} />
+        <li key={u.username}>
+          <UserRow user={u} loggedIn={loggedIn} />
+        </li>
       ))}
-    </div>
+    </ul>
   )
 })
 
@@ -279,6 +297,9 @@ export default function SearchPage() {
     <div className="h-[100dvh] bg-surface-0 flex justify-center">
       <div className="w-full max-w-[430px] h-[100dvh] relative flex flex-col">
 
+        {/* The search field is the header; sr-only h1 names the page. */}
+        <h1 className="sr-only">Search</h1>
+
         {/* Top bar: back + search input + post-search switcher */}
         <div className="shrink-0 z-20 bg-surface-0 px-3 pt-3 pb-2">
           <div className="flex items-center gap-2">
@@ -301,6 +322,7 @@ export default function SearchPage() {
               <input
                 ref={inputRef}
                 type="search"
+                aria-label="Search posts, books and people"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search posts, books, people…"
@@ -330,6 +352,8 @@ export default function SearchPage() {
               onSelect={selectTab}
               tabRefs={tabRefs}
               indicatorRef={indicatorRef}
+              idBase={SEARCH_TABS_ID}
+              ariaLabel="Search results"
             />
           )}
 
@@ -343,6 +367,7 @@ export default function SearchPage() {
                   <button
                     key={chip.value}
                     onClick={() => setFormatFilter(chip.value)}
+                    aria-pressed={isActive}
                     className={`chip shrink-0 px-3 py-1 text-xs ${
                       isActive
                         ? style
@@ -367,7 +392,7 @@ export default function SearchPage() {
           {/* Skeletons appear only when there is nothing to show yet; with
               previous results on screen they stay visible while the debounced
               refetch is in flight and swap in place when it lands. */}
-          <div className={pageClass}>
+          <div className={pageClass} {...tabPanelProps(SEARCH_TABS_ID, 0, activeIndex === 0)}>
             {!hasQuery ? (
               idleMessage
             ) : postsLoading && results === null ? (
@@ -386,7 +411,7 @@ export default function SearchPage() {
             )}
           </div>
 
-          <div className={pageClass}>
+          <div className={pageClass} {...tabPanelProps(SEARCH_TABS_ID, 1, activeIndex === 1)}>
             {!hasQuery ? (
               idleMessage
             ) : usersLoading && userResults === null ? (
