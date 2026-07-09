@@ -1,0 +1,222 @@
+{
+  "tags": [
+    "economics",
+    "energy-tech",
+    "critical-thinking"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Induced demand"
+      },
+      "featured": true
+    },
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Price elasticity of demand"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "Steam engines that used 75% less coal for the same work helped Britain burn more coal than ever before.",
+    "teasers": [
+      "One economist saw it coming in 1865",
+      "Why cheaper light did not save energy",
+      "The trap inside every efficiency promise"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "Steam engines that used 75% less coal for the same work helped Britain burn more coal than ever before."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 0 400 178' xmlns='http://www.w3.org/2000/svg' fill='none'><rect x='96' y='14' width='208' height='34' rx='17' stroke='var(--accent)' stroke-width='2' fill='var(--accent)' fill-opacity='0.10'/><text x='200' y='36' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='700' text-anchor='middle'>Total coal use rises</text><g stroke='currentColor' stroke-width='2.5'><rect x='22' y='100' width='104' height='58' rx='14'/><rect x='148' y='100' width='104' height='58' rx='14'/><rect x='274' y='100' width='104' height='58' rx='14'/></g><g stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' opacity='0.55'><path d='M126 129 h22'/><path d='M148 129 l-12 -6 m12 6 l-12 6'/><path d='M252 129 h22'/><path d='M274 129 l-12 -6 m12 6 l-12 6'/></g><g font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle' fill='currentColor'><text x='74' y='134'>Cheaper power</text><text x='200' y='134'>More engines</text><text x='326' y='134'>More coal</text></g></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "Buy a car that sips less fuel and you burn less fuel. For one car, that holds. At the scale of an economy, it inverts. Cheaper power does not sit still. When a machine costs less to run, more people run one, and whole industries grow around it. The extra machines burn past whatever the first ones saved."
+    },
+    {
+      "type": "story",
+      "order": 7,
+      "content": {
+        "body": "In 1865 a 29-year-old lecturer in Manchester, William Stanley Jevons, published *The Coal Question*. Britain ran on coal, and Jevons warned the cheap seams would run out. The sharp turn was his answer to the obvious fix. Build more efficient engines, he argued, and the country would burn through its coal faster than before. “It is wholly a confusion of ideas to suppose that the economical use of fuel is equivalent to a diminished consumption,” he wrote. “The very contrary is the truth.” His argument sat mostly ignored for over a century. It returned in the 1980s. Two economists, Daniel Khazzoom and Leonard Brookes, reached the same verdict for modern energy. Harry Saunders gave the idea a name in 1992, the Khazzoom-Brookes postulate.",
+        "key_figures": [
+          {
+            "name": "William Stanley Jevons",
+            "role": "First to state the paradox",
+            "one_line": "In 1865 he argued that using coal more efficiently would raise Britain's total coal consumption, not lower it.",
+            "lifespan": "1835-1882",
+            "birth_year": 1835,
+            "featured": true,
+            "image_url": "https://commons.wikimedia.org/wiki/Special:FilePath/PSM_V11_D660_William_Stanley_Jevons.jpg",
+            "image_attribution": "Unknown author, “William Stanley Jevons”, public domain (Popular Science Monthly, 1877, via Wikimedia Commons)"
+          }
+        ]
+      }
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "Cheaper light did not shrink the energy bill",
+          "body": "Lighting is the cleanest case on record. Jeff Tsao and colleagues traced three centuries of it across five lighting technologies, from tallow candles through gas lamps to LEDs. A unit of light grew thousands of times cheaper. People did not pocket the difference. They lit streets, offices, billboards, screens, the night. The energy spent on lighting kept rising as the cost fell.",
+          "visual_svg": "<svg viewBox='0 34 400 216' xmlns='http://www.w3.org/2000/svg' fill='none'><g stroke='currentColor' stroke-width='2' stroke-linecap='round' opacity='0.5'><line x1='58' y1='40' x2='58' y2='210'/><line x1='58' y1='210' x2='366' y2='210'/></g><path d='M74 66 C165 118, 255 172, 348 196' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' opacity='0.7'/><path d='M74 200 C165 186, 255 116, 348 58' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><text x='150' y='96' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.75' text-anchor='start'>Cost of light</text><text x='258' y='80' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>Light used</text><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'><text x='74' y='230'>1700</text><text x='348' y='230'>2000</text></g></svg>"
+        },
+        {
+          "title": "Add lanes and the traffic fills them",
+          "body": "The same shape shows up on the highway. Gilles Duranton and Matthew Turner measured lane-kilometers and driving across US cities, and found the two rise almost one for one. Build 10% more road and you get roughly 10% more driving. The new lanes fill until they are as jammed as the old. Faster travel is cheaper travel, so people take more trips and move farther from where they work.",
+          "visual_svg": "<svg viewBox='0 34 400 216' xmlns='http://www.w3.org/2000/svg' fill='none'><g stroke='currentColor' stroke-width='2' stroke-linecap='round' opacity='0.5'><line x1='62' y1='40' x2='62' y2='210'/><line x1='62' y1='210' x2='362' y2='210'/></g><line x1='74' y1='198' x2='344' y2='58' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><text x='250' y='108' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>rise in step</text><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.7'><text x='212' y='238' text-anchor='middle'>More lanes</text><text x='28' y='125' text-anchor='middle' transform='rotate(-90 28 125)'>More driving</text></g></svg>"
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "Efficiency is not wasted here. But efficiency and conservation are different goals, and reaching one does not hand you the other. Make a resource cheaper to use and people use more of it, so the total keeps climbing as long as the world wants more of what it buys. If the aim is less coal, or less carbon, efficiency has to run beside something that caps the total or prices it. Alone, it lowers the cost and nothing more. That worry now trails every promise that a more efficient data center will draw less power."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "Why did more efficient steam engines go along with Britain burning more coal, not less?",
+          "options": [
+            "The new engines secretly wasted fuel in other ways",
+            "Cheaper power made steam worth using in far more places, so total use grew",
+            "The coal being mined was of lower quality",
+            "The efficiency gains were too small to matter"
+          ],
+          "answer_index": 1,
+          "explanation": "Lower cost per unit of work made steam pay off in industries and places it could not reach before. The extra machines burned more coal than the per-engine savings held back."
+        },
+        {
+          "question": "Across three centuries, what happened to the energy used for lighting as bulbs grew more efficient?",
+          "options": [
+            "It fell in proportion to the efficiency gains",
+            "It stayed roughly flat",
+            "It rose, because cheaper light was used far more",
+            "It fell only after electric light arrived"
+          ],
+          "answer_index": 2,
+          "explanation": "Each leap in efficiency was met with much more light in more places, so the total energy poured into lighting climbed even as each lumen got cheaper."
+        },
+        {
+          "question": "A household installs a more efficient furnace. What does the evidence on direct rebound suggest happens?",
+          "options": [
+            "Its gas use rises above the old level",
+            "It saves nothing at all",
+            "It still saves, though some of the saving is spent on a warmer home",
+            "It saves exactly the engineering estimate, with no rebound"
+          ],
+          "answer_index": 2,
+          "explanation": "Direct rebound for home heating usually runs about 10% to 30%, so the efficient furnace still cuts gas use, though by less than the raw estimate promised."
+        },
+        {
+          "question": "Does the paradox mean that pursuing efficiency is a mistake?",
+          "options": [
+            "No, since efficiency delivers real value but does not by itself shrink total resource use",
+            "Yes, efficiency always backfires and should be avoided",
+            "Yes, because it only ever helps the wealthy",
+            "No, because rebound never happens"
+          ],
+          "answer_index": 0,
+          "explanation": "Cheaper light, heat, and travel made people better off, which is the point of efficiency. The paradox is only about total fuel used, not about whether the gains were worth having."
+        },
+        {
+          "question": "To bring its total coal use down, what does the paradox suggest a country must pair efficiency with?",
+          "options": [
+            "Nothing more, since efficiency alone is enough",
+            "A measure that caps the total or raises the price",
+            "Faster overall economic growth",
+            "A cheaper supply of coal"
+          ],
+          "answer_index": 1,
+          "explanation": "Efficiency lowers the cost of use and invites more of it, so bringing the total down needs a cap or a price signal working alongside it."
+        },
+        {
+          "question": "Jevons argued in 1865 that using coal more efficiently would...",
+          "options": [
+            "permanently solve Britain's fears about its coal supply",
+            "have no real effect on how much coal was demanded",
+            "only help if paired with the opening of new mines",
+            "increase Britain's total coal consumption"
+          ],
+          "answer_index": 3,
+          "explanation": "He held that cheaper, more efficient use would widen demand across the economy, drawing the coal down faster rather than stretching it."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "A more efficient machine always means less fuel burned overall.",
+          "reality": "Only when demand holds still. When cheaper operation pulls in new users and new uses, the extra use can outrun the savings."
+        },
+        {
+          "myth": "So chasing efficiency is pointless, or even harmful.",
+          "reality": "It made light, heat, and travel far cheaper and more available, which is most of what progress means. The paradox is about total fuel, not about whether the gains were worth having."
+        },
+        {
+          "myth": "Rebound wipes out the savings every time.",
+          "reality": "For a home furnace or a fuel-sipping car, measured rebound usually runs 10% to 30%, so the efficient version still saves. The full reversal shows up economy-wide and over long spans."
+        }
+      ]
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Jevons paradox",
+          "url": "https://en.wikipedia.org/wiki/Jevons_paradox",
+          "type": "wikipedia"
+        },
+        {
+          "label": "W. S. Jevons, The Coal Question (1865), full text at the Library of Economics and Liberty",
+          "url": "https://www.econlib.org/library/YPDBooks/Jevons/jvnCQ.html",
+          "type": "book"
+        },
+        {
+          "label": "Watt steam engine",
+          "url": "https://en.wikipedia.org/wiki/Watt_steam_engine",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Khazzoom-Brookes postulate",
+          "url": "https://en.wikipedia.org/wiki/Khazzoom%E2%80%93Brookes_postulate",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Tsao et al., Solid-state lighting: an energy-economics perspective, J. Phys. D: Appl. Phys. 43 (2010) 354001",
+          "url": "http://web.mit.edu/2.813/www/readings/Lighting%20Tsao%20copy.pdf",
+          "type": "paper"
+        },
+        {
+          "label": "Duranton & Turner, The Fundamental Law of Road Congestion, NBER Working Paper 15376 (2011)",
+          "url": "https://www.nber.org/papers/w15376",
+          "type": "paper"
+        },
+        {
+          "label": "Sorrell (UKERC), The Rebound Effect: an assessment of the evidence (2007)",
+          "url": "https://ukerc.ac.uk/project/the-rebound-effect-report/",
+          "type": "article"
+        }
+      ]
+    }
+  ]
+}
