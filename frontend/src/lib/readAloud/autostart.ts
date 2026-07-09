@@ -18,8 +18,13 @@ export function consumeAutoRead(postId: number): boolean {
   try {
     const v = sessionStorage.getItem(KEY)
     if (v === null) return false
+    // Remove the key ONLY when it is for this post. Removing it before the check
+    // let any other early consumer (React StrictMode's double-invoke, an
+    // intermediate page) delete the request, so the matching post then saw
+    // nothing and never auto-started.
+    if (v !== String(postId)) return false
     sessionStorage.removeItem(KEY)
-    return v === String(postId)
+    return true
   } catch {
     return false
   }

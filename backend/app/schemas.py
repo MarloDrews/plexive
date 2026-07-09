@@ -1,8 +1,30 @@
+import json
 import os
 from datetime import datetime
 from typing import Annotated, List, Literal, Union
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+
+# Shape caps on user-submitted post content (M127/SEC-013). Generous bounds that
+# stop a single post carrying multi-MB deeply nested JSON (which reading-time,
+# SVG re-sanitization, search and scoring would then walk repeatedly), without
+# constraining the content model. Seed content bypasses the API and these caps.
+MAX_SECTIONS = 40
+MAX_JSON_DEPTH = 12
+MAX_FEED_CARD_BYTES = 1 * 1024 * 1024
+MAX_SECTIONS_BYTES = 5 * 1024 * 1024
+
+
+def _json_depth(obj, _depth: int = 1) -> int:
+    """Nesting depth of a JSON-like value; stops descending once the cap is
+    exceeded so a pathological payload cannot make this itself expensive."""
+    if _depth > MAX_JSON_DEPTH:
+        return _depth
+    if isinstance(obj, dict):
+        return max((_json_depth(v, _depth + 1) for v in obj.values()), default=_depth)
+    if isinstance(obj, list):
+        return max((_json_depth(v, _depth + 1) for v in obj), default=_depth)
+    return _depth
 
 
 # ---------------------------------------------------------------------------
@@ -22,10 +44,38 @@ class UserOut(BaseModel):
     avatar_url: str | None
 
 
+class PublicUserOut(BaseModel):
+    # A projection of another user's record with no email or internal id, for
+    # responses ABOUT a non-self user (e.g. the admin verify endpoint). UserOut
+    # with its email stays for self-scoped responses only (M116/SEC-002).
+    model_config = ConfigDict(from_attributes=True)
+
+    username: str
+    is_verified: int
+    avatar_url: str | None
+    bio: str | None
+
+
+# Upper bound on a single view's dwell (4 hours in ms). A forged duration_ms
+# cannot overflow the Integer column or dominate the engagement average (M119).
+MAX_DURATION_MS = 4 * 60 * 60 * 1000
+
+
 class EventIn(BaseModel):
     post_id: int
-    event_type: str
+    # Allowlist: only the three events the client ever sends. A free-form string
+    # let junk event types into the stats aggregations (M119/SEC-005).
+    event_type: Literal["view", "like", "unlike"]
     duration_ms: int | None = None
+
+    @field_validator("duration_ms")
+    @classmethod
+    def clamp_duration(cls, v: int | None) -> int | None:
+        # Clamp rather than reject so one odd value does not 422 the whole batch,
+        # while still bounding storage and the feed-scoring average.
+        if v is None:
+            return v
+        return max(0, min(v, MAX_DURATION_MS))
 
 
 class InterestOut(BaseModel):
@@ -98,10 +148,26 @@ class QuizItem(BaseModel):
         return v
 
 
+def _require_web_url(value: str) -> str:
+    """Allow only http(s) URLs for user-controlled links (M123/SEC-009), so a
+    javascript:/data: scheme can never be stored and later rendered into an href.
+    """
+    v = value.strip()
+    low = v.lower()
+    if not (low.startswith("http://") or low.startswith("https://")):
+        raise ValueError("url must start with http:// or https://")
+    return v
+
+
 class SourceItem(BaseModel):
     label: str
     url: str
     type: Literal["wikipedia", "paper", "book", "article", "database"]
+
+    @field_validator("url")
+    @classmethod
+    def validate_url(cls, v: str) -> str:
+        return _require_web_url(v)
 
 
 class AuthorContextContent(BaseModel):
@@ -109,6 +175,11 @@ class AuthorContextContent(BaseModel):
     image_url: str | None = None
     image_attribution: str | None = None
     wikipedia_url: str | None = None
+
+    @field_validator("wikipedia_url")
+    @classmethod
+    def validate_wikipedia_url(cls, v: str | None) -> str | None:
+        return _require_web_url(v) if v else v
 
 
 # ---------------------------------------------------------------------------
@@ -306,7 +377,32 @@ class PostCreate(BaseModel):
         return v
 
     @model_validator(mode="after")
-    def validate_books_sections(self) -> "PostCreate":
+    def validate_sections(self) -> "PostCreate":
+        # No format allows two sections of the same type: consumers read the
+        # first match (quiz answering, search), so questions in a duplicate
+        # section would render but never be answerable.
+        if len(self.sections) > MAX_SECTIONS:
+            raise ValueError(f"too many sections (max {MAX_SECTIONS})")
+        types = [s.type for s in self.sections]
+        duplicates = sorted({t for t in types if types.count(t) > 1})
+        if duplicates:
+            raise ValueError(f"duplicate section type(s): {', '.join(duplicates)}")
+        # Serialize sections once and reuse for the size/depth caps and the
+        # image_url check below.
+        section_dicts = [s.model_dump() for s in self.sections]
+        # Size + depth caps (M127/SEC-013): bound abuse without touching the model.
+        if len(json.dumps(self.feed_card, default=str).encode("utf-8")) > MAX_FEED_CARD_BYTES:
+            raise ValueError("feed_card is too large")
+        if len(json.dumps(section_dicts, default=str).encode("utf-8")) > MAX_SECTIONS_BYTES:
+            raise ValueError("sections are too large")
+        if _json_depth(self.feed_card) > MAX_JSON_DEPTH or _json_depth(section_dicts) > MAX_JSON_DEPTH:
+            raise ValueError("content is nested too deeply")
+        # Validate image_url in sections for EVERY format (M122/SEC-008): user
+        # content must reference our upload storage, not arbitrary external hosts.
+        # This used to run only in the books branch below, leaving the other six
+        # formats able to embed any image_url.
+        for section_dict in section_dicts:
+            _check_image_urls(section_dict)
         if self.format != "books":
             return self
         # Validate feed card shape for books
@@ -317,10 +413,6 @@ class PostCreate(BaseModel):
         if missing:
             missing_list = ", ".join(sorted(missing))
             raise ValueError(f"section(s) required for Books format: {missing_list}")
-        # Validate image_url in sections: user content must use /uploads/ prefix
-        for section in self.sections:
-            section_dict = section.model_dump()
-            _check_image_urls(section_dict)
         return self
 
 
@@ -361,10 +453,11 @@ class PostOut(BaseModel):
     feed_card: dict
     sections: list[dict]
     tags: List[str] = []
-    connections: List[dict] = []
-    # Server-resolved featured edges for the detail page. Raw connections stay
-    # above as-is; this is the resolved projection so the frontend resolves
-    # nothing. Empty on list endpoints (only GET /posts/{id} populates it).
+    # Server-resolved featured edges for the detail page: the resolved
+    # projection so the frontend resolves nothing. The raw authoring-layer
+    # connections array stays on the ORM row (seed pipeline input) but is not
+    # serialized -- no client reads it. Empty on list endpoints (only
+    # GET /posts/{id} populates it).
     read_next: List[ReadNextItem] = []
     author_id: int | None = None
     author_username: str | None = None
@@ -375,14 +468,26 @@ class PostOut(BaseModel):
     is_user_content: bool = False
     like_count: int = 0
     comment_count: int = 0
-    # Computed from the post's text at serialization (attach_counts), not stored.
-    # Survives PostListOut.drop_sections so feed cards still get the real value.
+    # Computed from the post's text on write and stored on the row
+    # (models.Post.reading_minutes), so it survives PostListOut.drop_sections
+    # and list endpoints never walk the sections JSON.
     reading_minutes: int = 1
     interests: List[str] = []
     # Display name of the primary category (tags[0]), attached by attach_counts
     # from the post's own interests so the card eyebrow and the interest chips
     # label the same slug identically. None when tags[0] is absent/unmapped.
     primary_category_name: str | None = None
+
+    @field_validator("tags", mode="before")
+    @classmethod
+    def clean_tags(cls, v):
+        # tags is arbitrary JSON on seed/legacy rows. Without this, a row whose
+        # tags is not a list of strings raises ResponseValidationError, which
+        # 500s the ENTIRE list response (feed/search/etc.), not just that post.
+        # Coerce to a clean list[str] so one bad row cannot take down the list.
+        if not isinstance(v, list):
+            return []
+        return [t for t in v if isinstance(t, str)]
 
     @field_validator("interests", mode="before")
     @classmethod

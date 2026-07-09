@@ -11,8 +11,7 @@ import {
   Poppins,
 } from "next/font/google";
 import "./globals.css";
-import "katex/dist/katex.min.css";
-import Providers from "./components/Providers";
+import Providers from "@/components/Providers";
 
 // "Lamplight" type system (docs/DESIGN.md): Newsreader is the serif voice of
 // the content, Source Sans 3 is quiet UI chrome, Geist Mono renders data.
@@ -41,19 +40,25 @@ const geistMono = Geist_Mono({
 // inscriptional Roman-capital default (renders capitals by design).
 // All namespaced under --font-cover-* so none collides with a Tailwind theme
 // token (e.g. --font-sans).
-const coverSerif = Cinzel({ variable: "--font-cover-serif", subsets: ["latin"] });
-const coverDidone = Playfair_Display({ variable: "--font-cover-didone", subsets: ["latin"] });
-const coverGaramond = EB_Garamond({ variable: "--font-cover-garamond", subsets: ["latin"] });
+// preload: false on every cover font: they are used only inside baked book
+// cover SVGs, so preloading their files on every route (login, chat, stats,
+// ...) only competes with the LCP request. The CSS variables keep working;
+// the files load on first use.
+const coverSerif = Cinzel({ variable: "--font-cover-serif", subsets: ["latin"], preload: false });
+const coverDidone = Playfair_Display({ variable: "--font-cover-didone", subsets: ["latin"], preload: false });
+const coverGaramond = EB_Garamond({ variable: "--font-cover-garamond", subsets: ["latin"], preload: false });
 const coverSlab = Zilla_Slab({
   variable: "--font-cover-slab",
   subsets: ["latin"],
   weight: ["400", "500", "700"],
+  preload: false,
 });
-const coverSans = Inter({ variable: "--font-cover-sans", subsets: ["latin"] });
+const coverSans = Inter({ variable: "--font-cover-sans", subsets: ["latin"], preload: false });
 const coverGeometric = Poppins({
   variable: "--font-cover-geometric",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
+  preload: false,
 });
 
 export const metadata: Metadata = {

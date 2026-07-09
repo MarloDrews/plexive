@@ -1,0 +1,224 @@
+{
+  "tags": [
+    "microbiology",
+    "medicine",
+    "biology"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Gut microbiome"
+      },
+      "featured": true
+    },
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Antibiotic resistance"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "One course of antibiotics can disrupt your gut microbiome for months, and some species may never return.",
+    "teasers": [
+      "The gut bacteria that never come back",
+      "What antibiotics wipe out besides the infection",
+      "Why probiotics can backfire after a course"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "One course of antibiotics can disrupt your gut microbiome for months, and some species may never return."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 46 400 232' xmlns='http://www.w3.org/2000/svg' fill='none'><line x1='44' y1='250' x2='372' y2='250' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><line x1='48' y1='70' x2='366' y2='70' stroke='currentColor' stroke-width='1.5' opacity='0.35' stroke-dasharray='6 6'/><text x='122' y='62' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='middle'>starting community</text><path d='M52 70 L96 214 C150 200 200 118 262 108 C302 104 342 106 362 106' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/><line x1='352' y1='70' x2='352' y2='106' stroke='var(--accent)' stroke-width='1.5' opacity='0.6' stroke-dasharray='4 4'/><text x='300' y='92' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>some never return</text><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'><text x='96' y='268'>antibiotics</text><text x='232' y='268'>6 weeks</text><text x='352' y='268'>6 months</text></g></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "Antibiotics do their job fast. A course clears the infection in a matter of days, and you feel better. But the drug does not aim. It clears out whole populations of the harmless and helpful bacteria in your gut along with the target, and that side of the ledger takes far longer to settle. Most of the community grows back over weeks to months. Some of it may not grow back at all."
+    },
+    {
+      "type": "tangible",
+      "order": 4,
+      "content": {
+        "items": [
+          "Your gut alone is home to tens of trillions of bacteria.",
+          "Body-wide, you carry roughly as many bacterial cells as cells of your own.",
+          "They come from hundreds of species, so even a handful lost for good leaves a permanent gap."
+        ],
+        "visual_svg": "<svg viewBox='0 92 400 128' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='108' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>cells in your body</text><rect x='96' y='130' width='176' height='26' rx='8' fill='currentColor' opacity='0.5'/><text x='84' y='148' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' text-anchor='end'>you</text><text x='282' y='148' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' text-anchor='start'>~30T</text><rect x='96' y='172' width='224' height='26' rx='8' fill='var(--accent)'/><text x='84' y='190' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' text-anchor='end'>microbes</text><text x='330' y='190' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' text-anchor='start'>~38T</text></svg>"
+      }
+    },
+    {
+      "type": "how_we_know",
+      "order": 5,
+      "content": "You can read the wreckage in the DNA. Sequence everything in a stool sample before a course of antibiotics, then again for months after, and the collapse and slow regrowth show up species by species. One study using two courses of ciprofloxacin found a fast crash, a partial recovery, and a community that never quite matched the original. Another gave healthy men a four-day cocktail of strong antibiotics and tracked them for half a year. Most of the diversity returned within about six weeks. But nine common species that every man had started with were still missing at six months."
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "An emptied gut invites an invader",
+          "body": "A crowded gut is a defended gut. Hundreds of resident species compete for space and food, and that competition holds dangerous opportunists in check. Clear the residents with antibiotics and you open the field. The classic case is Clostridioides difficile, better known as C. diff, which plenty of people carry harmlessly. With its rivals gone, it can bloom and release toxins that inflame the colon. The result is a stubborn, sometimes dangerous diarrhea, usually treated with still more antibiotics.",
+          "visual_svg": "<svg viewBox='0 46 400 224' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='64' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>an emptied niche fills up</text><line x1='200' y1='84' x2='200' y2='244' stroke='currentColor' stroke-width='1.5' opacity='0.3' stroke-dasharray='6 6'/><g fill='currentColor' opacity='0.55'><circle cx='62' cy='118' r='5'/><circle cx='96' cy='106' r='5'/><circle cx='130' cy='122' r='5'/><circle cx='160' cy='112' r='5'/><circle cx='74' cy='150' r='5'/><circle cx='106' cy='144' r='5'/><circle cx='140' cy='158' r='5'/><circle cx='168' cy='146' r='5'/><circle cx='68' cy='192' r='5'/><circle cx='102' cy='186' r='5'/><circle cx='138' cy='200' r='5'/><circle cx='162' cy='182' r='5'/></g><circle cx='292' cy='150' r='30' fill='var(--accent)'/><g fill='currentColor' opacity='0.55'><circle cx='250' cy='108' r='5'/><circle cx='340' cy='198' r='5'/></g><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.75' text-anchor='middle'><text x='112' y='250'>crowded gut</text><text x='292' y='250'>C. diff blooms</text></g></svg>"
+        },
+        {
+          "title": "The gut grows back a different community",
+          "body": "What grows back is often a different community than the one that was there before. It can return to roughly its old size and diversity while sitting in a new arrangement, short a few members and over-supplied with others. The missing ones are not always minor. Among the casualties are butyrate producers, which feed the cells lining your colon, and Bifidobacterium, a group tied to gut health. Once a species is gone from your gut and nothing reintroduces it, there is nowhere for it to return from."
+        },
+        {
+          "title": "Antibiotics leave resistance behind",
+          "body": "The bacteria that survive a course of antibiotics are, by definition, the ones that could. As the gut regrows, it comes back carrying more antibiotic-resistance genes than before, a bloom in what researchers call the “resistome”. Those genes do not stay put. Gut bacteria swap DNA readily, passing resistance to their neighbors, so a course aimed at one infection can quietly stock your gut with defenses against the next. It is one way routine antibiotic use feeds resistance far beyond the bug being treated."
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "An antibiotic course can look like a clean transaction: take the pills, kill the infection, move on. The infection part is real, and usually worth it. What has come into focus is the rest of the bill. A course reaches far past its target, thins out an ecosystem you depend on, and leaves it changed in ways that can outlast the illness by months, sometimes for good. Antibiotics themselves are not the problem here. They remain one of medicine's great tools. The point is narrower: use them only when they are truly needed, and treat the gut's slow, patchy recovery as real rather than assuming it bounces back the day the pills stop."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "Why is clearing the infection not the whole story of a course of antibiotics?",
+          "options": [
+            "Antibiotics never actually kill the target bacteria",
+            "The infection always comes back within days",
+            "The drug also kills beneficial gut bacteria, which take weeks to months to recover, and some never do",
+            "Antibiotics only work on viruses"
+          ],
+          "answer_index": 2,
+          "explanation": "A course wipes out harmless and helpful gut bacteria along with the pathogen. Rebuilding that community takes far longer than clearing the infection, and parts of it may not come back at all."
+        },
+        {
+          "question": "In the study that gave healthy men a strong antibiotic cocktail, what happened over the next six months?",
+          "options": [
+            "The gut microbiome never recovered at all",
+            "Most diversity returned within weeks, but nine common species were still missing at six months",
+            "The microbiome fully recovered within a day",
+            "The men all developed new infections"
+          ],
+          "answer_index": 1,
+          "explanation": "Diversity bounced back to near-baseline within about six weeks, yet several common species that every subject had started with were still undetectable half a year later."
+        },
+        {
+          "question": "Why does saying the microbiome has recovered not mean it is back to normal?",
+          "options": [
+            "Recovery takes exactly one week for everyone",
+            "The microbiome cannot change at all",
+            "Only the number of bacteria matters, not the species",
+            "It can return to a similar size and diversity while being a different community, with some species permanently missing"
+          ],
+          "answer_index": 3,
+          "explanation": "The community often regrows to roughly its old size in a new arrangement. Diversity can look restored while specific species stay gone for good."
+        },
+        {
+          "question": "How can a course of antibiotics spread resistance beyond the infection it treats?",
+          "options": [
+            "The survivors carry resistance genes and swap DNA with neighboring bacteria, enriching the gut's resistome",
+            "Antibiotics create brand-new bacteria",
+            "Resistance genes are destroyed by the drug",
+            "It cannot. Resistance stays only in the target bacteria"
+          ],
+          "answer_index": 0,
+          "explanation": "The bacteria left standing are the resistant ones. As the gut regrows it carries more resistance genes, and because gut microbes trade DNA freely, those genes spread to their neighbors."
+        },
+        {
+          "question": "Why can clearing the gut with antibiotics let Clostridioides difficile bloom?",
+          "options": [
+            "Antibiotics feed C. diff directly",
+            "The resident species that normally out-compete it are wiped out, opening the niche",
+            "C. diff is immune to the immune system",
+            "C. diff only grows when the gut is full"
+          ],
+          "answer_index": 1,
+          "explanation": "A crowded gut keeps C. diff in check through competition. Remove the competitors and the niche opens, letting the bug bloom and release colon-inflaming toxins."
+        },
+        {
+          "question": "Is taking probiotics after antibiotics a proven way to restore your gut microbiome?",
+          "options": [
+            "Yes, they always rebuild the microbiome quickly",
+            "Yes, but only the expensive brands work",
+            "It does not matter, since the gut recovers instantly anyway",
+            "No; in one careful study probiotics delayed the native microbiome's return, and the evidence is mixed"
+          ],
+          "answer_index": 3,
+          "explanation": "The intuitive fix is not settled science. In one study, probiotics slowed the return of the person's own gut community compared with letting it recover on its own."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "Once the antibiotics are done, your gut is back to normal.",
+          "reality": "Diversity often returns within weeks to months, but the exact community may not. Some species can stay missing indefinitely, leaving a gut that is recovered without being restored."
+        },
+        {
+          "myth": "Take probiotics after antibiotics to rebuild your microbiome.",
+          "reality": "The evidence is mixed. In one careful trial, giving probiotics slowed the gut's own community from returning, compared with leaving it to recover on its own."
+        },
+        {
+          "myth": "Antibiotics only kill the bacteria causing the infection.",
+          "reality": "Broad-spectrum antibiotics hit many bystander species across the gut. That collateral damage is exactly why the microbiome takes so long to recover."
+        }
+      ]
+    },
+    {
+      "type": "open_questions",
+      "order": 12,
+      "content": {
+        "body": "The real unknown is what the long disruption does over the years. Nobody is sure. Short courses reshape the gut, and repeated or early-life exposure reshapes it more, but tying those shifts to specific later conditions has been hard to prove. How best to rebuild the gut is also unsettled. Fecal transplants restore diversity fastest, but they are no casual remedy.",
+        "items": [
+          "Do antibiotic-driven changes in childhood raise the risk of later immune or metabolic disease?",
+          "Is there a safe, simple way to help the gut fully recover, short of a fecal transplant?"
+        ]
+      }
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Palleja A et al. Recovery of gut microbiota of healthy adults following antibiotic exposure. Nature Microbiology 2018;3:1255-1265",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/30349083/",
+          "type": "paper"
+        },
+        {
+          "label": "Dethlefsen L, Relman DA. Incomplete recovery and individualized responses of the human distal gut microbiota to repeated antibiotic perturbation. PNAS 2011;108:4554-4561",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/20847294/",
+          "type": "paper"
+        },
+        {
+          "label": "Suez J et al. Post-antibiotic gut mucosal microbiome reconstitution is impaired by probiotics and improved by autologous FMT. Cell 2018;174:1406-1423 (Suez Lab summary)",
+          "url": "https://www.suezlab.org/highlights/cell2018b",
+          "type": "paper"
+        },
+        {
+          "label": "Antibiotics and gut microbiome disruption and recovery (review, 2025)",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12165447/",
+          "type": "paper"
+        },
+        {
+          "label": "Sender R, Fuchs S, Milo R. Revised estimates for the number of human and bacteria cells in the body. PLoS Biol 2016;14:e1002533",
+          "url": "https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.1002533",
+          "type": "paper"
+        }
+      ]
+    }
+  ]
+}

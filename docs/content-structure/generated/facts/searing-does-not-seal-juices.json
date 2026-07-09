@@ -1,0 +1,217 @@
+{
+  "tags": [
+    "food-science",
+    "chemistry",
+    "everyday-science"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "The Maillard reaction"
+      },
+      "featured": true
+    },
+    {
+      "format": "books",
+      "ref": {
+        "title": "On Food and Cooking",
+        "author": "Harold McGee"
+      },
+      "featured": true
+    }
+  ],
+  "feed_card": {
+    "headline": "The crust on a seared steak is flavor, not a seal: seared meat loses as much moisture as unseared, or more.",
+    "teasers": [
+      "What that sizzle in the pan really is",
+      "The kitchen rule nobody thought to test for generations",
+      "Why the crust is worth it anyway"
+    ],
+    "post_difficulty": 1
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "The crust on a seared steak is flavor, not a seal: seared meat loses as much moisture as unseared, or more."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='28' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='700' text-anchor='middle'>Weight lost while cooking</text><text x='200' y='46' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.65' text-anchor='middle'>the same steak, plain or seared</text><line x1='60' y1='252' x2='340' y2='252' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><rect x='95' y='135' width='74' height='117' rx='6' stroke='currentColor' stroke-width='2'/><rect x='231' y='81' width='74' height='171' rx='6' stroke='var(--accent)' stroke-width='2.5' fill='var(--accent)' fill-opacity='0.15'/><text x='132' y='127' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='15' font-weight='700' text-anchor='middle'>13%</text><text x='268' y='73' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='15' font-weight='700' text-anchor='middle'>19%</text><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle'><text x='132' y='272'>Plain</text><text x='268' y='272'>Seared</text></g></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "Heat a pan until it smokes and lay a steak in it. Listen. That aggressive hiss is water flashing to steam and leaving. Look under the meat when you lift it, and you will find juice on the plate. The crust never closes the surface. Weigh a seared steak against a plain roasted one. The seared piece comes out lighter, having lost more of its water."
+    },
+    {
+      "type": "story",
+      "order": 7,
+      "content": {
+        "body": "The idea has a birthday. In 1847 the German chemist Justus von Liebig proposed that searing meat hard at the start would harden its surface into a shell and hold the juices in. It was a plausible guess, and he never tested it. Cookbooks repeated it for the next hundred years as settled fact. When home economists finally weighed roasts in the 1930s, the seared ones had lost more. Decades later the food writer Harold McGee settled it in a line: the crust “is not waterproof,” and the sizzle you hear is moisture escaping.",
+        "key_figures": [
+          {
+            "name": "Justus von Liebig",
+            "role": "Started the myth in 1847",
+            "one_line": "The most influential food chemist of his day, he guessed that searing sealed the surface and never ran the test.",
+            "lifespan": "1803-1873",
+            "birth_year": 1803,
+            "featured": true
+          },
+          {
+            "name": "Harold McGee",
+            "role": "Debunked it",
+            "one_line": "His 1984 *On Food and Cooking* showed the crust is not waterproof and the sizzle is escaping moisture.",
+            "lifespan": "born 1951",
+            "birth_year": 1951,
+            "featured": false
+          }
+        ],
+        "image_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Restaurant_Steak.jpg",
+        "image_caption": "A cooked steak, its dark crust built by browning at the surface, not by any seal.",
+        "image_attribution": "Brianbesley, “Restaurant Steak”, CC0 1.0 (Wikimedia Commons)"
+      }
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "The crust is flavor, built by browning",
+          "body": "So if searing does not lock in juice, why do it? For taste. The intense heat drives the Maillard reaction, the browning that turns pale surface proteins and sugars into hundreds of new aromatic compounds. That deep, roasted, savory flavor is the whole point of a hard sear. It forms right where people pictured a moisture seal.",
+          "visual_svg": "<svg viewBox='0 0 400 280' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='26' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='700' text-anchor='middle'>What the crust really is</text><text x='200' y='74' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>moisture keeps escaping</text><g stroke='currentColor' stroke-width='2' opacity='0.5' fill='none' stroke-linecap='round'><path d='M150 120 q-6 -9 0 -18 q6 -9 0 -18'/><path d='M200 120 q-6 -9 0 -18 q6 -9 0 -18'/><path d='M250 120 q-6 -9 0 -18 q6 -9 0 -18'/></g><rect x='88' y='140' width='224' height='92' rx='18' stroke='currentColor' stroke-width='2' fill='currentColor' fill-opacity='0.06'/><rect x='94' y='128' width='212' height='16' rx='8' stroke='var(--accent)' stroke-width='2.5' fill='var(--accent)' fill-opacity='0.18'/><text x='200' y='196' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>inside stays juicy</text><text x='200' y='262' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle'>the browned crust is flavor, and moisture still gets out</text></svg>"
+        },
+        {
+          "title": "Juiciness is won by heat control and rest",
+          "body": "Knowing the crust is only flavor changes how you cook. Since the sear does not protect the inside, you are free to build it whenever it suits the meat. The reverse sear runs the other way: cook the steak gently until the center is nearly done, then give the outside a hard, quick crust at the end. It browns well and cooks evenly. The fierce heat meets the meat only at the very end, too briefly to overcook it. What keeps a steak juicy is rest. Let it sit a few minutes off the heat, and the juices settle back through instead of spilling out the moment you cut in.",
+          "visual_svg": "<svg viewBox='0 0 400 210' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='28' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='700' text-anchor='middle'>The reverse sear</text><rect x='30' y='84' width='152' height='66' rx='14' stroke='currentColor' stroke-width='2'/><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' text-anchor='middle'><text x='106' y='114'>Cook low</text><text x='106' y='134'>and slow</text></g><g stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' opacity='0.55'><path d='M182 117 h30'/><path d='M212 117 l-9 -6 m9 6 l-9 6'/></g><rect x='218' y='84' width='152' height='66' rx='14' stroke='var(--accent)' stroke-width='2.5' fill='var(--accent)' fill-opacity='0.12'/><g fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'><text x='294' y='114'>Sear hard,</text><text x='294' y='134'>at the end</text></g><text x='200' y='186' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>crust last, so the inside cooks evenly</text></svg>"
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "A bad theory can survive for a long time when it gives good advice by accident. Searing does make a better steak, just not for the reason Liebig gave. The crust tastes wonderful, so every cook who seared and enjoyed the result took it as proof the juices had been locked in. The method worked. The explanation was wrong, and it went unchecked in kitchens for generations. Sear your steak. Do it for the flavor, and keep it juicy some other way."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "What does searing a steak actually do?",
+          "options": [
+            "It browns the surface, creating flavor through the Maillard reaction",
+            "It seals the surface and locks moisture inside",
+            "It cuts the total cooking time roughly in half",
+            "It makes the meat lose less water than not searing"
+          ],
+          "answer_index": 0,
+          "explanation": "Searing is a browning reaction, not a sealing one. The high heat builds a flavorful crust on the outside while doing nothing to trap water within."
+        },
+        {
+          "question": "Compared with an unseared steak, a seared one typically...",
+          "options": [
+            "loses noticeably less moisture",
+            "loses about the same or a bit more moisture",
+            "gains moisture from the hot pan",
+            "loses no moisture at all"
+          ],
+          "answer_index": 1,
+          "explanation": "In weighing tests, the seared piece ends up lighter or about the same, never juicier. The fierce heat drives off surface water rather than holding it in."
+        },
+        {
+          "question": "The sizzling sound when meat hits a hot pan is mainly...",
+          "options": [
+            "fat catching fire",
+            "the protective seal snapping shut",
+            "moisture escaping and flashing to steam",
+            "sugars caramelizing silently"
+          ],
+          "answer_index": 2,
+          "explanation": "That hiss is water leaving the meat and vaporizing. If the surface were truly sealing, the sound would stop, but it continues the whole time the meat cooks."
+        },
+        {
+          "question": "Why did the searing-seals-juices idea last so long?",
+          "options": [
+            "Careful experiments kept confirming it",
+            "It was required by law in professional kitchens",
+            "Almost no one ate seared meat until recently",
+            "Searing does improve a steak, so cooks read the tasty result as proof"
+          ],
+          "answer_index": 3,
+          "explanation": "The advice worked for the wrong reason. A seared steak really is better, so generations took the delicious crust as evidence that juices had been locked in."
+        },
+        {
+          "question": "If searing does not keep a steak juicy, what actually helps?",
+          "options": [
+            "Cutting into it immediately to release the pressure",
+            "Letting it rest so the juices settle back through the meat",
+            "Searing it a second time for a thicker crust",
+            "Only salting it after it comes off the heat"
+          ],
+          "answer_index": 1,
+          "explanation": "Resting lets the juices redistribute instead of pouring out at the first cut. Gentle heat and a rest, not a hard sear, are what protect moisture."
+        },
+        {
+          "question": "What is the reverse sear?",
+          "options": [
+            "Searing the meat twice to build a thicker crust",
+            "Cooking the steak from frozen",
+            "Cooking the inside gently first, then searing the outside at the end",
+            "Searing only the edges of the steak"
+          ],
+          "answer_index": 2,
+          "explanation": "Because the sear is only for flavor, it can go last. Bringing the center up to temperature first, then searing briefly, gives an even interior and a good crust."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "Sear on high heat first to lock in the juices.",
+          "reality": "Searing builds a flavorful crust and drives off surface moisture rather than trapping it. If anything, a seared steak loses slightly more water than one cooked gently."
+        },
+        {
+          "myth": "A good crust means a juicier steak.",
+          "reality": "The crust and the juiciness are unrelated. A deep crust is about browning and flavor, while how much water the meat keeps depends on temperature and resting."
+        },
+        {
+          "myth": "There is no point searing, then, if it does not seal.",
+          "reality": "There is every point. The Maillard crust is where much of a steak's flavor lives, so searing is well worth doing for taste alone."
+        }
+      ]
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Meathead (with Prof. Greg Blonder). Myth: Searing Steaks Seals In The Juices. AmazingRibs.com",
+          "url": "https://amazingribs.com/more-technique-and-science/more-cooking-science/myth-searing-steaks-seals-juices/",
+          "type": "article"
+        },
+        {
+          "label": "McGee H. On Food and Cooking: The Science and Lore of the Kitchen (1984)",
+          "url": "https://en.wikipedia.org/wiki/On_Food_and_Cooking",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Justus von Liebig (the 1847 origin of the searing-seals-juices idea)",
+          "url": "https://en.wikipedia.org/wiki/Justus_von_Liebig",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Maillard reaction (the browning that builds the crust and its flavor)",
+          "url": "https://en.wikipedia.org/wiki/Maillard_reaction",
+          "type": "wikipedia"
+        }
+      ]
+    }
+  ]
+}

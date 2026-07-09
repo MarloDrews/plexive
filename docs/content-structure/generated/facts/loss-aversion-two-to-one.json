@@ -1,0 +1,252 @@
+{
+  "tags": [
+    "behavioral-economics",
+    "psychology",
+    "cognitive-biases"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Prospect theory"
+      },
+      "featured": true
+    },
+    {
+      "format": "books",
+      "ref": {
+        "title": "Thinking, Fast and Slow",
+        "author": "Daniel Kahneman"
+      },
+      "featured": false
+    },
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Framing effect"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "Losing \\$100 hurts about twice as much as winning \\$100 feels good.",
+    "teasers": [
+      "Why people turn down a 2-to-1 bet",
+      "The reason you overprice what you own",
+      "One number that steers your money decisions"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "Losing \\$100 hurts about twice as much as winning \\$100 feels good."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 84 400 190' xmlns='http://www.w3.org/2000/svg' fill='none'><line x1='44' y1='150' x2='356' y2='150' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><text x='352' y='144' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='end'>no change</text><rect x='120' y='110' width='60' height='40' rx='8' fill='currentColor' opacity='0.5'/><rect x='220' y='150' width='60' height='90' rx='8' fill='var(--accent)'/><text x='150' y='100' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>A gain</text><text x='250' y='262' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>A loss</text><text x='322' y='202' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='17' font-weight='700' text-anchor='middle'>2.25x</text></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "A gain and an equal loss look like they should cancel, and on the page they do. In the experiments they do not: a loss feels about 2.25 times as sharp as a matching gain, and that lopsided weighting quietly bends choices you think you are making on the merits. The mental books never quite balance, a dollar won against a dollar lost."
+    },
+    {
+      "type": "how_we_know",
+      "order": 5,
+      "content": "The number is not a guess. It comes from watching people choose. Offer a coin flip: heads you win \\$200, tails you lose \\$100. That is a good bet, positive on average. Most people still turn it down. Raise the prize and ask when they will take it, and the tipping point sits near a win of about twice the possible loss. Tversky and Kahneman fit that pattern across many such choices and pinned the loss-to-gain weight a little above 2 to 1."
+    },
+    {
+      "type": "story",
+      "order": 7,
+      "content": {
+        "body": "In 1979 the psychologists Daniel Kahneman and Amos Tversky set out to describe how people really choose under risk. Standard economics had modeled an ideal calculator. They wanted the messy human version. They called their account *prospect theory*. The core shift: measure every outcome from a reference point, usually where you stand right now, and weigh gains and losses from there on different scales. Losses, they found, loom larger. In 1992 they put a number on it, fitting a value curve to real choices and reporting that losses count about 2.25 times as much as matching gains. Before that, economics had largely assumed a dollar means the same whichever way it moves.",
+        "key_figures": [
+          {
+            "name": "Daniel Kahneman",
+            "role": "Co-created prospect theory",
+            "one_line": "With Tversky he built *prospect theory* and later put the loss-to-gain weight near 2.25. He won the 2002 Nobel in economics.",
+            "lifespan": "1934-2024",
+            "birth_year": 1934,
+            "featured": true,
+            "image_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Daniel_Kahneman_(3283955327).jpg",
+            "image_attribution": "nrkbeta, “Daniel Kahneman”, CC BY-SA 2.0 (Wikimedia Commons)"
+          },
+          {
+            "name": "Amos Tversky",
+            "role": "Mapped how people really choose",
+            "one_line": "The cognitive psychologist who, with Kahneman, showed that choices turn on gains and losses from a reference point, not on final wealth.",
+            "lifespan": "1937-1996",
+            "birth_year": 1937,
+            "featured": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "The tilt flips how you gamble",
+          "body": "Loss aversion does more than make people cautious. It flips how they gamble: safe when protecting a gain, bold when facing a loss. That is why investors sell winning stocks early to bank the gain, then hold losing ones far too long, hoping to climb back to even. Across 10,000 accounts, Terrance Odean found the winners people sold beat the losers they kept by about 3.4 points over the next year.",
+          "visual_svg": "<svg viewBox='0 50 400 202' xmlns='http://www.w3.org/2000/svg' fill='none'><line x1='44' y1='150' x2='356' y2='150' stroke='currentColor' stroke-width='1.5' opacity='0.4' stroke-linecap='round'/><line x1='200' y1='58' x2='200' y2='246' stroke='currentColor' stroke-width='1.5' opacity='0.4' stroke-linecap='round'/><path d='M200 150 C 250 122 300 110 352 105' stroke='currentColor' stroke-width='2.5' stroke-linecap='round'/><path d='M200 150 C 164 196 112 232 50 243' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><g font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle'><text x='300' y='142' fill='currentColor' opacity='0.7'>Gains</text><text x='100' y='142' fill='currentColor' opacity='0.7'>Losses</text><text x='206' y='72' fill='currentColor' opacity='0.7' text-anchor='start'>value felt</text></g><text x='118' y='224' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>falls ~2x steeper</text></svg>"
+        },
+        {
+          "title": "Owning it turns selling into losing",
+          "body": "Hand someone a coffee mug, then ask what they would sell it for. Ask a second person, holding no mug, what they would pay for the same one. In the original experiments the owners would not let go for less than about twice what buyers offered, roughly \\$7 to sell against \\$3 to buy. The mug had not changed. Giving it up now counted as a loss, and the loss outweighed the buyer's equal gain."
+        },
+        {
+          "title": "It makes reform hard to pass",
+          "body": "The asymmetry reaches into politics too. Every reform makes winners and losers, and because a loss outweighs an equal gain, those who stand to lose fight harder than those who stand to gain cheer. Whatever people already have becomes the reference point, so a change is felt as loss before it is felt as gain. A subsidy that would help millions a little can be blocked by the few it would cost a lot."
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "Once you see the 2 to 1 tilt, a lot of behavior that looks irrational lines up. Holding a losing stock, refusing a fair bet, staying in a job past its use, dreading a small risk more than the odds warrant: these are one bias in different clothes. The tilt also gives framing its power. Present a choice as a loss to avoid rather than a gain to win, and people act differently on the same facts. Marketers, negotiators, and governments all reach for that lever. Seeing the tilt does not remove it. It does let you catch the moments a choice is running on fear of loss instead of the numbers."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "What does loss aversion claim?",
+          "options": [
+            "People dislike all risk, whatever the outcome",
+            "People value money less as they grow richer",
+            "A loss of a given size feels roughly twice as intense as a gain of the same size",
+            "People always prefer a sure thing to a gamble"
+          ],
+          "answer_index": 2,
+          "explanation": "Loss aversion is about the asymmetry around a reference point: losing \\$100 hurts about 2.25 times as much as gaining \\$100 pleases. It is not general caution or the falling value of extra money."
+        },
+        {
+          "question": "Why do most people reject a coin flip that pays \\$200 on heads and costs \\$100 on tails, even though it wins on average?",
+          "options": [
+            "They cannot work out the average",
+            "The potential \\$100 loss, weighted about twice as heavily, outweighs the larger \\$200 gain",
+            "They assume the coin is rigged",
+            "They do not care about money"
+          ],
+          "answer_index": 1,
+          "explanation": "Weight the \\$100 loss by roughly 2.25 and it feels like about \\$225, heavier than the \\$200 gain feels. From the inside the bet looks like a net loss, so people pass."
+        },
+        {
+          "question": "How is loss aversion different from plain risk aversion?",
+          "options": [
+            "Loss aversion can make people risk-seeking, gambling to avoid locking in a sure loss",
+            "They are exactly the same thing",
+            "Risk aversion applies only to gains",
+            "Loss aversion means people never take any risk at all"
+          ],
+          "answer_index": 0,
+          "explanation": "A risk-averse person avoids gambles across the board. Under loss aversion, someone facing a certain loss will often take a worse gamble for the chance to break even, which is risk-seeking, not risk-averse."
+        },
+        {
+          "question": "In the mug experiment, owners demanded about twice what buyers would pay for the same mug. Why?",
+          "options": [
+            "The owners were told the mug was rare",
+            "The buyers simply had less money",
+            "The mugs given to owners were of higher quality",
+            "Giving up the mug registered as a loss, which outweighed the buyer's equal gain"
+          ],
+          "answer_index": 3,
+          "explanation": "Nothing about the mug changed. Once it was owned, parting with it counted as a loss, and the loss loomed larger than the pleasure of acquiring the same mug, so owners charged more."
+        },
+        {
+          "question": "The disposition effect, holding losing stocks and selling winners, follows from loss aversion because...",
+          "options": [
+            "winning stocks are riskier to keep",
+            "selling a loser means booking a painful loss, so investors hold on and hope to recover",
+            "losing stocks always rebound eventually",
+            "investors mainly want to lower their taxes"
+          ],
+          "answer_index": 1,
+          "explanation": "Realizing a loss makes it real and painful, so investors cling to losers to postpone the feeling, while banking gains early feels safe. The habit tends to drag down returns."
+        },
+        {
+          "question": "Given later critiques, what is the honest status of the 2.25 figure?",
+          "options": [
+            "It is an exact law of the mind, fixed for everyone",
+            "It has been fully disproven; losses never outweigh gains",
+            "It is an average that shifts with the person, the stakes, and the context, not a universal constant",
+            "It applies only to money and never to other decisions"
+          ],
+          "answer_index": 2,
+          "explanation": "2.25 came from one landmark study. Later work shows loss aversion is real but contingent: its size and even its direction depend on the situation, so the number is a useful average, not a constant."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "Loss aversion is just another name for being risk-averse.",
+          "reality": "Not quite. It can flip people into risk-seekers: facing a sure loss, many will gamble on a worse but uncertain outcome to avoid locking the loss in."
+        },
+        {
+          "myth": "Losses always hurt exactly 2.25 times as much as gains.",
+          "reality": "2.25 is an average from one landmark study. The real ratio depends on who is choosing and what is at stake, and some situations show little loss aversion at all."
+        },
+        {
+          "myth": "It just means people are timid about money.",
+          "reality": "It is sharper than timidity: it is the gap between how a gain and an equal loss feel, measured from wherever you stand now. Move that reference point and the same outcome can flip from gain to loss."
+        }
+      ]
+    },
+    {
+      "type": "open_questions",
+      "order": 12,
+      "content": {
+        "body": "How universal loss aversion really is has become a live argument. In 2018 David Gal and Derek Rucker reviewed the evidence and concluded that losses do not reliably loom larger than gains. Whether they do, they argued, depends heavily on the context. Defenders replied that the effect is real but contingent, stronger for some decisions and weaker for small or familiar stakes. The tidy 2.25 has not held up as a universal constant, though the basic asymmetry still appears in many settings.",
+        "items": [
+          "Is loss aversion a basic feature of the mind, or a byproduct of particular situations?",
+          "For which decisions do losses really outweigh gains, and for which do they roughly balance?"
+        ]
+      }
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Loss aversion, Mini-Encyclopedia of Behavioral Economics",
+          "url": "https://www.behavioraleconomics.com/resources/mini-encyclopedia-of-be/loss-aversion/",
+          "type": "article"
+        },
+        {
+          "label": "Tversky A, Kahneman D. Advances in prospect theory: cumulative representation of uncertainty. J Risk Uncertain 1992;5:297-323",
+          "url": "https://doi.org/10.1007/BF00122574",
+          "type": "paper"
+        },
+        {
+          "label": "Loss aversion",
+          "url": "https://en.wikipedia.org/wiki/Loss_aversion",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Endowment effect",
+          "url": "https://en.wikipedia.org/wiki/Endowment_effect",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Odean T. Are investors reluctant to realize their losses? Journal of Finance 1998;53:1775-1798",
+          "url": "https://faculty.haas.berkeley.edu/odean/papers%20current%20versions/areinvestorsreluctant.pdf",
+          "type": "paper"
+        },
+        {
+          "label": "Prospect theory",
+          "url": "https://en.wikipedia.org/wiki/Prospect_theory",
+          "type": "wikipedia"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,228 @@
+{
+  "tags": [
+    "animals",
+    "physics",
+    "nature-phenomena"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Electrostatics"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "Spiders take off with no wings and no wind, lifted by the Earth's electric field.",
+    "teasers": [
+      "Pulled from the sky, far out at sea",
+      "How a spider knows when to launch",
+      "Often the first predator to reach new land"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "Spiders take off with no wings and no wind, lifted by the Earth's electric field."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='30' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.75' text-anchor='middle'>upper air, positive</text><g stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' opacity='0.4'><path d='M74 48 V232'/><path d='M74 232 l-6 -13 m6 13 l6 -13'/><path d='M340 48 V232'/><path d='M340 232 l-6 -13 m6 13 l6 -13'/></g><text x='63' y='150' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.55' text-anchor='middle' transform='rotate(-90 63 150)'>fair-weather field</text><line x1='40' y1='250' x2='360' y2='250' stroke='currentColor' stroke-width='2' opacity='0.55' stroke-linecap='round'/><text x='355' y='270' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='end'>ground, negative</text><path d='M205 250 V226' stroke='currentColor' stroke-width='2' opacity='0.55' stroke-linecap='round'/><g stroke='currentColor' stroke-width='1.5' stroke-linecap='round' opacity='0.7'><path d='M205 224 L184 118'/><path d='M205 224 L205 104'/><path d='M205 224 L226 118'/></g><text x='205' y='92' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>charged silk</text><circle cx='205' cy='227' r='5' fill='currentColor'/><path d='M240 238 V150' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><path d='M240 150 l-7 14 m7 -14 l7 14' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/><text x='240' y='140' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>lift</text></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "A spider with no wings has been lifted almost five kilometers into the air. Others have turned up over open ocean, hundreds of miles from the nearest land. They did not stow away on a bird or a boat. They flew there. For a long time the answer was wind, spiders casting out silk and catching a breeze like a kite. Wind is part of it. But spiders also balloon on days too still for a kite, and they take off straight up. The lift comes from somewhere else: the electric field of the planet itself. A faint charge hangs between the ground and the sky, and the spider rides it."
+    },
+    {
+      "type": "tangible",
+      "order": 4,
+      "content": {
+        "items": [
+          "The spiders that boarded Darwin's ship had crossed nearly 100 kilometers of open water.",
+          "Aircraft and weather balloons have collected ballooning spiders nearly 5 kilometers up, about the height of an Alpine summit.",
+          "Most of these travelers are 2 to 3 millimeters across, lighter than a raindrop."
+        ],
+        "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><line x1='130' y1='58' x2='130' y2='244' stroke='currentColor' stroke-width='2' opacity='0.5' stroke-linecap='round'/><text x='130' y='262' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>ground</text><line x1='122' y1='60' x2='138' y2='60' stroke='currentColor' stroke-width='1.5' opacity='0.4'/><text x='114' y='64' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='end'>5 km</text><line x1='130' y1='210' x2='290' y2='210' stroke='currentColor' stroke-width='1.5' opacity='0.3' stroke-dasharray='5 5'/><text x='150' y='205' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.65' text-anchor='start'>tallest towers, under 1 km</text><line x1='130' y1='67' x2='300' y2='67' stroke='currentColor' stroke-width='1.5' opacity='0.35' stroke-dasharray='5 5'/><text x='150' y='62' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='start'>Mont Blanc, 4.8 km</text><circle cx='130' cy='78' r='7' fill='var(--accent)'/><line x1='137' y1='78' x2='250' y2='78' stroke='var(--accent)' stroke-width='2'/><text x='150' y='94' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='start'>spiders, ~4.5 km</text></svg>"
+      }
+    },
+    {
+      "type": "how_we_know",
+      "order": 5,
+      "content": "The test was almost absurdly simple. Morley and Robert put spiders in a sealed box of still air and switched an electric field on and off. With the field on, the spiders climbed to the tips of leaves, raised their abdomens, and lifted off on fresh silk. Switch it off and they sank back down. Fine hairs on their legs, called trichobothria, bend in an electric field, so a spider can feel the charge before it leaps. No wind was ever needed."
+    },
+    {
+      "type": "story",
+      "order": 7,
+      "content": {
+        "body": "On the first of November 1832, thousands of tiny red spiders rained onto HMS Beagle, sixty miles out at sea. Charles Darwin watched them land and take off again with what he called an unaccountable rapidity, and he suspected electricity had a hand in it. Nobody could show it. For most of two centuries, ballooning was filed under wind and left there. Then in 2013 an astrophysicist, Peter Gorham, ran the numbers on Darwin's puzzle and argued the atmospheric field could supply the force. Five years later Erica Morley and Daniel Robert brought spiders into the lab and proved it. It took 186 years to show that Darwin's guess was right.",
+        "key_figures": [
+          {
+            "name": "Charles Darwin",
+            "role": "Recorded the spiders at sea",
+            "one_line": "In 1832 he watched spiders balloon onto the Beagle far from land and guessed electricity was involved.",
+            "lifespan": "1809-1882",
+            "birth_year": 1809,
+            "featured": true
+          },
+          {
+            "name": "Erica Morley",
+            "role": "Proved the electric-field takeoff",
+            "one_line": "With Daniel Robert she showed in 2018 that an electric field alone can make a spider balloon.",
+            "featured": false
+          }
+        ],
+        "visual_svg": "<svg viewBox='0 0 400 190' xmlns='http://www.w3.org/2000/svg' fill='none'><line x1='45' y1='95' x2='355' y2='95' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><circle cx='72' cy='95' r='7' stroke='currentColor' stroke-width='2' opacity='0.6'/><text x='72' y='72' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>1832</text><text x='72' y='124' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.75' text-anchor='middle'>Darwin sees it</text><circle cx='200' cy='95' r='7' stroke='currentColor' stroke-width='2' opacity='0.6'/><text x='200' y='72' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>2013</text><text x='200' y='124' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.75' text-anchor='middle'>Gorham's math</text><circle cx='328' cy='95' r='8' fill='var(--accent)'/><text x='328' y='71' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>2018</text><text x='328' y='124' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle'>proved in the lab</text></svg>"
+      }
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "The sky is a slow battery",
+          "body": "The field the spider uses is not local. It is one arm of a planet-sized circuit. At any moment a couple of thousand thunderstorms are pumping negative charge down to the ground, and it leaks back through the clear air everywhere else. That leaves a steady field pointing down toward the negative ground. Near the surface it runs about 120 volts per meter, adding up to some 300,000 volts between the ground and the upper air. Spider silk takes on a negative charge, so that downward field pushes it up. A ballooning spider is tapping the circuit that lightning belongs to."
+        },
+        {
+          "title": "A field of gossamer is a mass exodus",
+          "body": "Ballooning is not a rare stunt. On the right autumn day whole fields launch at once, and the ground is left draped in sheets of silk the old names call gossamer. This is how spiders reach new places: fresh islands, cleared farmland, the bare slopes of Krakatoa after it erupted. They make up a large share of the aerial plankton, the drift of tiny animals riding the air. A spider is often the first predator to set foot on new land.",
+          "image_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Silk_threads_left_by_ballooning_spiders_-_Campegine,_Reggio_Emilia,_Italy_-_October_29,_2024.jpg",
+          "image_caption": "A landscape left draped in silk after a mass ballooning event, the threads once called gossamer.",
+          "image_attribution": "Giorgio Galeotti, “Silk threads left by ballooning spiders, Campegine, Italy”, CC BY-SA 4.0 (Wikimedia Commons)"
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "An electric field wraps the whole planet, and nothing in daily life makes you notice it. Spiders live inside it the way we live inside air, and they have learned to read it and push against it. So the smallest animals can travel without muscle or wing. On the right day the air over a field is full of them, drifting to wherever the charge and the wind will carry them."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "By switching an electric field on and off in still air, what did the 2018 experiment show?",
+          "options": [
+            "Spiders only balloon when a strong wind is blowing",
+            "Spiders rose when the field was on and settled when it was off, so the field alone can drive ballooning",
+            "The field made no difference to the spiders' behavior",
+            "The field harmed the spiders and they tried to flee"
+          ],
+          "answer_index": 1,
+          "explanation": "With air movement removed, turning the field on lifted the spiders and turning it off dropped them. That isolates the electric force as a sufficient cause."
+        },
+        {
+          "question": "Why does a spider's silk feel an upward force in fair weather?",
+          "options": [
+            "The silk is warmer than the air and rises",
+            "The silk is positive and the ground drags it up",
+            "The silk carries a negative charge, and the downward-pointing field pushes negative charge upward",
+            "The silk is lighter than air, like a tiny balloon"
+          ],
+          "answer_index": 2,
+          "explanation": "The fair-weather field points down toward the negative ground. A negative charge placed in that field feels a force upward, lifting the silk and the spider."
+        },
+        {
+          "question": "How does a spider sense the electric field before it launches?",
+          "options": [
+            "It tastes charged particles in the air",
+            "Fine leg hairs called trichobothria bend in the field",
+            "It watches for changes in the light",
+            "It feels a drop in temperature"
+          ],
+          "answer_index": 1,
+          "explanation": "Trichobothria, mechanical hairs on the legs, deflect in an electric field. That gives the spider a way to feel the charge and pick its moment to leave."
+        },
+        {
+          "question": "What keeps the planet-wide electric field charged up?",
+          "options": [
+            "The sun heating the upper atmosphere each day",
+            "The Earth's magnetic field at the poles",
+            "Ocean waves generating static electricity",
+            "Thousands of thunderstorms worldwide moving charge between ground and sky"
+          ],
+          "answer_index": 3,
+          "explanation": "At any moment a couple of thousand thunderstorms pump charge down to the ground, and it leaks back through fair-weather air, sustaining a standing voltage between ground and sky."
+        },
+        {
+          "question": "Why do a ballooning spider's several silk strands fan apart instead of tangling?",
+          "options": [
+            "They carry the same charge and repel one another",
+            "The wind blows them in different directions",
+            "The spider holds them apart with its legs",
+            "They are woven to spring outward on release"
+          ],
+          "answer_index": 0,
+          "explanation": "Each strand carries the same-sign charge, so they push each other away and spread into a fan, which also helps produce lift."
+        },
+        {
+          "question": "Before 2018, why was electric-field ballooning a hypothesis rather than established fact?",
+          "options": [
+            "No one had thought of the idea before then",
+            "Darwin had already disproved it in 1832",
+            "It had been proposed but never tested with the field separated from the wind",
+            "Spiders were believed unable to sense electricity at all"
+          ],
+          "answer_index": 2,
+          "explanation": "Darwin suspected it and Gorham argued it from physics, but only the 2018 experiment removed the wind and showed the field alone is enough."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "So spiders do not use the wind at all, it is purely electric.",
+          "reality": "Both matter. The electric field is a real force and can lift a spider by itself, but wind and warm updrafts still carry them, and how much each contributes is still being measured."
+        },
+        {
+          "myth": "A ballooning spider hangs from one long thread, like a parachute cord.",
+          "reality": "It releases several fine strands that fan apart. They share the same charge, so they repel and spread rather than twist together."
+        },
+        {
+          "myth": "Ballooning is a freak accident that only newly hatched spiderlings do.",
+          "reality": "It is a routine way spiders disperse, used by spiderlings and many small adults, and on some days it launches whole fields at once."
+        }
+      ]
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Morley EL, Robert D. Electric fields elicit ballooning in spiders. Current Biology 2018;28(14):2324-2330",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6065530/",
+          "type": "paper"
+        },
+        {
+          "label": "Gorham PW. Ballooning spiders: the case for electrostatic flight. arXiv:1309.4731 (2013)",
+          "url": "https://arxiv.org/abs/1309.4731",
+          "type": "paper"
+        },
+        {
+          "label": "Morley EL, Robert D et al. Evidence for nanocoulomb charges on spider ballooning silk. Phys Rev E 2020;102:012403",
+          "url": "https://arxiv.org/abs/1912.02335",
+          "type": "paper"
+        },
+        {
+          "label": "Ballooning (spider)",
+          "url": "https://en.wikipedia.org/wiki/Ballooning_(spider)",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Global atmospheric electrical circuit",
+          "url": "https://en.wikipedia.org/wiki/Global_atmospheric_electrical_circuit",
+          "type": "wikipedia"
+        }
+      ]
+    }
+  ]
+}

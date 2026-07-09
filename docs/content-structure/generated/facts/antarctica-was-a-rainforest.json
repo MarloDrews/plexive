@@ -1,0 +1,207 @@
+{
+  "tags": [
+    "paleontology",
+    "geology",
+    "climate"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Greenhouse and icehouse Earth"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "Ninety million years ago, a temperate rainforest grew within 900 kilometers of the South Pole. Its roots and pollen still lie in the seabed there, under today's Antarctic ice.",
+    "teasers": [
+      "The dark layer no one expected in the core",
+      "How anything green survived four months of night",
+      "Why Antarctic ice is younger than it looks"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "Ninety million years ago, a temperate rainforest grew within 900 kilometers of the South Pole. Its roots and pollen still lie in the seabed there, under today's Antarctic ice."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><circle cx='200' cy='152' r='116' stroke='currentColor' stroke-width='2' opacity='0.4'/><circle cx='200' cy='152' r='74' stroke='currentColor' stroke-width='1.5' opacity='0.28' stroke-dasharray='5 7'/><circle cx='200' cy='152' r='5' fill='currentColor' opacity='0.75'/><text x='200' y='142' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>South Pole</text><path d='M167 120 v-11' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><path d='M158 112 l9 -17 l9 17 z' fill='var(--accent)' fill-opacity='0.25' stroke='var(--accent)' stroke-width='2' stroke-linejoin='round'/><path d='M183 122 v-8' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><path d='M176 116 l7 -13 l7 13 z' fill='var(--accent)' fill-opacity='0.25' stroke='var(--accent)' stroke-width='2' stroke-linejoin='round'/><line x1='152' y1='102' x2='124' y2='78' stroke='var(--accent)' stroke-width='1.5' opacity='0.6'/><text x='120' y='74' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='end'>rainforest, ~82°S</text><text x='200' y='286' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>90 million years ago, 900 km from the pole</text></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "In 2017, a drill off the West Antarctic coast pulled a long core out of the seabed. Near the bottom, below the grey marine mud everyone expected, sat a band of dark, dense material shot through with fine channels. The channels were roots. Packed around them were pollen and spores from ferns and conifers, the fingerprint of a forest floor. This was soil, grown by a living forest, roughly 900 kilometers from the South Pole. Ninety million years ago the coldest place on Earth today was a swampy, temperate rainforest."
+    },
+    {
+      "type": "tangible",
+      "order": 4,
+      "content": {
+        "items": [
+          "The forest grew at about 82 degrees south, nearer the pole than any Antarctic coastline reaches today.",
+          "For about four months each year the sun never rose, and the trees lived through the dark on stored energy.",
+          "There was no polar ice anywhere on Earth, and the water in its rivers and swamps ran as warm as 20°C."
+        ],
+        "visual_svg": "<svg viewBox='0 44 400 152' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='72' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.78' text-anchor='middle'>A year near the South Pole</text><rect x='44' y='102' width='312' height='30' rx='9' stroke='currentColor' stroke-width='2' opacity='0.5'/><rect x='148' y='102' width='104' height='30' rx='6' fill='var(--accent)' fill-opacity='0.2' stroke='var(--accent)' stroke-width='2.5'/><text x='200' y='122' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>no sunrise</text><text x='90' y='122' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='middle'>sun up</text><text x='310' y='122' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='middle'>sun up</text><text x='200' y='162' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>about 4 months of polar night, and no ice anywhere</text></svg>"
+      }
+    },
+    {
+      "type": "how_we_know",
+      "order": 5,
+      "content": "A single core says a lot if you read it in layers. The roots came first. A dense mesh like that grows only in place, so this was a forest floor, not debris washed in from somewhere warmer. The pollen and spores named the plants: ferns, conifers, and the forerunners of today's southern trees. For temperature the team read molecules left by soil microbes, whose shape shifts with the climate they formed in. Those put the yearly average near 12°C, warm and wet. The ancient air held up to four times today's carbon dioxide."
+    },
+    {
+      "type": "story",
+      "order": 7,
+      "content": {
+        "body": "Getting the core was the easy part. In February 2017 the icebreaker Polarstern reached the Amundsen Sea off West Antarctica, one of the least accessible coasts on Earth. There a seafloor drill brought up the section. The odd dark layer near its base was obvious at once, but reading it took three years and labs in several countries. Teams sorted pollen grain by grain, ran the microbe chemistry, and CT-scanned the root mat without cutting it apart. When the picture resolved, the lead author, Johann Klages, called it the southernmost Cretaceous record ever recovered. A forest had stood where the maps now show only ice.",
+        "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><rect x='150' y='40' width='54' height='220' rx='16' stroke='currentColor' stroke-width='2.5' opacity='0.6'/><rect x='150' y='128' width='54' height='58' rx='6' fill='var(--accent)' fill-opacity='0.22' stroke='var(--accent)' stroke-width='2.5'/><line x1='134' y1='86' x2='150' y2='86' stroke='currentColor' stroke-width='1.5' opacity='0.4'/><text x='130' y='90' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='end'>marine mud</text><g stroke='var(--accent)' stroke-width='1.5' opacity='0.6'><line x1='204' y1='142' x2='230' y2='130'/><line x1='204' y1='157' x2='230' y2='157'/><line x1='204' y1='172' x2='230' y2='186'/></g><g fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='start'><text x='234' y='134'>roots</text><text x='234' y='162'>pollen</text><text x='234' y='191'>spores</text></g><text x='177' y='284' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>the forest soil, in a seabed core</text></svg>",
+        "key_figures": [
+          {
+            "name": "Johann Klages",
+            "role": "Led the study of the core",
+            "one_line": "The Alfred Wegener Institute geologist who led the team that read a near-polar rainforest out of a West Antarctic sediment core."
+          }
+        ]
+      }
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "The trees lived through months of night",
+          "body": "The strangest part is the dark. At 82 degrees south the sun stays down for about four months, and no amount of warmth changes that. Yet the forest held. The growing season was long and wet, and the trees rode out winter the way high-latitude plants still do. They slowed almost to a stop and lived off what they had stored. What the poles had always lacked was warmth, and for once there was plenty of it."
+        },
+        {
+          "title": "It took a hothouse to grow trees at the pole",
+          "body": "To land a pole at 12°C, the ancient air needs a lot of carbon dioxide. When the team ran the numbers, the models only fit the forest with CO2 between about 1,120 and 1,680 parts per million. It runs up to four times today's level, higher than some earlier estimates. That is the lever. Pour enough carbon into the air and even the poles can lose their ice and grow trees. The Cretaceous did it slowly, over millions of years, with volcanoes doing the pouring.",
+          "visual_svg": "<svg viewBox='0 44 400 178' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='64' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.78' text-anchor='middle'>Carbon dioxide in the air</text><text x='40' y='104' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.8' text-anchor='start'>today</text><rect x='120' y='92' width='60' height='20' rx='8' stroke='currentColor' stroke-width='2' opacity='0.6'/><text x='188' y='107' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='start'>~420 ppm</text><text x='40' y='170' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='start'>90 Ma</text><rect x='120' y='158' width='200' height='20' rx='8' fill='var(--accent)' fill-opacity='0.18' stroke='var(--accent)' stroke-width='2.5'/><text x='220' y='150' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>~1,120 to 1,680 ppm</text></svg>"
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "The white Antarctica on the map is not the continent's permanent state. It is what the place looks like in a cold, low-carbon world like ours, and it is younger than the forests that came before it. Push the carbon dioxide high enough and the ice is not guaranteed. The warmth that raised a polar forest can melt an ice sheet just as easily, and the same knob turns both ways. None of that means a rainforest is coming back soon. The shift ran over millions of years. But the core is a reminder that the poles have a warm setting, tied to what is in the air."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "Why was there a rainforest so close to the South Pole 90 million years ago?",
+          "options": [
+            "Earth was in a hothouse state, with high CO2 and no polar ice",
+            "Antarctica sat near the equator then and drifted south later",
+            "The South Pole was located elsewhere at the time",
+            "The forest was frozen solid and preserved in place"
+          ],
+          "answer_index": 0,
+          "explanation": "Antarctica was already near the pole. The planet as a whole was far warmer, with carbon dioxide high enough to keep the entire globe ice-free, so even the poles stayed temperate."
+        },
+        {
+          "question": "What in the core showed a forest had grown in place rather than washing in?",
+          "options": [
+            "A thick layer of volcanic ash",
+            "A bed of marine shells",
+            "Scattered grains of quartz sand",
+            "A dense, in-place network of roots"
+          ],
+          "answer_index": 3,
+          "explanation": "Roots grow where the plant stands, so a dense root mat means a forest floor formed on the spot. Debris carried in by water would arrive broken and jumbled, not as a living soil."
+        },
+        {
+          "question": "How did the forest cope with roughly four months of winter darkness?",
+          "options": [
+            "It migrated toward the equator each winter",
+            "The high CO2 supplied light in place of the sun",
+            "It slowed almost to a stop and lived on stored energy, kept alive by the warmth",
+            "The trees died off and grew back from seed each spring"
+          ],
+          "answer_index": 2,
+          "explanation": "High-latitude plants still handle a dark season by going nearly dormant. What made the difference at the Cretaceous pole was warmth, which meant the trees only had to wait out the dark, not the cold."
+        },
+        {
+          "question": "What did reproducing the 12°C polar climate require in the models?",
+          "options": [
+            "Much lower CO2 than the air holds today",
+            "CO2 up to four times today's level",
+            "A different position for the Sun in the sky",
+            "A far thicker atmosphere made mostly of oxygen"
+          ],
+          "answer_index": 1,
+          "explanation": "The models could only warm the pole to a rainforest with CO2 near 1,120 to 1,680 ppm. That is well above today's level, and higher than some earlier estimates for the period."
+        },
+        {
+          "question": "The reconstructed forest is best described as which of these?",
+          "options": [
+            "An equatorial tropical jungle",
+            "A dry, cold scrubland",
+            "A temperate, swampy rainforest averaging around 12°C",
+            "A frozen tundra of mosses and lichens"
+          ],
+          "answer_index": 2,
+          "explanation": "A mean around 12°C is temperate, not tropical. The nearest match today is the cool, wet rainforest of places like New Zealand or southern Chile, not the Amazon."
+        },
+        {
+          "question": "What does the discovery suggest about Antarctica's ice sheet?",
+          "options": [
+            "It has capped the continent for hundreds of millions of years",
+            "It formed at the same time as the planet",
+            "It proves carbon dioxide has no effect on ice",
+            "It belongs to a cool, low-carbon world and is not permanent"
+          ],
+          "answer_index": 3,
+          "explanation": "The ice is a feature of the cold, low-CO2 world we live in now. When the air held far more carbon, the same continent, in the same polar spot, carried forests instead."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "Antarctica was warm because it sat near the equator then and drifted to the pole later.",
+          "reality": "The continent was already near the South Pole 90 million years ago, close to where it sits now. It was warm because the whole planet was, in a high-CO2 greenhouse with no polar ice."
+        },
+        {
+          "myth": "A polar rainforest means the pole must have been bathed in constant sunlight.",
+          "reality": "The site still went about four months a year without a sunrise. The trees endured that dark. It was the steady warmth, not extra daylight, that let a forest grow."
+        },
+        {
+          "myth": "It was a steamy tropical jungle like the Amazon.",
+          "reality": "At a 12°C annual mean it was a cool, temperate rainforest. Think of the wet forests of today's New Zealand or southern Chile rather than the tropics."
+        }
+      ]
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Klages JP et al. Temperate rainforests near the South Pole during peak Cretaceous warmth. Nature 2020;580:81-86",
+          "url": "https://www.nature.com/articles/s41586-020-2148-5",
+          "type": "paper"
+        },
+        {
+          "label": "A sensational discovery: traces of rainforests in West Antarctica (Kiel University press release, with temperature, latitude and CO2 figures)",
+          "url": "https://www.uni-kiel.de/en/details/news/095-rainforest",
+          "type": "article"
+        },
+        {
+          "label": "Cretaceous (greenhouse climate and paleogeography context)",
+          "url": "https://en.wikipedia.org/wiki/Cretaceous",
+          "type": "wikipedia"
+        }
+      ]
+    }
+  ]
+}

@@ -32,9 +32,16 @@ Datei-Uploads auf **Supabase Storage**. Zugriff erfolgt privat über **Tailscale
 - **Service:** `deepscroll-backend` (systemd)
 - **Unit:** `/etc/systemd/system/deepscroll-backend.service`
 - **Port:** 8000, single uvicorn-Worker
-- **Start:** `uvicorn app.main:app --host 0.0.0.0 --port 8000 --proxy-headers --forwarded-allow-ips=*`
+- **Start:** `uvicorn app.main:app --host 0.0.0.0 --port 8000`
   - `--host 0.0.0.0` ist wichtig, damit auch die Tailscale-IP bedient wird.
-  - `--proxy-headers --forwarded-allow-ips=*` für korrekte `x-forwarded-proto`-Auswertung (relevant fürs WebSocket-Schema).
+  - `--proxy-headers --forwarded-allow-ips=*` wurde **entfernt** (SEC-004/ARCH-002):
+    `--forwarded-allow-ips=*` liess uvicorn `X-Forwarded-*` von **jedem** Peer
+    vertrauen, sodass `websocket.client.host` faelschbar war. Der WS-Gate prueft
+    jetzt den echten TCP-Peer selbst; der Tailscale-Bereich (100.64.0.0/10) ist
+    dort als lokal erlaubt, plain `ws` ueber Tailscale funktioniert also direkt.
+  - Steht spaeter ein echter Reverse-Proxy davor, der TLS terminiert, dessen IP
+    in `TRUSTED_PROXY_IPS` eintragen (nur dann wird sein `x-forwarded-proto`
+    ausgewertet). Solange ohne Proxy: leer lassen.
 - **Secrets-Datei:** `/etc/deepscroll/backend.env`, Rechte `root:root`, `chmod 600`
   (liegt **außerhalb** des Repos, wird von systemd via `EnvironmentFile=` geladen).
 - **create_all** beim Start: legt fehlende Tabellen an, **aber keine neuen Spalten**
@@ -49,6 +56,10 @@ SEED_ADMIN_PASSWORD=...
 SUPABASE_URL=https://<projekt>.supabase.co
 SUPABASE_SERVICE_KEY=...            # ACHTUNG: exakt dieser Name (NICHT ..._SERVICE_ROLE)
 FRONTEND_ORIGIN=http://100.64.140.55:3000   # ACHTUNG: mit http:// und Port, ohne / am Ende
+# TRUSTED_PROXY_IPS=127.0.0.1,10.0.0.0/8    # optional: nur setzen, wenn ein TLS-terminierender
+#                                             Reverse-Proxy davorsteht; dessen x-forwarded-proto
+#                                             wird nur von diesen IPs/CIDRs vertraut. Leer/ungesetzt
+#                                             ohne Proxy (aktueller Tailscale-Betrieb).
 ```
 
 > Vollständige Liste der vom Code zwingend erwarteten Variablen jederzeit prüfen mit:
@@ -186,11 +197,10 @@ Diese Schichtung hat sich bewährt – sie sagt, in welcher Ebene es klemmt:
 
 ## Offene Punkte / To-do
 
-- **WebSocket-Chat über Tailscale ungetestet.** Verbindung läuft als plain `ws://`,
-  und `chat.py` lehnt plain `ws` ggf. mit Code 4403 ab (außer Client „local" oder
-  `x-forwarded-proto: https`). Falls der Chat nicht verbindet: in `chat.py` eine
-  Ausnahme für den Tailscale-Bereich `100.64.0.0/10` ergänzen oder einen lokalen
-  Reverse-Proxy (Caddy/nginx) davorsetzen, der `x-forwarded-proto: https` setzt.
+- **WebSocket-Chat über Tailscale.** Der Tailscale-Bereich `100.64.0.0/10` ist im
+  WS-Gate (`app/ws_security.py`) inzwischen als lokal erlaubt (BUG-012), plain
+  `ws://` über Tailscale verbindet also direkt, ohne Reverse-Proxy. `x-forwarded-proto`
+  wird nur noch von IPs aus `TRUSTED_PROXY_IPS` ausgewertet (SEC-004/029).
 - **Auto-Deploy (GitHub Actions Self-hosted Runner) noch nicht eingerichtet.**
   Braucht Repo-Admin-Rechte vom Owner. **Sicherheitswarnung:** Repo ist öffentlich –
   Runner nur mit Trigger `push: main` (nicht `pull_request`) und deaktivierten

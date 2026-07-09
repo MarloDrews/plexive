@@ -1,7 +1,7 @@
 import asyncio
-import ipaddress
 import json
 import random
+import time
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
@@ -10,6 +10,15 @@ from ..auth import decode_access_token
 from ..database import SessionLocal
 from ..models import User
 from ..rate_limit import check_rate_limit
+from ..ws_security import (
+    WS_REVALIDATE_SECONDS,
+    connection_attempt_allowed,
+    is_secure_or_local,
+    leave_unauthenticated,
+    token_still_valid,
+    try_enter_unauthenticated,
+    user_still_active,
+)
 
 router = APIRouter(prefix="/battle", tags=["battle"])
 
@@ -20,33 +29,12 @@ WS_AUTH_TIMEOUT_SECONDS = 10
 # WebSocket close codes (4xxx range is reserved for applications).
 WS_CLOSE_UNAUTHORIZED = 4401
 WS_CLOSE_INSECURE = 4403
+WS_CLOSE_TRY_AGAIN = 4429  # too many handshake attempts, or the pre-auth pool is full
 
 # Number of questions in one duel. The clients derive the SAME question
 # sequence from the shared seed (mobile/src/lib/battle/seededQuestions.ts), so
 # the server only needs to agree on the length.
 BATTLE_QUESTION_COUNT = 7
-
-
-def _is_secure_or_local(websocket: WebSocket) -> bool:
-    """Require wss outside local development. TLS usually terminates at a
-    reverse proxy, so x-forwarded-proto counts as secure too. Plain ws is also
-    allowed from loopback and private LAN ranges (RFC1918 / link-local) so dev
-    clients -- the Android emulator or a phone reaching the dev machine by its
-    192.168.x.x address -- can connect; those addresses are never publicly
-    routable, so the "force TLS on the public internet" guarantee stands.
-    Mirrors the same gate in routers/chat.py."""
-    if websocket.url.scheme == "wss":
-        return True
-    if websocket.headers.get("x-forwarded-proto", "").lower() in ("https", "wss"):
-        return True
-    host = websocket.client.host if websocket.client else ""
-    if host in ("localhost", "testclient"):
-        return True
-    try:
-        ip = ipaddress.ip_address(host)
-    except ValueError:
-        return False
-    return ip.is_loopback or ip.is_private or ip.is_link_local
 
 
 class BattleManager:
@@ -190,47 +178,76 @@ async def _relay_to_opponent(websocket: WebSocket, user_id: int, payload: dict) 
 
 @router.websocket("/ws")
 async def battle_websocket(websocket: WebSocket):
-    if not _is_secure_or_local(websocket):
+    if not is_secure_or_local(websocket):
         # Reject the handshake outright: battle must run over wss in production.
         await websocket.close(code=WS_CLOSE_INSECURE)
         return
 
+    # Pre-auth per-IP handshake throttle (M137/SEC-021): close before accept().
+    host = websocket.client.host if websocket.client else "unknown"
+    if not connection_attempt_allowed(host):
+        await websocket.close(code=WS_CLOSE_TRY_AGAIN)
+        return
+
     await websocket.accept()
 
+    # Cap concurrent sockets connected but not yet authenticated (M137/SEC-021).
+    if not try_enter_unauthenticated():
+        await websocket.close(code=WS_CLOSE_TRY_AGAIN)
+        return
+
     # First frame must be {"type": "auth", "token": "<jwt>"}, exactly like chat —
-    # the token is never put in the URL so it cannot end up in access logs.
+    # the token is never put in the URL so it cannot end up in access logs. The
+    # pre-auth slot is held only until the outcome is known.
     try:
-        raw = await asyncio.wait_for(websocket.receive_text(), timeout=WS_AUTH_TIMEOUT_SECONDS)
-        first = json.loads(raw)
-    except (asyncio.TimeoutError, ValueError, WebSocketDisconnect):
-        await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
-        return
+        try:
+            raw = await asyncio.wait_for(websocket.receive_text(), timeout=WS_AUTH_TIMEOUT_SECONDS)
+            first = json.loads(raw)
+        except (asyncio.TimeoutError, ValueError, WebSocketDisconnect):
+            await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
+            return
 
-    if not isinstance(first, dict) or first.get("type") != "auth" or not isinstance(first.get("token"), str):
-        await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
-        return
+        if not isinstance(first, dict) or first.get("type") != "auth" or not isinstance(first.get("token"), str):
+            await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
+            return
 
-    try:
-        user_id = decode_access_token(first["token"])
-    except HTTPException:
-        await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
-        return
+        token = first["token"]
+        try:
+            user_id, token_version = decode_access_token(token)
+        except HTTPException:
+            await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
+            return
 
-    db = SessionLocal()
-    try:
-        user = db.query(User).filter(User.id == user_id, User.is_active == True).first()
-        username = user.username if user else None
+        db = SessionLocal()
+        try:
+            user = db.query(User).filter(User.id == user_id, User.is_active == True).first()
+            username = user.username if user else None
+        finally:
+            db.close()
+        # Reject a token whose version was revoked by a password change (M126).
+        if not user or username is None or user.token_version != token_version:
+            await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
+            return
     finally:
-        db.close()
-    if not user or username is None:
-        await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
-        return
+        leave_unauthenticated()
 
     await manager.connect(user_id, websocket)
     try:
         await websocket.send_json({"type": "auth_ok", "user_id": user_id})
+        next_recheck = time.monotonic() + WS_REVALIDATE_SECONDS
         while True:
             raw = await websocket.receive_text()
+            # Re-validate per frame (M137/BUG-037): token must still decode every
+            # frame; is_active/token_version re-checked in the DB once per interval.
+            if not token_still_valid(token, user_id, token_version):
+                await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
+                break
+            now = time.monotonic()
+            if now >= next_recheck:
+                if not user_still_active(user_id, token_version):
+                    await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
+                    break
+                next_recheck = now + WS_REVALIDATE_SECONDS
             if len(raw) > WS_FRAME_MAX_BYTES:
                 await _error(websocket, "Frame too large.")
                 continue

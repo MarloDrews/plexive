@@ -1,5 +1,6 @@
 import SectionLabel from "../SectionLabel"
 import type { StoryContent } from "../../types/post"
+import AppImage from "../AppImage"
 import SvgBlock from "../SvgBlock"
 import ContentImage from "./ContentImage"
 import Prose from "../Prose"
@@ -35,12 +36,14 @@ export default function StorySection({ content, isUserContent }: Props) {
           {content.key_figures.map((fig, i) => (
             <div key={i} className="bg-surface-2 border border-edge-strong rounded-field px-4 py-4 flex gap-3 items-start">
               {fig.image_url && (
-                <img
+                <AppImage
                   src={fig.image_url}
                   alt={fig.name}
-                  loading="lazy"
-                  decoding="async"
+                  width={40}
+                  height={40}
+                  sizes="40px"
                   className="w-10 h-10 rounded-full object-cover shrink-0 bg-surface-2"
+                  onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none" }}
                 />
               )}
               <div className="flex flex-col gap-0.5 min-w-0">

@@ -7,11 +7,15 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --test"
+    "test": "node --import tsx --test",
+    "analyze": "node scripts/analyze-routes.mjs"
+  },
+  "overrides": {
+    "js-yaml": "^4.1.2",
+    "postcss": "^8.5.10"
   },
   "dependencies": {
     "@diffusionstudio/vits-web": "^1.0.3",
-    "@types/katex": "^0.16.8",
     "katex": "^0.17.0",
     "next": "16.2.6",
     "react": "19.2.4",
@@ -21,13 +25,16 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/katex": "^0.16.8",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/react-test-renderer": "^19.1.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
-    "playwright": "^1.60.0",
+    "react-test-renderer": "^19.2.4",
     "tailwindcss": "^4",
+    "tsx": "^4.23.0",
     "typescript": "^5"
   }
 }

@@ -1,0 +1,258 @@
+{
+  "tags": [
+    "public-health",
+    "medicine",
+    "modern-history"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Manufactured doubt"
+      },
+      "featured": true
+    },
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Regulatory capture"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "Doctors tied lead paint to childhood brain damage in 1904. The United States kept it legal in homes until 1978.",
+    "teasers": [
+      "How a known poison stayed legal for decades",
+      "Who paid for the science that reassured everyone",
+      "Why it still coats millions of homes today"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "Doctors tied lead paint to childhood brain damage in 1904. The United States kept it legal in homes until 1978."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 0 400 210' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='30' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Known early, banned late</text><path d='M62 100 H367' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><path d='M62 100 v12 M367 100 v12' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><text x='214' y='92' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>74 years</text><line x1='45' y1='150' x2='375' y2='150' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><g stroke='currentColor' stroke-width='2' opacity='0.6' stroke-linecap='round'><line x1='62' y1='143' x2='62' y2='157'/><line x1='132' y1='143' x2='132' y2='157'/><line x1='367' y1='143' x2='367' y2='157'/></g><circle cx='62' cy='150' r='5' fill='currentColor'/><circle cx='367' cy='150' r='5' fill='currentColor'/><text x='132' y='136' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.75' text-anchor='middle'>Europe restricts</text><g fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' font-weight='700' text-anchor='middle'><text x='62' y='176'>1904</text><text x='132' y='176'>1921</text><text x='367' y='176'>1978</text></g><text x='48' y='196' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.75' text-anchor='start'>harm documented</text><text x='375' y='196' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.75' text-anchor='end'>US bans it</text></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "The danger was documented early. By 1904 the Queensland doctor John Lockhart Gibson had traced children's convulsions and blindness to the lead paint in their homes. Within two decades, France, Belgium, and much of Europe had restricted white lead indoors. The evidence did not stay quiet. It built through the 1920s, 30s, and 40s. And through all of it, American manufacturers kept selling lead house paint, and kept advertising it, until a federal ban finally arrived in 1978."
+    },
+    {
+      "type": "story",
+      "order": 7,
+      "content": {
+        "body": "The pattern repeated for decades: evidence arrived, and the industry pushed back. In Boston in 1943, the neurologist Randolph Byers and the psychologist Elizabeth Lord followed 20 children who had been sent home “cured” of lead poisoning. Nineteen of the 20 were left with lasting trouble in school, attention, and behavior. The damage, they showed, did not fully heal. Yet the field's leading lead expert, Robert Kehoe, ran the industry-funded Kettering Laboratory. For decades he maintained that ordinary lead levels were safe until proven otherwise. Because the industry paid for most of the research, its view shaped the science. The Lead Industries Association went further, promoting lead paint as clean and durable and blaming poisoned children on careless parents. Only in 1979 did Herbert Needleman, measuring lead in children's baby teeth, show that even low levels lowered IQ. The industry spent years attacking his work before it was accepted.",
+        "visual_svg": "<svg viewBox='0 0 400 210' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='28' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.75' text-anchor='middle'>Children sent home “cured” of lead poisoning (1943)</text><g fill='var(--accent)'><circle cx='42' cy='85' r='9'/><circle cx='77' cy='85' r='9'/><circle cx='112' cy='85' r='9'/><circle cx='147' cy='85' r='9'/><circle cx='182' cy='85' r='9'/><circle cx='217' cy='85' r='9'/><circle cx='252' cy='85' r='9'/><circle cx='287' cy='85' r='9'/><circle cx='322' cy='85' r='9'/><circle cx='357' cy='85' r='9'/><circle cx='42' cy='125' r='9'/><circle cx='77' cy='125' r='9'/><circle cx='112' cy='125' r='9'/><circle cx='147' cy='125' r='9'/><circle cx='182' cy='125' r='9'/><circle cx='217' cy='125' r='9'/><circle cx='252' cy='125' r='9'/><circle cx='287' cy='125' r='9'/><circle cx='322' cy='125' r='9'/></g><circle cx='357' cy='125' r='9' stroke='currentColor' stroke-width='2' opacity='0.5'/><text x='200' y='170' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>19 of 20 did not fully heal</text><text x='200' y='192' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.65' text-anchor='middle'>lasting harm to learning, attention, and behavior</text></svg>",
+        "key_figures": [
+          {
+            "name": "John Lockhart Gibson",
+            "role": "First tied children's poisoning to paint",
+            "one_line": "In 1904 the Queensland ophthalmologist traced a wave of childhood lead poisoning to the lead paint in children's homes.",
+            "lifespan": "1860-1944",
+            "birth_year": 1860,
+            "featured": true
+          },
+          {
+            "name": "Randolph Byers",
+            "role": "Showed the harm was permanent",
+            "one_line": "With Elizabeth Lord in 1943, he found that children who had recovered from lead poisoning were left with lasting learning and behavior problems.",
+            "featured": false
+          },
+          {
+            "name": "Robert Kehoe",
+            "role": "The industry's lead scientist",
+            "one_line": "As director of the industry-funded Kettering Laboratory, he held for decades that prevailing lead levels were safe.",
+            "lifespan": "1893-1992",
+            "birth_year": 1893,
+            "featured": false
+          },
+          {
+            "name": "Herbert Needleman",
+            "role": "Proved low doses harm children",
+            "one_line": "His 1979 study of lead in children's teeth showed that even low levels lowered IQ, and the industry spent years attacking it.",
+            "lifespan": "1927-2017",
+            "birth_year": 1927,
+            "featured": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "Lead's damage does not undo, and no dose is safe",
+          "body": "Two facts make lead paint worse than an ordinary poison. Byers had shown that the harm to a child's developing brain is largely permanent. And there is no clean threshold below which lead is fine. The CDC now states plainly that no level of lead in a child's blood is known to be safe. When the country finally took lead out of paint, and later out of gasoline, children's average blood lead fell steeply. It dropped from about 15 micrograms per decilitre in the late 1970s to under 1 today.",
+          "visual_svg": "<svg viewBox='0 0 400 220' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='28' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>US children's average blood lead (µg/dL)</text><g stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'><line x1='58' y1='58' x2='58' y2='180'/><line x1='58' y1='180' x2='372' y2='180'/></g><g fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' opacity='0.7' text-anchor='end'><text x='50' y='72'>15</text><text x='50' y='184'>0</text></g><polyline points='91,60 176,148 247,164 360,172' stroke='var(--accent)' stroke-width='3' stroke-linecap='round' stroke-linejoin='round' fill='none'/><g fill='var(--accent)'><circle cx='91' cy='60' r='4.5'/><circle cx='360' cy='172' r='4.5'/></g><text x='91' y='50' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' font-weight='700' text-anchor='middle'>~15</text><text x='356' y='166' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' font-weight='700' text-anchor='end'>~1</text><g fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' opacity='0.7' text-anchor='middle'><text x='91' y='198'>1978</text><text x='360' y='198'>2016</text></g><text x='200' y='214' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.65' text-anchor='middle'>after lead left paint and gasoline</text></svg>"
+        },
+        {
+          "title": "Money bought the science that reassured everyone",
+          "body": "The delay was built on purpose. For much of the century, the companies that made lead also funded most of the research into whether lead was harmful, and they backed the experts who said it was not. Doubt was the product. Later industries, from tobacco to fossil fuels, would copy the tactic. As long as the science could be called unsettled, there was no case for a ban, and the paint kept selling."
+        },
+        {
+          "title": "Exposure never fell evenly across neighborhoods",
+          "body": "Who got poisoned was not random. Lead paint lingered longest in old, poorly kept housing, and decades after the ban that housing still holds it. The industry leaned on that, at times casting lead poisoning as a failure of certain families. But the children most exposed were disproportionately poor, and in American cities disproportionately Black."
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "None of this was a failure to know. The science was in early, and much of the world acted on it. What failed was the will to act against a profitable product, and the cost of that delay was paid by children, in lost learning and altered lives, across several generations. It is the clearest early case of a pattern that keeps recurring, where a proven harm stays on the market because doubt is cheaper to manufacture than change. Knowing that something is harmful has never been enough, by itself, to stop it."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "Why is the delay in banning US lead paint described as manufactured rather than a case of slow science?",
+          "options": [
+            "The health science was genuinely unclear until the 1970s",
+            "The harm was documented early, but the industry funded doubt and kept the product on sale",
+            "Lead paint was too useful to replace until safer paints were invented",
+            "Regulators simply forgot to act on the evidence"
+          ],
+          "answer_index": 1,
+          "explanation": "The danger was documented from 1904 and acted on in Europe within two decades. In the US the evidence was met by an industry that funded reassuring research and kept selling, which is what stretched the delay to 1978."
+        },
+        {
+          "question": "What did Byers and Lord's 1943 study of children discharged as cured reveal?",
+          "options": [
+            "The children recovered fully with no lasting effects",
+            "Lead poisoning was harmless at those levels",
+            "Most were left with lasting problems in learning and behavior",
+            "Only physical effects, not mental ones, remained"
+          ],
+          "answer_index": 2,
+          "explanation": "Nearly all of the children they followed carried lasting deficits in attention, learning, and behavior. It was early evidence that lead's damage to a young brain does not simply heal."
+        },
+        {
+          "question": "What does the CDC's current position on childhood blood lead levels mean in practice?",
+          "options": [
+            "There is a safe level, around 5 micrograms per decilitre",
+            "Lead is dangerous only above 40 micrograms per decilitre",
+            "Lead is harmful only if a child swallows paint directly",
+            "No level of lead in a child's blood is known to be safe"
+          ],
+          "answer_index": 3,
+          "explanation": "Harm shows up even at low blood lead, so no threshold can be called safe. That is why the level that prompts action has been lowered repeatedly, toward zero."
+        },
+        {
+          "question": "How did the lead industry shape the science on lead's safety for decades?",
+          "options": [
+            "It funded much of the research and backed the experts who called lead safe",
+            "It banned independent scientists from studying lead",
+            "It destroyed all evidence of harm",
+            "It bribed government regulators directly"
+          ],
+          "answer_index": 0,
+          "explanation": "By paying for most lead research and supporting figures like Robert Kehoe, the industry could keep the question looking open. If the science seemed unsettled, there was no case for a ban."
+        },
+        {
+          "question": "Why is lead paint still a health concern today, decades after the ban?",
+          "options": [
+            "New lead paint is still sold for outdoor use",
+            "Old paint in pre-1978 housing turns to lead dust as it wears",
+            "The ban was reversed in the 1990s",
+            "Lead has been added back to gasoline"
+          ],
+          "answer_index": 1,
+          "explanation": "The ban stopped new lead paint but left the old paint in place. As it deteriorates in older homes, it grinds into dust that children take in, which is now the main source of childhood lead exposure."
+        },
+        {
+          "question": "After lead was removed from paint and gasoline, children's average blood lead levels...",
+          "options": [
+            "rose slightly as housing aged",
+            "stayed about the same",
+            "fell steeply, from about 15 to under 1 microgram per decilitre",
+            "became impossible to measure"
+          ],
+          "answer_index": 2,
+          "explanation": "The average dropped by more than tenfold within a generation. It is strong evidence that most childhood lead exposure was preventable all along."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "Lead paint only harms a child who eats paint chips.",
+          "reality": "Most exposure is invisible. As old paint wears, it grinds into a fine dust that settles on floors and window sills, and children take it in during ordinary hand-to-mouth play. Swallowing paint chips is only one route, and not the main one."
+        },
+        {
+          "myth": "Lead paint is a solved, historical problem.",
+          "reality": "The ban stopped new lead paint; it did not remove the old. Tens of millions of homes built before 1978 still have lead paint under later coats, and it is the leading source of lead exposure in American children today."
+        },
+        {
+          "myth": "Low levels of lead are basically harmless.",
+          "reality": "There is no known safe level for a child. Even low blood lead is tied to lower IQ, attention problems, and slower development, and the official safety threshold has been lowered again and again toward zero."
+        }
+      ]
+    },
+    {
+      "type": "open_questions",
+      "order": 12,
+      "content": {
+        "body": "The history is documented. The reckoning is not. Old lead paint still coats the insides of tens of millions of homes, and stripping it out safely is slow and costly, so most stays where it is. How much of a generation's lost learning traces back to lead is still being counted.",
+        "items": [
+          "How much of a generation's lost learning and behavior problems can be traced back to lead?",
+          "How can the lead paint still inside millions of old homes be removed safely and affordably?",
+          "Where else is the same strategy of manufacturing doubt delaying action right now?"
+        ]
+      }
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "US National Library of Medicine. This Lead Is Killing Us: A History of Citizens Fighting Lead in Baltimore",
+          "url": "https://www.nlm.nih.gov/exhibition/thisleadiskillingus/index.html",
+          "type": "article"
+        },
+        {
+          "label": "Lead-based paint in the United States",
+          "url": "https://en.wikipedia.org/wiki/Lead-based_paint_in_the_United_States",
+          "type": "wikipedia"
+        },
+        {
+          "label": "White Lead (Painting) Convention, 1921",
+          "url": "https://en.wikipedia.org/wiki/White_Lead_(Painting)_Convention,_1921",
+          "type": "wikipedia"
+        },
+        {
+          "label": "US Consumer Product Safety Commission. CPSC Announces Final Ban On Lead-Containing Paint (1977)",
+          "url": "https://www.cpsc.gov/Recalls/1977/cpsc-announces-final-ban-on-lead-containing-paint",
+          "type": "article"
+        },
+        {
+          "label": "Rosner D, Markowitz G. A gift of God? The public health controversy over leaded gasoline. AJPH 1985; and Warnings Unheeded: A History of Child Lead Poisoning. AJPH 1989;79(12):1668",
+          "url": "https://ajph.aphapublications.org/doi/pdf/10.2105/AJPH.79.12.1668",
+          "type": "paper"
+        },
+        {
+          "label": "Dignam T et al. Blood Lead Levels in U.S. Children Ages 1-11 Years, 1976-2016. Environmental Health Perspectives 2021",
+          "url": "https://ehp.niehs.nih.gov/doi/10.1289/EHP7932",
+          "type": "paper"
+        },
+        {
+          "label": "CDC. About Childhood Lead Poisoning Prevention",
+          "url": "https://www.cdc.gov/lead-prevention/about/index.html",
+          "type": "article"
+        }
+      ]
+    }
+  ]
+}

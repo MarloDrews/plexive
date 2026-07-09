@@ -3,6 +3,10 @@ uvicorn[standard]
 sqlalchemy
 psycopg2-binary
 bcrypt
+# python-jose pulls in `ecdsa`, which has an unfixable Minerva timing advisory
+# (PYSEC-2026-1325 / CVE-2024-23342) the maintainers will not patch. It affects
+# only ECDSA signing/keygen/ECDH; we sign JWTs with HS256 (HMAC) and never touch
+# an ECDSA code path, so the advisory is not exploitable here. Accepted (M135).
 python-jose[cryptography]
 python-dotenv
 email-validator

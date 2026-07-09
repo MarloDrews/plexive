@@ -1,0 +1,240 @@
+{
+  "tags": [
+    "sleep",
+    "neuroscience",
+    "human-body"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Sleep pressure"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "Go 17 hours without sleep and you perform like a driver at the legal alcohol limit across much of the world. Reach 24 hours awake and you match about twice that, past the limit almost everywhere.",
+    "teasers": [
+      "The test that reads tiredness in units of alcohol",
+      "Why your breath gives one impairment away and not the other",
+      "The stretch of road a microsleep erases"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "Go 17 hours without sleep and you perform like a driver at the legal alcohol limit across much of the world. Reach 24 hours awake and you match about twice that, past the limit almost everywhere."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><g stroke='currentColor' stroke-width='2' stroke-linecap='round' opacity='0.45'><line x1='60' y1='250' x2='372' y2='250'/><line x1='60' y1='250' x2='60' y2='52'/></g><line x1='60' y1='164' x2='348' y2='164' stroke='currentColor' stroke-width='1.5' opacity='0.5' stroke-dasharray='6 6'/><text x='64' y='157' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='start'>0.05% legal limit</text><path d='M70 246 Q 170 210 261 164 Q 305 128 340 82' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' opacity='0.75'/><circle cx='340' cy='82' r='5.5' fill='none' stroke='currentColor' stroke-width='2.5' opacity='0.8'/><text x='340' y='72' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='end'>24 h = 0.10%</text><circle cx='261' cy='164' r='6.5' fill='var(--accent)'/><text x='250' y='190' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>17 h awake</text><text x='214' y='276' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>hours awake</text><text x='28' y='150' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle' transform='rotate(-90 28 150)'>equivalent BAC</text></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "A tracking task is a simple test: keep a dot centered with a joystick while a machine logs how far you drift. After 17 hours awake, the drift reaches a familiar level. A rested person hits the same numbers with a couple of drinks in them, blood alcohol at 0.05%. Push the sleepless one to 24 hours and the scores match a reading of 0.10%, over the limit almost everywhere it is set. The body keeps no separate meter for tiredness. It shows up through the same slowed reactions and missed cues that alcohol produces."
+    },
+    {
+      "type": "how_we_know",
+      "order": 5,
+      "content": "This is not a loose analogy. Researchers put the two states on the same ruler. Volunteers ran reaction and coordination tasks across a night without sleep, then on other days did the same tasks after measured drinks, with blood alcohol climbing to 0.10%. Charting one against the other lets you read off, for any stretch of hours awake, the alcohol level that would dull you as much. A 2000 follow-up study found the sleepless scores worse than the drinking on some tasks. Response times ran up to 50% slower."
+    },
+    {
+      "type": "key_numbers",
+      "order": 6,
+      "content": [
+        {
+          "label": "Slept 6 to 7 hours",
+          "value": "1.3x",
+          "unit": "crash risk vs 7+ hours rested"
+        },
+        {
+          "label": "Slept 5 to 6 hours",
+          "value": "1.9x",
+          "unit": "crash risk"
+        },
+        {
+          "label": "Slept 4 to 5 hours",
+          "value": "4.3x",
+          "unit": "crash risk"
+        },
+        {
+          "label": "Slept under 4 hours",
+          "value": "11.5x",
+          "unit": "crash risk"
+        }
+      ]
+    },
+    {
+      "type": "story",
+      "order": 7,
+      "content": {
+        "body": "For most of the 20th century, fatigue and drink were policed as different dangers. A firm might breath-test for alcohol and wave a tired worker back to the line. In 1997 two researchers in Australia, Drew Dawson and Kathryn Reid, put them on one scale. They kept volunteers awake overnight and, on other days, dosed the same people with alcohol, running everyone through a hand-eye coordination test. Plotted together, the two curves let them read a night's lost sleep in units of blood alcohol. Twenty-four hours awake came out at 0.10%. Three years later Ann Williamson and Anne-Marie Feyer ran it again, with transport and army workers and a broader set of tasks. The match held.",
+        "visual_svg": "<svg viewBox='0 44 400 176' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='66' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.78' text-anchor='middle'>Response time on a vigilance test</text><text x='40' y='114' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.8' text-anchor='start'>Rested</text><rect x='120' y='100' width='100' height='22' rx='8' stroke='currentColor' stroke-width='2' opacity='0.6'/><text x='40' y='164' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='start'>17+ h awake</text><rect x='120' y='150' width='150' height='22' rx='8' fill='var(--accent)' fill-opacity='0.18' stroke='var(--accent)' stroke-width='2.5'/><text x='278' y='165' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='start'>up to 50% slower</text></svg>",
+        "key_figures": [
+          {
+            "name": "Drew Dawson",
+            "role": "First put sleep loss and alcohol on one scale",
+            "one_line": "Led the 1997 study that measured hours awake and blood alcohol against the same task, and reported the equivalence."
+          },
+          {
+            "name": "Ann Williamson",
+            "role": "Confirmed it across real workers",
+            "one_line": "Led the 2000 study of transport and army employees that reproduced the equivalence across a wider set of tasks."
+          }
+        ]
+      }
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "The deficit is one you cannot feel",
+          "body": "Alcohol announces itself. You slur, you sway, some part of you knows. Sleep loss is quiet. In studies where people are held to short nights, how sleepy they say they feel levels off after a few days while their scores on tasks keep sliding. The measured impairment keeps climbing while the felt sense of it stays flat."
+        },
+        {
+          "title": "A microsleep erases a stretch of road",
+          "body": "Past a certain point the brain stops asking permission. It blinks out for anywhere from half a second to several seconds, often with the eyes still open. You do not notice the gap. The part that would notice is the part that switched off. On a motorway, the car covers a long stretch of road while no one is watching it.",
+          "visual_svg": "<svg viewBox='0 66 400 148' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='90' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.78' text-anchor='middle'>A 4-second microsleep at 100 km/h</text><line x1='44' y1='170' x2='360' y2='170' stroke='currentColor' stroke-width='2' opacity='0.35' stroke-linecap='round' stroke-dasharray='2 10'/><rect x='44' y='160' width='26' height='16' rx='5' stroke='currentColor' stroke-width='2' opacity='0.7'/><line x1='80' y1='170' x2='352' y2='170' stroke='var(--accent)' stroke-width='4' stroke-linecap='round'/><line x1='352' y1='170' x2='340' y2='163' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><line x1='352' y1='170' x2='340' y2='177' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><text x='216' y='150' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>111 m with eyes shut</text><text x='216' y='196' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.65' text-anchor='middle'>longer than a football pitch</text></svg>"
+        },
+        {
+          "title": "Caffeine quiets the alarm while the deficit grows",
+          "body": "Stay awake and a molecule called adenosine builds up, pressing you toward sleep. Caffeine blocks that signal. The pressure is still there, only muffled, so you feel sharper without being sharper. When the caffeine fades, the reaction lapses return. It buys alertness on credit, and the debt stays owed."
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "We built a whole apparatus around drunk driving. The limits, the roadside tests, the penalties all exist because impaired driving kills. It mostly waves through the driver who has been awake since yesterday morning, whose scores on the tasks read the same. The gap is not in the science. One impairment leaves a smell on the breath. The other leaves nothing to point to, no inner alarm that says stop. So the honest measure of fitness to drive is hours slept, counted on a clock. The feeling of being fine goes first."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "Being awake for 24 hours leaves your task performance closest to which state?",
+          "options": [
+            "A rested person at 0.10% blood alcohol, over the limit in most countries",
+            "A rested person after a single drink",
+            "Someone with a mild head cold",
+            "No measurable impairment at all"
+          ],
+          "answer_index": 0,
+          "explanation": "In the controlled studies, a full day awake pushed performance down to what the same people showed at 0.10% blood alcohol, a level above the driving limit almost everywhere it is set."
+        },
+        {
+          "question": "Why is sleep-loss impairment harder to catch than alcohol impairment?",
+          "options": [
+            "It permanently damages the brain",
+            "It gives little inner warning, so people feel fine while measurably impaired",
+            "It always lasts longer than a hangover",
+            "It cannot be measured on any test"
+          ],
+          "answer_index": 1,
+          "explanation": "Alcohol produces obvious outward signs and a felt sense of being affected. Sleep loss degrades performance while self-rated alertness lags behind, so the impaired person is often confident they are fine."
+        },
+        {
+          "question": "How did researchers establish that sleep loss and alcohol cause comparable impairment?",
+          "options": [
+            "They surveyed drivers about how they felt after crashes",
+            "They tested the same people both sleep-deprived and after measured drinks on identical tasks",
+            "They compared brain scans of drinkers and insomniacs",
+            "They measured how much adenosine each group produced"
+          ],
+          "answer_index": 1,
+          "explanation": "By running the same people through the same tasks under both conditions, they could line the two impairments up on one scale and read hours awake directly as a blood alcohol equivalent."
+        },
+        {
+          "question": "Why is a microsleep at highway speed so dangerous?",
+          "options": [
+            "It briefly lowers the driver's blood alcohol",
+            "It forces the driver into a full sleep cycle",
+            "It sharply raises heart rate and blood pressure",
+            "The driver covers a long stretch of road with eyes effectively shut"
+          ],
+          "answer_index": 3,
+          "explanation": "A lapse of a few seconds carries a car more than a hundred meters at highway speed, all of it driven blind, and the driver rarely registers that the gap happened."
+        },
+        {
+          "question": "What does caffeine do for a sleep-deprived person?",
+          "options": [
+            "It repairs the underlying performance deficit",
+            "It substitutes for the sleep that was missed",
+            "It blocks the tiredness signal for a while without clearing the deficit",
+            "It has no effect on how alert they feel"
+          ],
+          "answer_index": 2,
+          "explanation": "Caffeine blocks adenosine, the molecule that signals sleep pressure, so you feel more alert. The pressure and the impairment remain, and both return once the caffeine wears off."
+        },
+        {
+          "question": "A workplace bars driving at 0.05% blood alcohol but lets staff drive home after a 20-hour shift. What does the research imply?",
+          "options": [
+            "The shift driver is likely more impaired than the barred drinker",
+            "The two situations are unrelated",
+            "The shift driver is measurably safer",
+            "Alcohol is the only real driving risk of the two"
+          ],
+          "answer_index": 0,
+          "explanation": "Around 17 hours awake already matches 0.05%, so by 20 hours the shift worker's measured impairment has passed the level the workplace treats as too drunk to drive."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "I have trained myself to do fine on 5 hours a night.",
+          "reality": "People adapt to feeling less sleepy, not to performing better. On objective tasks the chronically short-slept keep declining, all while rating themselves as fine."
+        },
+        {
+          "myth": "A strong coffee cancels out a night without sleep.",
+          "reality": "Caffeine mutes the tiredness signal for a couple of hours. The lapses in attention and the sleep debt are untouched, and both return when it clears."
+        },
+        {
+          "myth": "Sleep loss and alcohol impair you in exactly the same way.",
+          "reality": "The measured performance lines up closely, but the two are not identical. Alcohol and sleep loss act through partly different routes, and the equivalence is about the result on tasks, not the mechanism behind it."
+        }
+      ]
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Williamson AM, Feyer A-M. Moderate sleep deprivation produces impairments in cognitive and motor performance equivalent to legally prescribed levels of alcohol intoxication. Occup Environ Med 2000;57:649-655",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/10984335/",
+          "type": "paper"
+        },
+        {
+          "label": "Dawson D, Reid K. Fatigue, alcohol and performance impairment. Nature 1997;388:235",
+          "url": "https://www.eurocockpit.eu/sites/default/files/Dawson-Reid-1997.pdf",
+          "type": "paper"
+        },
+        {
+          "label": "Kuo AA. Editorial: does sleep deprivation impair cognitive and motor performance as much as alcohol intoxication? West J Med 2001;174(3)",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC1071308/",
+          "type": "article"
+        },
+        {
+          "label": "Tefft BC. Acute Sleep Deprivation and Risk of Motor Vehicle Crash Involvement. AAA Foundation for Traffic Safety, 2016",
+          "url": "https://aaafoundation.org/research/acute-sleep-deprivation-risk-motor-vehicle-crash-involvement/",
+          "type": "paper"
+        },
+        {
+          "label": "Drunk driving law by country (legal BAC limits)",
+          "url": "https://en.wikipedia.org/wiki/Drunk_driving_law_by_country",
+          "type": "wikipedia"
+        }
+      ]
+    }
+  ]
+}

@@ -2,6 +2,7 @@ import SectionLabel from "../SectionLabel"
 import Prose from "../Prose"
 import MathText from "../MathText"
 import type { YourTurnContent } from "../../types/post"
+import { asArray } from "@/lib/asArray"
 
 interface Props {
   content: YourTurnContent
@@ -19,7 +20,7 @@ export default function YourTurnSection({ content }: Props) {
       {/* Prompts use the shared open-question affordance (the accent "?" marker),
           since each prompt is a real question handed back to the reader. */}
       <ul className="flex flex-col gap-3">
-        {content.prompts.map((prompt, i) => (
+        {asArray(content.prompts).map((prompt, i) => (
           <li key={i} className="flex items-start gap-3">
             <span className="text-(--accent) font-semibold text-sm mt-0.5 shrink-0">?</span>
             <Prose><MathText text={prompt} /></Prose>

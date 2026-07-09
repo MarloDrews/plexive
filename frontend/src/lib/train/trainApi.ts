@@ -1,17 +1,19 @@
 import type { AnswerResult, Difficulty, MarathonQuestion } from "@/types/train"
 import { mockQuestions } from "./mockQuestions"
 import { applyDelta, computeDelta, DIFFICULTY_RATING, pickDifficulty } from "./elo"
-import { apiFetch } from "@/app/lib/api"
+import { numericMatch } from "./numeric"
+import { apiFetch } from "@/lib/api"
 
 // THE SEAM (ported from mobile/src/lib/train/trainApi.ts). Question SELECTION
-// still runs against the local mock pool (there is no server question bank yet).
-// SCORING is split by auth:
-//   - Logged-in players: the answer is POSTed to /api/train/answer and the
-//     server updates the user's SINGLE unified knowledge score (the same number
-//     shown as the profile "Knowledge score") and returns the authoritative
-//     rating + delta. Correctness is still decided here against the mock
-//     answerIndex and trusted by the server (see the note in @/types/train); it
-//     must move server-side once a real Train question backend exists.
+// still runs against the local mock pool (there is no shared question backend
+// yet). SCORING is split by auth:
+//   - Logged-in players: the answer is POSTed to /api/train/answer as the raw
+//     choice (question_id + chosen_index/chosen_value), and the SERVER grades
+//     correctness from its own bank (app/train_bank.py) and updates the user's
+//     SINGLE unified knowledge score, returning the authoritative rating + delta
+//     (M120). The client no longer sends its own correctness; it still computes
+//     `correct` LOCALLY for the immediate feedback display, from the same mock
+//     answer, so keep app/train_bank.py in sync with mockQuestions.ts.
 //   - Guests: pure client-side simulation via ./elo (nothing is persisted).
 //
 // All marathon math (Elo simulator + difficulty weighting) lives in ./elo so it
@@ -74,12 +76,11 @@ export async function submitAnswer(params: {
   chosenValue?: number
 }): Promise<AnswerResult> {
   const { question, chosenIndex, chosenValue, answerMs, currentElo, answeredCountInSession, loggedIn } = params
-  // Mock phase: correctness is decided here against the client-side answer.
-  // This MUST move server-side once a real Train question backend exists (see the
-  // note at the top of @/types/train).
+  // Local correctness is computed only for the immediate feedback display; the
+  // authoritative score comes from the server grade below (logged-in path).
   const numeric = question.kind === "numeric"
   const correct = numeric
-    ? chosenValue === question.answerValue
+    ? numericMatch(chosenValue ?? NaN, question.answerValue, question.min, question.step ?? 1)
     : chosenIndex === question.answerIndex
   // Per-kind correct answer to show in feedback (only one applies).
   const correctIndex = numeric ? undefined : question.answerIndex
@@ -87,26 +88,33 @@ export async function submitAnswer(params: {
   const eloBefore = Math.round(currentElo)
 
   if (loggedIn) {
-    // Authoritative path: the server updates the unified knowledge score and
-    // returns the new rating + delta, so Train and the profile stay one number.
+    // Authoritative path: send the raw choice; the server grades from its own
+    // bank and returns the new rating + delta, so Train and the profile stay one
+    // number and correctness is never client-asserted (M120).
     const r = await apiFetch("/api/train/answer", {
       method: "POST",
       body: JSON.stringify({
-        difficulty: question.difficulty,
-        correct,
+        question_id: question.id,
+        chosen_index: numeric ? undefined : chosenIndex,
+        chosen_value: numeric ? chosenValue : undefined,
         answer_ms: Math.round(answerMs),
       }),
     })
     if (!r.ok) throw new Error("Failed to submit answer.")
     const data: { rating: number; delta: number } = await r.json()
+    const eloAfter = Math.round(data.rating)
+    const delta = Math.round(data.delta)
     return {
       correct,
       correctIndex,
       correctValue,
       explanation: question.explanation,
-      eloBefore,
-      eloAfter: Math.round(data.rating),
-      delta: Math.round(data.delta),
+      // Derived from the server's own rating and delta so the ticker start,
+      // end and delta chip always agree; the client session value could
+      // differ (rounding, concurrent activity elsewhere).
+      eloBefore: eloAfter - delta,
+      eloAfter,
+      delta,
       answerMs,
       questionRating: questionRating(question.difficulty),
     }

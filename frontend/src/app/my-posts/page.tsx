@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { useAuth } from "@/app/lib/auth"
-import { apiFetch } from "@/app/lib/api"
+import { useAuth } from "@/lib/auth"
+import { apiFetch } from "@/lib/api"
 import { FORMAT_STYLES, type FormatId } from "@/lib/formats"
-import BottomNav from "@/app/components/BottomNav"
+import BottomNav from "@/components/BottomNav"
 import BookCover from "@/components/BookCover"
-import { relativeTime } from "@/app/lib/relativeTime"
+import { relativeTime } from "@/lib/relativeTime"
 import { fcStr, type Post } from "@/types/post"
 
 export default function MyPostsPage() {
@@ -23,8 +23,14 @@ export default function MyPostsPage() {
   useEffect(() => {
     if (!user) return
     apiFetch("/api/posts/mine")
-      .then((r) => r.json())
-      .then((data: Post[]) => setPosts(data))
+      .then((r) => {
+        // Without the ok-check a 401/500 error body (a JSON object, not an
+        // array) would land in `posts` and the page would render permanently
+        // blank; throw into the catch instead.
+        if (!r.ok) throw new Error(`status ${r.status}`)
+        return r.json()
+      })
+      .then((data: Post[]) => setPosts(Array.isArray(data) ? data : []))
       .catch(() => setFetchError("Failed to load posts."))
   }, [user])
 
@@ -33,7 +39,7 @@ export default function MyPostsPage() {
   return (
     <div className="h-[100dvh] bg-surface-0 flex justify-center">
       <div className="w-full max-w-[430px] h-[100dvh] relative">
-        <div className="h-full overflow-y-auto pb-24 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
+        <div className="h-full overflow-y-auto pb-24">
 
           {/* Header */}
           <div className="flex items-center gap-3 px-4 pt-4 pb-3">

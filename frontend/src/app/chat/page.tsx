@@ -1,16 +1,16 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import useSWR from "swr"
-import BottomNav from "@/app/components/BottomNav"
+import BottomNav from "@/components/BottomNav"
 import Avatar from "@/components/Avatar"
 import VerifiedBadge from "@/components/VerifiedBadge"
-import { apiFetch } from "@/app/lib/api"
-import { useAuth } from "@/app/lib/auth"
-import { relativeTime } from "@/app/lib/relativeTime"
-import type { ChatParticipant, Conversation } from "@/app/lib/chatSocket"
+import { apiFetch } from "@/lib/api"
+import { useAuth, hasToken } from "@/lib/auth"
+import { relativeTime } from "@/lib/relativeTime"
+import type { ChatParticipant, Conversation } from "@/lib/chatSocket"
 
 interface UserResult {
   username: string
@@ -43,6 +43,8 @@ function NewChatOverlay({ onClose, onCreated }: { onClose: () => void; onCreated
   const [groupName, setGroupName] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
+  // Guards against a slow response for an earlier query landing after a later one.
+  const searchSeq = useRef(0)
 
   useEffect(() => {
     const trimmed = query.trim()
@@ -50,9 +52,16 @@ function NewChatOverlay({ onClose, onCreated }: { onClose: () => void; onCreated
       setResults([])
       return
     }
+    const seq = ++searchSeq.current
     const timer = setTimeout(async () => {
-      const r = await apiFetch(`/api/search/users?${new URLSearchParams({ q: trimmed })}`)
-      if (r.ok) setResults(((await r.json()) as UserResult[]).filter((u) => !u.is_self))
+      try {
+        const r = await apiFetch(`/api/search/users?${new URLSearchParams({ q: trimmed })}`)
+        if (!r.ok) return
+        const data = ((await r.json()) as UserResult[]).filter((u) => !u.is_self)
+        if (seq === searchSeq.current) setResults(data)
+      } catch {
+        // Swallow so a failed lookup is not an unhandled rejection.
+      }
     }, 300)
     return () => clearTimeout(timer)
   }, [query])
@@ -136,7 +145,7 @@ function NewChatOverlay({ onClose, onCreated }: { onClose: () => void; onCreated
         {error && <p className="text-bad text-xs mt-2">{error}</p>}
       </div>
 
-      <div className="flex-1 overflow-y-auto px-3 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
+      <div className="flex-1 overflow-y-auto px-3">
         {results.map((u) => {
           const isSelected = selected.some((s) => s.username === u.username)
           return (
@@ -183,11 +192,12 @@ export default function ChatPage() {
   const { user, loading: authLoading } = useAuth()
   const [showNew, setShowNew] = useState(false)
 
-  // Conversation list via SWR (key null until the session is restored, same
-  // gating as before). Revisits render the cached list instantly; the default
-  // revalidate-on-mount keeps new messages appearing on each visit.
+  // Conversation list via SWR, gated on token presence rather than the /me
+  // round trip so the list starts loading during session restore. Revisits
+  // render the cached list instantly; the default revalidate-on-mount keeps new
+  // messages appearing on each visit.
   const { data: convData, error: convError } = useSWR<Conversation[]>(
-    !authLoading && user ? "/api/chat/conversations" : null
+    hasToken() ? "/api/chat/conversations" : null
   )
   const conversations: Conversation[] | null = convError ? [] : convData ?? null
 
@@ -221,7 +231,7 @@ export default function ChatPage() {
           )}
         </div>
 
-        <div className="flex-1 overflow-y-auto pb-24 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
+        <div className="flex-1 overflow-y-auto pb-24">
           {!authLoading && !user ? (
             <div className="h-full flex items-center justify-center px-6">
               <div className="card px-8 py-10 text-center max-w-xs flex flex-col items-center gap-3">

@@ -5,6 +5,7 @@ import ContentImage from "./ContentImage"
 import Prose from "../Prose"
 import MathText from "../MathText"
 import { unescapeDollar } from "@/lib/prose"
+import { asArray } from "@/lib/asArray"
 
 interface Props {
   content: AngleItem[]
@@ -15,7 +16,7 @@ export default function AnglesSection({ content, isUserContent }: Props) {
   return (
     <div className="px-6 py-8 flex flex-col gap-8">
       <SectionLabel>Multiple Angles</SectionLabel>
-      {content.map((angle, i) => (
+      {asArray(content).map((angle, i) => (
         <div key={i} className="flex flex-col gap-2">
           <h3 className="text-base font-semibold text-(--accent) leading-snug">{unescapeDollar(angle.title)}</h3>
           <Prose><MathText text={angle.body} /></Prose>

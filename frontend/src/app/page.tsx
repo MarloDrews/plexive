@@ -1,17 +1,32 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import useSWR from "swr"
-import PostCard from "@/app/components/PostCard"
-import BottomNav from "@/app/components/BottomNav"
-import FeedHeader, { type FeedTab } from "@/app/components/FeedHeader"
-import Marathon from "@/app/components/Marathon"
-import Battle from "@/app/components/Battle"
+import dynamic from "next/dynamic"
+import PostCard from "@/components/PostCard"
+import BottomNav from "@/components/BottomNav"
+import ToastHost from "@/components/ToastHost"
+import FeedHeader, { type FeedTab } from "@/components/FeedHeader"
 import type { Post } from "@/types/post"
-import { useAuth } from "@/app/lib/auth"
-import { useSwipeTabs } from "@/app/lib/useSwipeTabs"
+import { useAuth, hasToken } from "@/lib/auth"
+import { useSwipeTabs } from "@/lib/useSwipeTabs"
+import { useWindowedFeed } from "@/lib/useWindowedFeed"
+
+// Train and Battle ship as their own lazy chunks: their whole import graphs
+// (stage kit, sockets, question pools, Elo math) otherwise sit in the entry
+// chunk of the app's most-visited route while rendering is already gated on
+// tab activation. The loading fallback is the same empty surface the
+// non-activated tab shows, so nothing changes visually while the chunk loads.
+const Marathon = dynamic(() => import("@/components/Marathon"), {
+  ssr: false,
+  loading: () => <div className="h-full bg-surface-0" />,
+})
+const Battle = dynamic(() => import("@/components/Battle"), {
+  ssr: false,
+  loading: () => <div className="h-full bg-surface-0" />,
+})
 
 const TABS: FeedTab[] = [
   // The feed has no format-specific tabs (books, people, etc.); format filtering
@@ -27,6 +42,26 @@ const TABS: FeedTab[] = [
 ]
 
 const DEFAULT_TAB_INDEX = TABS.findIndex((t) => t.id === "for-you")
+
+// A per-session feed seed, generated once and reused for the whole session.
+// The backend jitters For You order per request but is deterministic under a
+// fixed seed, so pinning one seed makes the order stable across refetches --
+// which is what lets feed revalidation be turned back on without the feed
+// visibly reshuffling under the user.
+function getFeedSeed(): string {
+  if (typeof window === "undefined") return "0"
+  try {
+    let s = sessionStorage.getItem("feedSeed")
+    if (!s) {
+      s = Math.floor(Math.random() * 1_000_000_000).toString()
+      sessionStorage.setItem("feedSeed", s)
+    }
+    return s
+  } catch {
+    // Private-mode / disabled storage must not crash the feed render.
+    return Math.floor(Math.random() * 1_000_000_000).toString()
+  }
+}
 
 function PhoneFrame({ children }: { children: React.ReactNode }) {
   return (
@@ -48,40 +83,60 @@ function TabPage({
   const scrollRef = useRef<HTMLDivElement>(null)
   const { user, loading: authLoading } = useAuth()
   const isFollowingTab = tab.id === "following"
+  // Stable for the whole session; the same value across every tab and refetch.
+  const [seed] = useState(getFeedSeed)
 
   // SWR key; null reproduces the old fetch gating (not activated yet, no
-  // interests, or following tab before auth resolves). revalidateIfStale:
-  // false serves a revisited tab from cache with no background refetch —
-  // feed order is jittered per request server-side, so a silent revalidate
-  // would visibly reshuffle posts under the user.
+  // interests, or following tab before auth resolves). The For You feed pins a
+  // per-session seed so its order stays stable under revalidation; feed lists
+  // now revalidate when stale again (SWR default), picking up new posts and
+  // fresh counts without reshuffling the order under the user.
   let key: string | null = null
   if (isActivated) {
     if (isFollowingTab) {
-      if (!authLoading && user) key = "/api/feed/following"
+      // Gate on token presence, not the /me round trip: the following feed only
+      // needs the Bearer token, so it starts loading during session restore
+      // instead of waiting for it. An invalid token 401s here and clears via
+      // AuthProvider, which then shows the logged-out state.
+      if (hasToken()) key = "/api/feed/following"
     } else if (slugs.length > 0) {
-      const params = new URLSearchParams({ interests: slugs.join(",") })
+      const params = new URLSearchParams({ interests: slugs.join(","), seed })
       if (tab.format) params.set("format", tab.format)
       key = `/api/feed?${params}`
     }
   }
-  const { data, error } = useSWR<Post[]>(key, { revalidateIfStale: false })
-  // Error mapping preserves the old per-tab behavior: the following tab
-  // treated failures as an empty feed, the others kept showing the spinner.
+  const { data, error, mutate } = useSWR<Post[]>(key)
+  // The following tab still treats a failure as an empty feed (its empty and
+  // error states read the same). The other tabs used to leave posts at null on
+  // error, which is indistinguishable from loading, so they now branch on error
+  // below and offer a retry.
   const posts: Post[] | null = isFollowingTab ? (error ? [] : data ?? null) : data ?? null
+
+  // Window the card list: only the active card plus a small overscan stay
+  // mounted; the rest collapse into dvh spacers so DOM size no longer grows
+  // with the corpus.
+  const { start, end } = useWindowedFeed(scrollRef, posts?.length ?? 0)
 
   useEffect(() => {
     if (posts === null || !scrollRef.current) return
     const raw = sessionStorage.getItem("feedScrollPosition")
     if (!raw) return
-    const { scrollTop, tabId } = JSON.parse(raw)
-    if (tabId !== tab.id) return
-    scrollRef.current.scrollTop = scrollTop
-    sessionStorage.removeItem("feedScrollPosition")
+    try {
+      const { scrollTop, tabId } = JSON.parse(raw)
+      // Only the matching tab consumes (and clears) the entry; a mismatch leaves
+      // it for the correct tab.
+      if (tabId !== tab.id) return
+      scrollRef.current.scrollTop = scrollTop
+      sessionStorage.removeItem("feedScrollPosition")
+    } catch {
+      // Corrupt entry: drop it so it cannot wedge scroll restore.
+      sessionStorage.removeItem("feedScrollPosition")
+    }
   }, [posts, tab.id])
 
   return (
     // pb-24 clears the floating dock (12px inset + 56px tall).
-    <div ref={scrollRef} className="w-full shrink-0 snap-start h-[100dvh] overflow-y-scroll snap-y snap-mandatory overscroll-y-contain [&::-webkit-scrollbar]:hidden [scrollbar-width:none] pb-24">
+    <div ref={scrollRef} className="w-full shrink-0 snap-start h-[100dvh] overflow-y-scroll snap-y snap-mandatory overscroll-y-contain pb-24">
       {!isActivated ? (
         <div className="h-full bg-surface-0" />
       ) : isFollowingTab && !authLoading && !user ? (
@@ -103,6 +158,16 @@ function TabPage({
             </Link>
           </div>
         </div>
+      ) : !isFollowingTab && error ? (
+        <div className="h-full flex items-center justify-center bg-surface-0 px-6">
+          <div className="card px-8 py-10 text-center max-w-xs flex flex-col items-center gap-3">
+            <p className="font-serif text-xl text-ink leading-snug">Could not load your feed</p>
+            <p className="text-ink-muted text-sm">Check your connection and try again.</p>
+            <button onClick={() => mutate()} className="btn btn-primary px-5 py-2">
+              Retry
+            </button>
+          </div>
+        </div>
       ) : posts === null ? (
         // Loading: pulsing slabs floating where the card slab would sit.
         <div className="h-full flex flex-col justify-center bg-surface-0 px-5 gap-4">
@@ -117,7 +182,15 @@ function TabPage({
           </div>
         </div>
       ) : (
-        posts.map((post) => <PostCard key={post.id} post={post} activeTabId={tab.id} />)
+        <>
+          {start > 0 && <div aria-hidden="true" style={{ height: `${start * 100}dvh` }} />}
+          {posts.slice(start, end).map((post) => (
+            <PostCard key={post.id} post={post} activeTabId={tab.id} />
+          ))}
+          {end < posts.length && (
+            <div aria-hidden="true" style={{ height: `${(posts.length - end) * 100}dvh` }} />
+          )}
+        </>
       )}
     </div>
   )
@@ -138,6 +211,11 @@ export default function Home() {
   const selectTabRef = useRef(selectTab)
   selectTabRef.current = selectTab
 
+  // Stable identities for the two inline call-site props, so the memoized
+  // children (and PostCard behind them) are not invalidated every render.
+  const handleSearch = useCallback(() => router.push("/search"), [router])
+  const handleExitToFeed = useCallback(() => selectTabRef.current(DEFAULT_TAB_INDEX), [])
+
   // Check localStorage on mount, store interests, and restore active tab from sessionStorage
   useEffect(() => {
     const saved = localStorage.getItem("deepscroll_interests")
@@ -145,7 +223,18 @@ export default function Home() {
       router.replace("/onboarding")
       return
     }
-    setSlugs(JSON.parse(saved))
+    let parsed: unknown
+    try {
+      parsed = JSON.parse(saved)
+    } catch {
+      parsed = null
+    }
+    if (!Array.isArray(parsed)) {
+      // Corrupt interests value reads as "not onboarded" rather than crashing.
+      router.replace("/onboarding")
+      return
+    }
+    setSlugs(parsed)
 
     const savedTab = sessionStorage.getItem("feedActiveTab")
     if (savedTab) sessionStorage.removeItem("feedActiveTab")
@@ -181,7 +270,7 @@ export default function Home() {
         tabs={TABS}
         activeTab={activeTab}
         onTabClick={selectTab}
-        onSearch={() => router.push("/search")}
+        onSearch={handleSearch}
         tabRefs={tabRefs}
         indicatorRef={indicatorRef}
         tabStripRef={tabStripRef}
@@ -190,7 +279,7 @@ export default function Home() {
       {/* Horizontal strip — one full-width page per tab */}
       <div
         ref={pagerRef}
-        className="h-full flex flex-row overflow-x-scroll overflow-y-hidden snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [scrollbar-width:none]"
+        className="h-full flex flex-row overflow-x-scroll overflow-y-hidden snap-x snap-mandatory"
       >
         {TABS.map((tab, i) => {
           const isActivated = activatedIndices.has(i)
@@ -204,9 +293,9 @@ export default function Home() {
                 {!isActivated ? (
                   <div className="h-full bg-surface-0" />
                 ) : tab.id === "train" ? (
-                  <Marathon onExit={() => selectTab(DEFAULT_TAB_INDEX)} />
+                  <Marathon onExit={handleExitToFeed} />
                 ) : (
-                  <Battle onExit={() => selectTab(DEFAULT_TAB_INDEX)} />
+                  <Battle onExit={handleExitToFeed} />
                 )}
               </div>
             )
@@ -222,6 +311,8 @@ export default function Home() {
         })}
       </div>
       <BottomNav activeTab="feed" />
+      {/* The one toast element for every card's share feedback. */}
+      <ToastHost />
     </PhoneFrame>
   )
 }

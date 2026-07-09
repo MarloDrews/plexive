@@ -4,6 +4,7 @@
 
 import MathText from "../MathText"
 import { unescapeDollar } from "@/lib/prose"
+import { sizedImageUrl } from "@/lib/imageUrl"
 
 interface Props {
   url: string
@@ -16,8 +17,13 @@ interface Props {
 export default function ContentImage({ url, caption, attribution, className = "w-full max-w-[360px] mx-auto" }: Props) {
   return (
     <figure className={`${className} flex flex-col gap-1.5`}>
+      {/* Plain img on purpose: the intrinsic ratio is unknown (not in the post
+          JSON), so a next/image nominal width/height painted a large dark
+          placeholder box before every load. Body figures grow in like before;
+          only fixed-slot images (avatars, bands, portraits) use AppImage. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src={url}
+        src={sizedImageUrl(url, 720)}
         alt=""
         loading="lazy"
         decoding="async"

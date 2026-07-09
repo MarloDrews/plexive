@@ -1,6 +1,6 @@
 import asyncio
-import ipaddress
 import json
+import time
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect, status
@@ -12,6 +12,15 @@ from ..auth import decode_access_token, get_current_user
 from ..database import SessionLocal, get_db
 from ..models import Conversation, ConversationParticipant, Follow, Message, User
 from ..rate_limit import check_rate_limit
+from ..ws_security import (
+    WS_REVALIDATE_SECONDS,
+    connection_attempt_allowed,
+    is_secure_or_local,
+    leave_unauthenticated,
+    token_still_valid,
+    try_enter_unauthenticated,
+    user_still_active,
+)
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
@@ -25,23 +34,31 @@ WS_AUTH_TIMEOUT_SECONDS = 10
 # WebSocket close codes (4xxx range is reserved for applications).
 WS_CLOSE_UNAUTHORIZED = 4401
 WS_CLOSE_INSECURE = 4403
+WS_CLOSE_TRY_AGAIN = 4429  # too many handshake attempts, or the pre-auth pool is full
 
 
 # ---------------------------------------------------------------------------
 # Shared helpers
 # ---------------------------------------------------------------------------
 
-def _can_message(db: Session, viewer_id: int, target_id: int) -> bool:
-    """A conversation may be started only between users connected by an
-    accepted follow in either direction. Private accounts approve follows,
-    so they are unreachable until they accept one."""
-    return db.query(Follow).filter(
+def _messageable_ids(db: Session, viewer_id: int, target_ids: List[int]) -> set:
+    """The subset of target_ids the viewer may message: a conversation may be
+    started only between users connected by an accepted follow in either
+    direction. Private accounts approve follows, so they are unreachable until
+    they accept one. One batched query for all targets instead of one each."""
+    if not target_ids:
+        return set()
+    rows = db.query(Follow.follower_id, Follow.following_id).filter(
         Follow.status == "accepted",
         or_(
-            and_(Follow.follower_id == viewer_id, Follow.following_id == target_id),
-            and_(Follow.follower_id == target_id, Follow.following_id == viewer_id),
+            and_(Follow.follower_id == viewer_id, Follow.following_id.in_(target_ids)),
+            and_(Follow.follower_id.in_(target_ids), Follow.following_id == viewer_id),
         ),
-    ).first() is not None
+    ).all()
+    return {
+        following_id if follower_id == viewer_id else follower_id
+        for follower_id, following_id in rows
+    }
 
 
 def _get_participant(db: Session, conversation_id: int, user_id: int) -> Optional[ConversationParticipant]:
@@ -164,12 +181,23 @@ def create_conversation(
 ):
     check_rate_limit(current_user.id, "chat_create", 20, 3600)
 
+    # One IN query for all requested usernames instead of one lookup each; the
+    # first unknown username in request order is still the one reported.
+    found = {
+        u.username: u
+        for u in db.query(User).filter(
+            User.username.in_(body.usernames), User.is_active == True
+        ).all()
+    }
     targets: List[User] = []
     seen_ids = {current_user.id}
     for username in body.usernames:
-        user = db.query(User).filter(User.username == username, User.is_active == True).first()
-        if not user:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User not found: {username}")
+        user = found.get(username)
+        if user is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"User not found: {username}",
+            )
         if user.id in seen_ids:
             continue
         seen_ids.add(user.id)
@@ -177,8 +205,11 @@ def create_conversation(
     if not targets:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No valid recipients.")
 
+    # One batched follow query for all targets; the first non-messageable
+    # target in request order is still the one reported.
+    messageable = _messageable_ids(db, current_user.id, [t.id for t in targets])
     for target in targets:
-        if not _can_message(db, current_user.id, target.id):
+        if target.id not in messageable:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail=f"You can only message people you follow or who follow you: {target.username}",
@@ -301,28 +332,6 @@ class ConnectionManager:
 manager = ConnectionManager()
 
 
-def _is_secure_or_local(websocket: WebSocket) -> bool:
-    """Require wss outside local development. TLS usually terminates at a
-    reverse proxy, so x-forwarded-proto counts as secure too. Plain ws is also
-    allowed from loopback and private LAN ranges (RFC1918 / link-local) so dev
-    clients -- the Android emulator or a phone reaching the dev machine by its
-    192.168.x.x address -- can connect; those addresses are never publicly
-    routable, so the "force TLS on the public internet" guarantee stands.
-    Mirrors the same gate in routers/battle.py."""
-    if websocket.url.scheme == "wss":
-        return True
-    if websocket.headers.get("x-forwarded-proto", "").lower() in ("https", "wss"):
-        return True
-    host = websocket.client.host if websocket.client else ""
-    if host in ("localhost", "testclient"):
-        return True
-    try:
-        ip = ipaddress.ip_address(host)
-    except ValueError:
-        return False
-    return ip.is_loopback or ip.is_private or ip.is_link_local
-
-
 async def _ws_error(websocket: WebSocket, detail: str) -> None:
     await websocket.send_json({"type": "error", "detail": detail})
 
@@ -378,46 +387,79 @@ async def _handle_send(websocket: WebSocket, user_id: int, data: dict) -> None:
 
 @router.websocket("/ws")
 async def chat_websocket(websocket: WebSocket):
-    if not _is_secure_or_local(websocket):
+    if not is_secure_or_local(websocket):
         # Reject the handshake outright: chat must run over wss in production.
         await websocket.close(code=WS_CLOSE_INSECURE)
         return
 
+    # Pre-auth per-IP handshake throttle (M137/SEC-021): closing before accept()
+    # rejects the handshake without allocating a socket.
+    host = websocket.client.host if websocket.client else "unknown"
+    if not connection_attempt_allowed(host):
+        await websocket.close(code=WS_CLOSE_TRY_AGAIN)
+        return
+
     await websocket.accept()
 
+    # Cap concurrent sockets that have connected but not yet authenticated, so a
+    # client cannot hold many idle pre-auth sockets open (M137/SEC-021).
+    if not try_enter_unauthenticated():
+        await websocket.close(code=WS_CLOSE_TRY_AGAIN)
+        return
+
     # First frame must be {"type": "auth", "token": "<jwt>"}. The token is
-    # never put in the URL so it cannot end up in access logs.
+    # never put in the URL so it cannot end up in access logs. The slot is held
+    # only for the pre-auth phase and released once we know the outcome.
     try:
-        raw = await asyncio.wait_for(websocket.receive_text(), timeout=WS_AUTH_TIMEOUT_SECONDS)
-        first = json.loads(raw)
-    except (asyncio.TimeoutError, ValueError, WebSocketDisconnect):
-        await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
-        return
+        try:
+            raw = await asyncio.wait_for(websocket.receive_text(), timeout=WS_AUTH_TIMEOUT_SECONDS)
+            first = json.loads(raw)
+        except (asyncio.TimeoutError, ValueError, WebSocketDisconnect):
+            await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
+            return
 
-    if not isinstance(first, dict) or first.get("type") != "auth" or not isinstance(first.get("token"), str):
-        await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
-        return
+        if not isinstance(first, dict) or first.get("type") != "auth" or not isinstance(first.get("token"), str):
+            await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
+            return
 
-    try:
-        user_id = decode_access_token(first["token"])
-    except HTTPException:
-        await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
-        return
+        token = first["token"]
+        try:
+            user_id, token_version = decode_access_token(token)
+        except HTTPException:
+            await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
+            return
 
-    db = SessionLocal()
-    try:
-        user = db.query(User).filter(User.id == user_id, User.is_active == True).first()
+        db = SessionLocal()
+        try:
+            user = db.query(User).filter(User.id == user_id, User.is_active == True).first()
+        finally:
+            db.close()
+        # Reject a token whose version was revoked by a password change (M126).
+        if not user or user.token_version != token_version:
+            await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
+            return
     finally:
-        db.close()
-    if not user:
-        await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
-        return
+        leave_unauthenticated()
 
     await manager.connect(user_id, websocket)
     try:
         await websocket.send_json({"type": "auth_ok", "user_id": user_id})
+        next_recheck = time.monotonic() + WS_REVALIDATE_SECONDS
         while True:
             raw = await websocket.receive_text()
+            # Re-validate the session on each frame (M137/BUG-037): the token must
+            # still decode (catches expiry / a revoked version) every frame, and
+            # is_active/token_version are re-checked in the DB at most once per
+            # interval so a deactivated account cannot keep using a live socket.
+            if not token_still_valid(token, user_id, token_version):
+                await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
+                break
+            now = time.monotonic()
+            if now >= next_recheck:
+                if not user_still_active(user_id, token_version):
+                    await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
+                    break
+                next_recheck = now + WS_REVALIDATE_SECONDS
             if len(raw) > WS_FRAME_MAX_BYTES:
                 await _ws_error(websocket, "Frame too large.")
                 continue

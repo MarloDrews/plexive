@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Index, Integer, JSON, String, Table, Text, UniqueConstraint
+from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Index, Integer, JSON, String, Table, Text, UniqueConstraint, text
 from sqlalchemy.orm import relationship
 
 from .database import Base
@@ -50,6 +50,13 @@ class Post(Base):
     # within-format collisions are flagged for a human, not enforced. Added to the
     # live DB by scripts/add_identity_and_edges.py.
     identity_key = Column(String, nullable=True, index=True)
+
+    # Reading time in minutes, computed from the section text on write
+    # (app/reading_time.py stays the single computation source; posts.py and
+    # seed.py call it). Stored so list endpoints never walk the sections JSON
+    # per request. NULL only for rows written before the column existed --
+    # scripts/add_reading_minutes.py backfills those on the live DB.
+    reading_minutes = Column(Integer, nullable=True)
 
     # False for official/seed content; True for user submissions.
     # Cannot be derived from author_id because seed posts also have an author.
@@ -103,6 +110,18 @@ class Event(Base):
     # existing one.
     __table_args__ = (
         Index("ix_events_post_id_event_type", "post_id", "event_type"),
+        # Structural like dedup (M119): at most one like per (user, post). Partial
+        # so views/unlikes and anonymous rows are unconstrained. create_all adds
+        # it on fresh DBs; scripts/add_like_unique_index.py applies it to the
+        # live one (after removing anonymous likes and existing duplicates).
+        Index(
+            "uq_events_user_like",
+            "user_id",
+            "post_id",
+            unique=True,
+            postgresql_where=text("event_type = 'like' AND user_id IS NOT NULL"),
+            sqlite_where=text("event_type = 'like' AND user_id IS NOT NULL"),
+        ),
     )
 
     id          = Column(Integer, primary_key=True)
@@ -122,7 +141,18 @@ class User(Base):
     password_hash = Column(String, nullable=False)
     created_at    = Column(DateTime, default=datetime.utcnow)
     is_active     = Column(Boolean, default=True, nullable=False)
+    # Cosmetic verification badge ONLY (0/1/2). Split from the two capabilities
+    # below in M116 so the badge no longer implies publish or admin rights.
+    # Added to the live DB by scripts/add_capability_columns.py.
     is_verified   = Column(Integer, default=0, nullable=False)
+    # can_publish: this user's posts publish immediately instead of landing in
+    # the pending queue (consumed only by posts.create_post). Granted
+    # deliberately, back-filled to already-verified users by the migration so
+    # their behavior does not change. is_admin: may verify other users and
+    # release pending posts (admin router only); the owner is the sole admin at
+    # launch. Both added to the live DB by scripts/add_capability_columns.py.
+    can_publish   = Column(Boolean, default=False, nullable=False)
+    is_admin      = Column(Boolean, default=False, nullable=False)
     is_private    = Column(Boolean, default=False, nullable=False)
     bio           = Column(String, nullable=True)
     avatar_url    = Column(String, nullable=True)
@@ -133,6 +163,14 @@ class User(Base):
     # and counts every scored answer (post quizzes + Train), see app/elo.py.
     knowledge_rating         = Column(Float, nullable=True)
     knowledge_answered_count = Column(Integer, nullable=False, default=0)
+
+    # Monotonic token version embedded in each JWT as the "ver" claim and checked
+    # on decode (M126/SEC-012). Bumped on password change so existing tokens stop
+    # validating -- a stolen token dies when the victim changes their password.
+    # A token minted before the claim existed carries ver 0, matching the
+    # default, so nobody is logged out by adding the column. Added to the live DB
+    # by scripts/add_token_version.py.
+    token_version            = Column(Integer, nullable=False, default=0)
 
     posts = relationship("Post", back_populates="author", foreign_keys="Post.author_id")
 
@@ -146,7 +184,7 @@ class Follow(Base):
         Index("ix_follows_following_id_status", "following_id", "status"),
     )
 
-    id           = Column(Integer, primary_key=True, index=True)
+    id           = Column(Integer, primary_key=True)
     follower_id  = Column(Integer, ForeignKey("users.id"), nullable=False)
     following_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     status       = Column(String, default="accepted", nullable=False)
@@ -168,7 +206,7 @@ class QuizAnswer(Base):
     )
 
     id             = Column(Integer, primary_key=True)
-    user_id        = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    user_id        = Column(Integer, ForeignKey("users.id"), nullable=False)
     post_id        = Column(Integer, ForeignKey("posts.id"), nullable=False, index=True)
     question_index = Column(Integer, nullable=False)
     chosen_index   = Column(Integer, nullable=False)
@@ -197,7 +235,7 @@ class ConversationParticipant(Base):
     )
 
     id              = Column(Integer, primary_key=True)
-    conversation_id = Column(Integer, ForeignKey("conversations.id"), nullable=False, index=True)
+    conversation_id = Column(Integer, ForeignKey("conversations.id"), nullable=False)
     user_id         = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     joined_at       = Column(DateTime, default=datetime.utcnow)
 
@@ -207,6 +245,13 @@ class ConversationParticipant(Base):
 
 class Message(Base):
     __tablename__ = "messages"
+    # The history query filters conversation_id and keysets on id, so the
+    # composite serves it exactly. create_all only adds this on fresh
+    # databases - scripts/add_comment_message_indexes.py applies it to the
+    # existing one.
+    __table_args__ = (
+        Index("ix_messages_conversation_id_id", "conversation_id", "id"),
+    )
 
     id              = Column(Integer, primary_key=True)
     conversation_id = Column(Integer, ForeignKey("conversations.id"), nullable=False, index=True)
@@ -219,6 +264,13 @@ class Message(Base):
 
 class Comment(Base):
     __tablename__ = "comments"
+    # list_comments filters post_id and orders by created_at, so the composite
+    # avoids a sort after the index scan. create_all only adds this on fresh
+    # databases - scripts/add_comment_message_indexes.py applies it to the
+    # existing one.
+    __table_args__ = (
+        Index("ix_comments_post_id_created_at", "post_id", "created_at"),
+    )
 
     id         = Column(Integer, primary_key=True)
     post_id    = Column(Integer, ForeignKey("posts.id"), nullable=False, index=True)

@@ -2,6 +2,7 @@ import type { HeadlineFigureContent } from "../../types/post"
 import SvgBlock from "../SvgBlock"
 import MathText from "../MathText"
 import { unescapeDollar } from "@/lib/prose"
+import { sizedImageUrl } from "@/lib/imageUrl"
 
 interface Props {
   content: HeadlineFigureContent
@@ -18,7 +19,21 @@ export default function HeadlineFigureSection({ content, isUserContent }: Props)
       )}
       {content.image_url && !content.visual_svg && (
         <div className="w-full max-w-[360px] mx-auto">
-          <img src={content.image_url} alt="" loading="lazy" decoding="async" className="w-full rounded-lg object-cover" />
+          {/* Plain img on purpose: unknown intrinsic ratio, so a nominal
+              next/image size painted a dark placeholder before load. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={sizedImageUrl(content.image_url, 720)}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            className="w-full rounded-lg object-cover"
+            onError={(e) => {
+              // Hide the whole figure block (image + spacer) like ContentImage.
+              const wrap = (e.currentTarget as HTMLImageElement).parentElement
+              if (wrap) wrap.style.display = "none"
+            }}
+          />
         </div>
       )}
       {content.image_caption && (

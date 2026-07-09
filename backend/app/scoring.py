@@ -1,7 +1,9 @@
+import hashlib
 import random
 from datetime import datetime, timedelta
-from typing import List, Optional
+from typing import List, Optional, Sequence, Set, Tuple
 
+from sqlalchemy import case, func
 from sqlalchemy.orm import Session
 
 from .models import Event, Post
@@ -14,54 +16,95 @@ from .models import Event, Post
 #   most-engaged format receives 3.0 and all others scale proportionally.
 # Posts that have been viewed before lose 1.0 per recorded view event (last 30 days), with a
 #   floor of 0 so the score never goes negative.
-# The final score is multiplied by random.uniform(0.85, 1.15) to keep the feed from being
-#   perfectly deterministic on every load.
+# The final score is multiplied by a jitter in [0.85, 1.15]: deterministic per
+#   (session seed, post id) when the caller passes a seed, so the order stays
+#   stable while a user pages through the feed within one session; random per
+#   request without a seed, so a new session still gets a fresh shuffle.
 
 
-def score_posts(
-    posts: List[Post],
+def _jitter(seed: Optional[str], post_id: int) -> float:
+    """Score jitter factor in [0.85, 1.15].
+
+    With a session seed the factor is a deterministic hash of (seed, post_id):
+    the same seed reproduces the same feed order on every page request, which
+    keyset paging requires. Without a seed it stays random per request.
+    """
+    if seed is None:
+        return random.uniform(0.85, 1.15)
+    digest = hashlib.blake2b(f"{seed}:{post_id}".encode("utf-8"), digest_size=8).digest()
+    return 0.85 + 0.30 * (int.from_bytes(digest, "big") / 2**64)
+
+
+# The repeat penalty counts at most this many of a viewer's own views per post,
+# so no single post can be driven far negative and no client can grow the penalty
+# without bound (M119/BUG-032).
+_MAX_REPEAT_VIEWS = 5
+
+
+def rank_post_ids(
+    records: Sequence[Tuple[int, str, Set[str]]],
     interest_slugs: List[str],
     db: Session,
     tier_map: Optional[dict] = None,
-) -> List[Post]:
-    # tier_map: post_id -> tier (1 = direct match, 2 = related, 3 = fallback)
-    # Tier 1 gets full interest bonus, Tier 2 gets half, Tier 3 gets none.
-    # TODO: once user authentication exists, pass user_id here and filter
-    # events to that user so bonuses reflect individual rather than global engagement.
+    seed: Optional[str] = None,
+    user_id: Optional[int] = None,
+) -> List[int]:
+    """Order post ids by score, best first (ties broken by id, newest first).
 
+    records are lightweight (post_id, format, interest-slug set) tuples so the
+    whole corpus can be ranked without hydrating full rows; the caller fetches
+    complete rows only for the page it actually returns.
+
+    tier_map: post_id -> tier (1 = direct match, 2 = related, 3 = fallback).
+    Tier 1 gets full interest bonus, Tier 2 gets half, Tier 3 gets none.
+    seed: session seed for the jitter (see _jitter); None = fresh per request.
+    user_id: the requesting user, if any. The repeat penalty counts only THIS
+    user's own recent views (clamped) instead of every user's, so a few
+    anonymous views can no longer bury a post platform-wide (M119/BUG-031/032);
+    an anonymous caller (None) gets no repeat penalty at all.
+    """
     cutoff = datetime.utcnow() - timedelta(days=30)
-    # One joined tuple query instead of loading full Event ORM objects and
-    # then re-querying posts for their formats (the join also covers events
-    # on posts filtered out by ?format= or ?interests=, like the old
-    # two-query version did).
-    recent_rows = (
-        db.query(Event.post_id, Event.event_type, Event.duration_ms, Post.format)
+    # Two grouped queries instead of fetching every raw event row of the last
+    # 30 days: the aggregates are a handful of rows however much activity the
+    # platform records. The CASE filters keep the exact old fold semantics:
+    # AVG ignores NULL, so only view events with a duration shape the average
+    # (a view without duration still counts as a view below), and only like
+    # events count toward likes. The join covers events on posts filtered out
+    # by ?format= or ?interests=, like the old version did.
+    format_rows = (
+        db.query(
+            Post.format,
+            func.avg(case((Event.event_type == "view", Event.duration_ms))),
+            func.coalesce(func.sum(case((Event.event_type == "like", 1), else_=0)), 0),
+        )
+        .select_from(Event)
         .join(Post, Post.id == Event.post_id)
         .filter(Event.created_at >= cutoff)
+        .group_by(Post.format)
         .all()
     )
-
-    # Accumulate per-format engagement stats and per-post view counts.
-    format_view_durations: dict[str, list[int]] = {}
-    format_like_counts: dict[str, int] = {}
+    # Repeat penalty is per-viewer: only the requesting user's own views count,
+    # so another user's (or an anonymous flood's) views never penalize a post in
+    # this feed. Anonymous callers get no penalty (no identity to attribute).
     post_view_counts: dict[int, int] = {}
-
-    for post_id, event_type, duration_ms, fmt in recent_rows:
-        if event_type == "view":
-            if duration_ms is not None:
-                format_view_durations.setdefault(fmt, []).append(duration_ms)
-            post_view_counts[post_id] = post_view_counts.get(post_id, 0) + 1
-        elif event_type == "like":
-            format_like_counts[fmt] = format_like_counts.get(fmt, 0) + 1
+    if user_id is not None:
+        post_view_counts = dict(
+            db.query(Event.post_id, func.count(Event.id))
+            .filter(
+                Event.created_at >= cutoff,
+                Event.event_type == "view",
+                Event.user_id == user_id,
+            )
+            .group_by(Event.post_id)
+            .all()
+        )
 
     # Raw engagement score per format: avg view duration (ms) + like count.
     # Units differ but normalisation below makes the scale irrelevant.
-    all_formats = set(format_view_durations) | set(format_like_counts)
-    format_raw: dict[str, float] = {}
-    for fmt in all_formats:
-        durations = format_view_durations.get(fmt, [])
-        avg_dur = sum(durations) / len(durations) if durations else 0.0
-        format_raw[fmt] = avg_dur + format_like_counts.get(fmt, 0)
+    format_raw: dict[str, float] = {
+        fmt: (float(avg_view_ms) if avg_view_ms is not None else 0.0) + (like_count or 0)
+        for fmt, avg_view_ms, like_count in format_rows
+    }
 
     max_raw = max(format_raw.values(), default=0.0)
     format_bonus: dict[str, float] = {
@@ -71,27 +114,30 @@ def score_posts(
 
     interest_set = set(interest_slugs)
 
-    def compute_score(post: Post) -> float:
+    def compute_score(post_id: int, post_format: str, slugs: Set[str]) -> float:
         score = 1.0
 
-        # Interest match: post.interests is already eager-loaded by the caller.
-        # Multiply bonus by 1.0 (Tier 1), 0.5 (Tier 2), or 0.0 (Tier 3).
-        tier = tier_map.get(post.id, 1) if tier_map else 1
+        # Interest match, multiplied by 1.0 (Tier 1), 0.5 (Tier 2), 0.0 (Tier 3).
+        tier = tier_map.get(post_id, 1) if tier_map else 1
         interest_multiplier = {1: 1.0, 2: 0.5, 3: 0.0}.get(tier, 1.0)
-        for interest in post.interests:
-            if interest.slug in interest_set:
+        for slug in slugs:
+            if slug in interest_set:
                 score += 2.0 * interest_multiplier
 
         # Format engagement bonus.
-        score += format_bonus.get(post.format, 0.0)
+        score += format_bonus.get(post_format, 0.0)
 
-        # Repeat penalty.
-        score -= post_view_counts.get(post.id, 0) * 1.0
+        # Repeat penalty (this viewer's own views only, clamped).
+        score -= min(post_view_counts.get(post_id, 0), _MAX_REPEAT_VIEWS) * 1.0
         score = max(score, 0.0)
 
-        # Small random jitter keeps the feed fresh across loads.
-        score *= random.uniform(0.85, 1.15)
+        # Jitter keeps the feed fresh across sessions (see _jitter).
+        score *= _jitter(seed, post_id)
 
         return score
 
-    return sorted(posts, key=compute_score, reverse=True)
+    scored = [(compute_score(pid, fmt, slugs), pid) for pid, fmt, slugs in records]
+    # Deterministic tiebreak on id so equal scores cannot reorder between the
+    # page requests of one session.
+    scored.sort(key=lambda pair: (-pair[0], -pair[1]))
+    return [pid for _, pid in scored]

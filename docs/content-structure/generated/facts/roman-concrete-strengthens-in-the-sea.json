@@ -1,0 +1,230 @@
+{
+  "tags": [
+    "materials-science",
+    "ancient-rome",
+    "chemistry"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Self-healing materials"
+      },
+      "featured": true
+    },
+    {
+      "format": "books",
+      "ref": {
+        "title": "Concrete Planet",
+        "author": "Robert Courland"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "Seawater destroys modern concrete within decades, but for 2,000 years it has been growing the crystals that hold Roman sea walls together.",
+    "teasers": [
+      "The crystal no lab can grow",
+      "How its cracks seal themselves shut",
+      "A Roman naturalist noticed it 2,000 years ago"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "Seawater destroys modern concrete within decades, but for 2,000 years it has been growing the crystals that hold Roman sea walls together."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><rect x='104' y='84' width='196' height='150' rx='16' stroke='currentColor' stroke-width='2.5'/><g stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linejoin='round'><path d='M132 120 q10 -14 26 -6 q14 8 4 22 q-12 12 -26 4 q-12 -8 -4 -20 z'/><circle cx='252' cy='192' r='18'/><rect x='190' y='150' width='30' height='26' rx='8'/></g><g stroke='currentColor' stroke-width='2' opacity='0.55' stroke-linecap='round' stroke-linejoin='round'><path d='M52 130 h46'/><path d='M104 130 l-12 -6 m12 6 l-12 6'/><path d='M52 190 h46'/><path d='M104 190 l-12 -6 m12 6 l-12 6'/></g><text x='14' y='164' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.75' text-anchor='start'>seawater</text><g stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'><path d='M158 202 l18 -8'/><path d='M160 208 l18 -8'/><path d='M162 214 l18 -8'/><path d='M226 112 l16 8'/><path d='M224 118 l16 8'/><path d='M222 124 l16 8'/></g><text x='298' y='98' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='end'>crystals grow</text></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "Everything we build is in a slow race with decay, and saltwater is one of the worst opponents. It rusts steel and spalls modern concrete off in sheets. Roman marine concrete does the reverse. Seawater seeps into it and dissolves bits of the volcanic ash, and from that leached material new crystals grow, knitting the whole mass tighter."
+    },
+    {
+      "type": "story",
+      "order": 7,
+      "content": {
+        "body": "The Romans wrote the recipe down. The architect Vitruvius specified volcanic ash from the town of Pozzuoli, mixed with lime and seawater, and called for more ash in anything built underwater. Pliny the Elder, writing around 77 AD, described the result. Harbour concrete set in the sea, he wrote, to become a single stone, “impregnable to the waves and every day stronger.” Then Rome fell, and the technique faded from use for centuries. The explanation waited until 2017, when the geologist Marie Jackson drilled cores from Roman piers and put them under synchrotron X-rays. The beams showed crystals of aluminous tobermorite threaded through the cement, a mineral so hard to grow that no lab has made it at room temperature.",
+        "key_figures": [
+          {
+            "name": "Pliny the Elder",
+            "role": "Recorded the effect, around 77 AD",
+            "one_line": "The Roman naturalist who wrote that sea-set concrete becomes a single stone, stronger with every passing day.",
+            "lifespan": "AD 23-79",
+            "birth_year": 23,
+            "featured": false
+          },
+          {
+            "name": "Marie Jackson",
+            "role": "Found the crystals that explain it",
+            "one_line": "Geologist whose 2017 study showed seawater grows reinforcing tobermorite crystals inside Roman marine concrete.",
+            "featured": true
+          }
+        ],
+        "visual_svg": "<svg viewBox='0 44 400 96' xmlns='http://www.w3.org/2000/svg' fill='none'><line x1='74' y1='104' x2='338' y2='104' stroke='var(--accent)' stroke-width='3' stroke-linecap='round'/><g stroke='currentColor' stroke-width='2' opacity='0.5' stroke-linecap='round'><line x1='74' y1='96' x2='74' y2='112'/><line x1='338' y1='96' x2='338' y2='112'/></g><text x='206' y='80' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>still standing, 2,000 years on</text><g font-family='var(--font-mono), ui-monospace, monospace' font-size='14' font-weight='700' fill='currentColor' text-anchor='middle'><text x='74' y='132'>77 AD</text><text x='338' y='132'>2017</text></g></svg>"
+      }
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "Salt cracks modern seawalls within decades",
+          "body": "Ordinary Portland cement is built to be inert. Its aggregate is chosen not to react, so there is no chemistry left to repair the damage the sea slowly does. Salt works into it, rusts the steel reinforcement inside, and the expanding rust cracks the concrete apart. A modern seawall can start failing within decades. The Roman piers held no steel, and nothing in them to rust.",
+          "visual_svg": "<svg viewBox='0 46 400 120' xmlns='http://www.w3.org/2000/svg' fill='none'><line x1='60' y1='58' x2='60' y2='158' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><rect x='60' y='66' width='20' height='26' rx='6' stroke='currentColor' stroke-width='2' opacity='0.6'/><text x='88' y='84' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.8' text-anchor='start'>modern: decades</text><rect x='60' y='118' width='288' height='26' rx='6' fill='var(--accent)' opacity='0.15' stroke='var(--accent)' stroke-width='2.5'/><text x='72' y='136' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='start'>Roman: 2,000+ years</text></svg>"
+        },
+        {
+          "title": "The cracks can heal themselves",
+          "body": "There is a second trick, found only in 2023. Roman concrete is studded with little white lumps of lime that were long dismissed as sloppy mixing. They are not a mistake. When a crack opens and water seeps in, those lime lumps dissolve and recrystallise, filling the gap like a scab. In the lab, cracks in Roman-style concrete sealed shut within a few weeks, while plain modern concrete stayed open.",
+          "visual_svg": "<svg viewBox='0 46 400 116' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='60' y='84' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='start'>Roman: sealed in ~2 weeks</text><line x1='60' y1='96' x2='250' y2='96' stroke='var(--accent)' stroke-width='3' stroke-linecap='round'/><circle cx='250' cy='96' r='5' fill='var(--accent)'/><text x='60' y='128' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.8' text-anchor='start'>modern: stays open</text><line x1='60' y1='140' x2='352' y2='140' stroke='currentColor' stroke-width='2.5' opacity='0.55' stroke-dasharray='7 7' stroke-linecap='round'/><path d='M352 140 l-12 -6 m12 6 l-12 6' stroke='currentColor' stroke-width='2' opacity='0.55' stroke-linecap='round' stroke-linejoin='round'/></svg>"
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "For most of a century we have built for strength up front and let time do its worst. The Romans built for a material that makes peace with its surroundings and mends itself, trading some of that raw compressive strength for endurance. That patience is suddenly worth money. Cement alone throws off about 8% of the world's carbon dioxide, and every seawall that fails and gets rebuilt spends that carbon twice. A concrete the sea strengthens instead of eating away could teach us to build things that outlast us. The Romans got there first, by accident, and the sea has been proving them right for 2,000 years."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "Why does Roman marine concrete grow tougher over the centuries?",
+          "options": [
+            "Seawater slowly dries it out and hardens it",
+            "The steel inside it rusts into a solid mass",
+            "Seawater dissolves parts of it and grows reinforcing crystals inside",
+            "Sunlight bakes the surface into stone"
+          ],
+          "answer_index": 2,
+          "explanation": "Seawater percolates in, dissolves parts of the volcanic ash, and precipitates tobermorite crystals that knit the matrix together. Exposure builds the material up instead of wearing it down."
+        },
+        {
+          "question": "Why does that same seawater destroy modern Portland concrete?",
+          "options": [
+            "Its ingredients are chosen not to react, so it cannot repair sea damage",
+            "It contains no lime at all",
+            "It is always poured too thin",
+            "Modern concrete never touches seawater"
+          ],
+          "answer_index": 0,
+          "explanation": "Portland concrete uses inert aggregate, so there is no chemistry to heal the slow attack of salt. Chloride corrodes the steel inside, and the expanding rust cracks it apart."
+        },
+        {
+          "question": "In what sense is Roman concrete NOT better than modern concrete?",
+          "options": [
+            "It cannot be used underwater",
+            "It dissolves faster in fresh water",
+            "It cannot be made without steel",
+            "It has lower compressive strength, so it bears less load"
+          ],
+          "answer_index": 3,
+          "explanation": "Roman concrete is far more durable in seawater, but under load it is the weaker material. Its gift is how long it lasts in the sea."
+        },
+        {
+          "question": "How do the white lime lumps in Roman concrete help it last?",
+          "options": [
+            "They make the concrete lighter",
+            "They colour the concrete white",
+            "They dissolve and recrystallise to fill cracks that open later",
+            "They are pockets of trapped air for insulation"
+          ],
+          "answer_index": 2,
+          "explanation": "The lime lumps act as a reserve. When a crack lets water in, they dissolve and recrystallise across the gap, sealing it, in experiments within a few weeks."
+        },
+        {
+          "question": "Ancient writers recorded the recipe, yet the effect went unexplained until 2017. Why?",
+          "options": [
+            "The ancient texts were lost until 2017",
+            "The recipe worked, but seeing why it worked needed modern tools",
+            "The Romans used a secret ingredient no one has found",
+            "Earlier scientists had proved the effect was a myth"
+          ],
+          "answer_index": 1,
+          "explanation": "The Romans knew what to mix, and Pliny even noticed the sea made it stronger. But seeing the tobermorite crystals that explain it took synchrotron X-rays, so the how arrived 2,000 years after the what."
+        },
+        {
+          "question": "Why is Roman concrete more than a historical curiosity today?",
+          "options": [
+            "It could inspire longer-lasting, lower-carbon building materials",
+            "It is cheaper than any modern material",
+            "It can be printed by machines",
+            "It glows faintly in seawater"
+          ],
+          "answer_index": 0,
+          "explanation": "Cement is a major source of carbon emissions, and structures that fail have to be rebuilt at more cost still. A concrete the sea strengthens points toward materials that last far longer."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "Roman concrete beats modern concrete at everything.",
+          "reality": "Not at strength. Under load it is the weaker material, and its advantage is durability in seawater, where modern concrete fails."
+        },
+        {
+          "myth": "The recipe was lost for centuries.",
+          "reality": "The texts survived, Vitruvius and Pliny among them. What lapsed was the practice, and the chemistry behind it was only worked out in the last decade."
+        },
+        {
+          "myth": "Seawater builds the concrete up forever.",
+          "reality": "The crystal growth is slow and finite, not magic. It reinforces the matrix over centuries, yet the structures still weather and wear like anything else left in the sea."
+        }
+      ]
+    },
+    {
+      "type": "open_questions",
+      "order": 12,
+      "content": {
+        "body": "The Romans left no lab notes, so the method is still being reverse-engineered a piece at a time. And there is a catch that modern builders feel keenly.",
+        "items": [
+          "Which volcanic ash and mixing method best reproduce the effect?",
+          "Do the tobermorite crystals or the self-healing lime clasts matter more?",
+          "Can a concrete that strengthens over decades fit a modern build schedule?"
+        ]
+      }
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Jackson MD, et al. Phillipsite and Al-tobermorite mineral cements produced through low-temperature water-rock reactions in Roman marine concrete. American Mineralogist 2017;102:1435-1450",
+          "url": "https://pubs.geoscienceworld.org/msa/ammin/article/102/7/1435/353606/Phillipsite-and-Al-tobermorite-mineral-cements",
+          "type": "paper"
+        },
+        {
+          "label": "Seymour LM, et al. (Masic A). Hot mixing: mechanistic insights into the durability of ancient Roman concrete. Science Advances 2023;9:eadd1602",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9821858/",
+          "type": "paper"
+        },
+        {
+          "label": "New X-ray studies of Roman concrete samples stir interest in ancient techniques. Berkeley Lab News 2017",
+          "url": "https://newscenter.lbl.gov/2017/07/03/ancient-concrete-could-teach-us-to-do-as-romans-did/",
+          "type": "article"
+        },
+        {
+          "label": "Roman concrete",
+          "url": "https://en.wikipedia.org/wiki/Roman_concrete",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Learning from Roman seawater concrete. Advanced Light Source, Berkeley Lab",
+          "url": "https://als.lbl.gov/learning-from-roman-concrete/",
+          "type": "article"
+        }
+      ]
+    }
+  ]
+}

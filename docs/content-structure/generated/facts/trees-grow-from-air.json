@@ -1,0 +1,282 @@
+{
+  "tags": [
+    "botany",
+    "chemistry",
+    "everyday-science"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Photosynthesis"
+      },
+      "featured": true
+    },
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "The carbon cycle"
+      },
+      "featured": false
+    },
+    {
+      "format": "books",
+      "ref": {
+        "title": "Eating the Sun",
+        "author": "Oliver Morton"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "Dry out a tree and half its weight is carbon, every gram of it pulled from the air.",
+    "teasers": [
+      "A 5-pound shoot became a 169-pound tree",
+      "The soil barely notices a tree growing in it",
+      "Burn the wood and the air gets it back"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "Dry out a tree and half its weight is carbon, every gram of it pulled from the air."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='30' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='600' opacity='0.8' text-anchor='middle'>What dry wood is made of</text><line x1='40' y1='240' x2='372' y2='240' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><rect x='64' y='60' width='52' height='180' rx='10' fill='var(--accent)' fill-opacity='0.15' stroke='var(--accent)' stroke-width='2.5'/><rect x='149' y='85' width='52' height='155' rx='10' stroke='currentColor' stroke-width='2' opacity='0.55'/><rect x='234' y='218' width='52' height='22' rx='8' stroke='currentColor' stroke-width='2' opacity='0.55'/><rect x='319' y='232' width='52' height='8' rx='4' stroke='currentColor' stroke-width='2' opacity='0.55'/><text x='90' y='50' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='15' font-weight='700' text-anchor='middle'>50%</text><text x='175' y='77' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='14' font-weight='700' opacity='0.8' text-anchor='middle'>43%</text><text x='260' y='210' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='14' font-weight='700' opacity='0.8' text-anchor='middle'>6%</text><text x='345' y='224' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='14' font-weight='700' opacity='0.8' text-anchor='middle'>1%</text><text x='90' y='262' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' text-anchor='middle'>Carbon</text><text x='175' y='262' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' text-anchor='middle'>Oxygen</text><text x='260' y='262' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' text-anchor='middle'>Hydrogen</text><text x='345' y='262' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' text-anchor='middle'>Minerals</text><text x='90' y='282' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' text-anchor='middle'>from air</text><text x='345' y='282' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>from soil</text></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "Dig up the ground around an old tree and it weighs about what it always did, even with tonnes of new wood standing over it. A tree looks like it should be feeding straight out of that soil, yet the ground it stands in gives up almost nothing. Roughly half of that dry wood is carbon. And the carbon does not come from the earth. It comes from carbon dioxide in the air, which the leaves take in and pull apart, keeping the carbon to build sugar and then wood. What the soil hands over is water and a small run of minerals, a few percent of the finished weight."
+    },
+    {
+      "type": "tangible",
+      "order": 4,
+      "content": {
+        "items": [
+          "Carbon dioxide is about 0.04% of the air, near 1 molecule in every 2,500. A tree builds half its dry body from that trace.",
+          "A kilogram of dry wood holds roughly 500 grams of carbon, and the tree stripped that carbon from about 1.8 kilograms of carbon dioxide.",
+          "Half the weight of every wooden beam in a house is carbon that spent its recent past drifting as gas."
+        ],
+        "visual_svg": "<svg viewBox='0 26 400 224' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='48' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='600' opacity='0.8' text-anchor='middle'>What the air is made of</text><rect x='40' y='130' width='320' height='46' rx='14' stroke='currentColor' stroke-width='2' opacity='0.45'/><line x1='290' y1='130' x2='290' y2='176' stroke='currentColor' stroke-width='1.5' opacity='0.5'/><line x1='357' y1='130' x2='357' y2='176' stroke='currentColor' stroke-width='1.5' opacity='0.5'/><text x='165' y='159' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>Nitrogen 78%</text><text x='323' y='120' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.85' text-anchor='middle'>Oxygen 21%</text><line x1='358' y1='176' x2='358' y2='196' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><text x='360' y='214' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='14' font-weight='700' text-anchor='end'>CO2 0.04%</text><text x='360' y='234' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' text-anchor='end'>builds half a tree</text></svg>"
+      }
+    },
+    {
+      "type": "how_we_know",
+      "order": 5,
+      "content": "The clean proof is a labeling trick. Feed a plant carbon dioxide built with carbon-14, a mildly radioactive form of carbon, and you can follow those exact atoms wherever they travel. In the late 1940s Melvin Calvin did this with green algae and found the tagged carbon inside freshly made sugars within seconds, then in the body of the plant. The carbon in a leaf had been gas in the air moments before. A far older test had already ruled out the alternative: weigh the soil a plant grows in and it hardly drops, so the new mass is not coming from the ground. The tracer showed where it comes from instead."
+    },
+    {
+      "type": "story",
+      "order": 7,
+      "content": {
+        "body": "In the 1640s the Flemish physician Jan Baptist van Helmont ran the first weighed experiment in biology. He dried 200 pounds of soil, planted a 5-pound willow shoot, and for 5 years watered it with rain alone. The willow became a tree of 169 pounds. Weighed again, the soil had lost about 2 ounces. Some 164 pounds of wood and bark had appeared from what looked like nothing, and it had not come from the dirt, so van Helmont credited the water and stopped there. He had ruled out the soil and missed the air. Later, Joseph Priestley and Jan Ingenhousz showed that plants trade gases with the air and that light drives the exchange. The Swiss chemist Nicolas-Théodore de Saussure closed the case in 1804, weighing the gases along with the plant and showing the carbon comes from the carbon dioxide the leaves take in. The soil, he found, supplies little beyond water and minerals.",
+        "key_figures": [
+          {
+            "name": "Jan Baptist van Helmont",
+            "role": "Ran the first weighed plant experiment",
+            "one_line": "His 1640s willow experiment proved a tree's added mass does not come from the soil, though he wrongly credited it to water.",
+            "lifespan": "1580-1644",
+            "birth_year": 1580,
+            "featured": true,
+            "image_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Jan_Baptista_van_Helmont._Line_engraving,_1666._Wellcome_V0002677.jpg",
+            "image_attribution": "Wellcome Collection, “Jan Baptista van Helmont”, CC BY 4.0 (Wikimedia Commons)"
+          },
+          {
+            "name": "Nicolas-Théodore de Saussure",
+            "role": "Traced the carbon to the air",
+            "one_line": "In 1804 he weighed the gases a plant exchanges and showed its carbon comes from atmospheric carbon dioxide, not the soil.",
+            "lifespan": "1767-1845",
+            "birth_year": 1767,
+            "featured": true
+          }
+        ],
+        "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='30' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='600' opacity='0.8' text-anchor='middle'>Willow experiment, 5 years</text><line x1='40' y1='250' x2='372' y2='250' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><rect x='64' y='60' width='46' height='190' rx='12' stroke='currentColor' stroke-width='2' opacity='0.55'/><rect x='120' y='60' width='46' height='190' rx='12' stroke='currentColor' stroke-width='2' opacity='0.55'/><text x='87' y='50' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' font-weight='700' opacity='0.8' text-anchor='middle'>200 lb</text><text x='143' y='50' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' font-weight='700' opacity='0.8' text-anchor='middle'>200 lb</text><text x='115' y='272' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' text-anchor='middle'>Soil</text><text x='115' y='290' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.65' text-anchor='middle'>lost 2 oz</text><rect x='244' y='244' width='46' height='6' rx='3' stroke='currentColor' stroke-width='2' opacity='0.55'/><text x='267' y='236' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' font-weight='700' opacity='0.8' text-anchor='middle'>5 lb</text><rect x='300' y='90' width='46' height='160' rx='12' fill='var(--accent)' fill-opacity='0.15' stroke='var(--accent)' stroke-width='2.5'/><text x='323' y='80' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='15' font-weight='700' text-anchor='middle'>169 lb</text><text x='295' y='272' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' text-anchor='middle'>Willow</text><text x='295' y='290' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.65' text-anchor='middle'>gained 164 lb</text></svg>"
+      }
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "Set the wood alight and the air gets it back",
+          "body": "The carbon in wood is on loan. Burn a log or let it slowly rot, and the carbon finds oxygen again and drifts off as carbon dioxide, back where the tree took it from. A wood fire is photosynthesis in reverse, the stored sunlight leaving as heat and the stored air leaving as gas. A growing forest pulls carbon down out of the air. When it burns, that carbon goes back up.",
+          "visual_svg": "<svg viewBox='0 90 400 132' xmlns='http://www.w3.org/2000/svg' fill='none'><rect x='44' y='120' width='120' height='64' rx='16' stroke='currentColor' stroke-width='2' opacity='0.7'/><rect x='236' y='120' width='120' height='64' rx='16' stroke='var(--accent)' stroke-width='2.5'/><text x='104' y='148' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='700' text-anchor='middle'>Air</text><text x='104' y='170' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' opacity='0.7' text-anchor='middle'>CO2</text><text x='296' y='148' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='700' text-anchor='middle'>Wood</text><text x='296' y='170' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.8' text-anchor='middle'>carbon</text><path d='M170 138 Q200 114 230 138' stroke='currentColor' stroke-width='2' opacity='0.6' stroke-linecap='round' stroke-linejoin='round'/><path d='M230 138 l-12 -6 m12 6 l-12 6' stroke='currentColor' stroke-width='2' opacity='0.6' stroke-linecap='round' stroke-linejoin='round'/><text x='200' y='108' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.8' text-anchor='middle'>photosynthesis</text><path d='M230 166 Q200 190 170 166' stroke='currentColor' stroke-width='2' opacity='0.6' stroke-linecap='round' stroke-linejoin='round'/><path d='M170 166 l12 -6 m-12 6 l12 6' stroke='currentColor' stroke-width='2' opacity='0.6' stroke-linecap='round' stroke-linejoin='round'/><text x='200' y='210' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.8' text-anchor='middle'>fire or decay</text></svg>"
+        },
+        {
+          "title": "The soil's job is real, only small",
+          "body": "None of this leaves soil pointless. Roots draw up the water that supplies a plant's hydrogen. They also mine the nitrogen, phosphorus, and other minerals that leaves and enzymes need, together a percent or so of the dry weight. The ground holds the tree upright too. A plant in poor soil grows slowly, starved of those trace supplies even with carbon all around it."
+        },
+        {
+          "title": "Coal is a fossil of ancient air",
+          "body": "Push the idea back in time. Coal, oil, and gas are the carbon of ancient life, most of it built by plants that pulled carbon dioxide from far older skies. Some Carboniferous forests toppled into swamps and never fully rotted, and their air-carbon stayed locked underground for 300 million years. Burning fossil fuel does what a campfire does, with air that was captured in a different geological age."
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "So a forest is a slow reservoir of old air. Every trunk is carbon that once was gas, held in place until the wood burns or rots and lets it go. This is the hinge the carbon cycle turns on: plants pull carbon out of the sky and bind it into solid life, and whatever eats, burns, or rots them hands it back. Shift the rate on either side, by clearing forests or by digging up buried carbon and setting it alight, and the amount left in the air starts to move. The stuff of a tree was never the ground it stood on. It was the sky it grew into."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "A tree adds a tonne of wood over its life. Where does most of that added mass come from?",
+          "options": [
+            "Minerals dissolved out of the soil",
+            "Water lifted up by the roots",
+            "Carbon dioxide taken from the air",
+            "Sunlight absorbed by the leaves"
+          ],
+          "answer_index": 2,
+          "explanation": "About half of dry wood is carbon, and every carbon atom is pulled from carbon dioxide in the air during photosynthesis. Water supplies hydrogen and the soil a little mineral, but the bulk of the mass rides in on a gas."
+        },
+        {
+          "question": "Van Helmont's willow gained 164 pounds while the soil lost only 2 ounces. What did the result establish, and what did he get wrong?",
+          "options": [
+            "It ruled out the soil as the source of the mass, but he wrongly credited the gain to water",
+            "It proved the mass came from sunlight stored in the leaves",
+            "It showed plants slowly consume soil, just too little to notice",
+            "It ruled out water and pointed straight to the air"
+          ],
+          "answer_index": 0,
+          "explanation": "The unchanged soil showed the new wood was not built from the ground. Van Helmont credited the water instead, and missed that most of the mass was carbon coming from the air."
+        },
+        {
+          "question": "Burn a wooden plank. What becomes of the carbon that photosynthesis locked into it?",
+          "options": [
+            "It stays behind as ash",
+            "It returns to the air as carbon dioxide",
+            "It turns into water vapor",
+            "It soaks back into the soil"
+          ],
+          "answer_index": 1,
+          "explanation": "Burning is photosynthesis run backward: the carbon joins oxygen and leaves as carbon dioxide, the same gas the tree drew it from. Rotting does the same thing more slowly."
+        },
+        {
+          "question": "Roughly what share of a tree's dry weight is carbon?",
+          "options": [
+            "About 5%",
+            "About 20%",
+            "About 90%",
+            "About half"
+          ],
+          "answer_index": 3,
+          "explanation": "Carbon makes up close to 50% of dry wood, with most of the rest oxygen and hydrogen. That is why a tree is, by weight, largely rearranged air."
+        },
+        {
+          "question": "Grow a tree in a sealed greenhouse and weigh everything before and after. Why does the soil barely lose mass while the tree gains a lot?",
+          "options": [
+            "The tree builds its bulk from carbon dioxide in the air, not from the soil",
+            "The soil remakes its minerals as fast as the roots remove them",
+            "Roots return as much soil as they take up",
+            "The tree's new mass is mostly water drawn from the air"
+          ],
+          "answer_index": 0,
+          "explanation": "The carbon that makes up most of the new wood comes from the air, so the soil is hardly touched. Roots take only water and a small amount of mineral nutrient."
+        },
+        {
+          "question": "Given all this, what is the soil's real contribution to a growing tree?",
+          "options": [
+            "Nearly all of its structural mass",
+            "Water and a small supply of mineral nutrients",
+            "The carbon that becomes wood and bark",
+            "The energy that powers its growth"
+          ],
+          "answer_index": 1,
+          "explanation": "Soil provides water, the source of the plant's hydrogen, a percent or so of mineral nutrients, and physical support. The carbon comes from the air and the energy from sunlight."
+        },
+        {
+          "question": "More carbon dioxide in the air lets many trees grow faster, an effect called CO2 fertilization. Why don't forests simply keep speeding up as CO2 climbs?",
+          "options": [
+            "Leaves stop taking in carbon dioxide above a certain level",
+            "Other resources, soil nitrogen above all, run short and cap the extra growth",
+            "The extra carbon dioxide becomes toxic to the tree",
+            "Warmer air ends up holding less carbon dioxide"
+          ],
+          "answer_index": 1,
+          "explanation": "Extra carbon is only useful if a tree also has the nitrogen and other nutrients to build new tissue. In long carbon dioxide enrichment trials, the early growth boost faded as the soil's nitrogen ran low."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "Plants get their food and their bulk from the soil.",
+          "reality": "Soil gives water and a small dose of minerals, on the order of 1% of the dry weight. The material of the wood, its carbon, is drawn from the air."
+        },
+        {
+          "myth": "Van Helmont's willow proved a tree is made of water.",
+          "reality": "His sealed pot did show the soil gives almost nothing, but the 164 pounds he assigned to water is mostly carbon from the air. Water supplies the hydrogen, roughly 6% of the dry weight."
+        },
+        {
+          "myth": "A tree is basically stored sunlight.",
+          "reality": "Sunlight is the energy, not the material. The atoms are carbon from carbon dioxide and hydrogen from water, and light only powers the work of joining them."
+        }
+      ]
+    },
+    {
+      "type": "open_questions",
+      "order": 12,
+      "content": {
+        "body": "If plants are built from carbon dioxide, then more of it in the air should mean faster growth and more carbon stored, a real effect known as CO2 fertilization. Trials that pump extra carbon dioxide over whole forest plots did see a jump at first. In one 11-year experiment over a Tennessee sweetgum stand, the boost to yearly growth started near 24% and faded to about 9% as the trees ran short of nitrogen in the soil. How much the extra carbon helps, and for how long, is still being worked out.",
+        "items": [
+          "Will nutrient limits, nitrogen and phosphorus above all, cap the CO2 boost across most of the world's forests?",
+          "How much of the extra carbon a plant takes in stays locked in wood, instead of cycling straight back out?",
+          "As forests grow old or heat up, do they keep drawing carbon down or start releasing it?"
+        ]
+      }
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Jan Baptista van Helmont (Britannica biography)",
+          "url": "https://www.britannica.com/biography/Jan-Baptista-van-Helmont",
+          "type": "article"
+        },
+        {
+          "label": "Kimball's Biology: Discovering the secrets of photosynthesis (LibreTexts)",
+          "url": "https://bio.libretexts.org/Bookshelves/Introductory_and_General_Biology/Biology_(Kimball)/04:_Cell_Metabolism/4.09:_Photosynthesis_-_Dicovering_the_Secrets",
+          "type": "article"
+        },
+        {
+          "label": "Nicolas-Théodore de Saussure",
+          "url": "https://en.wikipedia.org/wiki/Nicolas_Th%C3%A9odore_de_Saussure",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Melvin Calvin: tracing the path of carbon with carbon-14 (Britannica)",
+          "url": "https://www.britannica.com/biography/Melvin-Calvin",
+          "type": "article"
+        },
+        {
+          "label": "The elemental composition of wood (about 50% carbon)",
+          "url": "https://biologyinsights.com/what-elements-are-in-wood-the-chemical-composition/",
+          "type": "article"
+        },
+        {
+          "label": "Climate change: atmospheric carbon dioxide (NOAA Climate.gov)",
+          "url": "https://www.climate.gov/news-features/understanding-climate/climate-change-atmospheric-carbon-dioxide",
+          "type": "article"
+        },
+        {
+          "label": "Norby et al. CO2 enhancement of forest productivity constrained by limited nitrogen availability. PNAS 2010",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2984154/",
+          "type": "paper"
+        }
+      ]
+    }
+  ]
+}

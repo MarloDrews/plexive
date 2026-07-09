@@ -1,0 +1,236 @@
+{
+  "tags": [
+    "quantum-physics",
+    "physics",
+    "astronomy"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Quantum tunneling"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "A proton in the Sun's core carries about 1 keV of energy, a few hundred times too little to fuse. The Sun shines only because quantum mechanics lets it tunnel through the barrier instead of over it.",
+    "teasers": [
+      "The Sun's core is far too cold to burn",
+      "The retort a physicist threw at his doubters",
+      "Why a single proton can wait billions of years"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "A proton in the Sun's core carries about 1 keV of energy, a few hundred times too little to fuse. The Sun shines only because quantum mechanics lets it tunnel through the barrier instead of over it."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><g stroke='currentColor' stroke-width='2' stroke-linecap='round' opacity='0.45'><line x1='52' y1='252' x2='372' y2='252'/><line x1='52' y1='252' x2='52' y2='54'/></g><path d='M64 248 C 134 244, 176 200, 202 80 C 207 63, 215 63, 220 80 C 246 200, 300 244, 364 248' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' opacity='0.7'/><line x1='52' y1='224' x2='150' y2='224' stroke='currentColor' stroke-width='1.5' opacity='0.4' stroke-dasharray='5 6'/><g stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M298 224 L138 224'/><path d='M138 224 l16 -7 m-16 7 l16 7'/></g><text x='211' y='50' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>Barrier ~550 keV</text><text x='300' y='242' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.75' text-anchor='end'>Proton ~1 keV</text><text x='214' y='210' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>tunnels through</text><text x='30' y='150' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='middle' transform='rotate(-90 30 150)'>energy</text><text x='212' y='274' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='middle'>proton separation</text></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "A proton in the Sun's core carries about a thousand electron-volts of energy. To force its way through the electric repulsion of another proton, it would need a few hundred thousand. The mismatch runs to several hundredfold. By the rules of billiard-ball collisions the reaction cannot happen, and the Sun cannot shine. It shines because a proton is also a wave, and a wave does not have to clear a barrier. It can pass through. Every so often two protons stick, having crossed a wall they could never climb."
+    },
+    {
+      "type": "tangible",
+      "order": 4,
+      "content": {
+        "items": [
+          "An average proton drifts through the core for billions of years before it fuses, longer than the Sun has so far existed.",
+          "Tunneling is only the first long shot: even after it, one of the two protons must flip into a neutron by the weak force, which almost never happens.",
+          "The Sun holds so many protons, a 1 trailed by 57 zeros, that even a reaction this rare still keeps it blazing."
+        ],
+        "visual_svg": "<svg viewBox='0 44 400 178' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='66' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>How long an average proton waits to fuse</text><rect x='48' y='142' width='308' height='16' rx='8' stroke='currentColor' stroke-width='2' opacity='0.4'/><line x1='166' y1='134' x2='166' y2='166' stroke='currentColor' stroke-width='2' opacity='0.6' stroke-linecap='round'/><text x='166' y='186' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>Sun today, 4.6</text><line x1='279' y1='128' x2='279' y2='166' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><text x='279' y='120' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>~9 billion yr</text><text x='48' y='186' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='start'>0</text><text x='202' y='210' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='middle'>billions of years</text></svg>"
+      }
+    },
+    {
+      "type": "how_we_know",
+      "order": 5,
+      "content": "You cannot run this reaction on a bench. The first step is so rare that no laboratory has ever caught two protons fusing directly. Its rate is worked out from theory. What makes it more than a story is that the theory has to produce the Sun we see. Feed the tunneling odds into the core's size and its 15-million-degree temperature, and out comes a brightness that matches the real one. The sharper test comes from neutrinos. Each fusion flings out a neutrino that escapes the Sun almost untouched. Detectors buried deep underground catch them at the predicted rate."
+    },
+    {
+      "type": "story",
+      "order": 7,
+      "content": {
+        "body": "By 1920 Arthur Eddington had decided the Sun ran on hydrogen fusing into helium, and he would not be talked out of it. Critics objected that even its core was far too cold to force protons together. To the ones who said the stars were not hot enough, he offered a standing retort: they could “go and find a hotter place.” He was right to hold firm, though he could not yet say why the coldness did not stop it. The answer arrived from a different problem entirely. In 1928 George Gamow, puzzling over how particles escape a radioactive nucleus, worked out the odds of one slipping through a barrier it could not climb. Within a year Robert Atkinson and Fritz Houtermans aimed that formula at the stars, and the temperatures Eddington had insisted on turned out to be exactly enough. Hans Bethe and Charles Critchfield pieced together the full proton-proton chain in 1938.",
+        "key_figures": [
+          {
+            "name": "Arthur Eddington",
+            "role": "Insisted the Sun runs on fusion",
+            "one_line": "Argued from 1920 that stars shine by fusing hydrogen, and held the line against critics who called the core too cold.",
+            "lifespan": "1882-1944",
+            "birth_year": 1882,
+            "featured": true
+          },
+          {
+            "name": "George Gamow",
+            "role": "Found the tunneling loophole",
+            "one_line": "In 1928 he derived the odds of a particle passing through a barrier it lacked the energy to cross, the effect that lets fusion start.",
+            "lifespan": "1904-1968",
+            "birth_year": 1904,
+            "featured": true
+          },
+          {
+            "name": "Hans Bethe",
+            "role": "Worked out the proton-proton chain",
+            "one_line": "With Charles Critchfield he set out the step-by-step reactions that turn hydrogen into helium in stars like the Sun, in 1938.",
+            "lifespan": "1906-2005",
+            "birth_year": 1906,
+            "featured": false
+          }
+        ],
+        "visual_svg": "<svg viewBox='0 56 400 150' xmlns='http://www.w3.org/2000/svg' fill='none'><line x1='44' y1='150' x2='356' y2='150' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><g stroke='currentColor' stroke-width='2' opacity='0.7'><circle cx='58' cy='150' r='6'/><circle cx='232' cy='150' r='6'/><circle cx='346' cy='150' r='6'/></g><circle cx='150' cy='150' r='7' fill='var(--accent)'/><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'><text x='58' y='112'>1920</text><text x='232' y='112'>1929</text><text x='346' y='112'>1938</text></g><text x='150' y='110' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='700' text-anchor='middle'>1928</text><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.75' text-anchor='middle'><text x='58' y='180'>Eddington</text><text x='232' y='180'>Houtermans</text><text x='346' y='180'>Bethe</text></g><text x='150' y='180' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>Gamow</text></svg>"
+      }
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "Tunneling makes the Sun a thermostat, not a bomb",
+          "body": "A proton's chance of tunneling climbs steeply with its energy, so the fusion rate depends fiercely on temperature. Nudge the core hotter and reactions surge, puffing it outward and cooling it back. Let it cool, and gravity squeezes it warm again. That feedback has held the Sun steady for billions of years.",
+          "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><g stroke='currentColor' stroke-width='2' stroke-linecap='round' opacity='0.45'><line x1='60' y1='250' x2='372' y2='250'/><line x1='60' y1='250' x2='60' y2='48'/></g><path d='M72 246 C 180 244, 250 238, 296 176 C 316 148, 330 100, 344 58' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' opacity='0.75'/><circle cx='296' cy='176' r='6' fill='var(--accent)'/><text x='296' y='160' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>Sun's core</text><text x='150' y='150' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>a little hotter,</text><text x='150' y='168' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>far more fusion</text><text x='216' y='276' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>core temperature</text><text x='30' y='150' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle' transform='rotate(-90 30 150)'>fusion rate</text></svg>"
+        },
+        {
+          "title": "The same barrier makes fusion power so hard to build",
+          "body": "The Sun gets away with a feeble rate because it has what no reactor has. Its core is crushed to about 150 grams per cubic centimeter, and it has billions of years to spare. A power plant has neither. To push enough protons through in a small machine, and quickly, reactors must reach past 100 million degrees, hotter than the Sun's own core. A reactor has to meet that barrier closer to head-on."
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "Strip quantum mechanics out of the universe and the barrier stands, uncrossed. Stars at these temperatures would sit cold and dark, and nothing in them would fuse. No sunlight would warm a planet. None of the carbon and oxygen that later stars cook from this first spark would exist either. The light you feel on your skin began as a bet a proton loses almost every time. That the sky holds any stars at all is a fact about the very small, written across the very large."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "Why do two protons that meet in the Sun's core usually fail to fuse?",
+          "options": [
+            "They carry like charges and lack the energy to overcome the repulsion",
+            "The core is too cold for them to move at all",
+            "There are never enough protons close together",
+            "Protons have no charge and so cannot stick"
+          ],
+          "answer_index": 0,
+          "explanation": "Two protons share the same positive charge, so they repel, and the push grows as they close in. At core energies they fall hundreds of times short of climbing over that repulsion."
+        },
+        {
+          "question": "What does quantum tunneling let a proton do?",
+          "options": [
+            "Move faster than light for an instant",
+            "Borrow energy from the vacuum to jump the barrier",
+            "Cross a barrier it never had the energy to climb over",
+            "Repel the other proton more strongly"
+          ],
+          "answer_index": 2,
+          "explanation": "Tunneling is a wave effect. A quantum particle has a small chance of turning up on the far side of a barrier it could never surmount, and that thin chance is what lets fusion begin."
+        },
+        {
+          "question": "Why does the Sun burn steadily for billions of years instead of detonating?",
+          "options": [
+            "Its hydrogen supply is effectively endless",
+            "Tunneling is so rare that fusion stays slow and self-correcting",
+            "The core is too dense for reactions to spread",
+            "Its magnetic field caps the reaction rate"
+          ],
+          "answer_index": 1,
+          "explanation": "Because tunneling is such a long shot, only a trickle of protons fuse at any moment, and the rate rises and falls with temperature to hold the core in balance. A furnace that reacted easily would burn out fast."
+        },
+        {
+          "question": "Classical physics says fusion needs temperatures far above the Sun's 15 million degrees. Why does the Sun manage anyway?",
+          "options": [
+            "Its core is denser than any plasma made in a lab",
+            "Quantum tunneling lets protons react at energies far below the barrier",
+            "The immense pressure lowers the barrier between protons",
+            "Gravity supplies the missing energy directly"
+          ],
+          "answer_index": 1,
+          "explanation": "Tunneling means a proton does not need the full barrier energy. A small fraction of pairs slip through from well below it, so fusion proceeds at temperatures classical collisions could never manage."
+        },
+        {
+          "question": "How do neutrinos from the Sun help confirm the tunneling picture?",
+          "options": [
+            "They are made in the fusion itself and reach detectors at the predicted rate",
+            "They heat the core enough to trigger fusion",
+            "They ferry protons through the barrier",
+            "They slow the reaction so the Sun stays stable"
+          ],
+          "answer_index": 0,
+          "explanation": "Each fusion emits a neutrino that leaves the Sun almost unimpeded. Underground detectors count them at the rate the tunneling calculation predicts, tying the theory to something measured."
+        },
+        {
+          "question": "Why must fusion reactors on Earth run even hotter than the Sun's core?",
+          "options": [
+            "Sunlight would otherwise interfere with the plasma",
+            "Earth's gravity weakens the reactions",
+            "The barrier between protons is taller on Earth",
+            "They lack the Sun's crushing density and endless time, so they make up for it with heat"
+          ],
+          "answer_index": 3,
+          "explanation": "The Sun tolerates a tiny reaction rate because it is enormously dense and has eons to spare. A reactor has neither, so it drives the temperature far higher to force enough tunneling in a small volume, fast."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "The Sun is a giant ball of fire, burning like an enormous bonfire.",
+          "reality": "Nothing in the Sun is on fire. Combustion could not power it for a thousandth of its life. What runs it is fusion, protons welding into helium and shedding a sliver of mass as energy."
+        },
+        {
+          "myth": "At 15 million degrees, the core must fuse protons with ease.",
+          "reality": "That temperature still leaves the core hundreds of times too cold to fuse by force. Nearly every proton that nears another is turned away."
+        },
+        {
+          "myth": "A barrier with one exact height should make the numbers precise.",
+          "reality": "Quoted barrier heights run from a few hundred thousand electron-volts to around a million, depending on how close the protons must approach. What matters is the size of the gap, not a single fixed value."
+        }
+      ]
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Gamow factor",
+          "url": "https://en.wikipedia.org/wiki/Gamow_factor",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Proton-proton chain",
+          "url": "https://en.wikipedia.org/wiki/Proton%E2%80%93proton_chain",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Arthur Eddington (source of the “hotter place” retort, from The Internal Constitution of the Stars, 1926)",
+          "url": "https://en.wikiquote.org/wiki/Arthur_Eddington",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Coulomb Barrier for Fusion, HyperPhysics",
+          "url": "https://hyperphysics.gsu.edu/hbase/NucEne/coubar.html",
+          "type": "article"
+        },
+        {
+          "label": "G. Knapp, The physics of fusion in stars (Princeton AST 403 notes): p-p Coulomb barrier ~550 keV, core thermal energy ~1.4 keV",
+          "url": "https://www.astro.princeton.edu/~gk/A403/fusion.pdf",
+          "type": "paper"
+        }
+      ]
+    }
+  ]
+}

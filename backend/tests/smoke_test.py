@@ -114,11 +114,14 @@ def main():
     check("explanation stripped", all("explanation" not in q for q in quiz["content"]))
     check("question kept", all("question" in q and "options" in q for q in quiz["content"]))
 
-    # --- Anonymous answer: correctness only, no Elo ---
+    # --- Anonymous answer: own-pick correctness only, no key, no Elo (M121) ---
     r = client.post("/api/quiz/answer", json={"post_id": post_id, "question_index": 0, "chosen_index": 1})
     check("anon answer", r.status_code == 200, r.text)
     d = r.json()
-    check("anon correct", d["correct"] is True and d["correct_index"] == 1)
+    # Anonymous callers learn whether their own pick was right but not the answer
+    # key or explanation (withheld to stop scraping, M121/SEC-018).
+    check("anon own-pick correctness", d["correct"] is True)
+    check("anon answer withholds the key", d["correct_index"] is None and d["explanation"] is None)
     check("anon no elo", d["elo"] is None and d["scored"] is False)
 
     # --- Authed correct answer raises Elo ---
@@ -164,22 +167,24 @@ def main():
     r = client.get("/api/users/alice/elo")
     d = r.json()
     check("public elo", r.status_code == 200 and d["global_rating"] is not None)
-    # The score is unified onto a single rating, so there is no per-format breakdown.
-    check("no per-format elo", d["formats"] == {})
+    # The score is unified onto a single rating; the per-format breakdown (and
+    # the always-empty compatibility dict that outlived it) is gone entirely.
+    check("no per-format elo", "formats" not in d)
     r = client.get("/api/users/bob/elo")
     check("unscored user has no global elo", r.json()["global_rating"] is None)
 
-    # --- Train answer moves the same unified knowledge score ---
+    # --- Train answer moves the same unified knowledge score (server-graded, M120) ---
     before = client.get("/api/users/alice/elo").json()["global_rating"]
     r = client.post("/api/train/answer", headers=a_h,
-                    json={"difficulty": 3, "correct": True, "answer_ms": 1000})
+                    json={"question_id": "sci-speed-of-light", "chosen_index": 2, "answer_ms": 1000})
     td = r.json()
     check("train answer ok", r.status_code == 200, str(td))
+    check("train graded correct server-side", td["correct"] is True, str(td))
     check("train delta positive", td["delta"] > 0, str(td))
     after = client.get("/api/users/alice/elo").json()["global_rating"]
     check("train moved knowledge score", after >= before)
     check("train requires auth", client.post(
-        "/api/train/answer", json={"difficulty": 2, "correct": True, "answer_ms": 0}
+        "/api/train/answer", json={"question_id": "sci-speed-of-light", "chosen_index": 2, "answer_ms": 0}
     ).status_code in (401, 403))
 
     # --- Bad inputs rejected ---
@@ -230,6 +235,14 @@ def main():
     check("follow bob", r.status_code == 200 and r.json()["status"] == "accepted")
     r = client.get("/api/search/users", params={"q": "bob"}, headers=a_h)
     check("search reflects follow", r.json()[0]["follow_status"] == "accepted")
+
+    # --- Profile follow_status (folded into the counts query) ---
+    r = client.get("/api/users/bob/profile", headers=a_h)
+    check("profile follow_status accepted for a follow", r.json()["follow_status"] == "accepted", r.text)
+    r = client.get("/api/users/alice/profile", headers=a_h)
+    check("profile follow_status None for self", r.json()["follow_status"] is None, r.text)
+    r = client.get("/api/users/bob/profile")
+    check("profile follow_status None for anon", r.json()["follow_status"] is None, r.text)
     r = client.get("/api/search/users", params={"q": "alice"}, headers=a_h)
     check("search marks self", r.json()[0]["is_self"] is True)
     r = client.get("/api/search/users", params={"q": ""})

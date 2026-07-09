@@ -64,6 +64,15 @@
   /* Radii (in-content blocks; chrome surfaces use rounded-2xl/3xl/full) */
   --radius-card: 0.875rem;                /* section-body cards */
   --radius-field: 0.625rem;               /* small in-content boxes */
+
+  /* Type sizes shared across components; single source for values that were
+     hand-mirrored as arbitrary classes. */
+  --text-reading: 1.0625rem;              /* 17px reading size: .prose-post + card teasers */
+  --text-headline: 2rem;                  /* detail headline: HeadlineSection + the people header beside the portrait */
+
+  /* The feed action rail and interest-tag box bottom-anchor 4px above the
+     nav dock top (dock top = safe-area + 68px). */
+  --spacing-rail: calc(env(safe-area-inset-bottom) + 72px);
 }
 
 /* Dark-only app; fixed to avoid a white flash on light-mode devices.
@@ -116,9 +125,14 @@ body::before {
    is detached neutral pills, press feedback is a springy scale-down.
    Sizing stays at the call site; these own the look. */
 @layer components {
+  /* No backdrop-filter on the slab: over the near-uniform dark page the blur
+     read identically to the plain translucent fill, while forcing per-frame
+     backdrop sampling for every mounted card during feed scroll (one of the
+     most expensive compositing features on mobile GPUs). Blur stays on the
+     chrome that genuinely overlays scrolling content (.btn-icon, nav dock,
+     tab capsules, toast, comment bar). */
   .card {
     background: rgb(255 255 255 / 0.04);
-    backdrop-filter: blur(24px);
     border: none;
     border-radius: 1.5rem;
   }
@@ -273,7 +287,7 @@ body::before {
   /* Long-form post prose: the reading voice of the app. */
   .prose-post {
     font-family: var(--font-serif);
-    font-size: 1.0625rem;
+    font-size: var(--text-reading);
     line-height: 1.7;
     color: var(--color-ink-body);
   }
@@ -350,5 +364,35 @@ body::before {
   .stage-pulse,
   .stage-sheet-in {
     animation: none;
+  }
+}
+
+/* Post detail sheet slide-in/out (previously an inline <style> injected by
+   the detail page, whose reduced-motion guard used an unscoped `*` selector
+   that zeroed every animation app-wide while the page was mounted). The
+   guard is scoped to the sheet itself; other animations keep their own
+   guards above. */
+@keyframes post-sheet-up {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+@keyframes post-sheet-down {
+  from { transform: translateY(0); }
+  to   { transform: translateY(100%); }
+}
+
+.post-sheet-open {
+  animation: post-sheet-up 300ms ease-out forwards;
+}
+
+.post-sheet-closing {
+  animation: post-sheet-down 250ms ease-in forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .post-sheet-open,
+  .post-sheet-closing {
+    animation-duration: 0ms;
   }
 }

@@ -1,0 +1,278 @@
+{
+  "tags": [
+    "ecology",
+    "botany",
+    "biology",
+    "nature-phenomena"
+  ],
+  "connections": [
+    {
+      "format": "books",
+      "ref": {
+        "title": "Entangled Life",
+        "author": "Merlin Sheldrake"
+      },
+      "featured": true
+    },
+    {
+      "format": "books",
+      "ref": {
+        "title": "Finding the Mother Tree",
+        "author": "Suzanne Simard"
+      },
+      "featured": false
+    },
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Symbiosis"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "A single teaspoon of soil can hold up to 10 metres of fungal thread, and most of a plant's foraging runs through it.",
+    "teasers": [
+      "A tree's root system is mostly not roots",
+      "How a plant pays a fungus, and for what",
+      "Why the “talking trees” idea got walked back"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "A single teaspoon of soil can hold up to 10 metres of fungal thread, and most of a plant's foraging runs through it."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><line x1='20' y1='120' x2='380' y2='120' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><line x1='200' y1='120' x2='200' y2='72' stroke='currentColor' stroke-width='2.5' stroke-linecap='round'/><circle cx='200' cy='54' r='20' stroke='currentColor' stroke-width='2.5'/><g stroke='currentColor' stroke-width='2' opacity='0.6' stroke-linecap='round'><path d='M200 120 L188 150'/><path d='M200 120 L212 150'/><path d='M200 120 L200 153'/></g><g stroke='var(--accent)' stroke-width='2' opacity='0.9' stroke-linecap='round'><path d='M196 150 Q140 175 70 232'/><path d='M198 150 Q150 200 118 250'/><path d='M202 152 Q210 205 175 255'/><path d='M204 150 Q270 185 305 242'/><path d='M206 150 Q300 175 345 222'/><path d='M200 153 Q235 210 250 258'/><path d='M197 151 Q108 196 92 238'/></g><g fill='currentColor' opacity='0.75'><circle cx='70' cy='232' r='3'/><circle cx='118' cy='250' r='3'/><circle cx='305' cy='242' r='3'/><circle cx='345' cy='222' r='3'/><circle cx='250' cy='258' r='3'/></g><g stroke='currentColor' stroke-width='2' opacity='0.7' stroke-linecap='round' stroke-linejoin='round'><path d='M168 132 L168 152'/><path d='M168 152 l-5 -8 m5 8 l5 -8'/><path d='M232 152 L232 132'/><path d='M232 132 l-5 8 m5 -8 l5 8'/></g><g font-family='var(--font-sans), system-ui, sans-serif' text-anchor='middle'><text x='146' y='146' fill='currentColor' font-size='13' opacity='0.8'>sugar</text><text x='260' y='146' fill='currentColor' font-size='13' opacity='0.8'>minerals</text><text x='205' y='172' fill='currentColor' font-size='13' font-weight='600' opacity='0.85'>roots</text><text x='300' y='287' fill='var(--accent)' font-size='15' font-weight='700'>fungal web</text></g></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "A teaspoon of soil can hold 10 metres of fungal thread, coiled too fine to see. Pull back and the picture rearranges. The trees you were looking at are not separate organisms standing in dirt. Each one has handed most of its underground foraging to fungi, paying in sugar for the water and minerals they haul back. What you call a root system is, in large part, not the plant's roots at all."
+    },
+    {
+      "type": "tangible",
+      "order": 4,
+      "content": {
+        "items": [
+          "Add up the mapped threads across the planet's topsoils and they run to about 110 quadrillion kilometres, enough for more than 300 million round trips to the Sun.",
+          "The web is densest not under rainforests but under wild grasslands, which hold roughly 40% of it.",
+          "Each year the world's plants channel about 13 billion tonnes of CO2 equivalent into these fungi, close to a third of what fossil fuels release."
+        ],
+        "visual_svg": "<svg viewBox='0 0 400 230' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='30' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.8' text-anchor='middle'>Carbon into fungi vs fossil fuels</text><rect x='132' y='70' width='79' height='34' rx='8' fill='var(--accent)' fill-opacity='0.22' stroke='var(--accent)' stroke-width='2'/><text x='124' y='92' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='end'>into fungi</text><text x='221' y='93' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='15' font-weight='700' text-anchor='start'>13</text><rect x='132' y='140' width='230' height='34' rx='8' stroke='currentColor' stroke-width='2' opacity='0.5'/><text x='124' y='162' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='end' opacity='0.85'>fossil fuels</text><text x='372' y='163' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='15' font-weight='700' text-anchor='start' opacity='0.85'>37</text><text x='200' y='210' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>gigatonnes CO2e per year</text></svg>"
+      }
+    },
+    {
+      "type": "how_we_know",
+      "order": 5,
+      "content": "Two very different kinds of work stand behind this. To watch carbon actually move, researchers feed one tree air spiked with a heavy form of carbon, then track where the label turns up. That is how, in 1997, tagged carbon was caught crossing underground from a birch to a nearby fir. The planetary numbers took brute effort: more than 16,000 soil cores pulled from every continent, run through models trained by robotically imaging over 300,000 living fungal threads. Neither trick works on a single handful of dirt. The pattern only shows up at scale."
+    },
+    {
+      "type": "story",
+      "order": 7,
+      "content": {
+        "body": "In 1885 the German botanist Albert Bernhard Frank gave the partnership its name: “mycorrhiza”, from the Greek for fungus and root. He went further and argued that the fungus and the tree feed each other. Most of his peers read any fungus on a root as a disease and disliked the idea. He turned out to be right. For the next century the work stayed quiet and technical, until a 1997 field experiment lit it up. Suzanne Simard sealed birch and fir seedlings in bags, fed them two labelled forms of carbon dioxide, and watched the carbon cross underground from one species to the other. The cover of Nature that carried her result called it the “wood wide web”, and the phrase escaped into the world. From there the story ran ahead of the evidence, into talk of trees nursing their young and trading warnings, which the field has since had to walk back.",
+        "key_figures": [
+          {
+            "name": "Albert Bernhard Frank",
+            "role": "Named the partnership",
+            "one_line": "In 1885 he coined the word “mycorrhiza” and argued, against his skeptics, that fungus and tree feed each other.",
+            "lifespan": "1839-1900",
+            "birth_year": 1839,
+            "featured": true,
+            "image_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Frank_Albert_Bernhardt.png",
+            "image_attribution": "Unknown author, portrait of A. B. Frank, Acta Horti Bergiani (1903), public domain (Wikimedia Commons)"
+          },
+          {
+            "name": "Suzanne Simard",
+            "role": "Traced carbon between trees",
+            "one_line": "In 1997 she tracked labelled carbon moving underground from a birch to a fir, the field result behind the “wood wide web”.",
+            "lifespan": "born 1960",
+            "birth_year": 1960,
+            "featured": false
+          }
+        ]
+      }
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "Plants pay their best fungal partners more",
+          "body": "The trade is transactional. Given several fungal strains at once, a plant sends the most sugar to the one delivering the most phosphorus, and the fungi push more phosphorus toward whichever roots pay best. Starve a partner and it withholds. Reward it and it delivers. Each side can sense a bad deal and pull back.",
+          "visual_svg": "<svg viewBox='0 0 400 220' xmlns='http://www.w3.org/2000/svg' fill='none'><rect x='40' y='80' width='110' height='60' rx='16' stroke='currentColor' stroke-width='2.5'/><rect x='250' y='80' width='110' height='60' rx='16' stroke='currentColor' stroke-width='2.5'/><text x='95' y='116' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='700' text-anchor='middle'>plant</text><text x='305' y='116' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='700' text-anchor='middle'>fungus</text><path d='M150 100 H250' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><path d='M250 100 l-10 -6 m10 6 l-10 6' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/><text x='200' y='90' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>sugar</text><path d='M250 128 H150' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' opacity='0.7'/><path d='M150 128 l10 -6 m-10 6 l10 6' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' opacity='0.7'/><text x='200' y='150' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' text-anchor='middle' opacity='0.85'>phosphorus</text><text x='200' y='192' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>best partners paid most</text></svg>"
+        },
+        {
+          "title": "The threads reach the phosphorus roots cannot",
+          "body": "Phosphorus barely moves in soil. A root strips the thin film of dirt right against it, and within days that shell is bare, a dead zone it cannot reach past. A fungal thread is a few thousandths of a millimetre wide, finer than a root hair, so it threads into pores that roots are too thick to enter. It mines the phosphorus and water out there and pipes them home. That reach is what the plant buys with its sugar."
+        },
+        {
+          "title": "Forest trees and grasses strike the deal differently",
+          "body": "There are two main ways to plug in. Grasses, crops, and many tropical trees use arbuscular fungi that push inside the root cells and branch there into tiny trees of exchange. Cool-forest trees like pine and oak mostly do it the other way, sheathing their root tips in a fungal wrap that never enters the cells. The new global map covers only the first kind. The forest web is a separate one, still largely uncharted.",
+          "visual_svg": "<svg viewBox='0 0 400 250' xmlns='http://www.w3.org/2000/svg' fill='none'><line x1='200' y1='36' x2='200' y2='214' stroke='currentColor' stroke-width='1.5' opacity='0.3' stroke-dasharray='6 6'/><rect x='48' y='92' width='104' height='92' rx='14' stroke='currentColor' stroke-width='2.5'/><g stroke='var(--accent)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M100 178 V150'/><path d='M100 150 L84 124 M100 150 L116 124'/><path d='M84 124 L74 110 M84 124 L94 112 M116 124 L106 112 M116 124 L126 110'/></g><text x='100' y='76' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>inside cells</text><text x='100' y='206' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.75' text-anchor='middle'>most plants</text><ellipse cx='300' cy='138' rx='24' ry='42' stroke='currentColor' stroke-width='2.5'/><ellipse cx='300' cy='138' rx='33' ry='52' stroke='var(--accent)' stroke-width='2' stroke-dasharray='3 5'/><text x='300' y='76' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>around tips</text><text x='300' y='206' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.75' text-anchor='middle'>forest trees</text></svg>"
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "Step back far enough and the tidy outline of a single plant blurs. This arrangement is old. For more than 400 million years, land life has run on it, trading sugar from sunlight for a foraging service older than roots and leaves. Popular books turned that into a tale of friendship among the trees. The ledger underneath is plainer and stranger: a market with no manager that most of the living world leans on. The map that measured its scale also measured its loss, with croplands running about half as dense as wild soil. We are tearing the network up faster than we can read it."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "In the plant-fungus partnership, what moves which way?",
+          "options": [
+            "The fungus gives the plant sugar in exchange for shade",
+            "Both make their own food and only share space",
+            "The plant gives sugar and gets water and minerals like phosphorus",
+            "The plant gives water and the fungus gives sugar"
+          ],
+          "answer_index": 2,
+          "explanation": "The plant is the one with leaves, so it makes the sugar and pays it down to the fungus. The fungus, spread through the soil, sends back water and mineral nutrients the roots struggle to reach."
+        },
+        {
+          "question": "Why is a fungal thread worth the sugar a plant spends on it?",
+          "options": [
+            "It is far finer than any root and reaches phosphorus and water roots cannot",
+            "It photosynthesises better than the plant's own leaves",
+            "It kills competing plants growing nearby",
+            "It stores the plant's sugar safely over winter"
+          ],
+          "answer_index": 0,
+          "explanation": "Phosphorus barely moves and roots quickly strip the soil right around them. A thread a few thousandths of a millimetre wide reaches into pores roots are too thick to enter, and forages far past that dead zone."
+        },
+        {
+          "question": "The experiment on reciprocal rewards showed the trade stays fair because...",
+          "options": [
+            "a dominant tree polices the network and punishes cheats",
+            "the fungus is genetically identical to the plant, so their aims match",
+            "neither side can tell partners apart, so cheating is impossible",
+            "each side gives more to whichever partner gives it more, and can pull back from a poor one"
+          ],
+          "answer_index": 3,
+          "explanation": "Cooperation here is enforced by exchange, not goodwill. A plant rewards the fungi that deliver most, fungi favour the roots that pay most, and either can withhold from a partner that stops delivering."
+        },
+        {
+          "question": "Which popular claim has the science had to walk back?",
+          "options": [
+            "That fungal threads reach well beyond a plant's own roots",
+            "That mature trees deliberately send food and warnings to their own seedlings through the web",
+            "That plants trade sugar to fungi for mineral nutrients",
+            "That the partnership is hundreds of millions of years old"
+          ],
+          "answer_index": 1,
+          "explanation": "A 2023 review found no peer-reviewed evidence that trees preferentially feed their own kin through the network. The underlying trade between a plant and its fungi is solid; the story of nurturing, communicating forests outran the data."
+        },
+        {
+          "question": "How did researchers show carbon can cross from one tree to another underground?",
+          "options": [
+            "They fed one tree air tagged with a heavy form of carbon and found the tag in a neighbour",
+            "They weighed each tree before and after a growing season",
+            "They cut the fungal threads and watched the trees die",
+            "They compared one forest that had fungi with one that did not"
+          ],
+          "answer_index": 0,
+          "explanation": "Feeding a tree a heavy isotope of carbon lets you follow that exact carbon. When it turns up in a neighbouring tree, it has moved between them, which is how the 1997 birch-to-fir transfer was caught."
+        },
+        {
+          "question": "What is the sharpest correction to picturing a forest as separate, self-feeding trees?",
+          "options": [
+            "The trees are secretly one genetic individual joined underground",
+            "The trees feed themselves entirely and ignore soil fungi",
+            "Most of each tree's underground foraging is outsourced to fungi it feeds with sugar",
+            "Soil fungi live only on dead trees, never living ones"
+          ],
+          "answer_index": 2,
+          "explanation": "Each tree is still its own organism, but the bulk of its soil foraging is done by fungi it pays in sugar. The self-contained, self-feeding tree is the part of the picture that breaks."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "Trees use the fungal web to send food and warnings to their own seedlings, like parents.",
+          "reality": "A 2023 review found no peer-reviewed evidence that mature trees preferentially feed their own young this way, and judged the broader forest sharing claims insufficiently supported: the field studies are too few, too varied, and too open to other explanations to generalise."
+        },
+        {
+          "myth": "The fungus helps the plant out of a kind of cooperation.",
+          "reality": "It is a trade under constant pressure, each side supplying more only when the other pays and getting shortchanged the moment it stops."
+        },
+        {
+          "myth": "All those threads in the soil are the tree's own roots.",
+          "reality": "The far reach belongs to fungi, a different kingdom of life entirely. The plant's own roots are the stubby part near the trunk."
+        }
+      ]
+    },
+    {
+      "type": "open_questions",
+      "order": 12,
+      "content": {
+        "body": "The new map measured how much fungal thread is out there. How much actually passes between one mature tree and another in a real forest, and whether it changes what grows, is still unsettled. The evidence is thin and the alternative explanations are many.",
+        "items": [
+          "How much carbon or nutrient really moves between grown trees in the wild, and does it matter to the forest?",
+          "Is there any true kin recognition or warning signal, or was that a leap from thin data?",
+          "The shape of the forest-tree web across the whole planet is still unmapped."
+        ]
+      }
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Stewart JD et al. Global density and biomass of arbuscular mycorrhizal fungal networks. Science 2026",
+          "url": "https://www.science.org/doi/10.1126/science.adu4373",
+          "type": "paper"
+        },
+        {
+          "label": "First global map of mycorrhizal fungi reveals the true scale of underground networks (SPUN). EurekAlert 2026",
+          "url": "https://www.eurekalert.org/news-releases/1131131",
+          "type": "article"
+        },
+        {
+          "label": "Hawkins HJ et al. Mycorrhizal mycelium as a global carbon pool. Current Biology 2023;33:R560-R573",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/37279689/",
+          "type": "paper"
+        },
+        {
+          "label": "Kiers ET et al. Reciprocal rewards stabilize cooperation in the mycorrhizal symbiosis. Science 2011;333:880-882",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/21836016/",
+          "type": "paper"
+        },
+        {
+          "label": "Simard SW et al. Net transfer of carbon between ectomycorrhizal tree species in the field. Nature 1997;388:579-582",
+          "url": "https://www.nature.com/articles/41557",
+          "type": "paper"
+        },
+        {
+          "label": "Karst J, Jones MD, Hoeksema JD. Positive citation bias and overinterpreted results lead to misinformation on common mycorrhizal networks in forests. Nature Ecology & Evolution 2023;7:501-511",
+          "url": "https://www.nature.com/articles/s41559-023-01986-1",
+          "type": "paper"
+        },
+        {
+          "label": "Mycorrhiza",
+          "url": "https://en.wikipedia.org/wiki/Mycorrhiza",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Arbuscular mycorrhiza",
+          "url": "https://en.wikipedia.org/wiki/Arbuscular_mycorrhiza",
+          "type": "wikipedia"
+        }
+      ]
+    }
+  ]
+}

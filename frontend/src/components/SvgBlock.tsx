@@ -5,7 +5,9 @@
 // seed/official SVGs (controlled content pipeline) may use
 // dangerouslySetInnerHTML. Never relax this rule.
 
+import { useMemo } from "react"
 import { LEGACY_SVG_ACCENT_MAP } from "@/lib/formats"
+import { toBase64Utf8 } from "@/lib/svg"
 
 interface Props {
   svg: string
@@ -14,11 +16,6 @@ interface Props {
   className?: string
   // currentColor for stroke-based seed SVGs.
   color?: string
-}
-
-// btoa alone throws on non-ASCII characters; round-trip through UTF-8 bytes.
-function toBase64Utf8(svg: string): string {
-  return btoa(unescape(encodeURIComponent(svg)))
 }
 
 // Seed SVGs were authored against the pre-redesign accent hexes. Rewrite
@@ -32,12 +29,30 @@ function repaletteSvg(svg: string): string {
   return out
 }
 
+function containsLegacyHex(svg: string): boolean {
+  for (const legacy of Object.keys(LEGACY_SVG_ACCENT_MAP)) {
+    if (svg.includes(legacy)) return true
+  }
+  return false
+}
+
 export default function SvgBlock({ svg, isUserContent, className = "w-full", color = "#c4c8e0" }: Props) {
-  const themed = repaletteSvg(svg)
-  if (isUserContent) {
+  // Memoized per svg string: the per-hex split/join scans (and the base64
+  // encode on the user-content path) used to re-run on every render,
+  // including each feed visibility flip. Strings with no legacy hex (every
+  // FIELD_GLYPH, all new-palette content) skip the rewrite entirely.
+  const { themed, dataUrl } = useMemo(() => {
+    const rewritten = containsLegacyHex(svg) ? repaletteSvg(svg) : svg
+    return {
+      themed: rewritten,
+      dataUrl: isUserContent ? `data:image/svg+xml;base64,${toBase64Utf8(rewritten)}` : null,
+    }
+  }, [svg, isUserContent])
+
+  if (dataUrl) {
     return (
       <div className={className}>
-        <img src={`data:image/svg+xml;base64,${toBase64Utf8(themed)}`} alt="" className="w-full" />
+        <img src={dataUrl} alt="" className="w-full" />
       </div>
     )
   }

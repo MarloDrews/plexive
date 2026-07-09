@@ -3,6 +3,7 @@ import ContentImage from "./ContentImage"
 import Prose from "../Prose"
 import MathText from "../MathText"
 import { unescapeDollar } from "@/lib/prose"
+import { safeImageSrc } from "@/lib/safeUrl"
 
 interface KeyThinker {
   name: string
@@ -50,7 +51,7 @@ export default function OriginSection({ content }: Props) {
               <div className="flex gap-3">
                 {thinker.image_url && (
                   <img
-                    src={thinker.image_url}
+                    src={safeImageSrc(thinker.image_url)}
                     alt=""
                     loading="lazy"
                     decoding="async"

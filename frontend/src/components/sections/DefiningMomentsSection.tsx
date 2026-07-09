@@ -1,4 +1,5 @@
 import SectionLabel from "../SectionLabel"
+import { safeImageSrc } from "@/lib/safeUrl"
 interface Episode {
   title: string
   year_or_period: string
@@ -14,6 +15,7 @@ import SvgBlock from "../SvgBlock"
 import Prose from "../Prose"
 import MathText from "../MathText"
 import { unescapeDollar } from "@/lib/prose"
+import { asArray } from "@/lib/asArray"
 
 interface Props {
   content: Episode[]
@@ -24,7 +26,7 @@ export default function DefiningMomentsSection({ content, isUserContent }: Props
   return (
     <div className="px-6 py-8 flex flex-col gap-10">
       <SectionLabel className="-mb-4">Defining Moments</SectionLabel>
-      {content.map((episode, i) => (
+      {asArray(content).map((episode, i) => (
         <div key={i} className="flex flex-col gap-3">
           <div className="flex items-baseline gap-2 flex-wrap">
             <span className="text-xs font-mono text-(--accent) shrink-0">{unescapeDollar(episode.year_or_period)}</span>
@@ -42,7 +44,7 @@ export default function DefiningMomentsSection({ content, isUserContent }: Props
           {episode.image_url && (
             <div className="flex flex-col">
               <img
-                src={episode.image_url}
+                src={safeImageSrc(episode.image_url)}
                 alt=""
                 loading="lazy"
                 className="w-full rounded-lg object-cover max-h-[280px]"

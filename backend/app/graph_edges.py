@@ -17,6 +17,8 @@ read_next (the post-detail "read next" set) is a small read-time projection of
 the featured edges, resolved against live posts; see resolved_read_next.
 """
 
+from collections import Counter
+
 from sqlalchemy import and_, or_
 
 from .graph_identity import _key_from_parts
@@ -96,9 +98,14 @@ def _connection_key(fmt, ref):
 def _edge_specs(post):
     """Yield (target_format, target_identity_key, featured) for a post's edges.
 
-    Skips anything unresolvable (legacy string ref, missing parts, no birth_year)
-    without raising and without ever producing a partial key.
+    Deduplicated per (target_format, target_identity_key) so the same person in
+    two section lists (or the same connection twice) yields ONE edge row, not
+    duplicates (BE-037/M128); featured is OR-ed, so a featured mention anywhere
+    keeps the edge featured. Skips anything unresolvable (legacy string ref,
+    missing parts, no birth_year) without raising and without ever producing a
+    partial key.
     """
+    specs: dict[tuple[str, str], bool] = {}
     connections = post.connections if isinstance(post.connections, list) else []
     for conn in connections:
         if not isinstance(conn, dict):
@@ -107,7 +114,7 @@ def _edge_specs(post):
         key = _connection_key(fmt, conn.get("ref"))
         if key is None:
             continue
-        yield fmt, key, bool(conn.get("featured"))
+        specs[(fmt, key)] = specs.get((fmt, key), False) or bool(conn.get("featured"))
 
     for person in _iter_person_entries(post.sections):
         key = _key_from_parts(
@@ -115,85 +122,153 @@ def _edge_specs(post):
         )
         if key is None:
             continue
-        yield "people", key, bool(person.get("featured"))
+        specs[("people", key)] = specs.get(("people", key), False) or bool(person.get("featured"))
+
+    for (fmt, key), featured in specs.items():
+        yield fmt, key, featured
+
+
+# Pairs per resolve query. Each pair is 2 bind params, so this keeps a query
+# well under SQLite's ~999-param default even for a post with many connections.
+_RESOLVE_CHUNK = 100
 
 
 def _resolve_live_targets(db, pairs):
     """Map (format, identity_key) -> (post_id, title) for LIVE posts matching pairs.
 
-    pairs is an iterable of (format, identity_key). One query, OR of per-pair
-    equality clauses (robust on both SQLite and PostgreSQL).
+    pairs is an iterable of (format, identity_key). Chunked into bounded OR-of-
+    per-pair-equality queries (robust on both SQLite and PostgreSQL) so a post
+    with an unbounded number of connections cannot build one oversized statement.
     """
     pairs = [(f, k) for f, k in pairs if k is not None]
     if not pairs:
         return {}
-    clause = or_(*[and_(Post.format == f, Post.identity_key == k) for f, k in pairs])
-    rows = (
-        db.query(Post.id, Post.format, Post.identity_key, Post.title)
-        .filter(Post.status == LIVE_STATUS, clause)
-        .all()
-    )
-    return {(fmt, key): (pid, title) for pid, fmt, key, title in rows}
+    resolved = {}
+    for i in range(0, len(pairs), _RESOLVE_CHUNK):
+        chunk = pairs[i:i + _RESOLVE_CHUNK]
+        clause = or_(*[and_(Post.format == f, Post.identity_key == k) for f, k in chunk])
+        rows = (
+            db.query(Post.id, Post.format, Post.identity_key, Post.title)
+            .filter(Post.status == LIVE_STATUS, clause)
+            .all()
+        )
+        resolved.update({(fmt, key): (pid, title) for pid, fmt, key, title in rows})
+    return resolved
 
 
 def _relatent_incoming(db, post_id):
-    """Set target_post_id NULL on every edge pointing at this post (re-latent).
+    """Detach every edge pointing at this post when it stops being a live node.
 
-    Used both when the target is deleted and when it stops being a live node.
+    Only a PERSON edge may be stored latent (the module invariant, _latent_allowed),
+    so a person edge is re-latented (target_post_id NULL) while a non-person edge
+    is DELETED rather than left as a latent row the invariant forbids (BE-014/M128).
+    A discarded non-person edge is re-derived when its source post is next written,
+    which matches rebuild's own rule that an unresolved non-person edge is never
+    stored latent. Used when the target is deleted and when it goes non-live.
     """
-    db.query(PostEdge).filter(PostEdge.target_post_id == post_id).update(
-        {PostEdge.target_post_id: None}, synchronize_session="fetch"
-    )
+    db.query(PostEdge).filter(
+        PostEdge.target_post_id == post_id,
+        PostEdge.target_format != "people",
+    ).delete(synchronize_session=False)
+    db.query(PostEdge).filter(
+        PostEdge.target_post_id == post_id,
+        PostEdge.target_format == "people",
+    ).update({PostEdge.target_post_id: None}, synchronize_session=False)
 
 
 def rebuild_post_edges(db, post):
     """Rebuild this post's outgoing edge rows from its current authoring data.
 
-    Always clears the post's existing rows first. A non-live post inserts none
-    (so going non-live tears its outgoing edges down). A live post inserts one
-    row per resolvable connection / person entry, with target_post_id resolved
-    against existing live posts. A person edge whose target does not exist yet is
-    stored latent (target_post_id NULL); a non-person edge whose target does not
-    resolve is discarded silently (_latent_allowed), never stored latent. This
-    also purges a pre-existing non-person latent row: it is deleted above and not
-    re-created here.
+    Derives the desired rows first: a non-live post yields none (so going
+    non-live tears its outgoing edges down). A live post yields one row per
+    resolvable connection / person entry, with target_post_id resolved against
+    existing live posts. A person edge whose target does not exist yet is stored
+    latent (target_post_id NULL); a non-person edge whose target does not resolve
+    is discarded silently (_latent_allowed), never stored latent.
+
+    When the desired rows match the stored rows exactly (a title/section tweak
+    that touched no connection), nothing is written -- no delete+reinsert churn.
+    Otherwise the post's rows are cleared and re-inserted, which also purges any
+    stale non-person latent row.
     """
+    desired = []  # (target_format, target_identity_key, target_post_id, featured)
+    if is_live_node(post):
+        specs = list(_edge_specs(post))
+        resolved = (
+            _resolve_live_targets(db, {(fmt, key) for fmt, key, _ in specs})
+            if specs else {}
+        )
+        for fmt, key, featured in specs:
+            target = resolved.get((fmt, key))
+            if target is None and not _latent_allowed(fmt):
+                continue  # non-person edge with no live target: discard, never latent
+            desired.append((fmt, key, target[0] if target else None, bool(featured)))
+
+    existing = [
+        (e.target_format, e.target_identity_key, e.target_post_id, e.featured)
+        for e in db.query(
+            PostEdge.target_format,
+            PostEdge.target_identity_key,
+            PostEdge.target_post_id,
+            PostEdge.featured,
+        )
+        .filter(PostEdge.source_post_id == post.id)
+        .all()
+    ]
+    # Multiset compare so duplicate authoring entries keep their current row
+    # behavior; only rewrite when the derived rows actually differ.
+    if Counter(existing) == Counter(desired):
+        return
+
     db.query(PostEdge).filter(PostEdge.source_post_id == post.id).delete(
-        synchronize_session="fetch"
+        synchronize_session=False
     )
-    if not is_live_node(post):
-        return
-    specs = list(_edge_specs(post))
-    if not specs:
-        return
-    resolved = _resolve_live_targets(db, {(fmt, key) for fmt, key, _ in specs})
-    for fmt, key, featured in specs:
-        target = resolved.get((fmt, key))
-        if target is None and not _latent_allowed(fmt):
-            continue  # non-person edge with no live target: discard, never latent
+    for fmt, key, target_post_id, featured in desired:
         db.add(
             PostEdge(
                 source_post_id=post.id,
                 target_format=fmt,
                 target_identity_key=key,
-                target_post_id=target[0] if target else None,
+                target_post_id=target_post_id,
                 featured=featured,
             )
         )
 
 
 def activate_edges_for(db, post):
-    """Point every edge whose target identity matches this post at it.
+    """Point every LATENT edge whose target identity matches this post at it.
 
     The single indexed statement that activates latent edges when their target
     is inserted or published -- no re-scan, no backfill job.
+
+    Two guards close the identity-key hijack (SEC-014/M128):
+    - A user-generated post never activates onto an identity key already owned by
+      a live seed/official post, so a crafted feed_card whose key collides with a
+      popular work/person cannot capture the read-next edges pointing there.
+    - Only LATENT edges (target_post_id NULL) are activated, so a second post with
+      a colliding key never steals edges already resolved to another post.
     """
     if not is_live_node(post) or post.identity_key is None:
         return
+    if getattr(post, "is_user_content", False):
+        owner_exists = (
+            db.query(Post.id)
+            .filter(
+                Post.status == LIVE_STATUS,
+                Post.format == post.format,
+                Post.identity_key == post.identity_key,
+                Post.is_user_content == False,
+                Post.id != post.id,
+            )
+            .first()
+        )
+        if owner_exists is not None:
+            return
     db.query(PostEdge).filter(
         PostEdge.target_format == post.format,
         PostEdge.target_identity_key == post.identity_key,
-    ).update({PostEdge.target_post_id: post.id}, synchronize_session="fetch")
+        PostEdge.target_post_id.is_(None),
+    ).update({PostEdge.target_post_id: post.id}, synchronize_session=False)
 
 
 def on_post_written(db, post):
@@ -218,7 +293,7 @@ def on_post_deleted(db, post):
     every edge that pointed at it (never dangling). Then delete the post row."""
     post_id = post.id
     db.query(PostEdge).filter(PostEdge.source_post_id == post_id).delete(
-        synchronize_session="fetch"
+        synchronize_session=False
     )
     _relatent_incoming(db, post_id)
     db.delete(post)

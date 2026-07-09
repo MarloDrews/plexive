@@ -1,17 +1,141 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { memo, useCallback, useEffect, useRef, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
+import useSWR from "swr"
 import Avatar from "@/components/Avatar"
-import { apiFetch } from "@/app/lib/api"
-import { useAuth } from "@/app/lib/auth"
+import { apiFetch } from "@/lib/api"
+import { useAuth } from "@/lib/auth"
 import {
   MESSAGE_MAX_CHARS,
   useChatSocket,
   type ChatMessage,
   type Conversation,
-} from "@/app/lib/chatSocket"
+} from "@/lib/chatSocket"
+
+// Matches the backend GET messages default limit; a full page means more
+// history may exist, a short page means we have reached the start.
+const MESSAGE_PAGE = 50
+
+// Insert a message by id: dedupe, and keep ascending id order so an out-of-order
+// socket delivery (two senders' broadcasts interleaving) never shows a newer
+// message above an older one after a refresh reorders them.
+function mergeMessage(list: ChatMessage[], m: ChatMessage): ChatMessage[] {
+  if (list.some((x) => x.id === m.id)) return list
+  const idx = list.findIndex((x) => x.id > m.id)
+  return idx === -1 ? [...list, m] : [...list.slice(0, idx), m, ...list.slice(idx)]
+}
+
+// Memoized bubble list: it re-renders only when the messages array (or the
+// group/user identity) changes, not on socket-status flips or other page
+// state. The DOM stays bounded by the before_id pagination (50 per page,
+// older pages load only on an explicit scroll to the top), so no separate
+// windowing layer is needed.
+const MessageList = memo(function MessageList({
+  messages,
+  currentUsername,
+  isGroup,
+}: {
+  messages: ChatMessage[]
+  currentUsername: string | undefined
+  isGroup: boolean
+}) {
+  return (
+    <>
+      {messages.map((m, i) => {
+        const own = m.sender_username === currentUsername
+        const showSender =
+          !own &&
+          isGroup &&
+          (i === 0 || messages[i - 1].sender_username !== m.sender_username)
+        return (
+          <div key={m.id} className={`flex flex-col ${own ? "items-end" : "items-start"}`}>
+            {showSender && (
+              <p className="text-ink-muted text-xs px-2 pt-1">@{m.sender_username}</p>
+            )}
+            <div
+              className={`max-w-[80%] rounded-2xl px-3.5 py-2 text-sm whitespace-pre-wrap break-words ${
+                own ? "bg-white/[0.14] text-ink" : "bg-surface-2 text-ink-body"
+              }`}
+            >
+              {m.body}
+            </div>
+          </div>
+        )
+      })}
+    </>
+  )
+})
+
+// The composer owns the draft, so typing re-renders this bar alone instead of
+// the page and every message bubble with it.
+function Composer({
+  canSend,
+  error,
+  onSend,
+}: {
+  canSend: boolean
+  error: string | null
+  onSend: (body: string) => boolean
+}) {
+  const [draft, setDraft] = useState("")
+  // The last body that left the client. Without per-message correlation (a later
+  // batch) the draft is cleared optimistically when the frame is sent; if the
+  // server then rejects it (rate limit / participant check) the error frame
+  // arrives here, and we restore the text so the user does not lose it.
+  const lastSentRef = useRef("")
+
+  useEffect(() => {
+    if (error && !draft) setDraft(lastSentRef.current)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [error])
+
+  function handleSend() {
+    const body = draft.trim()
+    if (!body || body.length > MESSAGE_MAX_CHARS) return
+    if (onSend(body)) {
+      lastSentRef.current = body
+      setDraft("")
+    }
+  }
+
+  return (
+    <div
+      className="px-3 py-2"
+      style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 8px)" }}
+    >
+      {error && <p className="text-bad text-xs pb-1.5">{error}</p>}
+      <div className="flex items-end gap-2">
+        <textarea
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault()
+              handleSend()
+            }
+          }}
+          placeholder="Message…"
+          rows={1}
+          maxLength={MESSAGE_MAX_CHARS}
+          className="field flex-1 text-sm py-2.5 resize-none max-h-32"
+        />
+        <button
+          onClick={handleSend}
+          disabled={!draft.trim() || !canSend}
+          className={`btn-icon shrink-0${draft.trim() && canSend ? " btn-icon-active" : ""}`}
+          aria-label="Send message"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+            <path d="M22 2L11 13" />
+            <path d="M22 2l-7 20-4-9-9-4 20-7z" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  )
+}
 
 export default function ConversationPage() {
   const router = useRouter()
@@ -19,54 +143,158 @@ export default function ConversationPage() {
   const conversationId = Number(params.id)
   const { user, loading: authLoading } = useAuth()
 
-  const [conversation, setConversation] = useState<Conversation | null>(null)
   const [messages, setMessages] = useState<ChatMessage[] | null>(null)
-  const [draft, setDraft] = useState("")
+  // Reuse the conversation list the /chat page already cached under this key
+  // (revalidates in the background) instead of refetching the whole list just
+  // to render one header. There is no single-conversation endpoint.
+  const { data: convList } = useSWR<Conversation[]>(
+    !authLoading && user ? "/api/chat/conversations" : null
+  )
+  const conversation = convList?.find((c) => c.id === conversationId) ?? null
   const [notFound, setNotFound] = useState(false)
+  // Distinct from notFound: a transient failure (offline, 500) is retryable and
+  // must not tell a real participant the conversation does not exist.
+  const [loadError, setLoadError] = useState(false)
+  // Older-history pagination: hasMore stays true until a page comes back short.
+  const [loadingOlder, setLoadingOlder] = useState(false)
+  const [hasMore, setHasMore] = useState(true)
   const bottomRef = useRef<HTMLDivElement>(null)
+  const listRef = useRef<HTMLDivElement>(null)
+  // Socket messages that arrive before the history snapshot has loaded are
+  // buffered here and drained by loadInitial, so a message sent in the first
+  // seconds of opening the conversation is never silently dropped.
+  const pendingRef = useRef<ChatMessage[]>([])
+  // Whether the user is scrolled near the bottom; gates auto-scroll so an
+  // incoming message does not yank the viewport while they read older history.
+  const atBottomRef = useRef(true)
 
   const onSocketMessage = useCallback(
     (m: ChatMessage) => {
       if (m.conversation_id !== conversationId) return
       setMessages((prev) => {
-        if (prev === null) return prev
-        if (prev.some((existing) => existing.id === m.id)) return prev
-        return [...prev, m]
+        if (prev === null) {
+          if (!pendingRef.current.some((x) => x.id === m.id)) pendingRef.current.push(m)
+          return prev
+        }
+        return mergeMessage(prev, m)
       })
     },
     [conversationId]
   )
   const { status, error, send, clearError } = useChatSocket(onSocketMessage)
 
-  useEffect(() => {
-    if (authLoading || !user || !Number.isFinite(conversationId)) return
-    apiFetch(`/api/chat/conversations/${conversationId}/messages`).then(async (r) => {
-      if (!r.ok) {
+  const loadInitial = useCallback(async () => {
+    setNotFound(false)
+    setLoadError(false)
+    setMessages(null)
+    pendingRef.current = []
+    try {
+      const r = await apiFetch(`/api/chat/conversations/${conversationId}/messages`)
+      // Only a real 404 is "not found"; any other non-ok (401/500) is a
+      // retryable error, not a missing conversation.
+      if (r.status === 404) {
         setNotFound(true)
         return
       }
-      setMessages(await r.json())
-    })
-    // There is no single-conversation endpoint; the list is small, find the entry.
-    apiFetch("/api/chat/conversations").then(async (r) => {
-      if (!r.ok) return
-      const list: Conversation[] = await r.json()
-      setConversation(list.find((c) => c.id === conversationId) ?? null)
-    })
-  }, [authLoading, user, conversationId])
+      if (!r.ok) {
+        setLoadError(true)
+        return
+      }
+      const page: ChatMessage[] = await r.json()
+      // Merge any socket messages buffered while the snapshot was loading.
+      const buffered = pendingRef.current
+      pendingRef.current = []
+      setMessages(buffered.reduce(mergeMessage, page))
+      // A short first page means there is no older history to page back to.
+      setHasMore(page.length >= MESSAGE_PAGE)
+    } catch {
+      // Network failure (offline, dropped connection): retryable, never eternal
+      // skeleton or an unhandled rejection.
+      setLoadError(true)
+    }
+  }, [conversationId])
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "instant", block: "end" })
-  }, [messages?.length])
+    if (authLoading || !user) return
+    // A non-numeric route id (/chat/abc) can never resolve: treat as not found
+    // rather than leaving the skeleton up forever.
+    if (!Number.isFinite(conversationId)) {
+      setNotFound(true)
+      return
+    }
+    loadInitial()
+  }, [authLoading, user, conversationId, loadInitial])
 
-  function handleSend() {
-    const body = draft.trim()
-    if (!body || body.length > MESSAGE_MAX_CHARS) return
-    if (send(conversationId, body)) {
-      setDraft("")
-      clearError()
+  // Auto-scroll to the bottom when the newest message changes, but only for the
+  // user's own sends or when they are already near the bottom (atBottomRef,
+  // which starts true so the initial load scrolls). An incoming message while
+  // the user reads older history no longer yanks them away.
+  const lastMessage = messages && messages.length ? messages[messages.length - 1] : null
+  const lastMessageId = lastMessage ? lastMessage.id : null
+  useEffect(() => {
+    if (!lastMessage) return
+    const own = lastMessage.sender_username === user?.username
+    if (own || atBottomRef.current) {
+      bottomRef.current?.scrollIntoView({ behavior: "instant", block: "end" })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastMessageId])
+
+  // Load the previous page of history and prepend it, preserving the scroll
+  // position so the view does not jump. Fires when the list is scrolled near
+  // the top. Reuses the existing dedupe-by-id logic.
+  async function loadOlder() {
+    if (loadingOlder || !hasMore || !messages || messages.length === 0) return
+    setLoadingOlder(true)
+    const oldestId = messages[0].id
+    const container = listRef.current
+    const prevHeight = container?.scrollHeight ?? 0
+    try {
+      const r = await apiFetch(
+        `/api/chat/conversations/${conversationId}/messages?before_id=${oldestId}`
+      )
+      if (!r.ok) {
+        setHasMore(false)
+        return
+      }
+      const older: ChatMessage[] = await r.json()
+      if (older.length < MESSAGE_PAGE) setHasMore(false)
+      if (older.length > 0) {
+        setMessages((prev) => {
+          if (!prev) return older
+          const existing = new Set(prev.map((m) => m.id))
+          return [...older.filter((m) => !existing.has(m.id)), ...prev]
+        })
+        // Keep the first previously-visible message under the same finger.
+        requestAnimationFrame(() => {
+          const c = listRef.current
+          if (c) c.scrollTop = c.scrollHeight - prevHeight
+        })
+      }
+    } finally {
+      setLoadingOlder(false)
     }
   }
+
+  function handleScroll() {
+    const c = listRef.current
+    if (!c) return
+    if (c.scrollTop < 48) loadOlder()
+    atBottomRef.current = c.scrollHeight - c.scrollTop - c.clientHeight < 120
+  }
+
+  // Stable send hook for the composer: returns whether the draft was accepted
+  // (the composer clears itself only then).
+  const handleSend = useCallback(
+    (body: string) => {
+      if (send(conversationId, body)) {
+        clearError()
+        return true
+      }
+      return false
+    },
+    [send, conversationId, clearError]
+  )
 
   if (!authLoading && !user) {
     return (
@@ -119,10 +347,26 @@ export default function ConversationPage() {
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto px-3 py-3 flex flex-col gap-1.5 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
+        <div
+          ref={listRef}
+          onScroll={handleScroll}
+          className="flex-1 overflow-y-auto px-3 py-3 flex flex-col gap-1.5"
+        >
+          {loadingOlder && (
+            <p className="text-ink-faint text-xs text-center py-1 shrink-0">Loading earlier messages…</p>
+          )}
           {notFound ? (
             <div className="flex-1 flex items-center justify-center">
               <p className="text-ink-muted text-sm">Conversation not found.</p>
+            </div>
+          ) : loadError ? (
+            <div className="flex-1 flex items-center justify-center">
+              <div className="flex flex-col items-center gap-3 text-center">
+                <p className="text-ink-muted text-sm">Could not load this conversation.</p>
+                <button onClick={loadInitial} className="btn btn-primary px-4 py-1.5 text-sm">
+                  Retry
+                </button>
+              </div>
             </div>
           ) : messages === null ? (
             // Loading: pulsing bubbles where the history will appear.
@@ -136,65 +380,21 @@ export default function ConversationPage() {
               <p className="text-ink-muted text-sm">Say hello</p>
             </div>
           ) : (
-            messages.map((m, i) => {
-              const own = m.sender_username === user?.username
-              const showSender =
-                !own &&
-                conversation?.is_group &&
-                (i === 0 || messages[i - 1].sender_username !== m.sender_username)
-              return (
-                <div key={m.id} className={`flex flex-col ${own ? "items-end" : "items-start"}`}>
-                  {showSender && (
-                    <p className="text-ink-muted text-xs px-2 pt-1">@{m.sender_username}</p>
-                  )}
-                  <div
-                    className={`max-w-[80%] rounded-2xl px-3.5 py-2 text-sm whitespace-pre-wrap break-words ${
-                      own ? "bg-white/[0.14] text-ink" : "bg-surface-2 text-ink-body"
-                    }`}
-                  >
-                    {m.body}
-                  </div>
-                </div>
-              )
-            })
+            <MessageList
+              messages={messages}
+              currentUsername={user?.username}
+              isGroup={!!conversation?.is_group}
+            />
           )}
           <div ref={bottomRef} />
         </div>
 
         {/* Input — borderless bar, safe-area aware */}
-        <div
-          className="px-3 py-2"
-          style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 8px)" }}
-        >
-          {error && <p className="text-bad text-xs pb-1.5">{error}</p>}
-          <div className="flex items-end gap-2">
-            <textarea
-              value={draft}
-              onChange={(e) => setDraft(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault()
-                  handleSend()
-                }
-              }}
-              placeholder="Message…"
-              rows={1}
-              maxLength={MESSAGE_MAX_CHARS}
-              className="field flex-1 text-sm py-2.5 resize-none max-h-32"
-            />
-            <button
-              onClick={handleSend}
-              disabled={!draft.trim() || status !== "open" || notFound}
-              className={`btn-icon shrink-0${draft.trim() && status === "open" && !notFound ? " btn-icon-active" : ""}`}
-              aria-label="Send message"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-                <path d="M22 2L11 13" />
-                <path d="M22 2l-7 20-4-9-9-4 20-7z" />
-              </svg>
-            </button>
-          </div>
-        </div>
+        <Composer
+          canSend={status === "open" && !notFound}
+          error={error}
+          onSend={handleSend}
+        />
       </div>
     </div>
   )

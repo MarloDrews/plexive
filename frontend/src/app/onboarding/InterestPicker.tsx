@@ -1,7 +1,9 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import { CATEGORIES } from "@/lib/interests"
+import { API_URL } from "@/lib/storage"
 
 interface Interest {
   id: number
@@ -9,126 +11,44 @@ interface Interest {
   slug: string
 }
 
-export interface Category {
-  label: string
-  slugs: string[]
-}
-
-export const CATEGORIES: Category[] = [
-  {
-    label: "Science & Nature",
-    slugs: [
-      "physics", "quantum-physics", "astronomy", "cosmology",
-      "chemistry", "biology", "genetics", "neuroscience",
-      "evolution", "ecology", "climate", "geology", "oceans",
-      "animals", "paleontology", "botany", "microbiology",
-      "mathematics", "statistics", "medicine",
-      "materials-science",
-    ],
-  },
-  {
-    label: "Technology & Engineering",
-    slugs: [
-      "artificial-intelligence", "machine-learning", "computing",
-      "internet", "cybersecurity", "robotics", "biotech",
-      "space-tech", "energy-tech", "engineering", "gadgets",
-      "cryptography", "blockchain", "aviation", "transportation",
-    ],
-  },
-  {
-    label: "Business & Economics",
-    slugs: [
-      "economics", "behavioral-economics", "finance",
-      "entrepreneurship", "startups", "marketing", "management",
-      "negotiation", "money-history", "markets", "career",
-      "productivity-work", "supply-chains", "advertising",
-    ],
-  },
-  {
-    label: "Self-Improvement & Psychology",
-    slugs: [
-      "psychology", "cognitive-biases", "habits", "productivity",
-      "focus", "motivation", "decision-making",
-      "emotional-intelligence", "mental-health", "mindfulness",
-      "happiness", "relationships", "communication", "learning",
-      "discipline", "confidence", "stoicism-practice",
-    ],
-  },
-  {
-    label: "Philosophy & Ideas",
-    slugs: [
-      "philosophy", "ethics", "stoicism", "existentialism",
-      "eastern-philosophy", "logic", "epistemology",
-      "consciousness", "free-will", "political-philosophy",
-      "philosophy-of-mind", "meaning", "mental-models",
-    ],
-  },
-  {
-    label: "History & Civilization",
-    slugs: [
-      "ancient-history", "medieval-history", "modern-history",
-      "world-wars", "cold-war", "empires", "revolutions",
-      "ancient-egypt", "ancient-rome", "ancient-greece",
-      "exploration", "archaeology", "history-of-science",
-      "forgotten-history", "military-history", "history",
-      "anthropology",
-    ],
-  },
-  {
-    label: "Politics & Society",
-    slugs: [
-      "politics", "geopolitics", "political-systems", "democracy",
-      "law", "human-rights", "social-movements", "inequality",
-      "propaganda", "diplomacy", "elections", "public-policy",
-    ],
-  },
-  {
-    label: "Arts & Culture",
-    slugs: [
-      "art-history", "music", "music-theory", "literature", "film",
-      "architecture", "design", "photography", "writing",
-      "mythology", "religion", "language", "poetry", "theater",
-    ],
-  },
-  {
-    label: "Health & Body",
-    slugs: [
-      "nutrition", "fitness", "sleep", "longevity", "human-body",
-      "brain-health", "immunity", "public-health", "sports-science",
-    ],
-  },
-  {
-    label: "Curiosity & Everyday",
-    slugs: [
-      "everyday-science", "food-science", "games", "sports",
-      "travel", "nature-phenomena", "curiosities", "future",
-      "internet-culture", "crime", "money-everyday",
-      "exponential-growth", "patience", "critical-thinking",
-      "trade-offs", "scarcity",
-    ],
-  },
-]
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL
-
 export default function InterestPicker() {
   const router = useRouter()
   const [interests, setInterests] = useState<Interest[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
+  const [saveError, setSaveError] = useState("")
   const [selected, setSelected] = useState<Set<string>>(new Set())
+
+  // Onboarding gates the whole app, so a transient failure here must not strand
+  // the user on pulsing placeholders: check r.ok, validate the payload is a
+  // non-empty array (a non-ok body is {detail: ...} which would crash the
+  // interests.map below), and surface a retry.
+  const loadInterests = useCallback(() => {
+    setError(false)
+    setLoading(true)
+    fetch(`${API_URL}/api/interests`)
+      .then((r) => {
+        if (!r.ok) throw new Error(`status ${r.status}`)
+        return r.json()
+      })
+      .then((data: Interest[]) => {
+        if (!Array.isArray(data) || data.length === 0) throw new Error("empty interests")
+        setInterests(data)
+        setLoading(false)
+      })
+      .catch(() => {
+        setError(true)
+        setLoading(false)
+      })
+  }, [])
 
   useEffect(() => {
     if (localStorage.getItem("deepscroll_interests")) {
       router.replace("/")
       return
     }
-    fetch(`${API_URL}/api/interests`)
-      .then((r) => r.json())
-      .then((data: Interest[]) => {
-        setInterests(data)
-        setLoading(false)
-      })
-  }, [router])
+    loadInterests()
+  }, [router, loadInterests])
 
   function toggle(slug: string) {
     setSelected((prev) => {
@@ -140,7 +60,14 @@ export default function InterestPicker() {
   }
 
   function handleContinue() {
-    localStorage.setItem("deepscroll_interests", JSON.stringify([...selected]))
+    try {
+      localStorage.setItem("deepscroll_interests", JSON.stringify([...selected]))
+    } catch {
+      // A full or unwritable storage would otherwise throw here and leave the
+      // button doing nothing; surface it instead of silently dead-ending.
+      setSaveError("Could not save your interests. Please free up some storage and try again.")
+      return
+    }
     router.push("/")
   }
 
@@ -182,8 +109,16 @@ export default function InterestPicker() {
       </div>
 
       {/* Scrollable content */}
-      <div className="flex-1 overflow-y-auto px-6 pb-4 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
-        {loading ? (
+      <div className="flex-1 overflow-y-auto px-6 pb-4">
+        {error ? (
+          <div className="flex flex-col items-center text-center gap-3 mt-16 px-6">
+            <p className="font-serif text-lg text-ink">Could not load topics</p>
+            <p className="text-ink-muted text-sm">Check your connection and try again.</p>
+            <button onClick={loadInterests} className="btn btn-primary px-5 py-2 mt-1">
+              Retry
+            </button>
+          </div>
+        ) : loading ? (
           // Loading: pulsing pill placeholders where the chips will appear.
           <div className="flex flex-wrap gap-2 mt-4">
             {Array.from({ length: 12 }, (_, i) => (
@@ -260,6 +195,7 @@ export default function InterestPicker() {
         <p className="text-ink-muted text-sm mb-3">
           {selected.size} of {interests.length} selected
         </p>
+        {saveError && <p className="text-bad text-sm mb-3">{saveError}</p>}
         <button
           onClick={handleContinue}
           disabled={!canContinue}

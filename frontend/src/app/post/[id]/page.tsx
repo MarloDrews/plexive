@@ -1,52 +1,34 @@
 "use client"
 
-import { use, useEffect, useRef, useState } from "react"
+import { use, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { formatStyle } from "@/lib/formats"
 import { unescapeDollar } from "@/lib/prose"
+import { sizedImageUrl } from "@/lib/imageUrl"
 import { fcNum, fcStr, type Post } from "@/types/post"
-import { FIELD_GLYPHS } from "@/lib/glyphs"
 import SectionRenderer from "@/components/SectionRenderer"
 import SectionLabel from "@/components/SectionLabel"
 import HeadlineSection from "@/components/sections/HeadlineSection"
 import RelatedPostsSection from "@/components/sections/RelatedPostsSection"
-import CommentsSection, { type Comment } from "@/app/components/CommentsSection"
-import { SlabAccent, SlabGlow } from "@/app/components/PostCard"
+import CommentsSection from "@/components/CommentsSection"
+import CommentBar from "./CommentBar"
+import { SlabAccent, SlabGlow } from "@/components/PostCard"
+import AppImage from "@/components/AppImage"
 import Avatar from "@/components/Avatar"
 import BookCover from "@/components/BookCover"
 import DotScale from "@/components/DotScale"
-import SvgBlock from "@/components/SvgBlock"
+import FieldGlyph from "@/components/FieldGlyph"
 import VerifiedBadge from "@/components/VerifiedBadge"
-import { ArrowUpIcon, HeartIcon, PauseIcon, SpeakerIcon, StopIcon } from "@/app/components/icons"
+import { PauseIcon, SpeakerIcon, StopIcon } from "@/components/icons"
 import { useReadAloud } from "@/lib/readAloud/useReadAloud"
 import { consumeAutoRead } from "@/lib/readAloud/autostart"
-import { useAuth } from "@/app/lib/auth"
-import { apiFetch } from "@/app/lib/api"
-import { queueEvent, hasPendingLike, cancelPendingLike } from "@/app/lib/eventQueue"
-import { likePost, unlikePost, isPostLiked, getCachedLikeCount, setCachedLikeCount, isLikeSent, markLikeSent, unmarkLikeSent } from "@/app/lib/likedPosts"
-import { updatePostInFeedCaches } from "@/app/lib/swr"
-
-// Large category glyph anchored to the TOP RIGHT of the detail header, filling the
-// field-line zone from the label's top down to the headline, mirroring the feed
-// card (LAYOUT_STANDARD s3, SVG_STANDARD s6). An absolute OVERLAY: out of the flow,
-// it occupies no layout space, so the label and headline do not move — the
-// field-line row keeps its height (min-h-7). `reach` is a negative bottom inset
-// bleeding the glyph down to the headline top (here the HeadlineSection pt-3), so it
-// never overlaps the headline. Width follows the viewBox aspect (landscape ~56x32),
-// capped (max-w) to clear the label. From FIELD_GLYPHS[tags[0]] (ROADMAP.md);
-// trusted content, official SVG path (isUserContent=false).
-function FieldGlyph({ slug, reach = "bottom-0" }: { slug: string | undefined; reach?: string }) {
-  const svg = slug ? FIELD_GLYPHS[slug] : undefined
-  if (!svg) return null
-  return (
-    <SvgBlock
-      svg={svg}
-      isUserContent={false}
-      className={`pointer-events-none absolute top-0 right-0 ${reach} flex items-center justify-end max-w-[45%] [&_svg]:h-full [&_svg]:w-auto [&_img]:h-full [&_img]:w-auto`}
-    />
-  )
-}
+import { useAuth } from "@/lib/auth"
+import { apiFetch } from "@/lib/api"
+import { usePostLike } from "@/lib/usePostLike"
+import { useComments } from "@/lib/useComments"
+import { findPostInFeedCaches, updatePostInFeedCaches } from "@/lib/swr"
+import { useSWRConfig } from "swr"
 
 // Shared flat-header meta row: avatar + creator, then the derived quiz-question
 // count, difficulty and reading time. Used by every flat header (facts,
@@ -97,70 +79,65 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
   const { id } = use(params)
   const router = useRouter()
   const { user } = useAuth()
+  const { cache } = useSWRConfig()
 
-  const [post, setPost] = useState<Post | null>(null)
+  // Seed from the cached feed lists so the tapped card's header (title,
+  // feed card, counts, author) paints instantly instead of a full skeleton.
+  // List payloads strip sections (serialized []) and carry no read_next, so
+  // the body shows its own pulse until the full fetch below replaces this.
+  const [post, setPost] = useState<Post | null>(() => findPostInFeedCaches(cache, Number(id)) ?? null)
   const [notFound, setNotFound] = useState(false)
   const [closing, setClosing] = useState(false)
-  const [comments, setComments] = useState<Comment[]>([])
-  const [deletingId, setDeletingId] = useState<number | null>(null)
-  const [stickyDraft, setStickyDraft] = useState("")
-  const [posting, setPosting] = useState(false)
-  const [liked, setLiked] = useState(() => isPostLiked(Number(id)))
-  const [likesCount, setLikesCount] = useState(() =>
-    getCachedLikeCount(Number(id)) ?? 0
+
+  const { liked, likesCount, toggleLike, reconcile } = usePostLike(Number(id), post?.like_count ?? null)
+  // Feed lists are cached for the session; write the comment count through to
+  // them whenever it changes here (add, delete, initial load).
+  const { comments, error: commentsError, posting, deletingId, postComment, deleteComment } = useComments(
+    Number(id),
+    (count) => updatePostInFeedCaches(Number(id), { comment_count: count })
   )
 
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const readableRef        = useRef<HTMLDivElement>(null)
   const commentsTopRef     = useRef<HTMLDivElement>(null)
-  const stickyInputRef     = useRef<HTMLInputElement>(null)
   const isClosingRef       = useRef(false)
-  const likeInteractedRef  = useRef(false)
-  const commentsLoadedRef  = useRef(false)
-
-  // Feed lists are cached for the session; keep the cached comment_count in
-  // sync whenever the comment list changes here (add, delete, initial load).
-  useEffect(() => {
-    if (!commentsLoadedRef.current) return
-    updatePostInFeedCaches(Number(id), { comment_count: comments.length })
-  }, [comments.length, id])
 
   useEffect(() => {
+    // Reset per-id so a client-side post-to-post navigation (Read Next uses
+    // next/link now) shows the new post's seed or loading state rather than
+    // the previous post, and a slow response for the old id can never
+    // overwrite the new post: the stale flag discards it. usePostLike/
+    // useComments re-key on Number(id) and reset themselves.
+    let stale = false
+    setPost(findPostInFeedCaches(cache, Number(id)) ?? null)
+    setNotFound(false)
     apiFetch(`/api/posts/${id}`)
       .then((r) => (r.ok ? r.json() : null))
       .then((data: Post | null) => {
+        if (stale) return
         if (!data) {
+          setPost(null)
           setNotFound(true)
           return
         }
         setPost(data)
-        if (!likeInteractedRef.current) {
-          setLikesCount(getCachedLikeCount(data.id) ?? data.like_count)
+      })
+      .catch(() => {
+        if (!stale) {
+          setPost(null)
+          setNotFound(true)
         }
       })
-      .catch(() => setNotFound(true))
-    apiFetch(`/api/posts/${id}/comments`)
-      .then((r) => r.json())
-      .then((data: Comment[]) => {
-        setComments(data)
-        commentsLoadedRef.current = true
-      })
-      .catch(() => {})
-    apiFetch(`/api/posts/${id}/likes`)
-      .then((r) => r.json())
-      .then((d) => {
-        if (!likeInteractedRef.current) {
-          const liked = isPostLiked(Number(id))
-          const sent = isLikeSent(Number(id))
-          const onServer = sent && !hasPendingLike(Number(id))
-          const adjust = (liked && !onServer ? 1 : 0) - (!liked && sent ? 1 : 0)
-          const display = d.count + adjust
-          setLikesCount(display)
-          setCachedLikeCount(Number(id), display)
-        }
-      })
-      .catch(() => {})
-  }, [id])
+    return () => {
+      stale = true
+    }
+  }, [id, cache])
+
+  // The feed card no longer reconciles the like count on mount; the detail page
+  // has no visibility observer, so reconcile once the post has loaded.
+  useEffect(() => {
+    if (post) reconcile()
+  }, [post, reconcile])
 
   const { status: readStatus, start: startReading, stop: stopReading, toggle: toggleReading } =
     useReadAloud(readableRef)
@@ -176,7 +153,13 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
     isClosingRef.current = true
     stopReading()
     setClosing(true)
-    setTimeout(() => router.back(), 250)
+    setTimeout(() => {
+      // A direct link / new tab has no in-app entry to return to, so router.back()
+      // is a no-op and the page stays translated off-screen (blank stuck screen);
+      // fall back to the feed in that case.
+      if (window.history.length > 1) router.back()
+      else router.push("/")
+    }, 250)
   }
 
   useEffect(() => {
@@ -185,13 +168,31 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
 
     let startX = 0
     let startY = 0
+    // Set when the gesture begins inside a horizontally scrollable region (the
+    // Read Next row, a wide equation block): scrubbing those must not be read as
+    // a swipe-to-close.
+    let ignore = false
+
+    function inHorizontalScroller(node: EventTarget | null): boolean {
+      let n = node instanceof HTMLElement ? node : null
+      while (n && n !== el) {
+        if (n.scrollWidth > n.clientWidth) {
+          const overflowX = getComputedStyle(n).overflowX
+          if (overflowX === "auto" || overflowX === "scroll") return true
+        }
+        n = n.parentElement
+      }
+      return false
+    }
 
     function onTouchStart(e: TouchEvent) {
       startX = e.touches[0].clientX
       startY = e.touches[0].clientY
+      ignore = inHorizontalScroller(e.target)
     }
 
     function onTouchEnd(e: TouchEvent) {
+      if (ignore) return
       const dx = e.changedTouches[0].clientX - startX
       const dy = Math.abs(e.changedTouches[0].clientY - startY)
       if (dx > 80 && dx > dy) close()
@@ -207,64 +208,16 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
 
   function handleToggleLike() {
     if (!post) return
-    likeInteractedRef.current = true
-    if (isPostLiked(post.id)) {
-      unlikePost(post.id)
-      setLiked(false)
-      setLikesCount((prev) => { const n = prev - 1; setCachedLikeCount(post.id, n); return n })
-      if (hasPendingLike(post.id)) {
-        cancelPendingLike(post.id)
-        unmarkLikeSent(post.id)
-      }
-    } else {
-      likePost(post.id)
-      setLiked(true)
-      setLikesCount((prev) => { const n = prev + 1; setCachedLikeCount(post.id, n); return n })
-      if (!isLikeSent(post.id)) {
-        markLikeSent(post.id)
-        queueEvent({ post_id: post.id, event_type: "like" })
-      }
-    }
+    toggleLike()
   }
 
-  async function handleDelete(commentId: number) {
-    if (deletingId !== null) return
-    setDeletingId(commentId)
-    try {
-      const r = await apiFetch(`/api/comments/${commentId}`, { method: "DELETE" })
-      if (r.ok) setComments((prev) => prev.filter((c) => c.id !== commentId))
-    } finally {
-      setDeletingId(null)
-    }
-  }
-
-  async function handlePostComment(body: string) {
-    if (posting) return
-    setPosting(true)
-    try {
-      const r = await apiFetch(`/api/posts/${id}/comments`, {
-        method: "POST",
-        body: JSON.stringify({ body }),
-      })
-      if (!r.ok) return
-      const created: Comment = await r.json()
-      setComments((prev) => [created, ...prev])
-      // Scroll the comments heading into view so the user sees their new comment.
-      setTimeout(() => {
-        commentsTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
-      }, 50)
-    } finally {
-      setPosting(false)
-    }
-  }
-
-  async function handleStickySubmit(e: React.FormEvent) {
-    e.preventDefault()
-    const body = stickyDraft.trim()
-    if (!body) return
-    setStickyDraft("")
-    await handlePostComment(body)
-  }
+  // Scroll the comments heading into view so the user sees their new comment
+  // (invoked by CommentBar after a successful post).
+  const scrollToComments = useCallback(() => {
+    setTimeout(() => {
+      commentsTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
+    }, 50)
+  }, [])
 
   const style = post ? formatStyle(post.format) : null
   // Typographic formats (LAYOUT_STANDARD s1) use the banner header: field line +
@@ -295,33 +248,41 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
   // label, the end-of-post tags, and the headline-section filter.
   const flatHeader = typographic || typographicAcademy || coverFlat || coverBooks || coverStories
 
+  // True while only the feed-cache seed is on screen (list payloads strip
+  // sections; every full post carries at least one). The page then renders
+  // header + ONE clean loading region: tags, read next and comments wait for
+  // the full post, so no content islands appear around dark gaps.
+  const seededOnly = !!post && post.sections.length === 0
+
+  // Memoized so SectionRenderer (React.memo) sees a stable prop: without this,
+  // the fresh .filter() array on every render defeated the memo and each
+  // keystroke or read-aloud tick re-ran the whole section tree.
+  // For flat headers the headline section is dropped to avoid doubling it, and
+  // questions' the_question too (it is the header headline there; academy's
+  // the_question is a real body section and must render).
+  const bodySections = useMemo(() => {
+    if (!post) return []
+    return flatHeader
+      ? post.sections.filter(
+          (s) =>
+            s.type !== "headline" &&
+            !(s.type === "the_question" && post.format === "questions")
+        )
+      : post.sections
+  }, [post, flatHeader])
+
   return (
     <div className="h-[100dvh] bg-surface-0 flex justify-center">
       <div className="w-full max-w-[430px] h-[100dvh] relative overflow-hidden">
         <div
-          className="absolute inset-0 bg-surface-0 flex flex-col z-40"
-          // --accent drives every format-colored detail in the header and sections.
-          style={{
-            animation: closing
-              ? "slideDown 250ms ease-in forwards"
-              : "slideUp 300ms ease-out forwards",
-            ["--accent" as string]: style?.accent,
-          }}
+          className={`absolute inset-0 bg-surface-0 flex flex-col z-40 ${
+            closing ? "post-sheet-closing" : "post-sheet-open"
+          }`}
+          // --accent drives every format-colored detail in the header and
+          // sections. The slide animation and its (sheet-scoped) reduced-motion
+          // guard live in globals.css.
+          style={{ ["--accent" as string]: style?.accent }}
         >
-          <style>{`
-            @keyframes slideUp {
-              from { transform: translateY(100%); }
-              to   { transform: translateY(0); }
-            }
-            @keyframes slideDown {
-              from { transform: translateY(0); }
-              to   { transform: translateY(100%); }
-            }
-            @media (prefers-reduced-motion: reduce) {
-              * { animation-duration: 0ms !important; }
-            }
-          `}</style>
-
           {/* Back button */}
           <button
             onClick={close}
@@ -394,7 +355,7 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
           {/* Scrollable content */}
           <div
             ref={scrollContainerRef}
-            className="flex-1 overflow-y-auto pt-16 pb-24 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]"
+            className="flex-1 overflow-y-auto pt-16 pb-24"
           >
             {post && style ? (
               <>
@@ -496,9 +457,12 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                     <div className="px-6 pt-3 pb-4 flex items-center gap-4">
                       {(post.feed_card as { portrait?: { image_url?: string } }).portrait?.image_url && (
                         <div className="shrink-0 w-24 h-24 rounded-full overflow-hidden bg-white/[0.06]">
-                          <img
-                            src={(post.feed_card as { portrait: { image_url: string } }).portrait.image_url}
+                          <AppImage
+                            src={sizedImageUrl((post.feed_card as { portrait: { image_url: string } }).portrait.image_url, 192)}
                             alt=""
+                            width={96}
+                            height={96}
+                            sizes="96px"
                             className="w-full h-full object-cover object-top"
                             onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none" }}
                           />
@@ -507,9 +471,9 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                       <div className="min-w-0">
                         {/* Name — the single headline. Styled inline rather than via
                             HeadlineSection only so it can align beside the portrait;
-                            the serif scale is kept matched to HeadlineSection by hand,
-                            so a HeadlineSection typography change must be mirrored here. */}
-                        <h1 className="font-serif text-[2rem] font-medium tracking-tight text-ink leading-snug">
+                            the serif scale comes from the shared --text-headline
+                            token, the same size HeadlineSection uses. */}
+                        <h1 className="font-serif text-headline font-medium tracking-tight text-ink leading-snug">
                           {post.title}
                         </h1>
                         {fcStr(post.feed_card, "lifespan") && (
@@ -582,9 +546,12 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                          draggable=false so the bare image never opens the platform
                          image viewer. object-position keeps the central scene
                          (faces and table) in frame on the slim crop. */
-                      <img
-                        src={fcStr(post.feed_card, "lead_image_url")}
+                      <AppImage
+                        src={sizedImageUrl(fcStr(post.feed_card, "lead_image_url"), 860)}
                         alt=""
+                        width={860}
+                        height={352}
+                        sizes="(max-width: 430px) 100vw, 430px"
                         draggable={false}
                         className="block w-full h-44 object-cover object-[center_38%] pointer-events-none select-none"
                         onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none" }}
@@ -669,35 +636,31 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                   </div>
                 )}
 
-                {/* Sections — for typographic formats the headline now lives in
-                    the header above, so drop any headline section to avoid doubling
-                    it (concepts has none, so this is a no-op there). Questions'
-                    the_question is likewise the header headline, so drop it too —
-                    but ONLY for questions: Academy also carries a the_question
-                    section, where it is a real body section (The Open Problem), not
-                    the page title, so it must render. */}
+                {/* Sections — the memoized bodySections array (headline filter
+                    for flat headers) keeps SectionRenderer's memo effective. */}
                 <SectionRenderer
-                  sections={
-                    flatHeader
-                      ? post.sections.filter(
-                          (s) =>
-                            s.type !== "headline" &&
-                            !(s.type === "the_question" && post.format === "questions")
-                        )
-                      : post.sections
-                  }
+                  sections={bodySections}
                   isUserContent={post.is_user_content}
                   postId={post.id}
                   format={post.format}
                   readingMinutes={post.reading_minutes}
                 />
+                {seededOnly && (
+                  // Seeded from the feed cache: the header above is real, the
+                  // body is still loading. Same slab shapes as the unseeded
+                  // full-page skeleton so this reads as one loading region.
+                  <div className="px-3 pt-2 pb-24 flex flex-col gap-3">
+                    <div className="stage-pulse card h-56 w-full" />
+                    <div className="stage-pulse card h-28 w-3/4" />
+                  </div>
+                )}
                 </div>
 
                 {/* Tags at the end (typographic formats) — small chips near the
                     sources section, the network/filter layer at the foot of the
                     post. The slab header carries its own tags, so this is only for
                     the banner-header formats. */}
-                {flatHeader && post.interests.length > 0 && (
+                {!seededOnly && flatHeader && post.interests.length > 0 && (
                   <div data-no-read className="px-6 pt-2 pb-6 flex flex-wrap gap-2">
                     {post.interests.map((name) => (
                       <span
@@ -727,15 +690,18 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                   )
                 })()}
 
-                {/* Comments list */}
-                <div ref={commentsTopRef} className="px-6">
-                  <CommentsSection
-                    comments={comments}
-                    currentUsername={user?.username}
-                    onDelete={handleDelete}
-                    deletingId={deletingId}
-                  />
-                </div>
+                {/* Comments list (once the full post is on screen) */}
+                {!seededOnly && (
+                  <div ref={commentsTopRef} className="px-6">
+                    <CommentsSection
+                      comments={comments}
+                      error={commentsError}
+                      currentUsername={user?.username}
+                      onDelete={deleteComment}
+                      deletingId={deletingId}
+                    />
+                  </div>
+                )}
               </>
             ) : notFound ? (
               <div className="flex items-center justify-center h-full px-6">
@@ -756,60 +722,16 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
             )}
           </div>
 
-          {/* Floating pill comment bar — detached from every edge, sits above
-              the bottom nav (page z-40 > nav z-30); safe-area aware. */}
-          <div
-            className="absolute left-3 right-3 z-10 rounded-full backdrop-blur-xl bg-white/[0.06] px-2 py-1.5 flex items-center gap-1.5"
-            style={{ bottom: "calc(env(safe-area-inset-bottom) + 12px)" }}
-          >
-            <div className="flex-1 min-w-0">
-              {user ? (
-                <form onSubmit={handleStickySubmit} className="flex items-center gap-1.5">
-                  <input
-                    ref={stickyInputRef}
-                    value={stickyDraft}
-                    onChange={(e) => setStickyDraft(e.target.value)}
-                    placeholder="Add a comment..."
-                    maxLength={2000}
-                    className="flex-1 min-w-0 h-11 rounded-full bg-white/[0.06] px-4 text-sm text-ink placeholder:text-ink-muted"
-                  />
-                  <button
-                    type="submit"
-                    disabled={!stickyDraft.trim() || posting}
-                    aria-label="Post comment"
-                    className={`w-11 h-11 shrink-0 rounded-full bg-white/[0.10] flex items-center justify-center cursor-pointer transition-all duration-150 active:scale-95 disabled:opacity-45 disabled:cursor-default ${
-                      stickyDraft.trim() && !posting ? "text-ink" : "text-ink-muted"
-                    }`}
-                  >
-                    <ArrowUpIcon className="w-4 h-4" />
-                  </button>
-                </form>
-              ) : (
-                <p className="text-sm text-ink-muted px-3 py-2 whitespace-nowrap overflow-hidden text-ellipsis">
-                  <Link
-                    href="/login"
-                    className="text-ink-dim hover:text-lamp underline transition-colors"
-                  >
-                    Sign in
-                  </Link>{" "}
-                  to comment
-                </p>
-              )}
-            </div>
-
-            {/* Like circle — the bar carries only comment + like */}
-            {post && (
-              <button
-                onClick={handleToggleLike}
-                aria-label={liked ? "Unlike" : "Like"}
-                className={`w-11 h-11 shrink-0 rounded-full flex items-center justify-center cursor-pointer transition-all duration-150 active:scale-95 ${
-                  liked ? "bg-like/10 text-like" : "bg-white/[0.06] text-ink-dim"
-                }`}
-              >
-                <HeartIcon filled={liked} className="w-5 h-5" />
-              </button>
-            )}
-          </div>
+          {/* Floating pill comment bar — owns the draft state so keystrokes
+              re-render the bar alone, never the section tree above it. */}
+          <CommentBar
+            posting={posting}
+            postComment={postComment}
+            onPosted={scrollToComments}
+            showLike={!!post}
+            liked={liked}
+            onToggleLike={handleToggleLike}
+          />
         </div>
       </div>
     </div>

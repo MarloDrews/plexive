@@ -32,6 +32,7 @@ variants, since no single rule catches all). Until then such edges stay correctl
 latent and surface in scripts/report_unmatched_edges.py.
 """
 
+import math
 import unicodedata
 
 # Dash variants that should all fold to a plain ASCII hyphen so "en-dash" and
@@ -57,20 +58,24 @@ def normalize_identity(text: str) -> str:
 def _coerce_year(value) -> int | None:
     """Coerce a birth year to an int, or None if it is not coercible.
 
-    bool is rejected even though it is an int subclass; a non-numeric string
-    yields None (the people post is then unresolvable rather than getting a
-    string-based key).
+    Returns None, NEVER raises: a malformed birth_year makes the people post
+    unresolvable, not a 500. bool is rejected even though it is an int
+    subclass; NaN/infinity floats and junk strings like "--480" (which the old
+    lstrip-based digit check let through to a raising int()) yield None.
     """
     if isinstance(value, bool):
         return None
     if isinstance(value, int):
         return value
     if isinstance(value, float):
-        return int(value)
+        return int(value) if math.isfinite(value) else None
     if isinstance(value, str):
-        s = value.strip()
-        if s.lstrip("-").isdigit():
-            return int(s)
+        # int() accepts one leading sign and surrounding whitespace; anything
+        # else ("--480", "12.5", "abc") is not a year.
+        try:
+            return int(value.strip())
+        except ValueError:
+            return None
     return None
 
 
@@ -93,16 +98,20 @@ def _key_from_parts(
     - books:  title + author
     - else:   title
     """
+    # Every part must be a real string. A non-string (e.g. a feed_card title of
+    # 123, or a legacy connection ref carrying a number) makes the post/ref
+    # unresolvable -- None, never a TypeError inside normalize_identity -- which
+    # honors this module's documented "returns None, never raises" contract.
     if post_format == "people":
         year = _coerce_year(birth_year)
-        if not name or year is None:
+        if not isinstance(name, str) or not name or year is None:
             return None
         return normalize_identity(f"{name} ({year})")
     if post_format == "books":
-        if not title or not author:
+        if not isinstance(title, str) or not isinstance(author, str) or not title or not author:
             return None
         return normalize_identity(f"{title} by {author}")
-    if not title:
+    if not isinstance(title, str) or not title:
         return None
     return normalize_identity(title)
 

@@ -1,4 +1,6 @@
+import { memo, useMemo } from "react"
 import type { Section } from "../types/post"
+import ErrorBoundary from "./ErrorBoundary"
 import EssenceSection from "./sections/EssenceSection"
 import VoicesSection from "./sections/VoicesSection"
 import AtAGlanceSection from "./sections/AtAGlanceSection"
@@ -104,8 +106,24 @@ const NO_READ_SECTIONS = new Set([
   "sources",
 ])
 
-export default function SectionRenderer({ sections, isUserContent, postId, format, readingMinutes }: Props) {
-  const sorted = [...sections].sort((a, b) => a.order - b.order)
+// Shown by the per-section ErrorBoundary when a section throws while rendering.
+function SectionFallback() {
+  return (
+    <div className="px-6 py-4 text-sm text-ink-muted">This section could not be displayed.</div>
+  )
+}
+
+// memo (export at the bottom): the detail page re-renders on comment drafts,
+// read-aloud status changes and like taps; with a stable (memoized) sections
+// prop the whole tree, including every MathText, skips those re-renders.
+function SectionRenderer({ sections, isUserContent, postId, format, readingMinutes }: Props) {
+  // Skip null/malformed entries and treat a missing order as 0 so the comparator
+  // stays consistent (a.order - b.order is NaN when order is absent, which can
+  // scramble the whole list).
+  const sorted = useMemo(
+    () => sections.filter(Boolean).sort((a, b) => (a?.order ?? 0) - (b?.order ?? 0)),
+    [sections],
+  )
 
   return (
     // Serif is the reading voice; labels (.label-caps) and data (font-mono)
@@ -287,11 +305,21 @@ export default function SectionRenderer({ sections, isUserContent, postId, forma
             return null
         }
         })()
-        if (rendered && NO_READ_SECTIONS.has(section.type)) {
-          return <div key={i} data-no-read>{rendered}</div>
-        }
-        return rendered
+        if (!rendered) return null
+        const wrapped = NO_READ_SECTIONS.has(section.type)
+          ? <div data-no-read>{rendered}</div>
+          : rendered
+        // Contain a section-level render throw to this one section: a malformed
+        // row degrades to a small notice instead of taking down the whole post.
+        // Keyed by post + index so a new post gets a fresh boundary.
+        return (
+          <ErrorBoundary key={`${postId}-${i}`} fallback={<SectionFallback />}>
+            {wrapped}
+          </ErrorBoundary>
+        )
       })}
     </div>
   )
 }
+
+export default memo(SectionRenderer)

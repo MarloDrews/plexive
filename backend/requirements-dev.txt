@@ -1,0 +1,10 @@
+# Test-only dependencies (not needed at runtime).
+# Install alongside requirements.txt before running backend/tests/*.
+# FastAPI's TestClient imports httpx at runtime.
+httpx
+
+# Dependency vulnerability scanner (M135). Run before a release:
+#   python -m pip_audit -r requirements.txt
+# The one remaining finding, ecdsa PYSEC-2026-1325 (CVE-2024-23342), is a known
+# accepted item documented in requirements.txt (we sign with HS256, not ECDSA).
+pip-audit

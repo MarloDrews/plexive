@@ -113,8 +113,9 @@ else:
         if not (len(resolved) == 2 and all(i.get("target_post_id") for i in resolved)):
             failures.append(f"expected two resolved connection entries, got {rn!r}")
 
-# The symptom states these fields ARE present; assert they remain so.
-for key in ("feed_card", "sections", "tags", "connections", "like_count", "interests"):
+# These fields must remain present. (connections was dropped from PostOut in
+# Batch 3 / M033 -- read_next is the only cross-post field the client reads now.)
+for key in ("feed_card", "sections", "tags", "like_count", "interests"):
     if key not in body:
         failures.append(f"expected field {key!r} present, but it is missing")
 

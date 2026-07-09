@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { useAuth } from "@/app/lib/auth"
+import { useAuth, hasToken } from "@/lib/auth"
 
 export default function RegisterPage() {
   const { user, loading, register } = useAuth()
@@ -33,8 +33,11 @@ export default function RegisterPage() {
     }
   }
 
-  // Render nothing while loading or redirecting to avoid a flash.
-  if (loading || user) return null
+  // Once logged in we redirect, so render nothing. During session restore blank
+  // only when a token exists (probably logged in) to avoid a form flash; a
+  // visitor with no token sees the register form immediately, not a blank frame.
+  if (user) return null
+  if (loading && hasToken()) return null
 
   // Stage composition: heading floats in the dark above the slab, the
   // frosted slab holds only the form, the cross-link floats below it.

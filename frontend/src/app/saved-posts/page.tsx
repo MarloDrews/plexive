@@ -1,16 +1,22 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
-import PostCard, { type Post } from "@/app/components/PostCard"
-import { getSavedPostIds } from "@/app/lib/savedPosts"
-import { apiFetch } from "@/app/lib/api"
-import BottomNav from "@/app/components/BottomNav"
-import { BookmarkIcon } from "@/app/components/icons"
+import PostCard, { type Post } from "@/components/PostCard"
+import { getSavedPostIds } from "@/lib/savedPosts"
+import { fetchPostsByIds } from "@/lib/fetchPosts"
+import { useWindowedFeed } from "@/lib/useWindowedFeed"
+import BottomNav from "@/components/BottomNav"
+import ToastHost from "@/components/ToastHost"
+import { BookmarkIcon } from "@/components/icons"
 
 export default function SavedPostsPage() {
   const router = useRouter()
   const [posts, setPosts] = useState<Post[] | null>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
+  // Same windowing as the feed: a heavy saver no longer mounts one
+  // full-screen card per saved post at once.
+  const { start, end } = useWindowedFeed(scrollRef, posts?.length ?? 0)
 
   useEffect(() => {
     const ids = getSavedPostIds()
@@ -18,18 +24,11 @@ export default function SavedPostsPage() {
       setPosts([])
       return
     }
-    Promise.allSettled(
-      ids.map((id) =>
-        apiFetch(`/api/posts/${id}`).then((r) => (r.ok ? (r.json() as Promise<Post>) : null))
-      )
-    ).then((results) => {
-      const loaded = results
-        .filter(
-          (r): r is PromiseFulfilledResult<Post | null> => r.status === "fulfilled"
-        )
-        .map((r) => r.value)
-        .filter((p): p is Post => p !== null)
-      setPosts(loaded)
+    // One detail fetch per saved id, but bounded so a heavy saver does not fire
+    // hundreds of concurrent requests at once (a backend batch endpoint is the
+    // real fix). Missing/deleted ids come back null and are skipped.
+    fetchPostsByIds<Post>(ids).then((results) => {
+      setPosts(results.filter((p): p is Post => p !== null))
     })
   }, [])
 
@@ -85,17 +84,23 @@ export default function SavedPostsPage() {
               </svg>
             </button>
 
-            <div className="h-[100dvh] overflow-y-auto snap-y snap-mandatory [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
-              {posts.map((post) => (
+            <div ref={scrollRef} className="h-[100dvh] overflow-y-auto snap-y snap-mandatory">
+              {start > 0 && <div aria-hidden="true" style={{ height: `${start * 100}dvh` }} />}
+              {posts.slice(start, end).map((post) => (
                 <div key={post.id} className="snap-center shrink-0 h-[100dvh] relative">
                   <PostCard post={post} activeTabId={`saved-${post.id}`} />
                 </div>
               ))}
+              {end < posts.length && (
+                <div aria-hidden="true" style={{ height: `${(posts.length - end) * 100}dvh` }} />
+              )}
             </div>
           </>
         )}
 
         <BottomNav activeTab="profile" />
+        {/* The one toast element for every card's share feedback. */}
+        <ToastHost />
       </div>
     </div>
   )

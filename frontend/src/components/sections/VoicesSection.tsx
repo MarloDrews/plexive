@@ -1,6 +1,7 @@
 import SectionLabel from "../SectionLabel"
 import type { VoiceItem } from "../../types/post"
 import { unescapeDollar } from "@/lib/prose"
+import { asArray } from "@/lib/asArray"
 
 interface Props {
   content: VoiceItem[]
@@ -13,7 +14,7 @@ export default function VoicesSection({ content, label }: Props) {
   return (
     <div className="px-6 py-8 flex flex-col gap-5">
       {label && <SectionLabel>{label}</SectionLabel>}
-      {content.map((voice, i) => (
+      {asArray(content).map((voice, i) => (
         <blockquote key={i} className="border-l-2 border-edge-strong pl-4">
           <p className="text-lg font-serif text-ink leading-relaxed">
             &ldquo;{unescapeDollar(voice.quote)}&rdquo;

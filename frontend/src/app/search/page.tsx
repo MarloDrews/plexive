@@ -1,16 +1,16 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { memo, useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { type Post } from "@/app/components/PostCard"
+import { type Post } from "@/components/PostCard"
 import { fcStr } from "@/types/post"
 import { FORMAT_IDS, FORMAT_STYLES, type FormatId } from "@/lib/formats"
-import { apiFetch } from "@/app/lib/api"
-import { useAuth } from "@/app/lib/auth"
-import { useSwipeTabs } from "@/app/lib/useSwipeTabs"
-import BottomNav from "@/app/components/BottomNav"
-import SegmentedTabs from "@/app/components/SegmentedTabs"
+import { apiFetch } from "@/lib/api"
+import { useAuth } from "@/lib/auth"
+import { useSwipeTabs } from "@/lib/useSwipeTabs"
+import BottomNav from "@/components/BottomNav"
+import SegmentedTabs from "@/components/SegmentedTabs"
 import VerifiedBadge from "@/components/VerifiedBadge"
 import Avatar from "@/components/Avatar"
 
@@ -58,8 +58,9 @@ function UserRow({ user, loggedIn }: { user: UserResult; loggedIn: boolean }) {
     setBusy(true)
     try {
       if (followStatus === "accepted" || followStatus === "pending") {
-        await apiFetch(`/api/users/${user.username}/follow`, { method: "DELETE" })
-        setFollowStatus("none")
+        const r = await apiFetch(`/api/users/${user.username}/follow`, { method: "DELETE" })
+        // Only drop to "none" when the unfollow actually succeeded.
+        if (r.ok) setFollowStatus("none")
       } else {
         const r = await apiFetch(`/api/users/${user.username}/follow`, { method: "POST" })
         if (r.ok) {
@@ -67,6 +68,8 @@ function UserRow({ user, loggedIn }: { user: UserResult; loggedIn: boolean }) {
           setFollowStatus(d.status)
         }
       }
+    } catch {
+      // Swallow so a failed toggle is not an unhandled rejection.
     } finally {
       setBusy(false)
     }
@@ -106,6 +109,52 @@ function UserRow({ user, loggedIn }: { user: UserResult; loggedIn: boolean }) {
   )
 }
 
+// Memoized result lists: a keystroke re-renders the page (query state), but
+// these skip until their fetched arrays actually change, so rows (and the
+// UserRow follow state) are never remounted or reconciled mid-typing.
+const PostResultsList = memo(function PostResultsList({ results }: { results: Post[] }) {
+  const router = useRouter()
+  return (
+    <div className="flex flex-col gap-2 pt-2">
+      {results.map((post) => (
+        <button
+          key={post.id}
+          onClick={() => router.push(`/post/${post.id}`)}
+          className="w-full text-left card px-4 py-3 cursor-pointer hover:bg-white/[0.07] transition-colors duration-150"
+        >
+          <FormatBadge format={post.format} />
+          <p className="text-ink font-serif font-medium text-[15px] mt-0.5 line-clamp-2">{post.title}</p>
+          <p className="flex items-center gap-1 text-ink-faint text-xs mt-0.5">
+            {post.is_user_content && post.author_username ? (
+              <Link href={`/profile/${post.author_username}`} className="hover:text-ink-dim transition-colors" onClick={(e) => e.stopPropagation()}>
+                @{post.author_username}
+              </Link>
+            ) : "Deepscroll"}
+            {post.is_user_content && post.author_is_verified != null && post.author_is_verified > 0 && <VerifiedBadge size={14} level={post.author_is_verified} />}
+          </p>
+          <Snippet post={post} />
+        </button>
+      ))}
+    </div>
+  )
+})
+
+const UserResultsList = memo(function UserResultsList({
+  users,
+  loggedIn,
+}: {
+  users: UserResult[]
+  loggedIn: boolean
+}) {
+  return (
+    <div className="flex flex-col gap-2 pt-2">
+      {users.map((u) => (
+        <UserRow key={u.username} user={u} loggedIn={loggedIn} />
+      ))}
+    </div>
+  )
+})
+
 export default function SearchPage() {
   const router = useRouter()
   const { user: authUser } = useAuth()
@@ -113,8 +162,19 @@ export default function SearchPage() {
   const [formatFilter, setFormatFilter] = useState<FormatValue>("")
   const [results, setResults] = useState<Post[] | null>(null)
   const [userResults, setUserResults] = useState<UserResult[] | null>(null)
-  const [loading, setLoading] = useState(false)
+  // Posts and accounts load in separate effects: only the posts search depends
+  // on the format filter, so a format-chip tap no longer refires the identical
+  // user search. Each carries its own loading flag and stale-response guard.
+  const [postsLoading, setPostsLoading] = useState(false)
+  const [usersLoading, setUsersLoading] = useState(false)
+  const [postsError, setPostsError] = useState(false)
+  const [usersError, setUsersError] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+  // Monotonic counters so a slow response for an earlier query can never
+  // overwrite the results of a later one (the debounce only cancels the timer,
+  // not an in-flight request).
+  const postsSeq = useRef(0)
+  const usersSeq = useRef(0)
 
   // Posts/Accounts is no longer a pre-search mode: one search fetches both,
   // and this swipeable switcher just flips which fetched list is visible.
@@ -125,35 +185,62 @@ export default function SearchPage() {
     inputRef.current?.focus()
   }, [])
 
+  // Posts search - depends on the format filter.
   useEffect(() => {
     const trimmed = query.trim()
     if (!trimmed) {
       setResults(null)
-      setUserResults(null)
-      setLoading(false)
+      setPostsLoading(false)
       return
     }
-
-    setLoading(true)
+    const seq = ++postsSeq.current
     const timer = setTimeout(async () => {
+      // Loading starts only when the debounced request actually fires; the
+      // previous results stay on screen while it is in flight (the skeletons
+      // used to swap in synchronously on every keystroke).
+      setPostsLoading(true)
+      setPostsError(false)
       try {
-        // Both endpoints in parallel — the backend has no combined search,
-        // and the two routes are rate-limited independently.
         const params = new URLSearchParams({ q: trimmed })
         if (formatFilter) params.set("format", formatFilter)
-        const [postsRes, usersRes] = await Promise.all([
-          apiFetch(`/api/search?${params}`),
-          apiFetch(`/api/search/users?${new URLSearchParams({ q: trimmed })}`),
-        ])
-        setResults((await postsRes.json()) as Post[])
-        setUserResults((await usersRes.json()) as UserResult[])
+        const res = await apiFetch(`/api/search?${params}`)
+        if (!res.ok) throw new Error(`status ${res.status}`)
+        const data = (await res.json()) as Post[]
+        if (seq === postsSeq.current) setResults(data)
+      } catch {
+        if (seq === postsSeq.current) setPostsError(true)
       } finally {
-        setLoading(false)
+        if (seq === postsSeq.current) setPostsLoading(false)
       }
     }, 300)
-
     return () => clearTimeout(timer)
   }, [query, formatFilter])
+
+  // User search - keyed on the query only, so format-chip taps do not refire it.
+  useEffect(() => {
+    const trimmed = query.trim()
+    if (!trimmed) {
+      setUserResults(null)
+      setUsersLoading(false)
+      return
+    }
+    const seq = ++usersSeq.current
+    const timer = setTimeout(async () => {
+      setUsersLoading(true)
+      setUsersError(false)
+      try {
+        const res = await apiFetch(`/api/search/users?${new URLSearchParams({ q: trimmed })}`)
+        if (!res.ok) throw new Error(`status ${res.status}`)
+        const data = (await res.json()) as UserResult[]
+        if (seq === usersSeq.current) setUserResults(data)
+      } catch {
+        if (seq === usersSeq.current) setUsersError(true)
+      } finally {
+        if (seq === usersSeq.current) setUsersLoading(false)
+      }
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [query])
 
   const hasQuery = !!query.trim()
 
@@ -179,8 +266,14 @@ export default function SearchPage() {
       <p className="text-ink-muted text-sm">Search posts, books, people…</p>
     </div>
   )
+  const errorMessage = (
+    <div className="flex flex-col items-center justify-center pt-20 text-center px-6 gap-2">
+      <p className="text-ink font-serif font-medium text-base">Something went wrong</p>
+      <p className="text-ink-muted text-xs">Check your connection and try again.</p>
+    </div>
+  )
   const pageClass =
-    "w-full shrink-0 snap-start h-full overflow-y-auto overscroll-y-contain px-3 pb-24 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]"
+    "w-full shrink-0 snap-start h-full overflow-y-auto overscroll-y-contain px-3 pb-24"
 
   return (
     <div className="h-[100dvh] bg-surface-0 flex justify-center">
@@ -242,7 +335,7 @@ export default function SearchPage() {
 
           {/* Format chips (refine the posts search server-side) */}
           {activeIndex === 0 && (
-            <div className="flex gap-2 mt-2 overflow-x-auto [&::-webkit-scrollbar]:hidden [scrollbar-width:none] pb-1">
+            <div className="flex gap-2 mt-2 overflow-x-auto pb-1">
               {FORMAT_CHIPS.map((chip) => {
                 const isActive = formatFilter === chip.value
                 const style = chip.value ? FORMAT_STYLES[chip.value] : null
@@ -269,60 +362,47 @@ export default function SearchPage() {
         {/* Results — swipeable pager: Posts | Accounts */}
         <div
           ref={pagerRef}
-          className="flex-1 min-h-0 flex overflow-x-scroll overflow-y-hidden snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [scrollbar-width:none]"
+          className="flex-1 min-h-0 flex overflow-x-scroll overflow-y-hidden snap-x snap-mandatory"
         >
+          {/* Skeletons appear only when there is nothing to show yet; with
+              previous results on screen they stay visible while the debounced
+              refetch is in flight and swap in place when it lands. */}
           <div className={pageClass}>
-            {loading ? (
-              loadingSlabs
-            ) : !hasQuery ? (
+            {!hasQuery ? (
               idleMessage
+            ) : postsLoading && results === null ? (
+              loadingSlabs
+            ) : postsError ? (
+              errorMessage
             ) : emptyPosts ? (
               <div className="flex flex-col items-center justify-center pt-20 text-center px-6 gap-2">
                 <p className="text-ink font-serif font-medium text-base">No results for &ldquo;{query}&rdquo;</p>
                 <p className="text-ink-muted text-xs">Try a different word or format</p>
               </div>
             ) : results !== null ? (
-              <div className="flex flex-col gap-2 pt-2">
-                {results.map((post) => (
-                  <button
-                    key={post.id}
-                    onClick={() => router.push(`/post/${post.id}`)}
-                    className="w-full text-left card px-4 py-3 cursor-pointer hover:bg-white/[0.07] transition-colors duration-150"
-                  >
-                    <FormatBadge format={post.format} />
-                    <p className="text-ink font-serif font-medium text-[15px] mt-0.5 line-clamp-2">{post.title}</p>
-                    <p className="flex items-center gap-1 text-ink-faint text-xs mt-0.5">
-                      {post.is_user_content && post.author_username ? (
-                        <Link href={`/profile/${post.author_username}`} className="hover:text-ink-dim transition-colors" onClick={(e) => e.stopPropagation()}>
-                          @{post.author_username}
-                        </Link>
-                      ) : "Deepscroll"}
-                      {post.is_user_content && post.author_is_verified != null && post.author_is_verified > 0 && <VerifiedBadge size={14} level={post.author_is_verified} />}
-                    </p>
-                    <Snippet post={post} />
-                  </button>
-                ))}
-              </div>
-            ) : null}
+              <PostResultsList results={results} />
+            ) : (
+              loadingSlabs
+            )}
           </div>
 
           <div className={pageClass}>
-            {loading ? (
-              loadingSlabs
-            ) : !hasQuery ? (
+            {!hasQuery ? (
               idleMessage
+            ) : usersLoading && userResults === null ? (
+              loadingSlabs
+            ) : usersError ? (
+              errorMessage
             ) : emptyUsers ? (
               <div className="flex flex-col items-center justify-center pt-20 text-center px-6 gap-2">
                 <p className="text-ink font-serif font-medium text-base">No results for &ldquo;{query}&rdquo;</p>
                 <p className="text-ink-muted text-xs">Try a different username</p>
               </div>
             ) : userResults !== null ? (
-              <div className="flex flex-col gap-2 pt-2">
-                {userResults.map((u) => (
-                  <UserRow key={u.username} user={u} loggedIn={!!authUser} />
-                ))}
-              </div>
-            ) : null}
+              <UserResultsList users={userResults} loggedIn={!!authUser} />
+            ) : (
+              loadingSlabs
+            )}
           </div>
         </div>
 

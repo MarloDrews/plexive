@@ -3,28 +3,23 @@
 import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { useAuth } from "@/app/lib/auth"
-import { apiFetch } from "@/app/lib/api"
-import BottomNav from "@/app/components/BottomNav"
+import useSWR from "swr"
+import { useAuth } from "@/lib/auth"
+import { apiFetch } from "@/lib/api"
+import { detailToMessage } from "@/lib/errorMessage"
+import BottomNav from "@/components/BottomNav"
 import VerifiedBadge from "@/components/VerifiedBadge"
 import Avatar from "@/components/Avatar"
-import Spinner from "@/components/Spinner"
-import { formatStyle } from "@/lib/formats"
+import FollowListSheet, { type ListUser } from "@/components/FollowListSheet"
 
-interface ListUser {
-  username: string
-  is_verified: number
-  is_private: boolean
-  avatar_url: string | null
-}
-
+// The knowledge score is one unified rating; the backend no longer sends a
+// per-format breakdown.
 interface EloData {
   global_rating: number | null
-  formats: Record<string, { rating: number; answered_count: number }>
 }
 
 export default function ProfilePage() {
-  const { user, loading, logout, updateUser } = useAuth()
+  const { user, loading, logout, updateUser, applyFreshToken } = useAuth()
   const router = useRouter()
 
   // Which settings panel is open: "username" | "password" | "delete" | null
@@ -53,24 +48,32 @@ export default function ProfilePage() {
 
   // Privacy toggle
   const [privacyLoading, setPrivacyLoading] = useState(false)
+  const [privacyError, setPrivacyError] = useState("")
 
   // Follow requests
   const [pendingRequests, setPendingRequests] = useState<{ username: string; is_verified: number; avatar_url?: string | null; created_at: string }[]>([])
   const [showRequests, setShowRequests] = useState(false)
   const [requestActionLoading, setRequestActionLoading] = useState<string | null>(null)
+  const [requestError, setRequestError] = useState("")
 
   // Avatar upload
   const avatarInputRef = useRef<HTMLInputElement>(null)
   const [avatarLoading, setAvatarLoading] = useState(false)
   const [avatarError, setAvatarError] = useState("")
 
-  // Knowledge score
-  const [elo, setElo] = useState<EloData | null>(null)
+  // Knowledge score, and follower/following/post counts via SWR keyed on the
+  // same URLs the public profile page uses, so navigating between the two shares
+  // one cache instead of refetching (writes stay on apiFetch).
+  const { data: eloData } = useSWR<EloData>(user ? `/api/users/${user.username}/elo` : null)
+  const elo = eloData ?? null
+  const { data: profileCounts, mutate: mutateCounts } = useSWR<{ follower_count: number; following_count: number; post_count: number }>(
+    user ? `/api/users/${user.username}/profile` : null
+  )
+  const followerCount = profileCounts?.follower_count ?? null
+  const followingCount = profileCounts?.following_count ?? null
+  const postCount = profileCounts?.post_count ?? null
 
-  // Followers / following counts and bottom-sheet
-  const [followerCount, setFollowerCount] = useState<number | null>(null)
-  const [followingCount, setFollowingCount] = useState<number | null>(null)
-  const [postCount, setPostCount] = useState<number | null>(null)
+  // Followers / following bottom-sheet
   const [listOpen, setListOpen] = useState<"followers" | "following" | null>(null)
   const [listUsers, setListUsers] = useState<ListUser[] | null>(null)
 
@@ -88,31 +91,10 @@ export default function ProfilePage() {
   useEffect(() => {
     if (!user?.is_private) return
     apiFetch(`/api/users/${user.username}/follow-requests`)
-      .then((r) => r.json())
-      .then(setPendingRequests)
-      .catch(() => {})
-  }, [user])
-
-  // Fetch knowledge score
-  useEffect(() => {
-    if (!user) return
-    apiFetch(`/api/users/${user.username}/elo`)
-      .then((r) => (r.ok ? r.json() : null))
-      .then(setElo)
-      .catch(() => {})
-  }, [user])
-
-  // Fetch follower / following / post counts
-  useEffect(() => {
-    if (!user) return
-    apiFetch(`/api/users/${user.username}/profile`)
-      .then((r) => (r.ok ? r.json() : null))
-      .then((data) => {
-        if (!data) return
-        setFollowerCount(data.follower_count)
-        setFollowingCount(data.following_count)
-        setPostCount(data.post_count)
-      })
+      // Guard the shape: a non-ok error body is a JSON object, not an array, and
+      // would throw on .map when the requests panel opens.
+      .then((r) => (r.ok ? r.json() : []))
+      .then((d) => setPendingRequests(Array.isArray(d) ? d : []))
       .catch(() => {})
   }, [user])
 
@@ -139,7 +121,7 @@ export default function ProfilePage() {
       form.append("file", file)
       const r = await apiFetch("/api/auth/me/avatar", { method: "POST", body: form })
       const data = await r.json()
-      if (!r.ok) throw new Error(data.detail ?? "Failed to upload picture.")
+      if (!r.ok) throw new Error(detailToMessage(data.detail, "Failed to upload picture."))
       updateUser(data)
     } catch (err) {
       setAvatarError(err instanceof Error ? err.message : "Failed to upload picture.")
@@ -169,7 +151,7 @@ export default function ProfilePage() {
         body: JSON.stringify({ username: newUsername }),
       })
       const data = await r.json()
-      if (!r.ok) throw new Error(data.detail ?? "Failed to update username.")
+      if (!r.ok) throw new Error(detailToMessage(data.detail, "Failed to update username."))
       updateUser(data)
       setOpen(null)
     } catch (err) {
@@ -189,7 +171,10 @@ export default function ProfilePage() {
         body: JSON.stringify({ current_password: currentPw, new_password: newPw }),
       })
       const data = await r.json()
-      if (!r.ok) throw new Error(data.detail ?? "Failed to change password.")
+      if (!r.ok) throw new Error(detailToMessage(data.detail, "Failed to change password."))
+      // The server bumped the token version, revoking every other session; keep
+      // this one signed in with the re-minted token it returned (M126).
+      if (data.access_token) applyFreshToken(data.access_token)
       setOpen(null)
     } catch (err) {
       setPasswordError(err instanceof Error ? err.message : "Failed to change password.")
@@ -209,7 +194,7 @@ export default function ProfilePage() {
       })
       if (!r.ok) {
         const data = await r.json()
-        throw new Error(data.detail ?? "Failed to delete account.")
+        throw new Error(detailToMessage(data.detail, "Failed to delete account."))
       }
       logout()
       router.replace("/")
@@ -229,7 +214,7 @@ export default function ProfilePage() {
         body: JSON.stringify({ bio }),
       })
       const data = await r.json()
-      if (!r.ok) throw new Error(data.detail ?? "Failed to save bio.")
+      if (!r.ok) throw new Error(detailToMessage(data.detail, "Failed to save bio."))
       updateUser(data)
     } catch (err) {
       setBioError(err instanceof Error ? err.message : "Failed to save bio.")
@@ -240,6 +225,7 @@ export default function ProfilePage() {
 
   async function handleTogglePrivacy() {
     if (!user) return
+    setPrivacyError("")
     setPrivacyLoading(true)
     try {
       const r = await apiFetch("/api/auth/me", {
@@ -247,28 +233,42 @@ export default function ProfilePage() {
         body: JSON.stringify({ is_private: !user.is_private }),
       })
       const data = await r.json()
-      if (!r.ok) throw new Error(data.detail ?? "Failed to update privacy.")
+      if (!r.ok) throw new Error(detailToMessage(data.detail, "Failed to update privacy."))
       updateUser(data)
+    } catch (err) {
+      // Without this catch the throw escaped the handler with no feedback.
+      setPrivacyError(err instanceof Error ? err.message : "Failed to update privacy.")
     } finally {
       setPrivacyLoading(false)
     }
   }
 
   async function handleAcceptRequest(requesterUsername: string) {
+    setRequestError("")
     setRequestActionLoading(requesterUsername)
     try {
-      await apiFetch(`/api/users/${requesterUsername}/follow/accept`, { method: "POST" })
+      const r = await apiFetch(`/api/users/${requesterUsername}/follow/accept`, { method: "POST" })
+      if (!r.ok) throw new Error("Failed to accept the request.")
+      // Only drop the row when the accept succeeded, and refresh the follower
+      // count so it reflects the new accepted follower.
       setPendingRequests((prev) => prev.filter((r) => r.username !== requesterUsername))
+      mutateCounts()
+    } catch (err) {
+      setRequestError(err instanceof Error ? err.message : "Failed to accept the request.")
     } finally {
       setRequestActionLoading(null)
     }
   }
 
   async function handleDeclineRequest(requesterUsername: string) {
+    setRequestError("")
     setRequestActionLoading(requesterUsername)
     try {
-      await apiFetch(`/api/users/${requesterUsername}/follow/reject`, { method: "DELETE" })
+      const r = await apiFetch(`/api/users/${requesterUsername}/follow/reject`, { method: "DELETE" })
+      if (!r.ok) throw new Error("Failed to decline the request.")
       setPendingRequests((prev) => prev.filter((r) => r.username !== requesterUsername))
+    } catch (err) {
+      setRequestError(err instanceof Error ? err.message : "Failed to decline the request.")
     } finally {
       setRequestActionLoading(null)
     }
@@ -282,7 +282,7 @@ export default function ProfilePage() {
   return (
     <div className="h-[100dvh] bg-surface-0 flex justify-center">
       <div className="w-full max-w-[430px] h-[100dvh] relative">
-        <div className="h-full overflow-y-auto pb-24 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
+        <div className="h-full overflow-y-auto pb-24">
 
         {/* Back button */}
         <button
@@ -357,18 +357,6 @@ export default function ProfilePage() {
               {elo?.global_rating ?? "—"}
             </p>
           </div>
-          {elo && Object.keys(elo.formats).length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-3">
-              {Object.entries(elo.formats).map(([fmt, data]) => {
-                const style = formatStyle(fmt)
-                return (
-                  <span key={fmt} className={`text-xs rounded-full px-2.5 py-1 bg-white/[0.06] ${style.text}`}>
-                    {style.label} {Math.round(data.rating)}
-                  </span>
-                )
-              })}
-            </div>
-          )}
         </div>
 
         {/* My content */}
@@ -449,6 +437,7 @@ export default function ProfilePage() {
             </button>
             {showRequests && (
               <div className="px-5 pb-5 flex flex-col gap-3">
+                {requestError && <p className="text-bad text-xs">{requestError}</p>}
                 {pendingRequests.length === 0 ? (
                   <p className="text-ink-muted text-sm">No pending requests.</p>
                 ) : (
@@ -506,6 +495,7 @@ export default function ProfilePage() {
                 }`} />
               </button>
             </div>
+            {privacyError && <p className="text-bad text-xs px-5 pb-3 -mt-1">{privacyError}</p>}
           </div>
 
           {/* Change username */}
@@ -628,47 +618,12 @@ export default function ProfilePage() {
         </div>
         </div>
 
-        {/* Followers / Following bottom sheet */}
-        {listOpen && (
-          <div className="fixed inset-0 z-40 flex justify-center" onClick={() => setListOpen(null)}>
-            <div className="absolute inset-0 bg-surface-0/70" />
-            <div
-              className="stage-sheet-in absolute inset-x-3 bottom-3 max-w-[406px] mx-auto max-h-[70dvh] rounded-3xl bg-surface-1/95 backdrop-blur-xl flex flex-col overflow-hidden"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex items-center justify-between px-5 pt-4 pb-2">
-                <p className="text-ink text-sm font-semibold capitalize">{listOpen}</p>
-                <button onClick={() => setListOpen(null)} className="btn-icon" aria-label="Close">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-                    <path d="M18 6L6 18M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-              <div className="overflow-y-auto px-3 py-3 flex flex-col gap-1 pb-[max(env(safe-area-inset-bottom),12px)]">
-                {listUsers === null ? (
-                  <div className="flex justify-center py-8"><Spinner /></div>
-                ) : listUsers.length === 0 ? (
-                  <p className="text-ink-muted text-sm text-center py-8">Nothing here yet.</p>
-                ) : (
-                  listUsers.map((u) => (
-                    <a
-                      key={u.username}
-                      href={`/profile/${u.username}`}
-                      onClick={() => setListOpen(null)}
-                      className="flex items-center gap-3 px-2 py-2 rounded-2xl hover:bg-white/[0.06] transition-colors duration-150"
-                    >
-                      <Avatar username={u.username} avatarUrl={u.avatar_url} size={40} verified={u.is_verified} />
-                      <span className="flex items-center gap-1.5 text-ink text-sm font-medium">
-                        @{u.username}
-                        {u.is_verified > 0 && <VerifiedBadge size={14} level={u.is_verified} />}
-                      </span>
-                    </a>
-                  ))
-                )}
-              </div>
-            </div>
-          </div>
-        )}
+        <FollowListSheet
+          open={listOpen}
+          onClose={() => setListOpen(null)}
+          users={listUsers}
+          emptyMessage="Nothing here yet."
+        />
 
         <BottomNav activeTab="profile" />
       </div>

@@ -1,0 +1,226 @@
+{
+  "tags": [
+    "astronomy",
+    "chemistry",
+    "physics"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Nucleosynthesis"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "The gold in a wedding ring is older than the Sun and was never made on Earth. No ordinary star can forge it. It takes the collision of dead stars, or a cataclysm just as violent, scattering the metal across space before the Earth formed.",
+    "teasers": [
+      "The dead end every star hits at iron",
+      "A 1957 prediction that waited 60 years",
+      "The gold you can dig is a latecomer"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "The gold in a wedding ring is older than the Sun and was never made on Earth. No ordinary star can forge it. It takes the collision of dead stars, or a cataclysm just as violent, scattering the metal across space before the Earth formed."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><g stroke='currentColor' stroke-width='2' stroke-linecap='round' opacity='0.45'><line x1='56' y1='250' x2='372' y2='250'/><line x1='56' y1='250' x2='56' y2='46'/></g><path d='M70 236 C 96 150, 122 96, 156 80 C 224 92, 300 110, 356 122' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' opacity='0.75'/><line x1='156' y1='88' x2='156' y2='230' stroke='var(--accent)' stroke-width='1.5' opacity='0.5' stroke-dasharray='4 5'/><circle cx='156' cy='80' r='6.5' fill='var(--accent)'/><text x='156' y='66' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>Iron</text><text x='156' y='244' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>fusion stops</text><circle cx='300' cy='110' r='5.5' fill='none' stroke='currentColor' stroke-width='2.5' opacity='0.85'/><text x='300' y='98' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>Gold</text><text x='108' y='214' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='middle'>fusion gains</text><text x='300' y='214' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='middle'>fusion loses</text><text x='214' y='276' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>heavier nuclei</text><text x='26' y='150' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle' transform='rotate(-90 26 150)'>binding energy</text></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "Hold a gold ring and you are holding the debris of a catastrophe. Its atoms did not form on Earth, or in the Sun, or in any steadily burning star. A star fuses light nuclei and gives off energy, but only as far as iron. Past iron, the books flip. Building anything heavier costs energy, so no ordinary star ever reaches gold. To make it, neutrons must pile onto a nucleus faster than it can decay. That happens only where matter is ripped apart and slammed together at once, which is where the gold in the ring was made."
+    },
+    {
+      "type": "tangible",
+      "order": 4,
+      "content": {
+        "items": [
+          "When two neutron stars merged in 2017, the flash was seen 130 million light-years off, and the wreck forged roughly 10 Earth masses of gold and platinum.",
+          "The build was quick, the r-process laying down elements up to uranium in about a second before the debris cooled.",
+          "None of that batch will reach us, but Earth's own gold formed the same way, in older collisions that seeded the cloud the Sun grew from."
+        ],
+        "visual_svg": "<svg viewBox='0 44 400 176' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='66' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.78' text-anchor='middle'>Gold and platinum forged in one merger</text><circle cx='72' cy='142' r='12' stroke='currentColor' stroke-width='2.5' opacity='0.7'/><text x='72' y='180' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>Earth</text><g fill='var(--accent)' fill-opacity='0.85'><circle cx='178' cy='128' r='12'/><circle cx='206' cy='128' r='12'/><circle cx='234' cy='128' r='12'/><circle cx='262' cy='128' r='12'/><circle cx='290' cy='128' r='12'/><circle cx='178' cy='156' r='12'/><circle cx='206' cy='156' r='12'/><circle cx='234' cy='156' r='12'/><circle cx='262' cy='156' r='12'/><circle cx='290' cy='156' r='12'/></g><text x='234' y='188' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>about 10 Earth masses</text></svg>"
+      }
+    },
+    {
+      "type": "how_we_know",
+      "order": 5,
+      "content": "The chain runs from nuclear physics to a night in 2017. In the lab, binding energies show precisely why fusion pays off up to iron and demands payment past it, so gold has to be built by piling on neutrons. Where that pile-up happens was the missing piece. The proof came when detectors felt two neutron stars merge and telescopes caught the glow that followed. That glow, a kilonova, fades in a pattern that only freshly made heavy elements produce, and its colors carried their fingerprint."
+    },
+    {
+      "type": "story",
+      "order": 7,
+      "content": {
+        "body": "The idea that heavy elements are cooked outside ordinary stars is old. In 1957 four astronomers, Margaret Burbidge among them, mapped how the elements form and named a rapid neutron-capture process for the heaviest ones. What it could not name was the furnace. For 60 years the r-process was a mechanism in search of a place, with neutron star mergers and rare supernovae the leading suspects. The case broke open on 17 August 2017. Detectors caught the gravitational shudder of two neutron stars spiraling together. Telescopes swung onto the afterglow, a kilonova whose light carried the chemical fingerprint of freshly minted heavy elements. The prediction had waited six decades for its confirmation.",
+        "key_figures": [
+          {
+            "name": "Margaret Burbidge",
+            "role": "Helped map where the elements come from",
+            "one_line": "A co-author of the 1957 paper that set out how stars build the elements and named the r-process for the heaviest nuclei.",
+            "lifespan": "1919-2020",
+            "birth_year": 1919,
+            "featured": true
+          },
+          {
+            "name": "Fred Hoyle",
+            "role": "Co-wrote the same 1957 map",
+            "one_line": "The astronomer who argued the elements are forged in stars and co-authored the paper that predicted the r-process.",
+            "lifespan": "1915-2001",
+            "birth_year": 1915,
+            "featured": false
+          }
+        ],
+        "visual_svg": "<svg viewBox='0 56 400 150' xmlns='http://www.w3.org/2000/svg' fill='none'><line x1='58' y1='150' x2='342' y2='150' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><circle cx='96' cy='150' r='7' fill='var(--accent)'/><circle cx='304' cy='150' r='6' stroke='currentColor' stroke-width='2' opacity='0.75'/><text x='96' y='112' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='700' text-anchor='middle'>1957</text><text x='304' y='112' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='700' text-anchor='middle'>2017</text><text x='96' y='182' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle'>predicted</text><text x='304' y='182' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.75' text-anchor='middle'>caught</text><text x='200' y='138' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.65' text-anchor='middle'>60 years</text></svg>"
+      }
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "Most of Earth's gold is locked in the core",
+          "body": "When the young Earth was molten, iron sank to the center and formed the core. It dragged most of the planet's gold down with it. What sits in the crust and mantle, the gold we can reach, is a rounding error next to that. And even that was mostly delivered later, by metal-rich meteorites that pounded the surface for hundreds of millions of years after the core set. Most of the gold in a vault spent far longer as space rock than it has spent on Earth.",
+          "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><circle cx='200' cy='158' r='116' stroke='currentColor' stroke-width='2' opacity='0.5'/><circle cx='200' cy='158' r='112' stroke='var(--accent)' stroke-width='3' stroke-dasharray='2 8' opacity='0.9'/><circle cx='200' cy='158' r='56' stroke='currentColor' stroke-width='2.5' fill='currentColor' fill-opacity='0.08'/><text x='200' y='154' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>core</text><text x='200' y='174' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.75' text-anchor='middle'>most gold</text><text x='200' y='36' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>gold we mine: a late veneer</text></svg>"
+        },
+        {
+          "title": "The alchemists were chasing a real reaction",
+          "body": "The alchemists were not entirely wrong. Turning one element into another is real, and gold and mercury are next-door neighbors on the periodic table. Fire a neutron at the right mercury isotope and it decays into ordinary, stable gold, the transformation they spent lifetimes hunting. The catch is the ledger. Making gold this way costs vastly more than the metal is ever worth. The dream came true and stayed useless."
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "Gold has meant permanence and wealth for as long as people have dug it up. It turns out to be the ash of the universe's most violent events. The same goes for the platinum in a converter and the iodine in your thyroid: everything past iron traces back to a dying or colliding star. Stardust is not just a metaphor here. The heavy atoms in your body are the literal leftovers of explosions the periodic table could not have been filled without. The next time a ring catches the light, that is what it is catching."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "Why can no ordinary star fuse its way up to gold?",
+          "options": [
+            "Past iron, fusion absorbs energy instead of releasing it",
+            "Stars run out of hydrogen before they can get there",
+            "Gold is too rare in the galaxy to accumulate",
+            "Gold nuclei are too large to assemble at all"
+          ],
+          "answer_index": 0,
+          "explanation": "Fusing nuclei gives off energy only up to iron, the most tightly bound region. Building anything heavier costs energy, so a star's fusion never climbs past the iron peak to reach gold."
+        },
+        {
+          "question": "How is gold built, if not by fusion?",
+          "options": [
+            "By slow cooling of molten iron in a planet's core",
+            "By ordinary fusion in the hottest stars",
+            "By neutrons piling onto nuclei faster than they can decay",
+            "By lightning striking mineral deposits over time"
+          ],
+          "answer_index": 2,
+          "explanation": "The r-process crams neutrons onto nuclei faster than they break apart, building up to very heavy elements that then decay to stable ones like gold. It needs a flood of neutrons found only in extreme events."
+        },
+        {
+          "question": "What did the 2017 neutron-star merger confirm?",
+          "options": [
+            "That the Sun secretly makes gold",
+            "That gold can be synthesized cheaply on Earth",
+            "That gold is younger than the solar system",
+            "That neutron star mergers do forge heavy elements like gold"
+          ],
+          "answer_index": 3,
+          "explanation": "The kilonova that followed the merger faded exactly as freshly made r-process elements would, and its light carried their chemical signature, catching heavy-element creation in the act for the first time."
+        },
+        {
+          "question": "Why is most of Earth's original gold out of reach?",
+          "options": [
+            "It boiled off into space while Earth was forming",
+            "It sank into the core with the iron when Earth was molten",
+            "It was never delivered to Earth in the first place",
+            "It slowly decayed into lead"
+          ],
+          "answer_index": 1,
+          "explanation": "As the molten Earth separated, iron sank and carried most of the gold into the core. The gold we mine is a thin surface share, much of it delivered later by meteorites."
+        },
+        {
+          "question": "Was the alchemists' dream of making gold physically impossible?",
+          "options": [
+            "Yes, one element can never become another",
+            "Yes, gold cannot be created by any known process",
+            "No, but making it costs far more than the gold is worth",
+            "No, and reactors now do it cheaply and at scale"
+          ],
+          "answer_index": 2,
+          "explanation": "Neutron bombardment can turn mercury into stable gold, the change alchemists sought. The energy and equipment cost far more than the gold produced, so it stays a curiosity, not a mint."
+        },
+        {
+          "question": "A friend says the gold in their ring was made in the Sun. What is the best correction?",
+          "options": [
+            "The Sun is far too young to have made it",
+            "No star fuses gold. It takes an r-process cataclysm, and this gold predates the Sun",
+            "The Sun makes only silver, never gold",
+            "Gold is not made by stars at all, only deep inside planets"
+          ],
+          "answer_index": 1,
+          "explanation": "Ordinary stellar fusion stops at iron, so the Sun cannot build gold. The gold on Earth was made by the r-process in earlier cataclysms and was already in the cloud that formed the Sun and planets."
+        }
+      ]
+    },
+    {
+      "type": "open_questions",
+      "order": 12,
+      "content": {
+        "body": "Neutron star mergers are now a proven source of gold. Proven is not the same as sole. Mergers may be too rare, and too slow to have enriched the early universe, to explain all the gold in the oldest stars. Some of it may instead come from a rare, fast-spinning kind of supernova, one that theory allows but no one has caught in the act. How the whole budget splits is unsettled.",
+        "items": [
+          "Did mergers alone seed the gold in the oldest stars, which formed before many mergers could have happened?",
+          "Do rare magnetized supernovae also drive the r-process, and how much gold do they add?"
+        ]
+      }
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Kasen D, Metzger B, Barnes J, Quataert E, Ramirez-Ruiz E. Origin of the heavy elements in binary neutron-star mergers from a gravitational-wave event. Nature 2017;551:80",
+          "url": "https://arxiv.org/abs/1710.05463",
+          "type": "paper"
+        },
+        {
+          "label": "GW170817 (event, distance, and heavy-element yield estimates)",
+          "url": "https://en.wikipedia.org/wiki/GW170817",
+          "type": "wikipedia"
+        },
+        {
+          "label": "B2FH paper (Burbidge, Burbidge, Fowler, Hoyle 1957), which named the r-process",
+          "url": "https://en.wikipedia.org/wiki/B2FH_paper",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Iron peak (why fusion releases no energy beyond iron)",
+          "url": "https://en.wikipedia.org/wiki/Iron_peak",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Synthesis of precious metals (mercury-to-gold transmutation and its cost)",
+          "url": "https://en.wikipedia.org/wiki/Synthesis_of_precious_metals",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Willbold et al.: Earth's accessible precious metals delivered by late meteorite bombardment (ScienceDaily summary, 2011)",
+          "url": "https://www.sciencedaily.com/releases/2011/09/110907132044.htm",
+          "type": "article"
+        }
+      ]
+    }
+  ]
+}

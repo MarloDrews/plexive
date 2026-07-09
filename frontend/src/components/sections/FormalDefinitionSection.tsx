@@ -1,5 +1,5 @@
-import katex from "katex"
 import SectionLabel from "../SectionLabel"
+import DisplayMath from "../DisplayMath"
 import MathText from "../MathText"
 import Prose from "../Prose"
 import { unescapeDollar } from "@/lib/prose"
@@ -19,18 +19,6 @@ interface Props {
   content: FormalDefinitionContent
 }
 
-// Block-level math, same treatment as FormalismSection (questions). The formula
-// is raw LaTeX, not wrapped in $...$, so it renders directly in display mode.
-function DisplayMath({ latex }: { latex: string }) {
-  let html = latex
-  try {
-    html = katex.renderToString(latex, { displayMode: true, throwOnError: false, output: "html" })
-  } catch {
-    // fall through to the raw string
-  }
-  return <div className="overflow-x-auto py-1 text-(--accent)" dangerouslySetInnerHTML={{ __html: html }} />
-}
-
 export default function FormalDefinitionSection({ content }: Props) {
   return (
     <div className="px-6 py-8 flex flex-col gap-4">
@@ -40,7 +28,9 @@ export default function FormalDefinitionSection({ content }: Props) {
       </Prose>
       {content.formula && (
         <div className="bg-surface-1 border border-edge rounded-card px-4 py-3">
-          <DisplayMath latex={content.formula} />
+          {/* Same treatment as FormalismSection, plus the accent ink this
+              section always gave its formula. */}
+          <DisplayMath latex={content.formula} className="text-(--accent)" />
         </div>
       )}
       {content.notation_legend && content.notation_legend.length > 0 && (

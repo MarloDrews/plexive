@@ -1,19 +1,46 @@
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session, selectinload
+from sqlalchemy.orm import Session
 
 from ..auth import get_current_user, get_optional_user
 from ..database import get_db
 from ..graph_edges import on_post_written, resolved_read_next
 from ..graph_identity import post_identity_key
 from ..models import Interest, Post
-from ..post_counts import attach_counts, attach_counts_one
+from ..post_counts import attach_counts, attach_counts_one, primary_category_name
 from ..rate_limit import check_rate_limit
+from ..reading_time import compute_reading_minutes
 from ..sanitize import sanitize_svg_text
-from ..schemas import PostCreate, PostOut
+from ..schemas import PostCreate, PostListOut, PostOut
+from ._shared import POST_EAGER, POST_LIST_EAGER, blank_sections, can_view_post
 
 router = APIRouter()
+
+
+# feed_card / section keys whose string value is a full SVG document.
+_SVG_KEYS = {"svg", "visual_svg"}
+
+
+def _sanitize_json_svgs(value):
+    """Recursively re-sanitize every SVG-bearing field in a JSON value (SEC-025).
+
+    The sections array has its own dedicated pass below; this covers feed_card,
+    where the book cover SVG lives at cover.svg. Any dict key named svg or
+    visual_svg with a non-empty string value is re-run through the SVG
+    sanitizer, so a smuggled script in feed_card is stripped at create time
+    exactly like the sections array (raises ValueError on an invalid SVG)."""
+    if isinstance(value, dict):
+        out = {}
+        for key, val in value.items():
+            if key in _SVG_KEYS and isinstance(val, str) and val.strip():
+                out[key] = sanitize_svg_text(val)
+            else:
+                out[key] = _sanitize_json_svgs(val)
+        return out
+    if isinstance(value, list):
+        return [_sanitize_json_svgs(item) for item in value]
+    return value
 
 
 def _sanitize_sections_svgs(sections: list) -> list:
@@ -41,18 +68,26 @@ def _sanitize_sections_svgs(sections: list) -> list:
 
 # IMPORTANT: /posts/mine must be registered before /posts/{post_id} so FastAPI
 # does not treat the literal string "mine" as an integer post_id.
-@router.get("/posts/mine", response_model=List[PostOut])
+@router.get("/posts/mine", response_model=List[PostListOut])
 def get_my_posts(
+    before_id: Optional[int] = None,
+    limit: int = 50,
     current_user=Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    posts = (
+    # Keyset pagination on the id (before_id = id of the last post the client
+    # already has); id-desc matches the old created_at-desc insert order.
+    # PostListOut with deferred+blanked sections: the my-posts page renders
+    # only row-level fields, never section bodies.
+    limit = max(1, min(limit, 100))
+    query = (
         db.query(Post)
-        .options(selectinload(Post.interests), selectinload(Post.author))
+        .options(*POST_LIST_EAGER)
         .filter(Post.author_id == current_user.id)
-        .order_by(Post.created_at.desc())
-        .all()
     )
+    if before_id is not None:
+        query = query.filter(Post.id < before_id)
+    posts = blank_sections(query.order_by(Post.id.desc()).limit(limit).all())
     return attach_counts(posts, db)
 
 
@@ -62,8 +97,6 @@ def create_post(
     current_user=Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    check_rate_limit(current_user.id, "create_post", 20, 86400)
-
     # Validate every interest slug exists (one IN query instead of one
     # query per slug; the first unknown slug in request order is reported,
     # matching the old per-slug loop)
@@ -85,15 +118,31 @@ def create_post(
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=f"Invalid SVG in sections: {exc}")
 
+    # Re-sanitize the feed_card SVGs too (SEC-025): the book cover SVG at
+    # cover.svg was previously stored unsanitized.
+    try:
+        feed_card = _sanitize_json_svgs(data.feed_card)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=f"Invalid SVG in feed card: {exc}")
+
+    # Record the daily slot only AFTER validation passes (BUG-081/M130): a client
+    # bug looping on a 400 must not exhaust the 20/day budget and lock a user out
+    # of posting for a day.
+    check_rate_limit(current_user.id, "create_post", 20, 86400)
+
     post = Post(
         format=data.format,
         title=data.title,
-        identity_key=post_identity_key(data.format, data.feed_card),
-        feed_card=data.feed_card,
+        identity_key=post_identity_key(data.format, feed_card),
+        feed_card=feed_card,
         sections=sections_list,
+        reading_minutes=compute_reading_minutes(sections_list),
         author_id=current_user.id,
         is_user_content=True,
-        status="published" if current_user.is_verified else "pending",
+        # Publishing is gated by the can_publish capability (M116), no longer by
+        # the cosmetic verified badge. Users verified before the split were
+        # granted can_publish in the migration, so behavior is unchanged.
+        status="published" if current_user.can_publish else "pending",
     )
     post.interests = interest_objects
     db.add(post)
@@ -107,11 +156,17 @@ def create_post(
 
     post = (
         db.query(Post)
-        .options(selectinload(Post.interests), selectinload(Post.author))
+        .options(*POST_EAGER)
         .filter(Post.id == post_id)
         .first()
     )
-    return attach_counts_one(post, db)
+    # A just-created post has zero likes and comments by construction and its
+    # reading_minutes is already stored, so the two grouped count queries of
+    # attach_counts_one would be pure waste; attach the values directly.
+    post.like_count = 0
+    post.comment_count = 0
+    post.primary_category_name = primary_category_name(post)
+    return post
 
 
 @router.get("/posts/{post_id}", response_model=PostOut)
@@ -122,16 +177,18 @@ def get_post(
 ):
     post = (
         db.query(Post)
-        .options(selectinload(Post.interests), selectinload(Post.author))
+        .options(*POST_EAGER)
         .filter(Post.id == post_id)
         .first()
     )
     if post is None:
         raise HTTPException(status_code=404, detail="Post not found")
 
-    if post.status == "pending":
-        if current_user is None or post.author_id != current_user.id:
-            raise HTTPException(status_code=404, detail="Post not found")
+    # Shared visibility rule over the already eager-loaded row (author included
+    # in POST_EAGER, so can_view_post reads it without a re-query): a pending
+    # post is author-only, and a private account's post is author-or-follower.
+    if not can_view_post(post, current_user, db):
+        raise HTTPException(status_code=404, detail="Post not found")
 
     # Resolved "read next" set so the frontend resolves nothing itself.
     post.read_next = resolved_read_next(db, post)

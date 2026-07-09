@@ -19,6 +19,7 @@
 // This is app-authored markup, not content-provided SVG, so it renders as plain
 // JSX (the dangerouslySetInnerHTML split in CLAUDE.md is only for content SVG).
 
+import { useMemo } from "react"
 import { coverParams, type CoverParams } from "@/lib/bookCover"
 
 // 2:3 portrait, the cover shape. All geometry below is in this coordinate space
@@ -306,7 +307,10 @@ function CoverText({
   fontFamily: string
 }) {
   const connectorScale = 0.62
-  const lines = splitTitleLines(title, 16, 4)
+  // Pure functions of the title/author; memoized so wide feed re-renders do
+  // not re-run the wrapping per books card.
+  const lines = useMemo(() => splitTitleLines(title, 16, 4), [title])
+  const authorLines = useMemo(() => wrapText(author, 18, 2), [author])
   const widest = Math.max(1, ...lines.map((l) => lineWidth(l, connectorScale)))
   const titleSize = Math.max(14, Math.min(32, (W - 2 * PAD) / (widest * CAP_W)))
   const connectorSize = Math.round(titleSize * connectorScale)
@@ -314,7 +318,6 @@ function CoverText({
   // Vertically center the title block on ~33% of the height.
   const titleBase = H * 0.33 - ((lines.length - 1) * titleLead) / 2 + titleSize * 0.34
 
-  const authorLines = wrapText(author, 18, 2)
   const authorSize = fitSize(authorLines, 16, CAP_W * 0.92)
   const authorLead = authorSize * 1.2
   const authorBase = H * 0.7
@@ -382,7 +385,9 @@ export default function GeneratedBookCover({
   ink,
   titleFont,
 }: Props) {
-  const pal = buildPalette(background, ink)
+  // Deterministic in (background, ink); memoized so wide feed re-renders do
+  // not re-derive the palette per books card.
+  const pal = useMemo(() => buildPalette(background, ink), [background, ink])
   const titleFontFamily =
     (titleFont && (FONT_MAP[titleFont] ?? titleFont)) || "var(--font-serif)"
   // A borrowed background means the book evokes a real cover: render text only,
@@ -422,9 +427,11 @@ function StageArt({
   pal: Palette
   fontFamily: string
 }) {
-  const params = coverParams(title, author)
-  const titleLines = wrapText(title, 16, 4)
-  const authorLines = wrapText(author, 22, 2)
+  // Seed hash + ~24 PRNG draws + text wrapping are pure in (title, author);
+  // memoized so they run once per book, not on every re-render.
+  const params = useMemo(() => coverParams(title, author), [title, author])
+  const titleLines = useMemo(() => wrapText(title, 16, 4), [title])
+  const authorLines = useMemo(() => wrapText(author, 22, 2), [author])
   const titleSize = 26
   const titleLead = 30
   const titleBottom = 372

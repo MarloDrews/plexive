@@ -1,5 +1,6 @@
 import MathText from "../MathText"
 import { unescapeDollar } from "@/lib/prose"
+import { sizedImageUrl } from "@/lib/imageUrl"
 
 interface PortraitContent {
   image_url: string
@@ -14,10 +15,14 @@ interface Props {
 export default function PortraitSection({ content }: Props) {
   return (
     <div className="flex flex-col">
+      {/* Plain img on purpose: unknown intrinsic ratio, so a nominal
+          next/image size painted a large dark placeholder before load. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src={content.image_url}
+        src={sizedImageUrl(content.image_url, 860)}
         alt=""
         loading="lazy"
+        decoding="async"
         className="w-full object-cover max-h-[420px]"
         onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none" }}
       />

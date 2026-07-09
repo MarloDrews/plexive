@@ -1,7 +1,9 @@
 import SectionLabel from "../SectionLabel"
 import MathText from "../MathText"
 import type { AuthorsContextItem } from "../../types/post"
+import { safeImageSrc } from "@/lib/safeUrl"
 import { unescapeDollar } from "@/lib/prose"
+import { asArray } from "@/lib/asArray"
 
 interface Props {
   content: AuthorsContextItem[]
@@ -15,14 +17,14 @@ interface Props {
 export default function AuthorsContextSection({ content }: Props) {
   return (
     <div className="px-6 py-8 flex flex-col gap-4">
-      <SectionLabel>{content.length === 1 ? "Author" : "Authors"}</SectionLabel>
+      <SectionLabel>{asArray(content).length === 1 ? "Author" : "Authors"}</SectionLabel>
       <div className="flex flex-col gap-3">
-        {content.map((author, i) => (
+        {asArray(content).map((author, i) => (
           <div key={i} className="border border-edge rounded-card px-4 py-3 flex flex-col gap-2">
             <div className="flex gap-3">
               {author.image_url && (
                 <img
-                  src={author.image_url}
+                  src={safeImageSrc(author.image_url)}
                   alt=""
                   loading="lazy"
                   decoding="async"

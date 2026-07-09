@@ -1,0 +1,225 @@
+{
+  "tags": [
+    "neuroscience",
+    "food-science",
+    "human-body"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Nociception"
+      },
+      "featured": true
+    }
+  ],
+  "feed_card": {
+    "headline": "Eating chili sends the same nerve signal as a 43°C burn, with nothing hot in your mouth.",
+    "teasers": [
+      "Birds feel nothing when they eat chili",
+      "The burn doctors use to switch off pain",
+      "Why milk beats water on a chili burn"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "Eating chili sends the same nerve signal as a 43°C burn, with nothing hot in your mouth."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><g stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' opacity='0.55'><rect x='20' y='58' width='104' height='56' rx='14'/><rect x='20' y='186' width='104' height='56' rx='14'/><rect x='286' y='122' width='96' height='56' rx='14'/></g><rect x='150' y='122' width='110' height='56' rx='14' stroke='var(--accent)' stroke-width='2.5' stroke-linejoin='round'/><g stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' opacity='0.55'><path d='M124 94 L148 132'/><path d='M148 132 l-13 -3 m13 3 l-3 -13'/><path d='M124 206 L148 168'/><path d='M148 168 l-13 3 m13 -3 l-3 13'/><path d='M260 150 H284'/><path d='M284 150 l-11 -6 m11 6 l-11 6'/></g><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' text-anchor='middle'><text x='72' y='82' font-size='14' font-weight='600'>Heat</text><text x='72' y='100' font-size='13' opacity='0.8'>above 43°C</text><text x='72' y='219' font-size='14' font-weight='600'>Capsaicin</text><text x='334' y='146' font-size='14' font-weight='600'>Brain reads</text><text x='334' y='164' font-size='13' opacity='0.8'>a burn</text></g><g fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' text-anchor='middle'><text x='205' y='146' font-size='15' font-weight='700'>TRPV1</text><text x='205' y='165' font-size='13' font-weight='600'>opens</text></g></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "At about 43°C, heat stops being warmth and starts being injury. Below that line a surface just feels hot. Above it, the nerve endings in your skin switch to a new message: this is burning you. One channel, called TRPV1, sits at that threshold and opens when it is crossed. Capsaicin, the molecule that makes a pepper hot, pries the very same channel open at body temperature. Your mouth never rises above 37°C. It reports a 43°C burn regardless."
+    },
+    {
+      "type": "story",
+      "order": 7,
+      "content": {
+        "body": "For most of the last century, capsaicin was a tool without a target. Researchers dripped it on nerves to make them fire, but no one had found the receptor it worked on. In 1997 a team led by David Julius at the University of California, San Francisco went hunting for it. They built a library from the genes active in sensory neurons, put them into cells that normally ignore capsaicin, and screened for the one gene that made a cell respond. A single gene did it. When they then heated those same cells past 43°C, with no capsaicin present, the channel opened again. Molecule and heat were pulling one lever. Julius shared the 2021 Nobel Prize in Physiology or Medicine for tracing how the body feels temperature and pain.",
+        "key_figures": [
+          {
+            "name": "David Julius",
+            "role": "Cloned the capsaicin receptor",
+            "one_line": "His 1997 lab found the receptor for capsaicin and showed it is also the sensor for noxious heat.",
+            "lifespan": "born 1955",
+            "birth_year": 1955,
+            "featured": true,
+            "image_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Dr_David_Julius_by_christopher_michel_in_2022_04_(cropped2).jpg",
+            "image_attribution": "Christopher Michel, “Dr David Julius”, CC BY-SA 4.0 (Wikimedia Commons)"
+          }
+        ]
+      }
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "Capsaicin drags the trigger below body heat",
+          "body": "Capsaicin does not warm anything. It binds TRPV1 from the inside and lowers the temperature at which the channel opens, from about 43°C to below body heat. Once the trigger drops under 37°C, your own warmth is enough to keep it open. This is why the burn lingers long after the pepper is swallowed, and why cold water does little to stop it.",
+          "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><line x1='165' y1='56' x2='165' y2='214' stroke='currentColor' stroke-width='1.5' opacity='0.4' stroke-dasharray='5 5'/><text x='165' y='46' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.75' text-anchor='middle'>body 37°C</text><line x1='55' y1='214' x2='360' y2='214' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><text x='55' y='234' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='start'>30°C</text><text x='360' y='234' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='end'>50°C</text><text x='55' y='124' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.8' text-anchor='start'>Normal</text><line x1='255' y1='126' x2='255' y2='214' stroke='currentColor' stroke-width='1.5' opacity='0.35'/><circle cx='255' cy='120' r='6' stroke='currentColor' stroke-width='2' opacity='0.6'/><text x='255' y='106' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.85' text-anchor='middle'>opens 43°C</text><text x='55' y='189' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.8' text-anchor='start'>Capsaicin</text><line x1='140' y1='191' x2='140' y2='214' stroke='var(--accent)' stroke-width='2'/><circle cx='140' cy='185' r='7' fill='var(--accent)'/><text x='140' y='171' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>opens under 37°C</text></svg>"
+        },
+        {
+          "title": "Birds feel none of it, by design",
+          "body": "The chili's heat is aimed. A bird can swallow the hottest pepper and feel nothing. Its version of TRPV1 does not answer to capsaicin, though it still senses real heat. A few amino acids differ between the bird channel and the mammal one, and that small change is the whole difference. For the plant this is a filter. Mammals that would grind the seeds are driven off. Birds that swallow them whole and scatter the seeds far are welcome.",
+          "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='40' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.75' text-anchor='middle'>Same capsaicin</text><line x1='200' y1='58' x2='200' y2='250' stroke='currentColor' stroke-width='1.5' opacity='0.3' stroke-dasharray='6 6'/><circle cx='100' cy='150' r='30' stroke='var(--accent)' stroke-width='2.5'/><g stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'><path d='M100 114 v-14'/><path d='M100 186 v14'/><path d='M62 150 h-14'/><path d='M138 150 h14'/><path d='M127 123 l10 -10'/><path d='M127 177 l10 10'/><path d='M73 123 l-10 -10'/><path d='M73 177 l-10 10'/></g><text x='100' y='84' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='700' text-anchor='middle'>Mammal</text><text x='100' y='236' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>fires</text><circle cx='300' cy='150' r='30' stroke='currentColor' stroke-width='2' opacity='0.5'/><text x='300' y='84' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='700' text-anchor='middle'>Bird</text><text x='300' y='236' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>no response</text></svg>"
+        },
+        {
+          "title": "The burn is now prescribed as a painkiller",
+          "body": "Push TRPV1 hard enough and it quits. A skin patch loaded with 8% capsaicin, far stronger than any food, floods the pain fibers until they retract and fall silent for weeks. Doctors use it for the nerve pain of shingles and diabetes. The molecule that screams damage, given in excess, is what quiets the nerve down. Touch and pressure are untouched. They run on different fibers."
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "You never feel the world directly. Sensory nerves report the state of a few channels, and the brain treats whatever opens one as the thing that channel exists to detect. Menthol runs the trick in reverse. It opens the cold channel, TRPM8, so a mouth at body temperature reads as cool. A chili is not hot. It only holds a gate open, and menthol only holds a cold one open. The gauge is all you ever get."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "Why does eating a chili feel like heat when nothing in your mouth is hot?",
+          "options": [
+            "Capsaicin warms your saliva by a few degrees",
+            "Capsaicin opens TRPV1, the same channel real heat opens, so the nerve sends the same signal",
+            "Capsaicin scratches the tongue, and the brain reads the damage as heat",
+            "The brain mixes up the taste of chili with the memory of hot food"
+          ],
+          "answer_index": 1,
+          "explanation": "TRPV1 sends one message whether a molecule or genuine heat opens it. The brain has no separate line for each cause, so a channel opened by capsaicin reads exactly like a burn."
+        },
+        {
+          "question": "TRPV1 normally opens near 43°C. What does capsaicin do to that opening temperature?",
+          "options": [
+            "It raises it, so even more heat is needed",
+            "It leaves it alone but adds a second, separate signal",
+            "It blocks the channel so it cannot open at all",
+            "It lowers it below body temperature, so 37°C body heat is enough"
+          ],
+          "answer_index": 3,
+          "explanation": "Capsaicin binds the channel and drags its opening temperature under 37°C. Your own body heat then trips it, with no external warmth involved."
+        },
+        {
+          "question": "Why can birds eat the hottest peppers without discomfort?",
+          "options": [
+            "Their TRPV1 does not respond to capsaicin, though it still detects real heat",
+            "Their mouth lining is too thick for capsaicin to reach any nerve",
+            "They swallow so fast the capsaicin never touches a receptor",
+            "They make an enzyme that breaks capsaicin down on contact"
+          ],
+          "answer_index": 0,
+          "explanation": "A few amino-acid differences make the bird channel blind to capsaicin while it still senses heat. That lets chili plants repel seed-crushing mammals and rely on birds to spread the seeds."
+        },
+        {
+          "question": "Why does milk relieve chili burn better than water?",
+          "options": [
+            "Milk is colder than water and cools the receptors",
+            "Milk coats the tongue and seals air away from the burn",
+            "Casein and fat in milk pull capsaicin off the receptors and carry it away",
+            "Milk neutralizes capsaicin in an acid-base reaction"
+          ],
+          "answer_index": 2,
+          "explanation": "Since the burn is not heat, cooling does little. Casein acts like a detergent and fat dissolves capsaicin, so both work by removing it from TRPV1."
+        },
+        {
+          "question": "A high-dose capsaicin patch treats chronic nerve pain. How can the burn molecule relieve pain?",
+          "options": [
+            "It severs the nerve permanently so it can never signal again",
+            "It floods the pain fibers until they retract and go quiet for weeks",
+            "It numbs all sensation in the skin, including touch and pressure",
+            "It cools the nerve endings for a lasting anesthetic effect"
+          ],
+          "answer_index": 1,
+          "explanation": "Overloading TRPV1 makes the pain fibers withdraw and stop firing for weeks. Touch and pressure stay intact because they run on different fibers."
+        },
+        {
+          "question": "What does the chili example reveal about how sensation works in general?",
+          "options": [
+            "Sensory nerves measure the outside world directly and accurately",
+            "Pain is the only sense a molecule can fool",
+            "Temperature is the only thing TRPV1 is able to detect",
+            "The brain reports the state of receptor channels, not the true cause that opened them"
+          ],
+          "answer_index": 3,
+          "explanation": "The brain reads whatever opens a channel as that channel's job. Menthol fools the cold channel the same way, so what you feel is the gauge, not the world itself."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "Spicy food burns and damages the lining of your mouth.",
+          "reality": "Capsaicin sets off the injury signal, but nothing is injured. At normal eating strengths it leaves the tissue unharmed once the sensation fades."
+        },
+        {
+          "myth": "Cold milk works by cooling the burn.",
+          "reality": "Temperature barely matters, because the burn is not heat. Casein in milk acts like a detergent and lifts capsaicin off the receptors, and its fat dissolves the rest."
+        },
+        {
+          "myth": "Building a tolerance to spice means your nerves are wearing out.",
+          "reality": "Regular exposure quietens the receptors rather than harming the nerve, and the sensitivity returns if you stop."
+        }
+      ]
+    },
+    {
+      "type": "open_questions",
+      "order": 12,
+      "content": {
+        "body": "The pattern is settled. Two things about TRPV1 are not. Drug companies built blockers to shut the channel and switch off chronic pain. The blockers eased pain and then drove patients into fever, some above 40°C, because the same channel also helps set the body's core temperature. That side effect has stalled the drugs for years.",
+        "items": [
+          "Can a TRPV1 blocker relieve pain without triggering fever?",
+          "How does a rise in temperature physically pull the channel open?"
+        ]
+      }
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Caterina MJ, Schumacher MA, Tominaga M, Rosen TA, Levine JD, Julius D. The capsaicin receptor: a heat-activated ion channel in the pain pathway. Nature 1997;389:816-824",
+          "url": "https://www.nature.com/articles/39807",
+          "type": "paper"
+        },
+        {
+          "label": "The Nobel Prize in Physiology or Medicine 2021 (David Julius and Ardem Patapoutian), press release",
+          "url": "https://www.nobelprize.org/prizes/medicine/2021/press-release/",
+          "type": "article"
+        },
+        {
+          "label": "Jordt SE, Julius D. Molecular basis for species-specific sensitivity to hot chili peppers. Cell 2002;108:421-430",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/11853675/",
+          "type": "paper"
+        },
+        {
+          "label": "Anand P, Bley K. Topical capsaicin for pain management: the high-concentration capsaicin 8% patch. Br J Anaesth 2011;107:490-502",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3169333/",
+          "type": "paper"
+        },
+        {
+          "label": "TRPV1 drugs alter core body temperature via central projections of primary afferent sensory neurons (on TRPV1 blockers and hyperthermia). eLife 2022",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9377796/",
+          "type": "paper"
+        },
+        {
+          "label": "TRPV1",
+          "url": "https://en.wikipedia.org/wiki/TRPV1",
+          "type": "wikipedia"
+        }
+      ]
+    }
+  ]
+}

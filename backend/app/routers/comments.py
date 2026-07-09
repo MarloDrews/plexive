@@ -2,25 +2,16 @@ from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from pydantic import BaseModel, field_validator, model_validator
+from sqlalchemy import func
 from sqlalchemy.orm import Session, selectinload
 
 from ..auth import get_current_user, get_optional_user
 from ..database import get_db
-from ..models import Comment, Post, User
+from ..models import Comment, User
 from ..rate_limit import check_rate_limit
+from ._shared import get_visible_post
 
 router = APIRouter(tags=["comments"])
-
-
-def _get_visible_post(post_id: int, db: Session, current_user: User | None) -> Post:
-    """Pending posts are only visible to their author (same rule as GET /posts/{id});
-    their comments must follow the same rule."""
-    post = db.query(Post).filter(Post.id == post_id).first()
-    if not post:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found.")
-    if post.status != "published" and (current_user is None or post.author_id != current_user.id):
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found.")
-    return post
 
 
 class CommentIn(BaseModel):
@@ -68,20 +59,33 @@ class CommentOut(BaseModel):
 def list_comments(
     post_id: int,
     count: bool = Query(False),
+    before_id: int | None = None,
+    limit: int = 50,
     current_user: User | None = Depends(get_optional_user),
     db: Session = Depends(get_db),
 ):
-    _get_visible_post(post_id, db, current_user)
+    get_visible_post(post_id, db, current_user)
     if count:
-        n = db.query(Comment).filter(Comment.post_id == post_id).count()
+        # Direct aggregate: .count() would wrap the row query in a subquery
+        # (SELECT count(*) FROM (SELECT comments.* ...)).
+        n = (
+            db.query(func.count(Comment.id))
+            .filter(Comment.post_id == post_id)
+            .scalar()
+        )
         return {"count": n}
-    comments = (
+    # Keyset pagination (chat's before_id pattern): before_id = id of the
+    # oldest comment the client already has; id-desc matches the old
+    # created_at-desc insert order while making the cursor exact.
+    limit = max(1, min(limit, 100))
+    query = (
         db.query(Comment)
         .filter(Comment.post_id == post_id)
         .options(selectinload(Comment.user))
-        .order_by(Comment.created_at.desc())
-        .all()
     )
+    if before_id is not None:
+        query = query.filter(Comment.id < before_id)
+    comments = query.order_by(Comment.id.desc()).limit(limit).all()
     return [CommentOut.model_validate(c) for c in comments]
 
 
@@ -93,20 +97,25 @@ def create_comment(
     db: Session = Depends(get_db),
 ):
     check_rate_limit(current_user.id, "create_comment", 30, 300)
-    _get_visible_post(post_id, db, current_user)
+    get_visible_post(post_id, db, current_user)
 
     comment = Comment(post_id=post_id, user_id=current_user.id, body=body.body)
     db.add(comment)
-    db.commit()
-
-    # Re-query with user relationship loaded for serialization
-    comment = (
-        db.query(Comment)
-        .options(selectinload(Comment.user))
-        .filter(Comment.id == comment.id)
-        .first()
+    # Flush assigns the id and fires the Python-side created_at default; the
+    # response is built from data already in hand (comment + current_user)
+    # BEFORE commit expires the instances, so serialization costs no re-query.
+    db.flush()
+    payload = CommentOut(
+        id=comment.id,
+        post_id=comment.post_id,
+        username=current_user.username,
+        is_verified=current_user.is_verified,
+        avatar_url=current_user.avatar_url,
+        body=comment.body,
+        created_at=comment.created_at,
     )
-    return comment
+    db.commit()
+    return payload
 
 
 @router.delete("/comments/{comment_id}", status_code=status.HTTP_204_NO_CONTENT)

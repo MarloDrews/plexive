@@ -1,0 +1,223 @@
+{
+  "tags": [
+    "statistics",
+    "mathematics",
+    "critical-thinking",
+    "cognitive-biases"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Confounding variable"
+      },
+      "featured": true
+    },
+    {
+      "format": "books",
+      "ref": {
+        "title": "The Book of Why",
+        "author": "Judea Pearl"
+      },
+      "featured": true
+    },
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Correlation and causation"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "Berkeley admitted 44% of men and 35% of women in 1973, yet most departments admitted women at an equal or higher rate.",
+    "teasers": [
+      "Two true numbers that contradict each other",
+      "What women's applications were quietly doing",
+      "The same trap picks a patient's surgery"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "Berkeley admitted 44% of men and 35% of women in 1973, yet most departments admitted women at an equal or higher rate."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='24' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='700' text-anchor='middle'>Admit rate, women vs men</text><circle cx='150' cy='44' r='5' fill='var(--accent)'/><text x='160' y='48' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' text-anchor='start'>Women</text><circle cx='232' cy='44' r='5' fill='currentColor'/><text x='242' y='48' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' text-anchor='start'>Men</text><g stroke='currentColor' stroke-width='1.5' opacity='0.18'><line x1='130' y1='64' x2='130' y2='244'/><line x1='251' y1='64' x2='251' y2='244'/><line x1='372' y1='64' x2='372' y2='244'/></g><g fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' opacity='0.6' text-anchor='middle'><text x='130' y='262'>0%</text><text x='251' y='262'>50%</text><text x='366' y='262'>100%</text></g><line x1='104' y1='92' x2='372' y2='92' stroke='currentColor' stroke-width='1.5' opacity='0.25'/><g stroke='currentColor' stroke-width='2' opacity='0.5' stroke-linecap='round'><line x1='237' y1='78' x2='215' y2='78'/><line x1='280' y1='112' x2='328' y2='112'/><line x1='283' y1='136' x2='295' y2='136'/><line x1='220' y1='160' x2='212' y2='160'/><line x1='210' y1='184' x2='215' y2='184'/><line x1='198' y1='208' x2='188' y2='208'/><line x1='145' y1='232' x2='147' y2='232'/></g><g fill='currentColor'><circle cx='237' cy='78' r='4.5'/><circle cx='280' cy='112' r='4.5'/><circle cx='283' cy='136' r='4.5'/><circle cx='220' cy='160' r='4.5'/><circle cx='210' cy='184' r='4.5'/><circle cx='198' cy='208' r='4.5'/><circle cx='145' cy='232' r='4.5'/></g><g fill='var(--accent)'><circle cx='215' cy='78' r='4.5'/><circle cx='328' cy='112' r='4.5'/><circle cx='295' cy='136' r='4.5'/><circle cx='212' cy='160' r='4.5'/><circle cx='215' cy='184' r='4.5'/><circle cx='188' cy='208' r='4.5'/><circle cx='147' cy='232' r='4.5'/></g><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='end'><text x='98' y='82'>All</text><text x='98' y='116'>A</text><text x='98' y='140'>B</text><text x='98' y='164'>C</text><text x='98' y='188'>D</text><text x='98' y='212'>E</text><text x='98' y='236'>F</text></g></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "Two claims sat in the same file, and both were true. Across the whole graduate division, 44% of the men got in and 35% of the women did. Split the applicants by department and the gap turns over: in 4 of the 6 largest, women were admitted at an equal or higher rate. Neither number is a trick. The association points one way in the pooled data and the other way once you know which department each person applied to."
+    },
+    {
+      "type": "story",
+      "order": 7,
+      "content": {
+        "body": "In the autumn of 1973, Berkeley's graduate division looked at its own admission numbers and grew nervous. Men were getting in at 44%, women at 35%, and an administrator feared the numbers looked like bias. So the statistician Peter Bickel was asked to find the departments to blame. He found almost none. Broken out one department at a time, the rates came out close to even, and where they tilted they mostly tilted toward women. The gap was real, but it came from where the women's applications went. The pattern was not new: Udny Yule had spotted it in 1903 and Edward Simpson set it out cleanly in 1951, decades before Berkeley handed it its most famous example.",
+        "key_figures": [
+          {
+            "name": "Peter J. Bickel",
+            "role": "Analyzed the Berkeley data",
+            "one_line": "Asked in 1973 to find the biased departments, he showed the aggregate gap came from where women applied, not from the decisions.",
+            "lifespan": "born 1940",
+            "birth_year": 1940,
+            "featured": true
+          },
+          {
+            "name": "Edward H. Simpson",
+            "role": "Set out the reversal in 1951",
+            "one_line": "His 1951 paper on contingency tables gave the reversal the clean treatment that later carried his name.",
+            "lifespan": "1922-2019",
+            "birth_year": 1922,
+            "featured": false
+          }
+        ],
+        "visual_svg": "<svg viewBox='0 106 400 78' xmlns='http://www.w3.org/2000/svg' fill='none'><line x1='75' y1='140' x2='325' y2='140' stroke='currentColor' stroke-width='2' opacity='0.5' stroke-linecap='round'/><circle cx='75' cy='140' r='6' fill='currentColor'/><circle cx='200' cy='140' r='6' fill='currentColor'/><circle cx='325' cy='140' r='6' fill='var(--accent)'/><g font-family='var(--font-mono), ui-monospace, monospace' font-size='14' font-weight='700' text-anchor='middle'><text x='75' y='124' fill='currentColor'>1903</text><text x='200' y='124' fill='currentColor'>1951</text><text x='325' y='124' fill='var(--accent)'>1973</text></g><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' text-anchor='middle'><text x='75' y='166'>Yule</text><text x='200' y='166'>Simpson</text><text x='325' y='166'>Berkeley</text></g></svg>"
+      }
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "Women applied where the doors were narrowest",
+          "body": "The overall gap was about departments more than about people. The two departments that waved almost everyone in, admitting over 60%, drew crowds of men and very few women. The hardest departments pulled far more women. The admission decisions within each were close to fair; the sorting had happened earlier, in who applied where. Department A let in 64%, and about 12% of its applicants were women. Department E let in 25%, and women were 67% of everyone who applied.",
+          "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><line x1='200' y1='40' x2='200' y2='262' stroke='currentColor' stroke-width='1.5' opacity='0.3' stroke-dasharray='6 6'/><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' text-anchor='middle'><text x='100' y='52' font-size='16' font-weight='700'>Dept A</text><text x='300' y='52' font-size='16' font-weight='700'>Dept E</text><text x='100' y='74' font-size='13' opacity='0.7'>admitted 64%</text><text x='300' y='74' font-size='13' opacity='0.7'>admitted 25%</text></g><line x1='40' y1='250' x2='360' y2='250' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><rect x='70' y='232' width='60' height='18' rx='6' stroke='currentColor' stroke-width='2'/><rect x='270' y='150' width='60' height='100' rx='6' stroke='var(--accent)' stroke-width='2.5' fill='var(--accent)' fill-opacity='0.15'/><text x='100' y='224' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='15' font-weight='700' text-anchor='middle'>12%</text><text x='300' y='142' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='16' font-weight='700' text-anchor='middle'>67%</text><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.75' text-anchor='middle'><text x='100' y='272'>women applicants</text><text x='300' y='272'>women applicants</text></g></svg>"
+        },
+        {
+          "title": "The same trap steers a real medical choice",
+          "body": "Doctors comparing two ways to remove kidney stones found the newer keyhole method winning: 83% success against 78% for open surgery. Then they split the cases by stone size. For small stones, open surgery did better, 93% to 87%. For large stones, open surgery again did better, 73% to 69%. Open surgery was the stronger option for both kinds of stone, yet it came out worse overall. The keyhole method had been handed the easy small stones far more often, and that alone lifted its average.",
+          "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='18' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='700' text-anchor='middle'>Stone removal, success rate</text><rect x='100' y='30' width='16' height='12' rx='3' stroke='currentColor' stroke-width='2' fill='currentColor' fill-opacity='0.18'/><text x='122' y='40' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' text-anchor='start'>Open surgery</text><rect x='235' y='30' width='16' height='12' rx='3' stroke='currentColor' stroke-width='2'/><text x='257' y='40' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' text-anchor='start'>Keyhole</text><line x1='40' y1='248' x2='360' y2='248' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><g stroke='currentColor' stroke-width='2'><rect x='62' y='81' width='30' height='167' rx='6' fill='currentColor' fill-opacity='0.18'/><rect x='98' y='92' width='30' height='156' rx='6'/><rect x='167' y='117' width='30' height='131' rx='6' fill='currentColor' fill-opacity='0.18'/><rect x='203' y='124' width='30' height='124' rx='6'/><rect x='272' y='108' width='30' height='140' rx='6' fill='currentColor' fill-opacity='0.18'/></g><rect x='308' y='99' width='30' height='149' rx='6' stroke='var(--accent)' stroke-width='2.5' fill='var(--accent)' fill-opacity='0.15'/><g font-family='var(--font-mono), ui-monospace, monospace' font-size='13' font-weight='700' text-anchor='middle' fill='currentColor'><text x='77' y='75'>93%</text><text x='113' y='86'>87%</text><text x='182' y='111'>73%</text><text x='218' y='118'>69%</text><text x='287' y='102'>78%</text></g><text x='323' y='93' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' font-weight='700' text-anchor='middle'>83%</text><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' text-anchor='middle'><text x='95' y='266'>Small</text><text x='200' y='266'>Large</text><text x='305' y='266'>Overall</text></g></svg>"
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "So a single rate cannot tell you which way to act. The same 44% and 35% that looked like a closed case become the opposite once you know what they average over. Which grouping is the honest one is not a matter of taste. It depends on what is actually causing what. At Berkeley, the applicants chose their departments, so splitting by department is the fair test. Reverse that causal order and the pooled number would be the honest one instead. Neither view is automatically the real one."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "How can both statements, men favored overall and women favored within most departments, be true at once?",
+          "options": [
+            "One of the two figures was miscalculated",
+            "The applicants were sorted unevenly across departments with very different admission rates",
+            "The departments changed their standards between the two counts",
+            "Men and women were judged by separate committees"
+          ],
+          "answer_index": 1,
+          "explanation": "Both figures are correct arithmetic. The reversal comes from a hidden split: men and women applied in very different proportions to departments whose admission rates ranged from over 60% down to single digits."
+        },
+        {
+          "question": "What did women's application choices have to do with the overall gap?",
+          "options": [
+            "They applied in equal numbers to every department",
+            "They applied mostly to the departments with the highest admission rates",
+            "They applied more to competitive departments that admitted only a small share of anyone",
+            "They tended to apply later in the cycle than men"
+          ],
+          "answer_index": 2,
+          "explanation": "Women were concentrated in the harder departments, where nearly everyone was turned away. That dragged their overall admission rate below the men's even though the departments themselves were not biased against them."
+        },
+        {
+          "question": "In the kidney-stone data, open surgery beat the keyhole method for small stones and for large stones, yet lost overall. Why?",
+          "options": [
+            "The overall figures counted different patients than the subgroups",
+            "The keyhole method was used mostly on the easier small stones, lifting its overall score",
+            "Open surgery had complications that the success rate ignored",
+            "The two methods were measured in different decades, so they cannot be compared"
+          ],
+          "answer_index": 1,
+          "explanation": "Stone size is the hidden split. Because the keyhole method was steered toward the easy small stones, its overall average rose above open surgery even though it was the weaker choice for each size on its own."
+        },
+        {
+          "question": "When a breakdown and the aggregate disagree, which one should you believe?",
+          "options": [
+            "Always the aggregate, since it uses all the data",
+            "Always the breakdown, since more detail is better",
+            "Whichever matches the real causal story of how the groups formed",
+            "The one based on the larger sample"
+          ],
+          "answer_index": 2,
+          "explanation": "Neither view is automatically right. You have to know what caused the grouping: at Berkeley the applicants chose the departments, so the per-department view is the fair one, but flip that causal order and the aggregate becomes the honest number."
+        },
+        {
+          "question": "A hospital reports a higher overall survival rate than a rival but a lower rate at every level of illness severity. What is the most likely explanation?",
+          "options": [
+            "It treats a larger share of low-severity patients, raising its overall number",
+            "Its doctors are genuinely better at every severity level",
+            "One of the two hospitals reported false numbers",
+            "The rival simply sees more patients in total"
+          ],
+          "answer_index": 0,
+          "explanation": "This is the same reversal. A gentler mix of cases can lift an overall rate even when performance is worse in every subgroup, so the aggregate flatters the hospital that takes the easier patients."
+        },
+        {
+          "question": "What did the Berkeley reanalysis actually conclude about bias?",
+          "options": [
+            "Admissions were strongly biased against women inside the departments",
+            "The departments showed little bias against women, and pooling even suggested a slight edge for them",
+            "The reversal proved the original worry had been a fabrication",
+            "No conclusion could be drawn from the data"
+          ],
+          "answer_index": 1,
+          "explanation": "Few departments departed from what you would expect by chance, and about as many favored women as men. Corrected for where people applied, the pooled data showed a small bias in women's favor, not against them."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "If two breakdowns of the same data disagree, one of them has to be an error.",
+          "reality": "Both can be exactly right. The average and the split are each honest arithmetic, and the reversal between them is a real feature of the data."
+        },
+        {
+          "myth": "The Berkeley numbers prove the university favored women.",
+          "reality": "Bickel's team found no bias against women and only a slight edge in their favor once the data were pooled. The plainer reading is that women applied more often to the departments that were hardest to enter."
+        },
+        {
+          "myth": "The safe move is always to trust the broken-down numbers over the average.",
+          "reality": "Not always. Whether the split or the average tells the truth depends on the causal story behind the grouping, and now and then the average is the one to trust."
+        }
+      ]
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Bickel PJ, Hammel EA, O'Connell JW. Sex Bias in Graduate Admissions: Data from Berkeley. Science 1975;187(4175):398-404",
+          "url": "https://www.science.org/doi/10.1126/science.187.4175.398",
+          "type": "paper"
+        },
+        {
+          "label": "Julious SA, Mullee MA. Confounding and Simpson's paradox. BMJ 1994;309:1480-1481 (kidney-stone treatment example)",
+          "url": "https://doi.org/10.1136/bmj.309.6967.1480",
+          "type": "article"
+        },
+        {
+          "label": "Simpson's paradox",
+          "url": "https://en.wikipedia.org/wiki/Simpson%27s_paradox",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Reinhart A. Simpson's Paradox and Statistical Urban Legends (a careful reading of the Berkeley case)",
+          "url": "https://www.refsmmat.com/posts/2016-05-08-simpsons-paradox-berkeley.html",
+          "type": "article"
+        }
+      ]
+    }
+  ]
+}

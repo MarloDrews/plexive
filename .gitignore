@@ -13,9 +13,6 @@ node_modules/
 .next/
 .env.local
 
-# User uploads (never commit user files)
-user_uploads/
-
 # Performance audit artifacts
 .perf/
 
@@ -30,3 +27,5 @@ user_uploads/
 .DS_Store
 .vscode/
 !.vscode/extensions.json
+
+docs/content-structure/generated/*/_batches/

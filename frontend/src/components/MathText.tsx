@@ -1,5 +1,7 @@
-import katex from "katex"
+import { memo, useMemo } from "react"
 import { splitItalics } from "@/lib/italics"
+import { unescapeDollar } from "@/lib/prose"
+import { useKatex } from "@/lib/katexLoader"
 
 type Segment = { type: "text"; content: string } | { type: "math"; content: string }
 
@@ -14,11 +16,6 @@ function nextUnescapedDollar(text: string, from: number): number {
     if (text[j] === "$") return j
   }
   return -1
-}
-
-// Turns an escaped "\$" back into a literal "$" for display in text segments.
-function unescapeDollar(text: string): string {
-  return text.replace(/\\\$/g, "$")
 }
 
 function parseSegments(text: string): Segment[] {
@@ -47,13 +44,22 @@ interface Props {
   className?: string
 }
 
-// Renders prose text that may contain inline $...$ LaTeX math.
-export default function MathText({ text, className }: Props) {
-  const segments = parseSegments(text)
+// Renders prose text that may contain inline $...$ LaTeX math. KaTeX loads
+// lazily and only when a math segment actually exists, so plain prose never
+// pays for the module; math shows its raw LaTeX as plain text until then.
+// Parsing and katex.renderToString are memoized on the text (stable per post),
+// and the component is memo-exported, so page-level re-renders (comment
+// drafts, read-aloud status) never repeat LaTeX layout work.
+function MathText({ text, className }: Props) {
+  // Coerce a missing string once here: every free-text prose field in all seven
+  // formats routes through MathText, so a section whose prose is absent must
+  // degrade to empty rather than throw inside parseSegments (text.length).
+  const segments = useMemo(() => parseSegments(text ?? ""), [text])
+  const katex = useKatex(segments.some((seg) => seg.type === "math"))
 
-  return (
-    <span className={className}>
-      {segments.map((seg, i) => {
+  const children = useMemo(
+    () =>
+      segments.map((seg, i) => {
         if (seg.type === "text")
           return (
             <span key={i}>
@@ -62,15 +68,24 @@ export default function MathText({ text, className }: Props) {
               )}
             </span>
           )
-        const html = (() => {
-          try {
-            return katex.renderToString(seg.content, { throwOnError: false, output: "html" })
-          } catch {
-            return seg.content
-          }
-        })()
-        return <span key={i} dangerouslySetInnerHTML={{ __html: html }} />
-      })}
-    </span>
+        if (!katex) return <span key={i}>{seg.content}</span>
+        // On a KaTeX failure, render the raw string as a plain text node, never
+        // through __html (M124/SEC-010): the raw math is user-controlled, so
+        // injecting it as HTML would be stored XSS.
+        let html: string | null = null
+        try {
+          html = katex.renderToString(seg.content, { throwOnError: false, output: "html" })
+        } catch {
+          html = null
+        }
+        return html !== null
+          ? <span key={i} dangerouslySetInnerHTML={{ __html: html }} />
+          : <span key={i}>{seg.content}</span>
+      }),
+    [segments, katex]
   )
+
+  return <span className={className}>{children}</span>
 }
+
+export default memo(MathText)

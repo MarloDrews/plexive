@@ -23,16 +23,6 @@ export interface AtAGlancePeopleContent {
   post_difficulty: 1 | 2 | 3
 }
 
-export interface PeopleFeedCard {
-  portrait: { image_url: string; image_attribution: string }
-  name: string
-  role: string
-  lifespan: string
-  essence: string
-  teasers: [string, string, string]
-  post_difficulty: 1 | 2 | 3
-}
-
 export interface CoreIdeaItem {
   title: string
   body: string
@@ -89,14 +79,6 @@ export interface SeeItContent {
   image_attribution?: string
 }
 
-// Feed-card visual anchor: a small square shown top-right beside the headline.
-// Exactly one of image_url or svg is set (image preferred, svg emblem fallback).
-export interface CardVisual {
-  image_url?: string
-  image_attribution?: string
-  svg?: string
-}
-
 export interface KeyNumberItem {
   label: string
   value: string
@@ -126,21 +108,6 @@ export interface KeyFigure {
   featured?: boolean
   image_url?: string
   image_attribution?: string
-}
-
-// A connection's target identity. The shape depends on the connection's `format`:
-// people -> { name, birth_year? }, books -> { title, author }, any other -> { title }.
-export type ConnectionRef =
-  | { name: string; birth_year?: number }   // target: people
-  | { title: string; author: string }       // target: books
-  | { title: string }                        // any other format
-
-// Graph edge to another post (top-level on Post). The target may not exist yet
-// (latent edge), so it is identified by natural identity in `ref`, not an id.
-export interface ConnectionItem {
-  format: string
-  ref: ConnectionRef
-  featured: boolean
 }
 
 export interface StoryContent {
@@ -444,25 +411,6 @@ export interface Section {
   content: unknown
 }
 
-export interface BooksFeedCard {
-  cover_url: string | null
-  title: string
-  author: string
-  essence: string
-  teasers: [string, string, string]
-  post_difficulty: 1 | 2 | 3
-  year: number
-  genre: string
-}
-
-export interface FactsFeedCard {
-  field: string
-  headline: string
-  card_visual?: CardVisual
-  teasers: [string, string, string]
-  post_difficulty: 1 | 2 | 3
-}
-
 // feed_card is format-specific JSON, so fields arrive as unknown.
 // This accessor narrows a field to string for display without unsafe casts.
 export function fcStr(fc: Record<string, unknown> | undefined, key: string): string {
@@ -483,9 +431,9 @@ export interface Post {
   feed_card: Record<string, unknown>
   sections: Section[]
   tags?: string[]
-  connections?: ConnectionItem[]
   // Server-resolved featured edges for the detail page (only GET /api/posts/{id}
   // populates it). The client renders this directly; it never re-derives it.
+  // The raw authoring-layer connections array is no longer serialized.
   read_next?: ReadNextItem[]
   author_id: number | null
   author_username: string | null

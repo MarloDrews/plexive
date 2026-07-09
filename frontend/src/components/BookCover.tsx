@@ -10,8 +10,10 @@
 //   3. otherwise the live GeneratedBookCover fallback (for books with no baked svg).
 // See IMAGE_STANDARD.md and LAYOUT_STANDARD.md.
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { resolveBookCover, generatedCoverStyle, bakedCoverSvg } from "@/lib/bookCover"
+import { toBase64Utf8 } from "@/lib/svg"
+import { sizedImageUrl } from "@/lib/imageUrl"
 import { fcStr } from "@/types/post"
 import GeneratedBookCover from "./GeneratedBookCover"
 
@@ -23,12 +25,9 @@ interface Props {
   // readable size (the detail header). Off for small thumbnails.
   showCredit?: boolean
   // The post's content origin, for the SVG security split on the baked cover.
-  isUserContent?: boolean
-}
-
-// btoa alone throws on non-ASCII; round-trip through UTF-8 bytes (same as SvgBlock).
-function toBase64Utf8(svg: string): string {
-  return btoa(unescape(encodeURIComponent(svg)))
+  // Required (SEC-026): an omitted flag must never silently default a user
+  // submission to the dangerouslySetInnerHTML path.
+  isUserContent: boolean
 }
 
 // Render the baked cover SVG with the SVG security split, and without the legacy
@@ -69,7 +68,7 @@ export default function BookCover({
   feedCard,
   className,
   showCredit = false,
-  isUserContent = false,
+  isUserContent,
 }: Props) {
   // If a real cover image fails to load, fall back to the generated cover so the
   // book is never blank. The credit is dropped in that case too, so a credit line
@@ -77,6 +76,14 @@ export default function BookCover({
   const [imgFailed, setImgFailed] = useState(false)
 
   const decision = resolveBookCover(feedCard)
+  // Reset the failure flag when the resolved cover changes, so a component
+  // instance reused for a different book (e.g. a recycled feed card) does not
+  // stay stuck on the generated fallback from the previous cover's load error.
+  const resolvedUrl = decision.kind === "real" ? decision.url : null
+  useEffect(() => {
+    setImgFailed(false)
+  }, [resolvedUrl])
+
   const title = fcStr(feedCard, "title")
   const author = fcStr(feedCard, "author")
   const baked = bakedCoverSvg(feedCard)
@@ -88,7 +95,7 @@ export default function BookCover({
     cover = (
       <div className={className}>
         <img
-          src={decision.url}
+          src={sizedImageUrl(decision.url, 400)}
           alt=""
           loading="lazy"
           decoding="async"

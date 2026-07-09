@@ -39,7 +39,12 @@ TIME_BONUS_MAX = 0.5
 
 
 def question_rating(post_difficulty) -> float:
-    return DIFFICULTY_RATING.get(post_difficulty, DIFFICULTY_RATING[2])
+    # post_difficulty comes from arbitrary feed_card JSON; an unhashable value
+    # (list/dict) would raise inside dict.get, so fall back to the medium rating.
+    try:
+        return DIFFICULTY_RATING.get(post_difficulty, DIFFICULTY_RATING[2])
+    except TypeError:
+        return DIFFICULTY_RATING[2]
 
 
 def expected_score(user_rating: float, q_rating: float) -> float:
@@ -82,14 +87,14 @@ def apply_answer_timed(db: Session, user: User, difficulty, correct: bool, answe
     return _update(user, difficulty, correct, time_bonus=bonus)
 
 
-def elo_summary(db: Session, user_id: int) -> tuple[int | None, dict[str, dict]]:
-    """The user's single knowledge rating, plus an empty per-format dict.
+def elo_summary(user: User) -> int | None:
+    """The user's single knowledge rating, rounded, or None before the first
+    scored answer.
 
-    The per-format breakdown was removed when the score was unified onto the user
-    row; the empty dict keeps the response shape stable for existing API callers
-    (they all guard `formats` and read `global_rating`).
+    Takes the already-loaded User row: every caller holds one, so the old
+    by-id variant paid a redundant SELECT per scored answer / elo view. The
+    per-format breakdown died with the move to the unified score on the user
+    row; responses no longer carry a formats dict.
     """
-    user = db.query(User).filter(User.id == user_id).first()
-    rating = user.knowledge_rating if user else None
-    global_rating = round(rating) if rating is not None else None
-    return global_rating, {}
+    rating = user.knowledge_rating
+    return round(rating) if rating is not None else None
