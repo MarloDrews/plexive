@@ -1,0 +1,199 @@
+{
+  "tags": [
+    "energy-tech",
+    "statistics",
+    "public-health"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Availability heuristic"
+      },
+      "featured": true
+    },
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Externalities"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "Per unit of energy, nuclear power kills roughly 800 times fewer people than coal, even counting Chernobyl and Fukushima.",
+    "teasers": [
+      "The safest power source is also the scariest",
+      "The deaths that arrive without a headline",
+      "Why Fukushima's radiation killed so few"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "Per unit of energy, nuclear power kills roughly 800 times fewer people than coal, even counting Chernobyl and Fukushima."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='28' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Deaths per terawatt-hour of electricity</text><line x1='40' y1='236' x2='378' y2='236' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><g stroke='currentColor' stroke-width='2' opacity='0.55'><rect x='46' y='56' width='46' height='180' rx='6'/><rect x='116' y='101' width='46' height='135' rx='6'/><rect x='186' y='215' width='46' height='21' rx='6'/><rect x='326' y='231' width='46' height='5' rx='2.5'/></g><rect x='256' y='231' width='46' height='5' rx='2.5' fill='var(--accent)' stroke='var(--accent)' stroke-width='2'/><g font-family='var(--font-mono), ui-monospace, monospace' font-size='13' font-weight='700' text-anchor='middle' fill='currentColor'><text x='69' y='48'>24.62</text><text x='139' y='93'>18.43</text><text x='209' y='207'>2.82</text><text x='349' y='223'>0.02</text></g><text x='279' y='223' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='14' font-weight='700' text-anchor='middle'>0.03</text><g font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle' fill='currentColor'><text x='69' y='256'>Coal</text><text x='139' y='256'>Oil</text><text x='209' y='256'>Gas</text><text x='349' y='256'>Solar</text></g><text x='279' y='256' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>Nuclear</text></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "By the numbers that count deaths, nuclear power sits with wind and solar, among the safest sources there are. That is the reverse of how it is usually ranked. The fear comes from a few dramatic accidents. The deaths come from air. The exhaust of burning coal, oil, and gas kills millions each year, quietly and without a headline."
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "Air pollution does most of the killing",
+          "body": "The death rate folds in two very different kinds of harm. For fossil fuels, it is mostly the air. Fine soot and gases from combustion settle in lungs and arteries, quietly shortening lives across the world, year after year. For nuclear, it is mostly the rare, catastrophic accident. One harm is a steady background hum. The other is a spike every few decades. Both go into the same figure.",
+          "visual_svg": "<svg viewBox='0 92 400 116' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='118' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Coal's toll, by cause</text><rect x='40' y='140' width='294' height='28' rx='8' stroke='var(--accent)' stroke-width='2.5' fill='var(--accent)' fill-opacity='0.18'/><rect x='340' y='140' width='34' height='28' rx='8' stroke='currentColor' stroke-width='2' opacity='0.5'/><text x='187' y='190' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>air pollution</text><text x='357' y='190' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.7' text-anchor='middle'>accidents</text></svg>"
+        },
+        {
+          "title": "The accidents everyone fears, in scale",
+          "body": "Two accidents drive the fear. Count them plainly. Chernobyl killed about 30 workers and firefighters within weeks in 1986, and its long-term cancer estimates run from a few hundred to roughly 4,000. At Fukushima in 2011, one death has been tied to radiation. The evacuation that followed, not the radiation, caused about 2,300 more. Both are already folded into nuclear's 0.03.",
+          "visual_svg": "<svg viewBox='0 0 400 250' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='28' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Deaths, one comparison</text><line x1='40' y1='196' x2='378' y2='196' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><rect x='72' y='58' width='84' height='138' rx='6' fill='var(--accent)' opacity='0.85'/><rect x='250' y='190' width='84' height='6' rx='3' stroke='currentColor' stroke-width='2' opacity='0.55'/><text x='114' y='48' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>1M+ per year</text><text x='114' y='222' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle' opacity='0.8'>fossil air pollution</text><text x='292' y='180' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>a few thousand</text><text x='292' y='222' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle' opacity='0.8'>all nuclear accidents, ever</text></svg>"
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "We rate danger by how vivid it is, not how often it happens. A meltdown has a date and a place. Air pollution has neither. So the source that has killed the fewest gets feared the most. What we choose to build still turns on cost, waste, and where the sun and wind are strong. On the narrow question of deaths per unit of energy, though, the answer has been clear for years."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "Measured by deaths per unit of energy, how does nuclear power compare with coal?",
+          "options": [
+            "Nuclear is slightly more dangerous",
+            "They come out about equal",
+            "Nuclear causes far fewer deaths, on the order of 800 times fewer",
+            "Coal is safer once accidents are counted"
+          ],
+          "answer_index": 2,
+          "explanation": "Coal runs about 24 deaths per terawatt-hour and nuclear about 0.03, a gap near 800 to one. Wind and solar sit close to nuclear."
+        },
+        {
+          "question": "For coal, oil, and gas, what accounts for most of the deaths in these figures?",
+          "options": [
+            "Explosions at the power plants",
+            "Chronic air pollution from burning them",
+            "Radiation leaks",
+            "Dam failures"
+          ],
+          "answer_index": 1,
+          "explanation": "Most fossil-fuel deaths come from breathing combustion pollution over years, not from accidents. That toll is large but diffuse, so it rarely makes the news."
+        },
+        {
+          "question": "What caused most of the deaths connected to the Fukushima accident?",
+          "options": [
+            "Direct radiation exposure",
+            "The reactor explosion itself",
+            "Contaminated food",
+            "The stress and disruption of the mass evacuation"
+          ],
+          "answer_index": 3,
+          "explanation": "Only one death there has been officially tied to radiation. The roughly 2,300 other deaths came from the forced evacuation, not from the radiation."
+        },
+        {
+          "question": "Why do people tend to rate nuclear as more dangerous than the death data suggest?",
+          "options": [
+            "Its deaths arrive in rare, vivid accidents, while fossil deaths are slow and spread out",
+            "Nuclear plants are much newer than coal plants",
+            "The underlying data are usually wrong",
+            "Coal's death toll is deliberately exaggerated"
+          ],
+          "answer_index": 0,
+          "explanation": "A single accident is a dramatic, datable event, while air-pollution deaths are quiet and diffuse. The mind weighs the vivid risk far more heavily."
+        },
+        {
+          "question": "Does deaths per unit of energy settle the entire case for nuclear power?",
+          "options": [
+            "Yes, it answers every question about it",
+            "No, it leaves out waste, cost, and proliferation",
+            "Yes, because it already counts accidents",
+            "No, because it ignores air pollution"
+          ],
+          "answer_index": 1,
+          "explanation": "The metric captures deaths well, but building choices also turn on waste storage, cost, proliferation risk, and land, which it does not measure."
+        },
+        {
+          "question": "The nuclear figure of about 0.03 deaths per unit of energy includes what?",
+          "options": [
+            "Only routine operation, with no accidents",
+            "Only the Fukushima accident",
+            "Chernobyl and Fukushima, folded into the total",
+            "Deaths from every kind of power plant"
+          ],
+          "answer_index": 2,
+          "explanation": "The worst nuclear accidents are already counted in that number, and nuclear still lands among the safest sources by this measure."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "Nuclear power is the most dangerous way to make electricity.",
+          "reality": "By deaths per unit of energy, it is one of the safest, close to wind and solar. Fossil fuels kill far more, mostly through air pollution."
+        },
+        {
+          "myth": "Fukushima's radiation killed thousands of people.",
+          "reality": "One worker's death has been officially attributed to radiation. The more than 2,000 other deaths came from the stress and disruption of the evacuation, not from the radiation itself."
+        },
+        {
+          "myth": "So the numbers are settled and nuclear is beyond debate.",
+          "reality": "Not entirely. Chernobyl's long-term cancer toll is still uncertain, with estimates ranging widely. And deaths per unit of energy leave out waste, cost, and proliferation, which are real parts of the argument."
+        }
+      ]
+    },
+    {
+      "type": "open_questions",
+      "order": 12,
+      "content": {
+        "body": "The hardest number to pin down is Chernobyl's long-term toll. Estimating deaths from low doses of radiation spread across decades and a whole continent is genuinely difficult, and honest experts differ by thousands. Whether very low levels of radiation carry risk in proportion to the dose, or almost none at all, is itself unsettled. That is why the range stays wide.",
+        "items": [
+          "How many cancers did Chernobyl's fallout cause across Europe?",
+          "Does very low-dose radiation harm in proportion to dose, or barely at all?"
+        ]
+      }
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Ritchie H. What are the safest and cleanest sources of energy? Our World in Data",
+          "url": "https://ourworldindata.org/safest-sources-of-energy",
+          "type": "article"
+        },
+        {
+          "label": "Ritchie H. What was the death toll from Chernobyl and Fukushima? Our World in Data",
+          "url": "https://ourworldindata.org/what-was-the-death-toll-from-chernobyl-and-fukushima",
+          "type": "article"
+        },
+        {
+          "label": "WHO. Chernobyl: the true scale of the accident (2005)",
+          "url": "https://www.who.int/news/item/05-09-2005-chernobyl-the-true-scale-of-the-accident",
+          "type": "article"
+        },
+        {
+          "label": "Fukushima nuclear accident casualties",
+          "url": "https://en.wikipedia.org/wiki/Fukushima_nuclear_accident_casualties",
+          "type": "wikipedia"
+        }
+      ]
+    }
+  ]
+}
