@@ -7,9 +7,10 @@ from pydantic import BaseModel, EmailStr, field_validator
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+from ..account_lifecycle import is_reserved_username, scramble_and_detach
 from ..auth import create_access_token, get_current_user, hash_password, verify_password
 from ..database import get_db
-from ..models import User
+from ..models import Follow, User
 from ..rate_limit import check_rate_limit
 from ..sanitize import validate_image
 from ..schemas import UserOut
@@ -46,6 +47,11 @@ class RegisterRequest(BaseModel):
         v = v.strip()
         if not USERNAME_RE.fullmatch(v):
             raise ValueError(USERNAME_RULE)
+        # The deleted-account lifecycle owns "deleted_user" and "deleted-<id>"
+        # (M150): registrable copies would impersonate the placeholder or
+        # collide with a future scramble.
+        if is_reserved_username(v):
+            raise ValueError("This username is reserved.")
         return v
 
     @field_validator("password")
@@ -179,6 +185,9 @@ class PatchMeRequest(BaseModel):
         v = v.strip()
         if not USERNAME_RE.fullmatch(v):
             raise ValueError(USERNAME_RULE)
+        # Reserved for the deleted-account lifecycle (M150), same as register.
+        if is_reserved_username(v):
+            raise ValueError("This username is reserved.")
         return v
 
 
@@ -226,6 +235,14 @@ def patch_me(
         current_user.username = body.username
 
     if body.is_private is not None:
+        # Going public releases the request queue (BUG-020/M150): pending
+        # rows would otherwise be stuck forever; requesters saw "Requested"
+        # while a public account needs no approval.
+        if current_user.is_private and body.is_private is False:
+            db.query(Follow).filter(
+                Follow.following_id == current_user.id,
+                Follow.status == "pending",
+            ).update({Follow.status: "accepted"}, synchronize_session=False)
         current_user.is_private = body.is_private
 
     if body.bio is not None:
@@ -296,9 +313,13 @@ def delete_me(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Current password is incorrect.",
         )
-    # Soft delete: a hard DELETE would orphan comments/posts/events/follows
-    # (SQLite does not enforce the FKs here) and crash endpoints that join on
-    # the user. All auth and lookup paths already filter on is_active.
-    current_user.is_active = False
+    # Decision 10 (M150): soft delete, but nothing personal may remain. The
+    # row is scrambled (email/username freed for re-registration, BUG-021;
+    # bio/avatar/password cleared), published posts are re-attributed to the
+    # neutral deleted_user sentinel so the content survives without the
+    # identity link, and every follow edge is removed so no dead entries
+    # linger in lists or request queues (BUG-019/BUG-022). The token_version
+    # bump kills every session including live websockets.
+    scramble_and_detach(db, current_user)
     db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)

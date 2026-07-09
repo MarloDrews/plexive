@@ -131,7 +131,7 @@ def _compute_global_stats(db: Session) -> dict:
         text(
             "SELECT"
             " (SELECT COUNT(*) FROM posts) AS total_posts,"
-            " (SELECT COUNT(*) FROM users) AS total_users,"
+            " (SELECT COUNT(*) FROM users WHERE is_active) AS total_users,"
             " (SELECT COUNT(*) FROM comments) AS total_comments,"
             " (SELECT COUNT(*) FROM events WHERE event_type='like') AS total_likes"
         )
@@ -143,11 +143,14 @@ def _compute_global_stats(db: Session) -> dict:
     avg_posts_per_user = round(total_posts / total_users, 2) if total_users > 0 else 0.0
 
     # --- Top creators by posts ---
+    # All four leaderboards filter User.is_active (M150/BUG-022): deactivated
+    # accounts and the deleted_user sentinel (which inherits severed posts)
+    # must never chart.
     top_creators_by_posts = [
         {"username": r.username, "is_verified": r.is_verified, "post_count": r.cnt}
         for r in db.query(User.username, User.is_verified, func.count(Post.id).label("cnt"))
         .join(Post, Post.author_id == User.id)
-        .filter(Post.status == "published")
+        .filter(Post.status == "published", User.is_active == True)
         .group_by(User.id)
         .order_by(func.count(Post.id).desc())
         .limit(10)
@@ -160,7 +163,7 @@ def _compute_global_stats(db: Session) -> dict:
         for r in db.query(User.username, User.is_verified, func.count(Event.id).label("cnt"))
         .join(Post, Post.author_id == User.id)
         .join(Event, and_(Event.post_id == Post.id, Event.event_type == "like"))
-        .filter(Post.status == "published")
+        .filter(Post.status == "published", User.is_active == True)
         .group_by(User.id)
         .order_by(func.count(Event.id).desc())
         .limit(10)
@@ -173,7 +176,7 @@ def _compute_global_stats(db: Session) -> dict:
         for r in db.query(User.username, User.is_verified, func.count(Comment.id).label("cnt"))
         .join(Post, Post.author_id == User.id)
         .join(Comment, Comment.post_id == Post.id)
-        .filter(Post.status == "published")
+        .filter(Post.status == "published", User.is_active == True)
         .group_by(User.id)
         .order_by(func.count(Comment.id).desc())
         .limit(10)
@@ -190,7 +193,7 @@ def _compute_global_stats(db: Session) -> dict:
         for r in db.query(User.username, User.is_verified, func.avg(Event.duration_ms).label("avg_ms"))
         .join(Post, Post.author_id == User.id)
         .join(Event, and_(Event.post_id == Post.id, Event.event_type == "view"))
-        .filter(Event.duration_ms.isnot(None), Post.status == "published")
+        .filter(Event.duration_ms.isnot(None), Post.status == "published", User.is_active == True)
         .group_by(User.id)
         .order_by(func.avg(Event.duration_ms).desc())
         .limit(10)
@@ -203,7 +206,7 @@ def _compute_global_stats(db: Session) -> dict:
     per_format_rows = (
         db.query(Post.format, User.username, func.count(Post.id).label("cnt"))
         .join(User, Post.author_id == User.id)
-        .filter(Post.status == "published")
+        .filter(Post.status == "published", User.is_active == True)
         .group_by(Post.format, User.id)
         .order_by(Post.format, func.count(Post.id).desc())
         .all()
@@ -383,6 +386,7 @@ def _compute_global_stats(db: Session) -> dict:
         {"username": r.username, "comment_count": r.cnt}
         for r in db.query(User.username, func.count(Comment.id).label("cnt"))
         .join(Comment, Comment.user_id == User.id)
+        .filter(User.is_active == True)
         .group_by(User.id)
         .order_by(func.count(Comment.id).desc())
         .limit(10)
@@ -429,14 +433,18 @@ _me_globals_lock = threading.Lock()
 
 
 def _compute_me_globals(db: Session) -> dict:
-    total_users = db.query(func.count(User.id)).scalar() or 0
+    # Deactivated accounts and the deleted_user sentinel are excluded from the
+    # denominator and the distributions (M150/BUG-022): the sentinel inherits
+    # every severed post, which would otherwise skew the rankings.
+    total_users = db.query(func.count(User.id)).filter(User.is_active == True).scalar() or 0
     # Per-author published-post counts and received-like counts, ascending, so a
     # caller's rank is a bisect against the distribution instead of a per-request
     # grouped ranking subquery.
     post_counts = sorted(
         row.cnt
         for row in db.query(func.count(Post.id).label("cnt"))
-        .filter(Post.status == "published", Post.author_id.isnot(None))
+        .join(User, User.id == Post.author_id)
+        .filter(Post.status == "published", User.is_active == True)
         .group_by(Post.author_id)
         .all()
     )
@@ -444,7 +452,8 @@ def _compute_me_globals(db: Session) -> dict:
         row.cnt
         for row in db.query(func.count(Event.id).label("cnt"))
         .join(Post, Post.id == Event.post_id)
-        .filter(Event.event_type == "like", Post.author_id.isnot(None))
+        .join(User, User.id == Post.author_id)
+        .filter(Event.event_type == "like", User.is_active == True)
         .group_by(Post.author_id)
         .all()
     )
@@ -461,6 +470,7 @@ def _compute_me_globals(db: Session) -> dict:
             "    JOIN posts p ON p.id=c.post_id GROUP BY p.author_id) cc ON cc.author_id=u.id"
             "  LEFT JOIN (SELECT author_id, COUNT(id) AS cnt FROM posts"
             "    WHERE status='published' GROUP BY author_id) pc ON pc.author_id=u.id"
+            "  WHERE u.is_active"
             ") AS ms"
         )
     ).scalar() or 0

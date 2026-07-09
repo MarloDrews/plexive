@@ -100,7 +100,14 @@ def follow_user(
         Follow.following_id == target.id,
     ).first()
     if existing:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Already following.")
+        # A pending request is not "following" (BUG-020): tell the requester
+        # what state they are actually in.
+        detail = (
+            "Follow request already pending."
+            if existing.status == "pending"
+            else "Already following."
+        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=detail)
 
     follow_status = "pending" if target.is_private else "accepted"
     follow = Follow(follower_id=current_user.id, following_id=target.id, status=follow_status)
