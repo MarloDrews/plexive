@@ -6,13 +6,28 @@ carried an identical copy of this logic).
 
 import ipaddress
 import os
+from typing import Optional
 
-from fastapi import HTTPException, WebSocket
+from fastapi import HTTPException, WebSocket, WebSocketDisconnect
 
 from .auth import decode_access_token
 from .database import SessionLocal
 from .models import User
 from .rate_limit import check_rate_limit
+
+
+async def receive_text_frame(websocket: WebSocket) -> Optional[str]:
+    """Next frame as text, or None for a binary frame.
+
+    receive_text() raises a bare KeyError on a binary frame, which escapes the
+    handlers' except tuples and kills the connection without an error frame
+    (BUG-086/M141). Raises WebSocketDisconnect on disconnect, matching
+    receive_text, so existing except clauses keep working.
+    """
+    message = await websocket.receive()
+    if message["type"] == "websocket.disconnect":
+        raise WebSocketDisconnect(message.get("code") or 1000)
+    return message.get("text")
 
 # Tailscale's CGNAT range (RFC 6598 shared address space). It backs a tailnet
 # but is NOT covered by ipaddress.is_private, so allow it explicitly for a plain

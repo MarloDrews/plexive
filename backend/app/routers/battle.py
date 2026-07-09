@@ -1,5 +1,6 @@
 import asyncio
 import json
+import logging
 import random
 import time
 from typing import Optional
@@ -16,16 +17,26 @@ from ..ws_security import (
     connection_attempt_allowed,
     is_secure_or_local,
     leave_unauthenticated,
+    receive_text_frame,
     token_still_valid,
     try_enter_unauthenticated,
     user_still_active,
 )
+
+logger = logging.getLogger("app.battle")
 
 router = APIRouter(prefix="/battle", tags=["battle"])
 
 # A WS frame larger than this cannot be a valid battle frame; reject before JSON parsing.
 WS_FRAME_MAX_BYTES = 4 * 1024
 WS_AUTH_TIMEOUT_SECONDS = 10
+# A recipient that cannot take a frame within this window is treated as dead
+# (BUG-085/M141), mirroring chat's send timeout.
+WS_SEND_TIMEOUT_SECONDS = 5
+# Sanity bounds for client-reported progress/finish values: index is a question
+# position, score a small correct-count-derived number. Reject junk instead of
+# relaying it to the opponent (BUG-086).
+SCORE_MAX = 1000
 
 # WebSocket close codes (4xxx range is reserved for applications).
 WS_CLOSE_UNAUTHORIZED = 4401
@@ -105,17 +116,35 @@ class BattleManager:
         if ws is None:
             return
         try:
-            await ws.send_json(payload)
+            # Timeout treats an alive-but-stalled socket like a dead one so a
+            # full TCP buffer cannot block the sender's loop (BUG-085/M141).
+            await asyncio.wait_for(ws.send_json(payload), timeout=WS_SEND_TIMEOUT_SECONDS)
         except Exception:
-            # A dead socket is cleaned up by its own handler's finally block.
-            pass
+            # Dead or stalled: close it so its handler's finally block cleans up.
+            try:
+                await asyncio.wait_for(ws.close(), timeout=1)
+            except Exception:
+                pass
 
 
 manager = BattleManager()
 
 
 async def _error(websocket: WebSocket, detail: str) -> None:
-    await websocket.send_json({"type": "error", "detail": detail})
+    try:
+        await websocket.send_json({"type": "error", "detail": detail})
+    except Exception:
+        # Replying to a just-closed socket must not raise past the handler
+        # (BUG-086); its own finally block does the cleanup.
+        pass
+
+
+def _valid_score(score) -> bool:
+    """A relayable score: a real number (bool excluded, it passes isinstance
+    int) within sane bounds (BUG-086)."""
+    if isinstance(score, bool) or not isinstance(score, (int, float)):
+        return False
+    return 0 <= score <= SCORE_MAX
 
 
 def _load_active_user(user_id: int) -> Optional[User]:
@@ -218,9 +247,18 @@ async def battle_websocket(websocket: WebSocket):
     # pre-auth slot is held only until the outcome is known.
     try:
         try:
-            raw = await asyncio.wait_for(websocket.receive_text(), timeout=WS_AUTH_TIMEOUT_SECONDS)
+            raw = await asyncio.wait_for(receive_text_frame(websocket), timeout=WS_AUTH_TIMEOUT_SECONDS)
+        except (asyncio.TimeoutError, WebSocketDisconnect):
+            await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
+            return
+        # A binary frame or an oversized auth frame is not a valid handshake;
+        # the auth frame was previously exempt from any size cap (BUG-086).
+        if raw is None or len(raw) > WS_FRAME_MAX_BYTES:
+            await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
+            return
+        try:
             first = json.loads(raw)
-        except (asyncio.TimeoutError, ValueError, WebSocketDisconnect):
+        except ValueError:
             await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
             return
 
@@ -250,7 +288,7 @@ async def battle_websocket(websocket: WebSocket):
         await websocket.send_json({"type": "auth_ok", "user_id": user_id})
         next_recheck = time.monotonic() + WS_REVALIDATE_SECONDS
         while True:
-            raw = await websocket.receive_text()
+            raw = await receive_text_frame(websocket)
             # Re-validate per frame (M137/BUG-037): token must still decode every
             # frame; is_active/token_version re-checked in the DB once per interval.
             if not token_still_valid(token, user_id, token_version):
@@ -263,7 +301,12 @@ async def battle_websocket(websocket: WebSocket):
                     await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
                     break
                 next_recheck = now + WS_REVALIDATE_SECONDS
-            if len(raw) > WS_FRAME_MAX_BYTES:
+            if raw is None:
+                await _error(websocket, "Frames must be text.")
+                continue
+            # Byte-length cap, not code points (BUG-086); the char check
+            # short-circuits encoding absurdly long frames.
+            if len(raw) > WS_FRAME_MAX_BYTES or len(raw.encode("utf-8")) > WS_FRAME_MAX_BYTES:
                 await _error(websocket, "Frame too large.")
                 continue
             try:
@@ -279,13 +322,26 @@ async def battle_websocket(websocket: WebSocket):
             if msg_type == "ping":
                 await websocket.send_json({"type": "pong"})
             elif msg_type == "challenge":
-                await _handle_challenge(websocket, user_id, username, data)
+                # A transient DB failure inside one frame must cost that frame,
+                # not the whole connection (BUG-034).
+                try:
+                    await _handle_challenge(websocket, user_id, username, data)
+                except Exception:
+                    logger.exception("battle challenge failed (user %s)", user_id)
+                    await _error(websocket, "Could not start the battle. Try again.")
             elif msg_type == "progress":
                 # The sender's per-question result, mirrored to the opponent.
+                # bool is an int subclass, so exclude it explicitly; bound the
+                # values so junk never reaches the opponent (BUG-086).
                 index = data.get("index")
                 correct = data.get("correct")
                 score = data.get("score")
-                if not isinstance(index, int) or not isinstance(correct, bool) or not isinstance(score, (int, float)):
+                if (
+                    not isinstance(index, int) or isinstance(index, bool)
+                    or not isinstance(correct, bool)
+                    or not _valid_score(score)
+                    or not 0 <= index < BATTLE_QUESTION_COUNT
+                ):
                     await _error(websocket, "progress requires index (int), correct (bool), score (number).")
                     continue
                 await _relay_to_opponent(
@@ -294,7 +350,7 @@ async def battle_websocket(websocket: WebSocket):
                 )
             elif msg_type == "finish":
                 score = data.get("score")
-                if not isinstance(score, (int, float)):
+                if not _valid_score(score):
                     await _error(websocket, "finish requires score (number).")
                     continue
                 await _relay_to_opponent(websocket, user_id, {"type": "opponent_finish", "score": score})

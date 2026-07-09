@@ -1,5 +1,6 @@
 import asyncio
 import json
+import logging
 import time
 from typing import List, Optional
 
@@ -18,10 +19,13 @@ from ..ws_security import (
     connection_attempt_allowed,
     is_secure_or_local,
     leave_unauthenticated,
+    receive_text_frame,
     token_still_valid,
     try_enter_unauthenticated,
     user_still_active,
 )
+
+logger = logging.getLogger("app.chat")
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
@@ -31,6 +35,12 @@ GROUP_NAME_MAX_CHARS = 80
 # A WS frame larger than this cannot be a valid message; reject before JSON parsing.
 WS_FRAME_MAX_BYTES = 16 * 1024
 WS_AUTH_TIMEOUT_SECONDS = 10
+# A recipient socket that cannot take a frame within this window is treated as
+# dead: one full TCP buffer must not stall delivery to everyone after it and
+# block the sender's receive loop (ARCH-005/BUG-085/M141).
+WS_SEND_TIMEOUT_SECONDS = 5
+# Optional client correlation tag echoed back in the broadcast (BUG-035).
+SEND_TAG_MAX_CHARS = 64
 
 # WebSocket close codes (4xxx range is reserved for applications).
 WS_CLOSE_UNAUTHORIZED = 4401
@@ -325,17 +335,29 @@ class ConnectionManager:
             sockets = [ws for uid in user_ids for ws in self._connections.get(uid, ())]
         for ws in sockets:
             try:
-                await ws.send_json(payload)
+                # Timeout treats an alive-but-stalled socket (full TCP buffer)
+                # like a dead one, so one frozen recipient cannot block the
+                # sender's receive loop and everyone after it (ARCH-005/M141).
+                await asyncio.wait_for(ws.send_json(payload), timeout=WS_SEND_TIMEOUT_SECONDS)
             except Exception:
-                # A dead socket is cleaned up by its own handler's finally block.
-                pass
+                # Dead or stalled: close it so its handler's finally block
+                # unregisters it; registry cleanup never happens here.
+                try:
+                    await asyncio.wait_for(ws.close(), timeout=1)
+                except Exception:
+                    pass
 
 
 manager = ConnectionManager()
 
 
 async def _ws_error(websocket: WebSocket, detail: str) -> None:
-    await websocket.send_json({"type": "error", "detail": detail})
+    try:
+        await websocket.send_json({"type": "error", "detail": detail})
+    except Exception:
+        # Replying to a just-closed socket must not raise past the handler
+        # (BUG-086); its own finally block does the cleanup.
+        pass
 
 
 def _load_active_user(user_id: int) -> Optional[User]:
@@ -348,13 +370,19 @@ def _load_active_user(user_id: int) -> Optional[User]:
         db.close()
 
 
-def _persist_message(conversation_id: int, user_id: int, body: str):
+def _persist_message(conversation_id: int, user_id: int, username: str, body: str):
     """Participant check + insert + participant list, one short-lived session.
 
     Sync on purpose: the websocket handler awaits this via anyio.to_thread so
     the sequential remote round trips run in the threadpool like every REST
     handler instead of stalling the event loop for all sockets (BE-004/M140).
-    Returns (message, participant_ids); message is None when the sender is not
+
+    The broadcast dict is built from the FLUSHED row before commit (BUG-035/
+    M141): once the commit succeeds there is nothing left that can raise, so a
+    stored message can no longer lose its own broadcast. The sender username
+    comes from the socket's auth (no re-SELECT; a mid-session username change
+    shows up on the next connect, matching the socket's other cached identity).
+    Returns (payload, participant_ids); payload is None when the sender is not
     a participant.
     """
     db = SessionLocal()
@@ -362,27 +390,36 @@ def _persist_message(conversation_id: int, user_id: int, body: str):
         # Participant check on every send — never trust the client.
         if not _get_participant(db, conversation_id, user_id):
             return None, []
-        message = Message(conversation_id=conversation_id, sender_id=user_id, body=body)
-        db.add(message)
-        db.commit()
-        message = (
-            db.query(Message)
-            .options(selectinload(Message.sender))
-            .filter(Message.id == message.id)
-            .first()
-        )
         participant_ids = [
             p.user_id
             for p in db.query(ConversationParticipant).filter(
                 ConversationParticipant.conversation_id == conversation_id
             ).all()
         ]
-        return message, participant_ids
+        message = Message(conversation_id=conversation_id, sender_id=user_id, body=body)
+        db.add(message)
+        db.flush()  # assigns id + created_at
+        payload = {
+            "type": "message",
+            "message": {
+                "id": message.id,
+                "conversation_id": conversation_id,
+                "sender_id": user_id,
+                "sender_username": username,
+                "body": message.body,
+                "created_at": message.created_at.isoformat() if message.created_at else None,
+            },
+        }
+        db.commit()
+        return payload, participant_ids
+    except Exception:
+        db.rollback()
+        raise
     finally:
         db.close()
 
 
-async def _handle_send(websocket: WebSocket, user_id: int, data: dict) -> None:
+async def _handle_send(websocket: WebSocket, user_id: int, username: str, data: dict) -> None:
     conversation_id = data.get("conversation_id")
     body = data.get("body")
     if not isinstance(conversation_id, int) or not isinstance(body, str):
@@ -395,6 +432,11 @@ async def _handle_send(websocket: WebSocket, user_id: int, data: dict) -> None:
     if len(body) > MESSAGE_MAX_CHARS:
         await _ws_error(websocket, f"Message body must be at most {MESSAGE_MAX_CHARS} characters.")
         return
+    # Optional client correlation tag, echoed verbatim in the broadcast so a
+    # sender can match the echo to a pending optimistic send (BUG-035/M141).
+    tag = data.get("tag")
+    if not isinstance(tag, str) or not tag or len(tag) > SEND_TAG_MAX_CHARS:
+        tag = None
 
     try:
         check_rate_limit(user_id, "chat_message", 30, 60)
@@ -402,14 +444,15 @@ async def _handle_send(websocket: WebSocket, user_id: int, data: dict) -> None:
         await _ws_error(websocket, "Rate limit exceeded. Slow down.")
         return
 
-    message, participant_ids = await anyio.to_thread.run_sync(
-        _persist_message, conversation_id, user_id, body
+    payload, participant_ids = await anyio.to_thread.run_sync(
+        _persist_message, conversation_id, user_id, username, body
     )
-    if message is None:
+    if payload is None:
         await _ws_error(websocket, "Conversation not found.")
         return
 
-    payload = {"type": "message", "message": _serialize_message(message)}
+    if tag is not None:
+        payload = {**payload, "tag": tag}
     await manager.send_to_users(participant_ids, payload)
 
 
@@ -440,9 +483,18 @@ async def chat_websocket(websocket: WebSocket):
     # only for the pre-auth phase and released once we know the outcome.
     try:
         try:
-            raw = await asyncio.wait_for(websocket.receive_text(), timeout=WS_AUTH_TIMEOUT_SECONDS)
+            raw = await asyncio.wait_for(receive_text_frame(websocket), timeout=WS_AUTH_TIMEOUT_SECONDS)
+        except (asyncio.TimeoutError, WebSocketDisconnect):
+            await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
+            return
+        # A binary frame or an oversized auth frame is not a valid handshake;
+        # the auth frame was previously exempt from any size cap (BUG-086).
+        if raw is None or len(raw) > WS_FRAME_MAX_BYTES:
+            await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
+            return
+        try:
             first = json.loads(raw)
-        except (asyncio.TimeoutError, ValueError, WebSocketDisconnect):
+        except ValueError:
             await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
             return
 
@@ -466,12 +518,13 @@ async def chat_websocket(websocket: WebSocket):
     finally:
         leave_unauthenticated()
 
+    username = user.username
     await manager.connect(user_id, websocket)
     try:
         await websocket.send_json({"type": "auth_ok", "user_id": user_id})
         next_recheck = time.monotonic() + WS_REVALIDATE_SECONDS
         while True:
-            raw = await websocket.receive_text()
+            raw = await receive_text_frame(websocket)
             # Re-validate the session on each frame (M137/BUG-037): the token must
             # still decode (catches expiry / a revoked version) every frame, and
             # is_active/token_version are re-checked in the DB at most once per
@@ -486,7 +539,13 @@ async def chat_websocket(websocket: WebSocket):
                     await websocket.close(code=WS_CLOSE_UNAUTHORIZED)
                     break
                 next_recheck = now + WS_REVALIDATE_SECONDS
-            if len(raw) > WS_FRAME_MAX_BYTES:
+            if raw is None:
+                await _ws_error(websocket, "Frames must be text.")
+                continue
+            # Compare encoded bytes, not code points: a char-counted cap admits
+            # up to 4x the intended bytes for multi-byte text (BUG-086). The
+            # cheap length check short-circuits encoding absurdly long frames.
+            if len(raw) > WS_FRAME_MAX_BYTES or len(raw.encode("utf-8")) > WS_FRAME_MAX_BYTES:
                 await _ws_error(websocket, "Frame too large.")
                 continue
             try:
@@ -501,7 +560,14 @@ async def chat_websocket(websocket: WebSocket):
             if msg_type == "ping":
                 await websocket.send_json({"type": "pong"})
             elif msg_type == "send":
-                await _handle_send(websocket, user_id, data)
+                # A transient DB failure inside one frame must cost that frame,
+                # not the whole connection (BUG-034): report it as an error
+                # frame and keep the loop alive.
+                try:
+                    await _handle_send(websocket, user_id, username, data)
+                except Exception:
+                    logger.exception("chat send failed (user %s)", user_id)
+                    await _ws_error(websocket, "Could not send the message. Try again.")
             else:
                 await _ws_error(websocket, f"Unknown frame type: {msg_type!r}")
     except WebSocketDisconnect:
