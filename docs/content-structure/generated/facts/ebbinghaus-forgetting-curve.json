@@ -1,0 +1,218 @@
+{
+  "tags": [
+    "learning",
+    "neuroscience",
+    "cognitive-biases"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Spacing effect"
+      },
+      "featured": true
+    },
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Testing effect"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "A day after you learn something new, without review, roughly two-thirds of it has slipped away.",
+    "teasers": [
+      "The man who memorized gibberish for years",
+      "Why cramming loses to short, spaced reviews",
+      "You forgot it, but it is not gone"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "A day after you learn something new, without review, roughly two-thirds of it has slipped away."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 18 400 224' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='214' y='34' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.7' text-anchor='middle'>A fresh list, over time</text><g stroke='currentColor' stroke-width='2' stroke-linecap='round' opacity='0.5'><line x1='56' y1='48' x2='56' y2='210'/><line x1='56' y1='210' x2='374' y2='210'/></g><path d='M64 54 C 84 92, 96 108, 110 115 C 138 129, 150 133, 165 137 C 208 146, 226 149, 255 151 C 292 158, 322 164, 352 170' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><g fill='var(--accent)'><circle cx='110' cy='115' r='3.5'/><circle cx='165' cy='137' r='3.5'/><circle cx='255' cy='151' r='3.5'/><circle cx='352' cy='170' r='3.5'/></g><g fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' font-weight='700' text-anchor='middle'><text x='110' y='104'>58%</text><text x='165' y='126'>44%</text><text x='255' y='140'>34%</text><text x='352' y='160'>21%</text></g><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'><text x='110' y='228'>20 min</text><text x='165' y='228'>1 hr</text><text x='255' y='228'>1 day</text><text x='352' y='228'>1 month</text></g><text x='30' y='130' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle' transform='rotate(-90 30 130)'>% saved</text></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "Most of what you forget, you forget fast. The steepest loss comes in the first hours after learning, not spread evenly over weeks. We picture memory fading slowly, like paint left in the sun. It fades in a rush, then nearly stalls. What you still hold a day later tends to stay. Forgetting is not a slow leak. It runs on a curve, and the curve is steep at the start."
+    },
+    {
+      "type": "story",
+      "order": 7,
+      "content": {
+        "body": "Hermann Ebbinghaus ran the whole thing on one subject: himself. Starting in 1879, alone and without a lab, he built a pool of about 2,300 nonsense syllables. They were blank three-letter sounds like “DAX”, “BOK”, and “YAT”, chosen so no meaning could help him remember. He would drill a list until he could recite it without error, set it aside for a fixed stretch, then relearn it and count how much effort he saved. The saving was his measure of memory. He repeated this for years, at intervals from 20 minutes to a month, and in 1885 published the results as *Über das Gedächtnis*. The curve he drew has barely moved since. In 2015 Jaap Murre and Joeri Dros reran his procedure and reproduced the same forgetting curve.",
+        "key_figures": [
+          {
+            "name": "Hermann Ebbinghaus",
+            "role": "Charted the forgetting curve",
+            "one_line": "From 1879 he tested his own memory of nonsense syllables and, in 1885, plotted how fast fresh learning fades.",
+            "lifespan": "1850-1909",
+            "birth_year": 1850,
+            "featured": true,
+            "image_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Ebbinghaus2.jpg",
+            "image_attribution": "Unknown photographer, “Hermann Ebbinghaus”, public domain (Wikimedia Commons)"
+          }
+        ]
+      }
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "A quick review resets the whole curve",
+          "body": "The curve is a starting condition, not a sentence. Review the material right as it starts to fade, and memory climbs back toward full. The next drop is shallower. Each well-timed pass leaves a gentler slope, until a few reviews hold for months what one session held for a day. Spacing the same hour of study across days beats cramming it into one sitting.",
+          "visual_svg": "<svg viewBox='0 18 400 224' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='214' y='34' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.7' text-anchor='middle'>Each review resets the curve</text><g stroke='currentColor' stroke-width='2' stroke-linecap='round' opacity='0.5'><line x1='52' y1='48' x2='52' y2='210'/><line x1='52' y1='210' x2='374' y2='210'/></g><path d='M60 62 C 120 132, 220 186, 366 200' stroke='currentColor' stroke-width='2' stroke-linecap='round' opacity='0.5' stroke-dasharray='6 6'/><path d='M60 60 C 80 92, 98 114, 116 120 L116 60 C 143 80, 172 96, 198 102 L198 60 C 233 74, 268 84, 298 90 L298 60 C 326 68, 350 73, 370 76' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/><text x='250' y='72' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>with review</text><text x='300' y='188' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.7' text-anchor='middle'>no review</text><text x='30' y='128' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle' transform='rotate(-90 30 128)'>memory</text><text x='213' y='228' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>time</text></svg>"
+        },
+        {
+          "title": "Meaning is what makes memory stick",
+          "body": "Ebbinghaus used nonsense on purpose. DAX and BOK hook onto nothing you already know, so they fall away cleanly. Real learning is the opposite. A fact you understand ties into things you already hold, and every connection is a handhold against the fade. Test a meaningful passage the same way, and its curve is far gentler.",
+          "visual_svg": "<svg viewBox='0 18 400 224' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='214' y='34' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.7' text-anchor='middle'>Meaning slows the fade</text><g stroke='currentColor' stroke-width='2' stroke-linecap='round' opacity='0.5'><line x1='56' y1='48' x2='56' y2='210'/><line x1='56' y1='210' x2='374' y2='210'/></g><path d='M64 58 C 88 110, 130 168, 200 186 C 260 198, 320 200, 366 202' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' opacity='0.6'/><path d='M64 58 C 110 80, 170 100, 240 112 C 290 120, 330 126, 366 130' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><text x='150' y='150' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.7' text-anchor='middle'>Nonsense</text><text x='302' y='118' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>Meaningful</text><text x='213' y='228' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>time since learning</text></svg>"
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "Learning is mostly a fight against how fast information leaves. The curve moves the target. Hours logged at a desk matter less than when those hours land against the fade. Review at the right moments and you beat someone who studied twice as long in one block. What a study session is worth shows up a week later, in what is still there."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "According to Ebbinghaus's curve, when is forgetting fastest?",
+          "options": [
+            "Only after about a week",
+            "At a steady rate across the whole month",
+            "In the first hours after learning",
+            "In the final hours before you next review"
+          ],
+          "answer_index": 2,
+          "explanation": "The sharpest loss comes in the first minutes and hours. After that the curve flattens, so what survives the first day tends to persist."
+        },
+        {
+          "question": "Ebbinghaus measured memory by savings. What does a savings score capture?",
+          "options": [
+            "The share of items you can freely recall",
+            "How much faster you relearn the list than the first time",
+            "How many syllables he could invent",
+            "How long a memory lasts before vanishing entirely"
+          ],
+          "answer_index": 1,
+          "explanation": "Savings is the effort spared on relearning. That is why material can seem two-thirds gone yet come back quickly on a second pass, which is the seed of spaced review."
+        },
+        {
+          "question": "Why did Ebbinghaus learn nonsense syllables rather than real words?",
+          "options": [
+            "They were faster to write down",
+            "Real words had not yet been standardized",
+            "To make the lists longer",
+            "To strip out meaning, so prior knowledge could not aid memory"
+          ],
+          "answer_index": 3,
+          "explanation": "Meaning gives new material handholds. By using sounds that hook onto nothing, he measured raw forgetting, without the boost that understanding provides."
+        },
+        {
+          "question": "Why does spacing the same study time across days beat one long session?",
+          "options": [
+            "Each timed review leaves a shallower forgetting curve, so the material holds longer",
+            "Long sessions mainly tire the eyes",
+            "Spacing lets you learn more syllables at once",
+            "It makes no difference, since total hours are all that count"
+          ],
+          "answer_index": 0,
+          "explanation": "Reviewing as a memory begins to fade resets it and flattens the next drop, so a few spaced passes outlast one massed block of the same length."
+        },
+        {
+          "question": "Does the steep loss of about two-thirds in a day apply to everything you learn?",
+          "options": [
+            "Yes, all learning decays at the same rate",
+            "No, since material you understand and connect fades far more slowly",
+            "Yes, but only for adults",
+            "No, because nothing is ever truly forgotten"
+          ],
+          "answer_index": 1,
+          "explanation": "That figure comes from nonsense syllables. Facts you grasp tie into what you already know, and each connection slows the loss."
+        },
+        {
+          "question": "Based on the curve, the single most useful change a student could make is to...",
+          "options": [
+            "study only on the night before a test",
+            "read the material once, very slowly",
+            "review at spaced intervals, timed against the fade",
+            "memorize longer lists in one sitting"
+          ],
+          "answer_index": 2,
+          "explanation": "Timing reviews against the curve does more than adding raw hours, because it attacks forgetting where it is steepest, in the first day or two."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "Some people are born with bad memories.",
+          "reality": "The steep early loss shows up for everyone. Ebbinghaus found it testing only himself, and a 2015 replication found it again. What varies most is review, not a memory gene."
+        },
+        {
+          "myth": "The curve means whatever you study today is wasted by tomorrow.",
+          "reality": "Come back to it and relearn, and it clicks faster than the first time. Nothing was erased, and a well-timed review resets the curve and flattens the next drop."
+        },
+        {
+          "myth": "Two-thirds gone in a day is true for anything you learn.",
+          "reality": "Those numbers come from nonsense syllables, stripped of meaning on purpose. Knowledge you understand and connect to what you already know decays much more slowly."
+        }
+      ]
+    },
+    {
+      "type": "open_questions",
+      "order": 12,
+      "content": {
+        "body": "Why memory fades in this exact shape is still argued. Some say traces decay on their own, others that newer learning crowds them out. The clearest live thread is sleep. When Murre and Dros reran the experiment, retention seemed to tick upward after a night's rest.",
+        "items": [
+          "Do old memories fade on their own, or get overwritten by newer ones?",
+          "How much of the curve does a night of sleep undo?"
+        ]
+      }
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Forgetting curve",
+          "url": "https://en.wikipedia.org/wiki/Forgetting_curve",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Hermann Ebbinghaus",
+          "url": "https://en.wikipedia.org/wiki/Hermann_Ebbinghaus",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Murre JMJ, Dros J. Replication and Analysis of Ebbinghaus' Forgetting Curve. PLoS ONE 2015;10(7):e0120644",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4492928/",
+          "type": "paper"
+        },
+        {
+          "label": "Ebbinghaus H. Memory: A Contribution to Experimental Psychology (1885), English translation, Classics in the History of Psychology",
+          "url": "https://psychclassics.yorku.ca/Ebbinghaus/index.htm",
+          "type": "book"
+        }
+      ]
+    }
+  ]
+}
