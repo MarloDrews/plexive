@@ -279,25 +279,31 @@ def on_post_written(db, post):
     - not live: rebuild clears outgoing edges, then re-latent incoming ones, so
       an un-verified / taken-down / un-published post is no longer a live node on
       either side.
+
+    Does NOT commit: the CALLER owns the transaction (M149/BE-013). The post
+    row and its derived edges must land in one commit, otherwise a crash
+    between the two leaves a published post with no edge rows and no latent
+    activation, and nothing repairs user posts until the next write. Callers
+    flush the post (so it has an id and is visible to the edge queries here),
+    call this, then commit once.
     """
     rebuild_post_edges(db, post)
     if is_live_node(post):
         activate_edges_for(db, post)
     else:
         _relatent_incoming(db, post.id)
-    db.commit()
 
 
 def on_post_deleted(db, post):
     """Remove a post and clean up its edges: drop its outgoing rows, and re-latent
-    every edge that pointed at it (never dangling). Then delete the post row."""
+    every edge that pointed at it (never dangling). Then delete the post row.
+    Does NOT commit: the caller owns the transaction (M149/BE-013)."""
     post_id = post.id
     db.query(PostEdge).filter(PostEdge.source_post_id == post_id).delete(
         synchronize_session=False
     )
     _relatent_incoming(db, post_id)
     db.delete(post)
-    db.commit()
 
 
 def resolved_read_next(db, post):

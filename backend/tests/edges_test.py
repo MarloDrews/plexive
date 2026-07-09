@@ -55,8 +55,11 @@ def add_post(fmt, feed_card, *, status="published", connections=None, sections=N
         is_user_content=is_user,
     )
     db.add(post)
-    db.commit()
+    # Mirror the app's M149 transaction shape: flush for the id, derive edges,
+    # one commit (on_post_written no longer commits).
+    db.flush()
     on_post_written(db, post)
+    db.commit()
     return post
 
 
@@ -95,6 +98,7 @@ check("creating the person activates the latent edge", src_edges[0].target_post_
 
 target_id = target.id
 on_post_deleted(db, target)
+db.commit()
 db.refresh(src_edges[0])
 check("deleting the person returns the edge to latent", src_edges[0].target_post_id is None)
 check("person post row is gone", db.get(Post, target_id) is None)
@@ -103,6 +107,7 @@ check("person post row is gone", db.get(Post, target_id) is None)
 
 source_id = source.id
 on_post_deleted(db, source)
+db.commit()
 check(
     "deleting the source removes its edges",
     db.query(PostEdge).filter_by(source_post_id=source_id).count() == 0,
@@ -122,8 +127,8 @@ pending = add_post(
 check("a pending source casts no edges", len(edges_from(pending)) == 0)
 
 pending.status = "published"
-db.commit()
 on_post_written(db, pending)
+db.commit()
 pub_edges = edges_from(pending)
 check("publishing the source casts its edges", len(pub_edges) == 1)
 check("the published non-person edge resolved to its live target",
@@ -148,8 +153,8 @@ check("A's edge into T2 resolved while live", edges_from(a)[0].target_post_id ==
 
 t2_id = t2.id
 t2.status = "pending"
-db.commit()
 on_post_written(db, t2)
+db.commit()
 check("un-published node drops its outgoing edges", len(edges_from(t2)) == 0)
 # A's edge into T2 is a NON-PERSON (books) edge. The module invariant allows only
 # person edges to be latent, so an incoming non-person edge to an un-published
@@ -370,6 +375,7 @@ check(
 # Delete the book target: the incoming non-person edge is DELETED (not latented),
 # so no transient non-person latent row is left in the DB (BE-014/M128).
 on_post_deleted(db, ephemeral_book)
+db.commit()
 check(
     "deleting the book target deletes the incoming non-person edge outright",
     db.query(PostEdge).filter_by(source_post_id=holder.id, target_format="books").count() == 0,
@@ -383,6 +389,7 @@ check(
 # Rebuild the holder: still just the person latent edge (the book target is gone,
 # so its non-person edge is discarded, never stored latent).
 on_post_written(db, holder)
+db.commit()
 after = edges_from(holder)
 check(
     "rebuild keeps the person latent edge and casts no book edge",

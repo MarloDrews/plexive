@@ -54,8 +54,11 @@ def add_post(fmt, feed_card, *, status="published", connections=None, sections=N
         is_user_content=False,
     )
     db.add(post)
-    db.commit()
+    # Mirror the app's M149 transaction shape: flush for the id, derive edges,
+    # one commit (on_post_written no longer commits).
+    db.flush()
     on_post_written(db, post)
+    db.commit()
     return post
 
 

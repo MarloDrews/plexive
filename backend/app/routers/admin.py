@@ -75,10 +75,11 @@ def release_post(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found.")
     if post.status != "published":
         post.status = "published"
-        db.commit()
         # Rebuild this post's outgoing edges and activate incoming latent ones,
-        # now that it is a live node.
+        # now that it is a live node; ONE commit so status + edges land
+        # atomically (M149/BE-013).
         on_post_written(db, post)
+        db.commit()
     audit_logger.info("release: actor=%s post=%s", current_user.id, post.id)
     # Re-query with the eager options so serialization does not lazy-load after
     # the commit expired the row's relationships.

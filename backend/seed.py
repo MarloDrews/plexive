@@ -168,9 +168,10 @@ def upsert_post(db, marlo, post_format, data, slug, allow_legacy_adopt):
         existing.connections = connections
         existing.interests = interests
         existing.status = "published"
-        db.commit()
-        # Rebuild this post's edges and activate any latent edges pointing at it.
+        # Rebuild this post's edges and activate any latent edges pointing at
+        # it, then ONE commit so post + edges land atomically (M149/BE-013).
         on_post_written(db, existing)
+        db.commit()
         print(f"Updated existing {post_format.title()} post: {title}.")
         return
 
@@ -190,9 +191,11 @@ def upsert_post(db, marlo, post_format, data, slug, allow_legacy_adopt):
     )
     post.interests = interests
     db.add(post)
-    db.commit()
-    # Rebuild this post's edges and activate any latent edges pointing at it.
+    # Flush so the row has an id for the edge derivation, then ONE commit so
+    # post + edges land atomically (M149/BE-013).
+    db.flush()
     on_post_written(db, post)
+    db.commit()
     print(f"Seeded {post_format.title()} post: {title}.")
 
 

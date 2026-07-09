@@ -146,13 +146,14 @@ def create_post(
     )
     post.interests = interest_objects
     db.add(post)
-    db.commit()
-    db.refresh(post)
-    post_id = post.id
-
-    # Derive this post's graph edges and activate any latent edges pointing at it
-    # (only when it is published; a pending submission casts none).
+    # Flush (not commit) so the row has an id and is visible to the edge
+    # queries, derive the edges, then commit ONCE: post + edges land atomically,
+    # so a crash between them can no longer leave a published post edgeless
+    # (M149/BE-013).
+    db.flush()
     on_post_written(db, post)
+    db.commit()
+    post_id = post.id
 
     post = (
         db.query(Post)
