@@ -225,7 +225,7 @@ function FriendsTab({ username, verifiedLevel }: { username: string; verifiedLev
                   {p.username === username ? "You" : p.username}
                 </Link>
                 {/* is_verified is a number; a bare && would render a literal 0. */}
-                {p.is_verified > 0 && p.username !== username && <span className="ml-1 text-lamp text-[10px]">✓</span>}
+                {p.is_verified > 0 && p.username !== username && <><span className="ml-1 text-lamp text-[10px]" aria-hidden="true">✓</span><span className="sr-only">verified</span></>}
               </td>
               <td className="py-2 text-right text-ink-body font-mono">{Math.round(p.global_rating ?? 0)}</td>
             </tr>

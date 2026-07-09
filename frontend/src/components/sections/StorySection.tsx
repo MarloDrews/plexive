@@ -38,7 +38,9 @@ export default function StorySection({ content, isUserContent }: Props) {
               {fig.image_url && (
                 <AppImage
                   src={fig.image_url}
-                  alt={fig.name}
+                  // Decision 12: the name renders right beside the portrait, so
+                  // an alt would read it twice.
+                  alt=""
                   width={40}
                   height={40}
                   sizes="40px"

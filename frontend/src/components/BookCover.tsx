@@ -59,6 +59,8 @@ function BakedCover({
   return (
     <div
       className={`${className ?? ""} [&_svg]:w-full [&_svg]:h-full [&_svg]:block`}
+      // Decision 12: the title and author render as text beside every cover.
+      aria-hidden="true"
       dangerouslySetInnerHTML={{ __html: svg }}
     />
   )

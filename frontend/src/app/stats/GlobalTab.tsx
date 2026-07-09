@@ -81,7 +81,7 @@ function GlobalTab({ data }: { data: GlobalStats }) {
               <td className="py-2 pr-3 text-ink">
                 <Link href={`/profile/${r.username}`} className="hover:text-ink-body transition-colors">{r.username}</Link>
                 {/* is_verified is a number; a bare && would render a literal 0. */}
-                {r.is_verified > 0 && <span className="ml-1 text-lamp text-[10px]">✓</span>}
+                {r.is_verified > 0 && <><span className="ml-1 text-lamp text-[10px]" aria-hidden="true">✓</span><span className="sr-only">verified</span></>}
               </td>
               <td className="py-2 text-right text-ink-body">{r.post_count}</td>
             </tr>
@@ -148,7 +148,7 @@ function GlobalTab({ data }: { data: GlobalStats }) {
               <td className="py-2 pr-3 text-ink-muted">{i + 1}</td>
               <td className="py-2 pr-3 text-ink">
                 <Link href={`/profile/${r.username}`} className="hover:text-ink-body transition-colors">{r.username}</Link>
-                {r.is_verified > 0 && <span className="ml-1 text-lamp text-[10px]">✓</span>}
+                {r.is_verified > 0 && <><span className="ml-1 text-lamp text-[10px]" aria-hidden="true">✓</span><span className="sr-only">verified</span></>}
               </td>
               <td className="py-2 text-right text-ink-body">{r.like_count}</td>
             </tr>

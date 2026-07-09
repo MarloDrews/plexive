@@ -399,8 +399,9 @@ export default function GeneratedBookCover({
     <svg
       viewBox={`0 0 ${W} ${H}`}
       className={className}
-      role="img"
-      aria-label={`${title} by ${author}`}
+      // Decision 12: every call site renders the title (and usually the author)
+      // as text beside the cover, so naming the cover would read them twice.
+      aria-hidden="true"
       preserveAspectRatio="xMidYMid slice"
     >
       <rect x={0} y={0} width={W} height={H} fill={pal.base} />

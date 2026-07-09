@@ -350,10 +350,19 @@ function MyStatsTab({
                   : "border-transparent bg-white/[0.06]"
               }`}
             >
+              {/* The glyph is the only thing separating an achieved milestone
+                  from a pending one, so it carries a spoken equivalent. The
+                  label itself renders below and is not repeated here. */}
               {m.achieved ? (
-                <span className="text-lamp">✓</span>
+                <>
+                  <span className="text-lamp" aria-hidden="true">✓</span>
+                  <span className="sr-only">Achieved:</span>
+                </>
               ) : (
-                <span className="text-ink-faint">○</span>
+                <>
+                  <span className="text-ink-faint" aria-hidden="true">○</span>
+                  <span className="sr-only">Not yet achieved:</span>
+                </>
               )}
             </div>
             <div className={`text-[10px] text-center leading-tight ${m.achieved ? "text-ink-body" : "text-ink-faint"}`}>

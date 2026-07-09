@@ -86,7 +86,7 @@ const BooksFeedCardBlock = memo(function BooksFeedCardBlock({
           {coverUploading ? "Uploading..." : "Upload"}
         </label>
         {value.cover_url && (
-          <img src={`${API_URL}${value.cover_url}`} alt="" className="w-10 h-14 object-cover rounded" />
+          <img src={`${API_URL}${value.cover_url}`} alt="Cover preview" className="w-10 h-14 object-cover rounded" />
         )}
         {!value.cover_url && <span className="text-ink-faint text-xs">or type /uploads/… URL</span>}
       </div>
