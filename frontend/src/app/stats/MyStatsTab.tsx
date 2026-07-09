@@ -196,11 +196,12 @@ function MyStatsTab({
   const myTopLikesTable = (
     <div className="overflow-x-auto overscroll-x-contain">
       <table className="w-full text-xs">
+        <caption className="sr-only">My posts ranked by likes</caption>
         <thead>
           <tr className="text-ink-muted border-b border-edge">
-            <th className="text-left pb-2 pr-2">Title</th>
-            <th className="text-left pb-2 pr-2">Format</th>
-            <th className="text-right pb-2">Likes</th>
+            <th scope="col" className="text-left pb-2 pr-2">Title</th>
+            <th scope="col" className="text-left pb-2 pr-2">Format</th>
+            <th scope="col" className="text-right pb-2">Likes</th>
           </tr>
         </thead>
         <tbody>
@@ -240,11 +241,12 @@ function MyStatsTab({
   const myTopCommentsTable = (
     <div className="overflow-x-auto overscroll-x-contain">
       <table className="w-full text-xs">
+        <caption className="sr-only">My posts ranked by comments</caption>
         <thead>
           <tr className="text-ink-muted border-b border-edge">
-            <th className="text-left pb-2 pr-2">Title</th>
-            <th className="text-left pb-2 pr-2">Format</th>
-            <th className="text-right pb-2">Comments</th>
+            <th scope="col" className="text-left pb-2 pr-2">Title</th>
+            <th scope="col" className="text-left pb-2 pr-2">Format</th>
+            <th scope="col" className="text-right pb-2">Comments</th>
           </tr>
         </thead>
         <tbody>

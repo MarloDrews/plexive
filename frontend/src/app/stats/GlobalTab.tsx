@@ -67,11 +67,12 @@ function GlobalTab({ data }: { data: GlobalStats }) {
   const topByPostsTable = (
     <div className="overflow-x-auto overscroll-x-contain">
       <table className="w-full text-xs">
+        <caption className="sr-only">Top users by posts published</caption>
         <thead>
           <tr className="text-ink-muted border-b border-edge">
-            <th className="text-left pb-2 pr-3">#</th>
-            <th className="text-left pb-2 pr-3">Username</th>
-            <th className="text-right pb-2">Posts</th>
+            <th scope="col" className="text-left pb-2 pr-3">#</th>
+            <th scope="col" className="text-left pb-2 pr-3">Username</th>
+            <th scope="col" className="text-right pb-2">Posts</th>
           </tr>
         </thead>
         <tbody>
@@ -135,11 +136,12 @@ function GlobalTab({ data }: { data: GlobalStats }) {
   const topByLikesTable = (
     <div className="overflow-x-auto overscroll-x-contain">
       <table className="w-full text-xs">
+        <caption className="sr-only">Top users by likes received</caption>
         <thead>
           <tr className="text-ink-muted border-b border-edge">
-            <th className="text-left pb-2 pr-3">#</th>
-            <th className="text-left pb-2 pr-3">Username</th>
-            <th className="text-right pb-2">Likes</th>
+            <th scope="col" className="text-left pb-2 pr-3">#</th>
+            <th scope="col" className="text-left pb-2 pr-3">Username</th>
+            <th scope="col" className="text-right pb-2">Likes</th>
           </tr>
         </thead>
         <tbody>
@@ -199,11 +201,12 @@ function GlobalTab({ data }: { data: GlobalStats }) {
   const topByCommentsTable = (
     <div className="overflow-x-auto overscroll-x-contain">
       <table className="w-full text-xs">
+        <caption className="sr-only">Top users by comments received</caption>
         <thead>
           <tr className="text-ink-muted border-b border-edge">
-            <th className="text-left pb-2 pr-3">#</th>
-            <th className="text-left pb-2 pr-3">Username</th>
-            <th className="text-right pb-2">Comments</th>
+            <th scope="col" className="text-left pb-2 pr-3">#</th>
+            <th scope="col" className="text-left pb-2 pr-3">Username</th>
+            <th scope="col" className="text-right pb-2">Comments</th>
           </tr>
         </thead>
         <tbody>
@@ -252,11 +255,12 @@ function GlobalTab({ data }: { data: GlobalStats }) {
   const topByReadTimeTable = (
     <div className="overflow-x-auto overscroll-x-contain">
       <table className="w-full text-xs">
+        <caption className="sr-only">Top users by average read time</caption>
         <thead>
           <tr className="text-ink-muted border-b border-edge">
-            <th className="text-left pb-2 pr-3">#</th>
-            <th className="text-left pb-2 pr-3">Username</th>
-            <th className="text-right pb-2">Avg Read</th>
+            <th scope="col" className="text-left pb-2 pr-3">#</th>
+            <th scope="col" className="text-left pb-2 pr-3">Username</th>
+            <th scope="col" className="text-right pb-2">Avg Read</th>
           </tr>
         </thead>
         <tbody>
@@ -326,9 +330,31 @@ function GlobalTab({ data }: { data: GlobalStats }) {
       ]),
     )
     const maxVal = Math.max(...Object.values(userTotals), 1)
+    const topUsers = allUsers.slice(0, 10)
+    const cellCount = (u: string, fmt: string) =>
+      data.top_creators_per_format[fmt]?.find(r => r.username === u)?.post_count ?? 0
     return (
       <div className="overflow-x-auto overscroll-x-contain">
-        <div className="min-w-max">
+        {/* The per-cell counts are reachable only through a title attribute
+            (A11Y-019). The table carries them; the grid is the picture. */}
+        <table className="sr-only">
+          <caption>Top creators per format, posts published</caption>
+          <thead>
+            <tr>
+              <th scope="col">Creator</th>
+              {FORMATS.map(f => <th key={f} scope="col">{f}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {topUsers.map(u => (
+              <tr key={u}>
+                <th scope="row">{u}</th>
+                {FORMATS.map(fmt => <td key={fmt}>{cellCount(u, fmt)}</td>)}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div aria-hidden="true" className="min-w-max">
           <div className="flex gap-0.5 mb-1">
             <div className="w-16" />
             {FORMATS.map(f => (
@@ -417,13 +443,14 @@ function GlobalTab({ data }: { data: GlobalStats }) {
   const topPostsTable = (
     <div className="overflow-x-auto overscroll-x-contain">
       <table className="w-full text-xs">
+        <caption className="sr-only">Top posts by likes</caption>
         <thead>
           <tr className="text-ink-muted border-b border-edge">
-            <th className="text-left pb-2 pr-2">#</th>
-            <th className="text-left pb-2 pr-2">Title</th>
-            <th className="text-left pb-2 pr-2">Format</th>
-            <th className="text-left pb-2 pr-2">Author</th>
-            <th className="text-right pb-2">Likes</th>
+            <th scope="col" className="text-left pb-2 pr-2">#</th>
+            <th scope="col" className="text-left pb-2 pr-2">Title</th>
+            <th scope="col" className="text-left pb-2 pr-2">Format</th>
+            <th scope="col" className="text-left pb-2 pr-2">Author</th>
+            <th scope="col" className="text-right pb-2">Likes</th>
           </tr>
         </thead>
         <tbody>
@@ -609,11 +636,12 @@ function GlobalTab({ data }: { data: GlobalStats }) {
   const commentersTable = (
     <div className="overflow-x-auto overscroll-x-contain">
       <table className="w-full text-xs">
+        <caption className="sr-only">Top commenters</caption>
         <thead>
           <tr className="text-ink-muted border-b border-edge">
-            <th className="text-left pb-2 pr-3">#</th>
-            <th className="text-left pb-2 pr-3">Username</th>
-            <th className="text-right pb-2">Comments</th>
+            <th scope="col" className="text-left pb-2 pr-3">#</th>
+            <th scope="col" className="text-left pb-2 pr-3">Username</th>
+            <th scope="col" className="text-right pb-2">Comments</th>
           </tr>
         </thead>
         <tbody>

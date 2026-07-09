@@ -209,11 +209,12 @@ function FriendsTab({ username, verifiedLevel }: { username: string; verifiedLev
   const eloTable = eloSorted.length === 0 ? <NoData /> : (
     <div className="overflow-x-auto overscroll-x-contain">
       <table className="w-full text-xs">
+        <caption className="sr-only">Friends ranked by global Elo</caption>
         <thead>
           <tr className="text-ink-muted border-b border-edge">
-            <th className="text-left pb-2 pr-3">#</th>
-            <th className="text-left pb-2 pr-3">User</th>
-            <th className="text-right pb-2">Global Elo</th>
+            <th scope="col" className="text-left pb-2 pr-3">#</th>
+            <th scope="col" className="text-left pb-2 pr-3">User</th>
+            <th scope="col" className="text-right pb-2">Global Elo</th>
           </tr>
         </thead>
         <tbody>
@@ -289,11 +290,12 @@ function FriendsTab({ username, verifiedLevel }: { username: string; verifiedLev
   const postTable = (
     <div className="overflow-x-auto overscroll-x-contain">
       <table className="w-full text-xs">
+        <caption className="sr-only">Friends ranked by posts published</caption>
         <thead>
           <tr className="text-ink-muted border-b border-edge">
-            <th className="text-left pb-2 pr-3">#</th>
-            <th className="text-left pb-2 pr-3">User</th>
-            <th className="text-right pb-2">Posts</th>
+            <th scope="col" className="text-left pb-2 pr-3">#</th>
+            <th scope="col" className="text-left pb-2 pr-3">User</th>
+            <th scope="col" className="text-right pb-2">Posts</th>
           </tr>
         </thead>
         <tbody>

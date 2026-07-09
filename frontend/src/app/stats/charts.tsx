@@ -61,7 +61,9 @@ export function WaffleChart({ data }: { data: { label: string; value: number; co
   while (squares.length < 100) squares.push(squares[squares.length - 1] ?? "#222222")
   return (
     <div className="flex flex-col gap-3">
-      <div className="grid grid-cols-10 gap-0.5">
+      {/* 100 squares carrying no text. The legend below names every series and
+          its value, so the grid itself is decorative (A11Y-019). */}
+      <div aria-hidden="true" className="grid grid-cols-10 gap-0.5">
         {squares.slice(0, 100).map((color, i) => (
           <div key={i} className="w-4 h-4 rounded-sm" style={{ backgroundColor: color }} />
         ))}
@@ -96,25 +98,47 @@ export function CalendarHeatmap({ data }: { data: { period: string; count: numbe
     return { key, label: d.toLocaleString("default", { month: "short" }), year: d.getFullYear() }
   })
   return (
-    <div className="grid grid-cols-4 gap-2">
-      {months.map(m => {
-        const count = lookup.get(m.key) ?? 0
-        const intensity = count / maxCount
-        return (
-          <div key={m.key} className="flex flex-col items-center gap-1">
-            <div
-              className="w-full h-8 rounded-lg"
-              style={{
-                backgroundColor:
-                  count === 0 ? "#1a1a1a" : `rgba(124,111,255,${0.2 + intensity * 0.8})`,
-              }}
-              title={`${m.label} ${m.year}: ${count}`}
-            />
-            <span className="text-ink-muted text-[10px]">{m.label}</span>
-          </div>
-        )
-      })}
-    </div>
+    <>
+      {/* The counts lived only in a title attribute, which screen readers and
+          keyboard users cannot reach (A11Y-019). The table is the real data;
+          the grid below it is the picture of the same numbers. */}
+      <table className="sr-only">
+        {/* Deliberately generic: this renders posts_over_time on the global tab
+            and my_posts_over_time on mine. The enclosing section supplies the
+            subject. */}
+        <caption>Monthly totals, last 12 months</caption>
+        <thead>
+          <tr><th scope="col">Month</th><th scope="col">Count</th></tr>
+        </thead>
+        <tbody>
+          {months.map(m => (
+            <tr key={m.key}>
+              <th scope="row">{`${m.label} ${m.year}`}</th>
+              <td>{lookup.get(m.key) ?? 0}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <div aria-hidden="true" className="grid grid-cols-4 gap-2">
+        {months.map(m => {
+          const count = lookup.get(m.key) ?? 0
+          const intensity = count / maxCount
+          return (
+            <div key={m.key} className="flex flex-col items-center gap-1">
+              <div
+                className="w-full h-8 rounded-lg"
+                style={{
+                  backgroundColor:
+                    count === 0 ? "#1a1a1a" : `rgba(124,111,255,${0.2 + intensity * 0.8})`,
+                }}
+                title={`${m.label} ${m.year}: ${count}`}
+              />
+              <span className="text-ink-muted text-[10px]">{m.label}</span>
+            </div>
+          )
+        })}
+      </div>
+    </>
   )
 }
 
@@ -133,7 +157,30 @@ export function ActivityHeatmap({
   const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
   return (
     <div className="overflow-x-auto overscroll-x-contain">
-      <div className="flex gap-0.5 min-w-max">
+      {/* 168 cells whose counts lived only in a title attribute (A11Y-019).
+          One row per weekday, one column per hour. */}
+      <table className="sr-only">
+        <caption>Activity by weekday and hour of day</caption>
+        <thead>
+          <tr>
+            <th scope="col">Day</th>
+            {Array.from({ length: 24 }, (_, hr) => (
+              <th key={hr} scope="col">{`${hr}:00`}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {days.map((d, wd) => (
+            <tr key={d}>
+              <th scope="row">{d}</th>
+              {Array.from({ length: 24 }, (_, hr) => (
+                <td key={hr}>{lookup.get(`${wd}:${hr}`) ?? 0}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <div aria-hidden="true" className="flex gap-0.5 min-w-max">
         <div className="flex flex-col gap-0.5 mr-1 mt-4">
           {days.map(d => (
             <div key={d} className="h-3 text-ink-muted text-[9px] leading-3 w-7">{d}</div>
@@ -205,7 +252,10 @@ export function GaugeChart({
 
   return (
     <div className="flex flex-col items-center">
-      <svg width={size} height={size * 0.65} viewBox={`0 0 ${size} ${size * 0.65}`}>
+      {/* The gauge has no Table pill to fall back on, so it states its own
+          reading (A11Y-019). */}
+      <p className="sr-only">{`${label ? label + ": " : ""}${displayValue} of ${max}`}</p>
+      <svg aria-hidden="true" width={size} height={size * 0.65} viewBox={`0 0 ${size} ${size * 0.65}`}>
         <path
           d={`M ${sx} ${sy} A ${r} ${r} 0 0 0 ${ex} ${ey}`}
           fill="none"
