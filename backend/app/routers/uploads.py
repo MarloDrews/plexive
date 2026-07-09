@@ -1,3 +1,4 @@
+import logging
 import uuid
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
@@ -7,6 +8,8 @@ from ..rate_limit import check_rate_limit
 from ..sanitize import sanitize_svg, validate_image
 from ..schemas import SvgUploadResponse, UploadResponse
 from ..upload_config import SUPABASE_BUCKET, supabase_client
+
+logger = logging.getLogger("app.uploads")
 
 router = APIRouter()
 
@@ -30,12 +33,18 @@ def upload_image(
     path = f"images/{filename}"
     if supabase_client is None:
         raise HTTPException(status_code=503, detail="Storage not configured")
-    supabase_client.storage.from_(SUPABASE_BUCKET).upload(
-        path=path,
-        file=data,
-        file_options={"content-type": media_type, "upsert": "false"},
-    )
-    url = supabase_client.storage.from_(SUPABASE_BUCKET).get_public_url(path)
+    # Storage-side failures (bucket missing, policy denial, network) must
+    # surface as a clear upstream error, not an opaque 500 (BUG-014/M151).
+    try:
+        supabase_client.storage.from_(SUPABASE_BUCKET).upload(
+            path=path,
+            file=data,
+            file_options={"content-type": media_type, "upsert": "false"},
+        )
+        url = supabase_client.storage.from_(SUPABASE_BUCKET).get_public_url(path)
+    except Exception:
+        logger.exception("image upload to storage failed")
+        raise HTTPException(status_code=502, detail="Storage upload failed. Try again later.")
     return {"url": url}
 
 

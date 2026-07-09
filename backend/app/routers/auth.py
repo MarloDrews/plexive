@@ -1,3 +1,4 @@
+import logging
 import re
 import uuid
 from typing import Optional
@@ -15,6 +16,8 @@ from ..rate_limit import check_rate_limit
 from ..sanitize import validate_image
 from ..schemas import UserOut
 from ..upload_config import SUPABASE_BUCKET, supabase_client
+
+logger = logging.getLogger("app.auth")
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -273,6 +276,10 @@ def upload_avatar(
     # Same hardened pipeline as post images: magic-byte check + Pillow re-encode.
     # Sync def: the image work and storage upload run in the threadpool
     # like every other handler instead of blocking the event loop.
+    # Config guard BEFORE the rate limit (BUG-013/M151): a 503 for missing
+    # storage must not burn one of the user's 10 hourly slots.
+    if supabase_client is None:
+        raise HTTPException(status_code=503, detail="Storage not configured")
     check_rate_limit(current_user.id, "avatar_upload", 10, 3600)
     try:
         data, media_type = validate_image(file)
@@ -284,12 +291,18 @@ def upload_avatar(
         ext = "jpg"
     filename = f"{uuid.uuid4()}.{ext}"
     path = f"images/{filename}"
-    supabase_client.storage.from_(SUPABASE_BUCKET).upload(
-        path=path,
-        file=data,
-        file_options={"content-type": media_type, "upsert": "false"},
-    )
-    url = supabase_client.storage.from_(SUPABASE_BUCKET).get_public_url(path)
+    # Storage failures surface as a clear upstream error, not an opaque 500
+    # (BUG-014/M151).
+    try:
+        supabase_client.storage.from_(SUPABASE_BUCKET).upload(
+            path=path,
+            file=data,
+            file_options={"content-type": media_type, "upsert": "false"},
+        )
+        url = supabase_client.storage.from_(SUPABASE_BUCKET).get_public_url(path)
+    except Exception:
+        logger.exception("avatar upload to storage failed (user %s)", current_user.id)
+        raise HTTPException(status_code=502, detail="Storage upload failed. Try again later.")
 
     current_user.avatar_url = url
     db.commit()
