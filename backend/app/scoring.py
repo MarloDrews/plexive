@@ -1,12 +1,13 @@
 import hashlib
 import random
-from datetime import datetime, timedelta
+from datetime import timedelta
 from typing import List, Optional, Sequence, Set, Tuple
 
 from sqlalchemy import case, func
 from sqlalchemy.orm import Session
 
 from .models import Event, Post
+from .time_utils import utcnow
 
 # Scoring formula (plain English):
 # Each post starts with a base score of 1.0.
@@ -63,7 +64,7 @@ def rank_post_ids(
     anonymous views can no longer bury a post platform-wide (M119/BUG-031/032);
     an anonymous caller (None) gets no repeat penalty at all.
     """
-    cutoff = datetime.utcnow() - timedelta(days=30)
+    cutoff = utcnow() - timedelta(days=30)
     # Two grouped queries instead of fetching every raw event row of the last
     # 30 days: the aggregates are a handful of rows however much activity the
     # platform records. The CASE filters keep the exact old fold semantics:

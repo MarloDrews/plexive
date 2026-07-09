@@ -13,6 +13,7 @@ from ..database import engine, get_db
 from ..elo import elo_summary
 from ..models import Comment, Event, Post, QuizAnswer, User
 from ..rate_limit import check_rate_limit
+from ..time_utils import utcnow
 
 router = APIRouter(tags=["stats"])
 
@@ -55,7 +56,7 @@ def _day(col):
 
 
 def _last_n_months(n: int) -> List[str]:
-    today = datetime.utcnow()
+    today = utcnow()
     months = []
     for i in range(n - 1, -1, -1):
         m = today.month - i
@@ -771,7 +772,7 @@ def get_my_stats(
                 streak = 1
 
         last_date = dates[-1]
-        today = datetime.utcnow().date()
+        today = utcnow().date()
         if last_date >= today - timedelta(days=1):
             current_streak = 1
             for i in range(len(dates) - 1, 0, -1):

@@ -1,9 +1,8 @@
-from datetime import datetime
-
 from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Index, Integer, JSON, String, Table, Text, UniqueConstraint, text
 from sqlalchemy.orm import relationship
 
 from .database import Base
+from .time_utils import utcnow
 
 post_interests = Table(
     "post_interests",
@@ -35,7 +34,7 @@ class Post(Base):
     connections = Column(JSON, nullable=False, default=list)
     author_id  = Column(Integer, ForeignKey("users.id"), nullable=True, index=True)
     status     = Column(String, nullable=False, default="published", index=True)
-    created_at = Column(DateTime, default=datetime.utcnow, index=True)
+    created_at = Column(DateTime, default=utcnow, index=True)
 
     # Stable per-post identity for seed/official content (the JSON filename stem).
     # NULL for user-created posts. Unique so the seed upsert can key on it and
@@ -98,7 +97,7 @@ class PostEdge(Base):
     target_post_id      = Column(Integer, ForeignKey("posts.id"), nullable=True)
     featured            = Column(Boolean, nullable=False, default=False)
     kind                = Column(String, nullable=False, default="related")
-    created_at          = Column(DateTime, default=datetime.utcnow)
+    created_at          = Column(DateTime, default=utcnow)
 
 
 class Event(Base):
@@ -128,7 +127,7 @@ class Event(Base):
     post_id     = Column(Integer, ForeignKey("posts.id"), nullable=False)
     event_type  = Column(String, nullable=False)
     duration_ms = Column(Integer, nullable=True)
-    created_at  = Column(DateTime, default=datetime.utcnow, index=True)
+    created_at  = Column(DateTime, default=utcnow, index=True)
     user_id     = Column(Integer, ForeignKey("users.id"), nullable=True, index=True)
 
 
@@ -139,7 +138,7 @@ class User(Base):
     email         = Column(String, unique=True, nullable=False, index=True)
     username      = Column(String, unique=True, nullable=False)
     password_hash = Column(String, nullable=False)
-    created_at    = Column(DateTime, default=datetime.utcnow)
+    created_at    = Column(DateTime, default=utcnow)
     is_active     = Column(Boolean, default=True, nullable=False)
     # Cosmetic verification badge ONLY (0/1/2). Split from the two capabilities
     # below in M116 so the badge no longer implies publish or admin rights.
@@ -188,7 +187,7 @@ class Follow(Base):
     follower_id  = Column(Integer, ForeignKey("users.id"), nullable=False)
     following_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     status       = Column(String, default="accepted", nullable=False)
-    created_at   = Column(DateTime, default=datetime.utcnow)
+    created_at   = Column(DateTime, default=utcnow)
 
     follower  = relationship("User", foreign_keys=[follower_id])
     following = relationship("User", foreign_keys=[following_id])
@@ -212,7 +211,7 @@ class QuizAnswer(Base):
     chosen_index   = Column(Integer, nullable=False)
     is_correct     = Column(Boolean, nullable=False)
     rating_delta   = Column(Float, nullable=False, default=0.0)
-    created_at     = Column(DateTime, default=datetime.utcnow)
+    created_at     = Column(DateTime, default=utcnow)
 
 
 class Conversation(Base):
@@ -223,7 +222,7 @@ class Conversation(Base):
     # Group display name; NULL for direct messages (name derived from the other user).
     name       = Column(String, nullable=True)
     created_by = Column(Integer, ForeignKey("users.id"), nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=utcnow)
 
     participants = relationship("ConversationParticipant", back_populates="conversation")
 
@@ -237,7 +236,7 @@ class ConversationParticipant(Base):
     id              = Column(Integer, primary_key=True)
     conversation_id = Column(Integer, ForeignKey("conversations.id"), nullable=False)
     user_id         = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
-    joined_at       = Column(DateTime, default=datetime.utcnow)
+    joined_at       = Column(DateTime, default=utcnow)
 
     conversation = relationship("Conversation", back_populates="participants")
     user         = relationship("User")
@@ -257,7 +256,7 @@ class Message(Base):
     conversation_id = Column(Integer, ForeignKey("conversations.id"), nullable=False, index=True)
     sender_id       = Column(Integer, ForeignKey("users.id"), nullable=False)
     body            = Column(Text, nullable=False)
-    created_at      = Column(DateTime, default=datetime.utcnow, index=True)
+    created_at      = Column(DateTime, default=utcnow, index=True)
 
     sender = relationship("User")
 
@@ -276,6 +275,6 @@ class Comment(Base):
     post_id    = Column(Integer, ForeignKey("posts.id"), nullable=False, index=True)
     user_id    = Column(Integer, ForeignKey("users.id"), nullable=False)
     body       = Column(Text, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=utcnow)
 
     user = relationship("User")
