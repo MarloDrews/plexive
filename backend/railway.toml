@@ -1,0 +1,30 @@
+# Railway config-as-code for the backend service (M138/ARCH-001).
+#
+# DEPLOYMENT INVARIANT (hard rule): the backend runs as exactly one process,
+# one Railway replica running one uvicorn worker. Never add --workers,
+# WEB_CONCURRENCY, or a second replica. Process-local state depends on this:
+# the in-memory rate limiter (app/rate_limit.py), the chat ConnectionManager
+# (app/routers/chat.py), the BattleManager (app/routers/battle.py), the
+# pre-auth socket counters (app/ws_security.py), and the stats caches
+# (app/routers/stats.py). At N processes every rate limit silently multiplies
+# by N, chat and battle delivery splits across processes, and cached stats
+# diverge. Horizontal scaling requires moving this state to a shared store
+# (Redis) first, which is a separate, deferred track.
+#
+# This file lives in backend/ because the Railway service is expected to build
+# from this directory. If the service's Root Directory in the Railway
+# dashboard is the repository root instead, move this file there and prefix
+# the start command with "cd backend &&".
+#
+# main.py additionally refuses to boot when WEB_CONCURRENCY or UVICORN_WORKERS
+# is set above 1, so a dashboard misconfiguration fails the deploy loudly
+# instead of silently splitting the in-memory state.
+
+[deploy]
+# Single uvicorn worker on purpose; see the invariant above. No
+# --proxy-headers / --forwarded-allow-ips: forwarded headers are not trusted
+# unless TRUSTED_PROXY_IPS is configured (M136/SEC-004), and the websocket
+# gate checks the real TCP peer.
+startCommand = "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+numReplicas = 1
+restartPolicyType = "ON_FAILURE"

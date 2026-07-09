@@ -29,6 +29,14 @@ Datei-Uploads auf **Supabase Storage**. Zugriff erfolgt privat über **Tailscale
 
 ## Backend
 
+> **Hinweis (M138):** Dieses Dokument beschreibt das Raspberry-Pi/systemd-Setup.
+> Fuer das Railway-Deployment ist `backend/railway.toml` die verbindliche Quelle.
+> In beiden Faellen gilt die harte Deployment-Invariante: **genau ein Prozess**
+> (eine Replica, ein uvicorn-Worker, niemals `--workers` oder `WEB_CONCURRENCY`).
+> Rate-Limiter, Chat-/Battle-Socket-Registries und Stats-Caches leben im
+> Prozessspeicher; bei N Prozessen vervielfachen sich alle Limits still um N und
+> die Live-Zustellung von Chat/Battle zerfaellt. Details: ARCHITECTURE.md.
+
 - **Service:** `deepscroll-backend` (systemd)
 - **Unit:** `/etc/systemd/system/deepscroll-backend.service`
 - **Port:** 8000, single uvicorn-Worker

@@ -13,8 +13,30 @@ from .routers import admin as admin_router, auth as auth_router, comments as com
 from .routers import battle as battle_router, chat as chat_router, quiz as quiz_router, train as train_router, uploads as uploads_router
 
 
+def _assert_single_worker() -> None:
+    """Enforce the deployment invariant (M138/ARCH-001): exactly one process.
+
+    One Railway replica running one uvicorn worker. The in-memory rate limiter
+    (app/rate_limit.py), the chat ConnectionManager, the BattleManager, the
+    pre-auth socket counters (app/ws_security.py) and the stats caches are all
+    process-local; at N processes every rate limit silently multiplies by N and
+    chat/battle delivery splits across processes. Fail the boot loudly instead
+    of degrading silently. Replica count cannot be detected from inside the
+    process; that half of the invariant lives in backend/railway.toml.
+    """
+    for var in ("WEB_CONCURRENCY", "UVICORN_WORKERS"):
+        raw = os.getenv(var, "").strip()
+        if raw.isdigit() and int(raw) > 1:
+            raise RuntimeError(
+                f"{var}={raw} violates the single-worker deployment invariant "
+                "(see backend/railway.toml). The in-memory rate limiter and the "
+                "websocket registries are only correct at exactly one worker."
+            )
+
+
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
+    _assert_single_worker()
     Base.metadata.create_all(bind=engine)
     yield
 

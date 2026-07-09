@@ -42,7 +42,8 @@ class BattleManager:
     current 1v1 pairing (user id -> opponent user id). One socket per user
     (latest connection wins). Single-process only, consistent with the chat
     ConnectionManager and the in-memory rate limiter; a multi-worker deployment
-    would need a shared broker (e.g. Redis pub/sub)."""
+    would need a shared broker (e.g. Redis pub/sub). Protected by the
+    single-worker deployment invariant (M138, see backend/railway.toml)."""
 
     def __init__(self) -> None:
         self._sockets: dict[int, WebSocket] = {}

@@ -95,7 +95,7 @@ def is_secure_or_local(websocket: WebSocket) -> bool:
 # A client can open sockets and sit before authenticating, tying up resources.
 # Two cheap, in-memory guards bound that: a per-IP handshake-attempt rate and a
 # global cap on sockets accepted-but-not-yet-authenticated (single-worker
-# invariant, same as rate_limit.py).
+# deployment invariant, same as rate_limit.py; M138, see backend/railway.toml).
 WS_CONNECT_ATTEMPTS_PER_MIN = 30
 MAX_UNAUTHENTICATED_SOCKETS = 32
 # How often an established socket re-checks is_active / token_version in the DB.

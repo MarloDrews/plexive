@@ -4,6 +4,8 @@ from typing import Dict, List, Union
 
 from fastapi import HTTPException
 
+# Process-local by design: correct only under the single-worker, single-replica
+# deployment invariant (M138, see backend/railway.toml and ARCHITECTURE.md).
 _counters: Dict[str, List[float]] = defaultdict(list)
 
 # Largest window used anywhere (create_post: 20/day). Buckets whose newest

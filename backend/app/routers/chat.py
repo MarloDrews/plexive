@@ -300,7 +300,8 @@ def get_messages(
 class ConnectionManager:
     """In-memory registry of open sockets per user id. Single-process only,
     consistent with the in-memory rate limiter; a multi-worker deployment
-    would need a shared broker (e.g. Redis pub/sub) instead."""
+    would need a shared broker (e.g. Redis pub/sub) instead. Protected by the
+    single-worker deployment invariant (M138, see backend/railway.toml)."""
 
     def __init__(self) -> None:
         self._connections: dict[int, set[WebSocket]] = {}

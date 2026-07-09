@@ -100,7 +100,7 @@ _GLOBAL_STATS_TTL_SECONDS = 60
 _global_stats_cache: tuple | None = None  # (monotonic_timestamp, payload)
 # Serializes the rebuild so a cache expiry does not run the pipeline in every
 # waiting thread at once. Per-process (like the cache itself); see ARCH-013 /
-# the M138 single-process-state inventory.
+# the M138 single-worker deployment invariant (backend/railway.toml).
 _global_stats_lock = threading.Lock()
 
 
