@@ -59,32 +59,43 @@ def time_factor(answer_ms: int) -> float:
     return (SLOW_MS - answer_ms) / (SLOW_MS - FAST_MS)
 
 
-def _update(user: User, post_difficulty, correct: bool, time_bonus: float) -> float:
-    """Core Elo update against the user's single rating. Returns the delta.
+def _update(db: Session, user: User, post_difficulty, correct: bool, time_bonus: float) -> float:
+    """Core Elo update against the user's single rating. Returns the delta the
+    rating ACTUALLY moved (after the floor clamp, BUG-078), so stored and
+    displayed deltas always sum to the rating.
+
+    Re-reads the row under a row lock first (BUG-028/M144): two concurrent
+    scored answers (rapid Train play, two tabs) would otherwise both read the
+    same rating and the last commit would silently drop one delta and one
+    answered_count increment. The lock holds until the caller commits;
+    SQLite (tests) ignores FOR UPDATE, where its single-writer file lock
+    covers the same race.
 
     `time_bonus` is the extra fraction (0..TIME_BONUS_MAX) added to a correct
     gain; pass 0 for plain (post-quiz) scoring. Caller commits.
     """
+    db.refresh(user, with_for_update=True)
     rating = user.knowledge_rating if user.knowledge_rating is not None else START_RATING
     k = K_PROVISIONAL if user.knowledge_answered_count < PROVISIONAL_ANSWERS else K_STABLE
     expected = expected_score(rating, question_rating(post_difficulty))
     actual = 1.0 if correct else 0.0
     base = k * (actual - expected)
     delta = base * (1.0 + time_bonus) if correct else base
-    user.knowledge_rating = max(FLOOR_RATING, rating + delta)
+    new_rating = max(FLOOR_RATING, rating + delta)
+    user.knowledge_rating = new_rating
     user.knowledge_answered_count += 1
-    return delta
+    return new_rating - rating
 
 
 def apply_answer(db: Session, user: User, post_difficulty, correct: bool) -> float:
     """Post-quiz scoring (no time bonus). Returns the rating delta. Caller commits."""
-    return _update(user, post_difficulty, correct, time_bonus=0.0)
+    return _update(db, user, post_difficulty, correct, time_bonus=0.0)
 
 
 def apply_answer_timed(db: Session, user: User, difficulty, correct: bool, answer_ms: int) -> float:
     """Train marathon scoring: core delta plus a speed bonus on correct answers."""
     bonus = TIME_BONUS_MAX * time_factor(answer_ms) if correct else 0.0
-    return _update(user, difficulty, correct, time_bonus=bonus)
+    return _update(db, user, difficulty, correct, time_bonus=bonus)
 
 
 def elo_summary(user: User) -> int | None:
