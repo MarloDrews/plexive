@@ -6,11 +6,11 @@
 // live in globals.css with a reduced-motion guard.
 
 import { useEffect, useRef, useState } from "react"
-import { createPortal } from "react-dom"
 import Link from "next/link"
 import { useAuth } from "../lib/auth"
 import { useComments } from "../lib/useComments"
 import CommentRow from "./CommentRow"
+import Dialog from "./Dialog"
 import { ArrowUpIcon } from "./icons"
 
 interface Props {
@@ -27,15 +27,15 @@ export default function CommentsBottomSheet({ postId, onClose, onCountChange }: 
   // Positive value = sheet dragged downward (visual feedback only)
   const [dragDelta, setDragDelta] = useState(0)
 
-  const dragRef = useRef<HTMLDivElement>(null)
+  // A callback ref in state, not a plain ref: the sheet's markup now mounts
+  // one commit later, inside Dialog's portal, so an effect keyed on a plain
+  // ref would run while the node was still null and never re-run.
+  const [dragEl, setDragEl] = useState<HTMLDivElement | null>(null)
   const dragStartY = useRef(0)
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => { setMounted(true) }, [])
 
   // Drag handle: swipe up → expand to 75 vh, swipe down → collapse or close
   useEffect(() => {
-    const el = dragRef.current
+    const el = dragEl
     if (!el) return
 
     function onTouchStart(e: TouchEvent) {
@@ -68,17 +68,15 @@ export default function CommentsBottomSheet({ postId, onClose, onCountChange }: 
       el.removeEventListener("touchmove", onTouchMove)
       el.removeEventListener("touchend", onTouchEnd)
     }
-  }, [expanded, onClose])
+  }, [dragEl, expanded, onClose])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (await postComment(draft)) setDraft("")
   }
 
-  if (!mounted) return null
-
-  return createPortal(
-    <div className="fixed inset-0 z-50" onClick={onClose}>
+  return (
+    <Dialog label="Comments" onClose={onClose} className="fixed inset-0 z-50">
       {/* Backdrop */}
       <div className="absolute inset-0 bg-surface-0/70" />
 
@@ -93,7 +91,7 @@ export default function CommentsBottomSheet({ postId, onClose, onCountChange }: 
         onClick={(e) => e.stopPropagation()}
       >
         {/* Drag handle zone */}
-        <div ref={dragRef} className="flex-none pt-3 pb-2 relative touch-none select-none">
+        <div ref={setDragEl} className="flex-none pt-3 pb-2 relative touch-none select-none">
           {/* Pill. Also a real button (A11Y-029): the swipe-up expand gesture
               was touch-only, so keyboard and mouse users could never reach the
               expanded height. The gesture above still works. */}
@@ -198,7 +196,6 @@ export default function CommentsBottomSheet({ postId, onClose, onCountChange }: 
           )}
         </div>
       </div>
-    </div>,
-    document.body
+    </Dialog>
   )
 }

@@ -1,5 +1,6 @@
 import Link from "next/link"
 import Avatar from "@/components/Avatar"
+import Dialog from "@/components/Dialog"
 import Spinner from "@/components/Spinner"
 import VerifiedBadge from "@/components/VerifiedBadge"
 
@@ -27,7 +28,13 @@ export default function FollowListSheet({
 }) {
   if (!open) return null
   return (
-    <div className="fixed inset-0 z-40 flex justify-center" onClick={onClose}>
+    // Dialog portals this to document.body: rendered inline it would sit
+    // inside <main id="app-root">, which the dialog itself marks inert.
+    <Dialog
+      label={open === "followers" ? "Followers" : "Following"}
+      onClose={onClose}
+      className="fixed inset-0 z-40 flex justify-center"
+    >
       <div className="absolute inset-0 bg-surface-0/70" />
       <div
         className="stage-sheet-in absolute inset-x-3 bottom-3 max-w-[406px] mx-auto max-h-[70dvh] rounded-3xl bg-surface-1/95 backdrop-blur-xl flex flex-col overflow-hidden"
@@ -67,6 +74,6 @@ export default function FollowListSheet({
           )}
         </div>
       </div>
-    </div>
+    </Dialog>
   )
 }

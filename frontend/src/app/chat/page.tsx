@@ -6,6 +6,7 @@ import Link from "next/link"
 import useSWR from "swr"
 import BottomNav from "@/components/BottomNav"
 import Avatar from "@/components/Avatar"
+import Dialog from "@/components/Dialog"
 import VerifiedBadge from "@/components/VerifiedBadge"
 import { apiFetch } from "@/lib/api"
 import { useAuth, hasToken } from "@/lib/auth"
@@ -99,7 +100,17 @@ function NewChatOverlay({ onClose, onCreated }: { onClose: () => void; onCreated
   }
 
   return (
-    <div className="absolute inset-0 z-40 bg-surface-0 flex flex-col">
+    // Dialog portals to document.body, so the overlay can no longer position
+    // itself against the page's phone frame; the fixed layer plus the centered
+    // max-w column reproduce it exactly. onBackdropClick is a no-op because
+    // this overlay was opaque and never closed on an outside click.
+    <Dialog
+      label="New chat"
+      onClose={onClose}
+      onBackdropClick={() => {}}
+      className="fixed inset-0 z-40 bg-surface-0 flex justify-center"
+    >
+    <div className="w-full max-w-[430px] h-full flex flex-col">
       <div className="px-3 pt-3 pb-2">
         <div className="flex items-center gap-2">
           <button onClick={onClose} className="btn-icon shrink-0" aria-label="Close">
@@ -107,7 +118,7 @@ function NewChatOverlay({ onClose, onCreated }: { onClose: () => void; onCreated
               <path d="M18 6L6 18M6 6l12 12" />
             </svg>
           </button>
-          <p className="font-serif text-ink font-medium text-base">New chat</p>
+          <h2 className="font-serif text-ink font-medium text-base">New chat</h2>
         </div>
         <input
           type="search"
@@ -187,6 +198,7 @@ function NewChatOverlay({ onClose, onCreated }: { onClose: () => void; onCreated
         </button>
       </div>
     </div>
+    </Dialog>
   )
 }
 
