@@ -313,6 +313,7 @@ export default function ProfilePage() {
             <input
               ref={avatarInputRef}
               type="file"
+              aria-label="Upload a profile picture"
               accept="image/png,image/jpeg,image/webp,image/gif"
               onChange={handleAvatarChange}
               className="hidden"
@@ -393,8 +394,9 @@ export default function ProfilePage() {
 
         {/* Bio */}
         <div className="mx-6 mb-4 card px-5 py-4">
-          <label className="block label-caps mb-1.5">Bio</label>
+          <label htmlFor="profile-bio" className="block label-caps mb-1.5">Bio</label>
           <textarea
+            id="profile-bio"
             value={bio}
             onChange={(e) => setBio(e.target.value)}
             maxLength={160}
@@ -520,6 +522,7 @@ export default function ProfilePage() {
               <form id="settings-panel-username" onSubmit={handleChangeUsername} className="px-5 pb-5 flex flex-col gap-3">
                 <input
                   type="text"
+                  aria-label="New username"
                   placeholder="New username"
                   value={newUsername}
                   onChange={(e) => setNewUsername(e.target.value)}
@@ -553,6 +556,7 @@ export default function ProfilePage() {
               <form id="settings-panel-password" onSubmit={handleChangePassword} className="px-5 pb-5 flex flex-col gap-3">
                 <input
                   type="password"
+                  aria-label="Current password"
                   placeholder="Current password"
                   value={currentPw}
                   onChange={(e) => setCurrentPw(e.target.value)}
@@ -562,6 +566,7 @@ export default function ProfilePage() {
                 />
                 <input
                   type="password"
+                  aria-label="New password"
                   placeholder="New password"
                   value={newPw}
                   onChange={(e) => setNewPw(e.target.value)}
@@ -606,6 +611,7 @@ export default function ProfilePage() {
                 <p className="text-ink-dim text-sm">This will permanently delete your account and all your data.</p>
                 <input
                   type="password"
+                  aria-label="Password, to confirm account deletion"
                   placeholder="Enter password to confirm"
                   value={deletePw}
                   onChange={(e) => setDeletePw(e.target.value)}

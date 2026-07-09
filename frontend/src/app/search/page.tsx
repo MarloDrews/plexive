@@ -322,6 +322,7 @@ export default function SearchPage() {
               <input
                 ref={inputRef}
                 type="search"
+                aria-label="Search posts, books and people"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search posts, books, people…"

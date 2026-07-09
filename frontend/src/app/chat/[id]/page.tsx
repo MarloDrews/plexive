@@ -108,6 +108,7 @@ function Composer({
       {error && <p className="text-bad text-xs pb-1.5">{error}</p>}
       <div className="flex items-end gap-2">
         <textarea
+          aria-label="Message"
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={(e) => {

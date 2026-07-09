@@ -645,7 +645,7 @@ export default function CreatePage() {
                   <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
                 </svg>
                 <input
-                  type="search" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
+                  type="search" aria-label="Search existing posts" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search existing posts..."
                   className="field text-sm pl-9 py-3"
                 />

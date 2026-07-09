@@ -62,6 +62,7 @@ export default function CommentBar({
         {user ? (
           <form onSubmit={handleSubmit} className="flex items-center gap-1.5">
             <input
+              aria-label="Add a comment"
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
               placeholder="Add a comment..."

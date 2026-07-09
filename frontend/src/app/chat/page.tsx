@@ -122,6 +122,7 @@ function NewChatOverlay({ onClose, onCreated }: { onClose: () => void; onCreated
         </div>
         <input
           type="search"
+          aria-label="Search people you follow"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search people you follow…"
@@ -146,6 +147,7 @@ function NewChatOverlay({ onClose, onCreated }: { onClose: () => void; onCreated
         {selected.length > 1 && (
           <input
             type="text"
+            aria-label="Group name (optional)"
             value={groupName}
             onChange={(e) => setGroupName(e.target.value)}
             placeholder="Group name (optional)"

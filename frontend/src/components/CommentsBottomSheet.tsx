@@ -166,6 +166,7 @@ export default function CommentsBottomSheet({ postId, onClose, onCountChange }: 
           {user ? (
             <form onSubmit={handleSubmit} className="flex gap-2 items-center">
               <input
+                aria-label="Add a comment"
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
                 placeholder="Add a comment..."

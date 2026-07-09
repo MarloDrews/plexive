@@ -498,6 +498,7 @@ export default function Battle({ onExit, active = true }: Props) {
         </p>
 
         <input
+          aria-label="Search by username"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search by username"
