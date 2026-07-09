@@ -96,7 +96,10 @@ export default function LoginPage() {
 
         <p className="text-ink-muted text-sm text-center mt-6">
           Don&apos;t have an account?{" "}
-          <Link href="/register" className="text-lamp hover:text-ink transition-colors">
+          {/* Underlined: inside a text block, color alone is not enough to mark
+              a link (A11Y-030, link-in-text-block). Matches the sign-in link in
+              CommentsBottomSheet. */}
+          <Link href="/register" className="text-lamp hover:text-ink underline transition-colors">
             Register
           </Link>
         </p>

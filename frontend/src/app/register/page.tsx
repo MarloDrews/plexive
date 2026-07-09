@@ -107,7 +107,8 @@ export default function RegisterPage() {
 
         <p className="text-ink-muted text-sm text-center mt-6">
           Already have an account?{" "}
-          <Link href="/login" className="text-lamp hover:text-ink transition-colors">
+          {/* Underlined for the same reason as the register link on /login. */}
+          <Link href="/login" className="text-lamp hover:text-ink underline transition-colors">
             Sign in
           </Link>
         </p>
