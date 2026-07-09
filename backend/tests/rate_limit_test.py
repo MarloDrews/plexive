@@ -20,7 +20,7 @@ from concurrent.futures import ThreadPoolExecutor
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-import _throwaway_db  # noqa: F401 — must run before any app import
+import _throwaway_db  # noqa: F401, must run before any app import
 
 from fastapi import HTTPException  # noqa: E402
 

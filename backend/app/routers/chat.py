@@ -446,7 +446,7 @@ def _persist_message(conversation_id: int, user_id: int, username: str, body: st
     """
     db = SessionLocal()
     try:
-        # Participant check on every send — never trust the client.
+        # Participant check on every send; never trust the client.
         if not _get_participant(db, conversation_id, user_id):
             return None, []
         participant_ids = [

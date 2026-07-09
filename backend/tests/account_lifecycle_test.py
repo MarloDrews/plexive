@@ -24,7 +24,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-import _throwaway_db  # noqa: F401 — must run before any app import
+import _throwaway_db  # noqa: F401, must run before any app import
 
 os.environ.setdefault("JWT_SECRET", "lifecycle-test-secret-lifecycle-test")
 
