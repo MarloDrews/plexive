@@ -197,7 +197,7 @@ export default function InterestPicker() {
         <p className="text-ink-muted text-sm mb-3">
           {selected.size} of {interests.length} selected
         </p>
-        {saveError && <p className="text-bad text-sm mb-3">{saveError}</p>}
+        {saveError && <p role="alert" className="text-bad text-sm mb-3">{saveError}</p>}
         <button
           onClick={handleContinue}
           disabled={!canContinue}

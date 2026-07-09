@@ -35,26 +35,26 @@ const BooksFeedCardBlock = memo(function BooksFeedCardBlock({
       <p className="label-caps text-lamp mb-3">Feed Card</p>
 
       <label htmlFor={`${uid}-title`} className={labelCls}>Book title *</label>
-      <input id={`${uid}-title`} type="text" value={value.title} onChange={(e) => onField("title", e.target.value)} maxLength={200} placeholder="Thinking, Fast and Slow" className={inputCls} data-err={errors.fc_title || undefined} />
-      <FieldError msg={errors.fc_title} />
+      <input id={`${uid}-title`} type="text" value={value.title} onChange={(e) => onField("title", e.target.value)} maxLength={200} placeholder="Thinking, Fast and Slow" className={inputCls} data-err={errors.fc_title || undefined} aria-describedby={errors.fc_title ? `${uid}-title-error` : undefined} />
+      <FieldError id={`${uid}-title-error`} msg={errors.fc_title} />
 
       <label htmlFor={`${uid}-author`} className={labelCls}>Author *</label>
-      <input id={`${uid}-author`} type="text" value={value.author} onChange={(e) => onField("author", e.target.value)} placeholder="Daniel Kahneman" className={inputCls} />
-      <FieldError msg={errors.fc_author} />
+      <input id={`${uid}-author`} type="text" value={value.author} onChange={(e) => onField("author", e.target.value)} placeholder="Daniel Kahneman" className={inputCls} aria-describedby={errors.fc_author ? `${uid}-author-error` : undefined} />
+      <FieldError id={`${uid}-author-error`} msg={errors.fc_author} />
 
       <label htmlFor={`${uid}-essence`} className={labelCls}>Essence * <span className="normal-case text-ink-muted">(~200 chars, why this book matters)</span></label>
-      <textarea id={`${uid}-essence`} value={value.essence} onChange={(e) => onField("essence", e.target.value)} maxLength={300} rows={3} placeholder="The core insight in one or two sentences..." className={`${inputCls} resize-none`} />
-      <FieldError msg={errors.fc_essence} />
+      <textarea id={`${uid}-essence`} value={value.essence} onChange={(e) => onField("essence", e.target.value)} maxLength={300} rows={3} placeholder="The core insight in one or two sentences..." className={`${inputCls} resize-none`} aria-describedby={errors.fc_essence ? `${uid}-essence-error` : undefined} />
+      <FieldError id={`${uid}-essence-error`} msg={errors.fc_essence} />
 
       <label htmlFor={`${uid}-teaser1`} className={labelCls}>Teaser 1 * <span className="normal-case text-ink-muted">(~40 chars)</span></label>
-      <input id={`${uid}-teaser1`} type="text" value={value.teaser1} onChange={(e) => onField("teaser1", e.target.value)} maxLength={80} placeholder="What you'll learn..." className={inputCls} />
-      <FieldError msg={errors.fc_teaser1} />
+      <input id={`${uid}-teaser1`} type="text" value={value.teaser1} onChange={(e) => onField("teaser1", e.target.value)} maxLength={80} placeholder="What you'll learn..." className={inputCls} aria-describedby={errors.fc_teaser1 ? `${uid}-teaser1-error` : undefined} />
+      <FieldError id={`${uid}-teaser1-error`} msg={errors.fc_teaser1} />
       <label htmlFor={`${uid}-teaser2`} className={labelCls}>Teaser 2 *</label>
-      <input id={`${uid}-teaser2`} type="text" value={value.teaser2} onChange={(e) => onField("teaser2", e.target.value)} maxLength={80} placeholder="Another insight..." className={inputCls} />
-      <FieldError msg={errors.fc_teaser2} />
+      <input id={`${uid}-teaser2`} type="text" value={value.teaser2} onChange={(e) => onField("teaser2", e.target.value)} maxLength={80} placeholder="Another insight..." className={inputCls} aria-describedby={errors.fc_teaser2 ? `${uid}-teaser2-error` : undefined} />
+      <FieldError id={`${uid}-teaser2-error`} msg={errors.fc_teaser2} />
       <label htmlFor={`${uid}-teaser3`} className={labelCls}>Teaser 3 *</label>
-      <input id={`${uid}-teaser3`} type="text" value={value.teaser3} onChange={(e) => onField("teaser3", e.target.value)} maxLength={80} placeholder="A third takeaway..." className={inputCls} />
-      <FieldError msg={errors.fc_teaser3} />
+      <input id={`${uid}-teaser3`} type="text" value={value.teaser3} onChange={(e) => onField("teaser3", e.target.value)} maxLength={80} placeholder="A third takeaway..." className={inputCls} aria-describedby={errors.fc_teaser3 ? `${uid}-teaser3-error` : undefined} />
+      <FieldError id={`${uid}-teaser3-error`} msg={errors.fc_teaser3} />
 
       <div className="grid grid-cols-2 gap-3">
         <div>
@@ -67,13 +67,13 @@ const BooksFeedCardBlock = memo(function BooksFeedCardBlock({
         </div>
         <div>
           <label htmlFor={`${uid}-year`} className={labelCls}>Year *</label>
-          <input id={`${uid}-year`} type="number" value={value.year} onChange={(e) => onField("year", e.target.value)} placeholder="2011" className={inputCls} />
-          <FieldError msg={errors.fc_year} />
+          <input id={`${uid}-year`} type="number" value={value.year} onChange={(e) => onField("year", e.target.value)} placeholder="2011" className={inputCls} aria-describedby={errors.fc_year ? `${uid}-difficulty-error` : undefined} />
+          <FieldError id={`${uid}-difficulty-error`} msg={errors.fc_year} />
         </div>
         <div>
           <label htmlFor={`${uid}-genre`} className={labelCls}>Genre *</label>
-          <input id={`${uid}-genre`} type="text" value={value.genre} onChange={(e) => onField("genre", e.target.value)} placeholder="Psychology" className={inputCls} />
-          <FieldError msg={errors.fc_genre} />
+          <input id={`${uid}-genre`} type="text" value={value.genre} onChange={(e) => onField("genre", e.target.value)} placeholder="Psychology" className={inputCls} aria-describedby={errors.fc_genre ? `${uid}-genre-error` : undefined} />
+          <FieldError id={`${uid}-genre-error`} msg={errors.fc_genre} />
         </div>
       </div>
 

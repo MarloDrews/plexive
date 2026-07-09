@@ -375,6 +375,20 @@ export default function Battle({ onExit, active = true }: Props) {
 
   // --- Render helpers -------------------------------------------------------
 
+  // Color was the only marker of an answered option (A11Y-018): a glyph and a
+  // spoken suffix carry the same state without it. Derives `cur` from state the
+  // same way optionStyle does.
+  function optionState(i: number): "correct" | "incorrect" | null {
+    const cur = seq[index]
+    if (stage !== "feedback" || lastCorrect === null || !cur || cur.kind === "numeric") return null
+    if (i === cur.answerIndex) return "correct"
+    if (i === selected) return "incorrect"
+    return null
+  }
+
+  const OPTION_GLYPH = { correct: "✓", incorrect: "✗" } as const
+  const OPTION_SUFFIX = { correct: ", correct answer", incorrect: ", your choice, incorrect" } as const
+
   // Per-option pill styling: rest is a frosted white/6% pill; feedback reveals
   // the correct option in good, a wrong pick in bad, the rest dimmed.
   function optionStyle(i: number): React.CSSProperties {
@@ -393,11 +407,19 @@ export default function Battle({ onExit, active = true }: Props) {
 
   function renderStrip() {
     return (
-      <div className="flex items-center justify-around">
-        <ScoreStat label="You" value={myScore} color="var(--color-lamp)" />
-        <span className="text-ink-muted text-[13px]">vs</span>
-        <ScoreStat label={opponent ? `@${opponent}` : "Rival"} value={oppScore} color="var(--color-ink)" />
-      </div>
+      <>
+        {/* The opponent's score arrives over the socket with nothing else to
+            signal it, so it is announced politely. These are settled values;
+            the per-frame TickingNumber is kept out of every live region. */}
+        <div aria-live="polite" className="sr-only">
+          {`You ${myScore}, ${opponent ? "@" + opponent : "rival"} ${oppScore}`}
+        </div>
+        <div aria-hidden="true" className="flex items-center justify-around">
+          <ScoreStat label="You" value={myScore} color="var(--color-lamp)" />
+          <span className="text-ink-muted text-[13px]">vs</span>
+          <ScoreStat label={opponent ? `@${opponent}` : "Rival"} value={oppScore} color="var(--color-ink)" />
+        </div>
+      </>
     )
   }
 
@@ -436,10 +458,12 @@ export default function Battle({ onExit, active = true }: Props) {
             key={i}
             onClick={interactive ? () => handleSelect(i) : undefined}
             disabled={!interactive || selected !== null}
+            aria-label={optionState(i) ? `${opt}${OPTION_SUFFIX[optionState(i)!]}` : undefined}
             className="text-left rounded-3xl border px-5 py-4 text-base transition-colors duration-150 disabled:cursor-default"
             style={optionStyle(i)}
           >
             {opt}
+            {optionState(i) && <span aria-hidden="true" className="ml-2">{OPTION_GLYPH[optionState(i)!]}</span>}
           </button>
         ))}
       </div>

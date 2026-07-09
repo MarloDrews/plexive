@@ -94,7 +94,7 @@ export default function RegisterPage() {
               required
               className="field rounded-full text-sm px-5 py-3.5"
             />
-            {error && <p className="text-bad text-sm px-2">{error}</p>}
+            {error && <p role="alert" className="text-bad text-sm px-2">{error}</p>}
             <button
               type="submit"
               disabled={submitting}

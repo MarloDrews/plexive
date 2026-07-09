@@ -56,7 +56,7 @@ export default function CommentBar({
       className="absolute left-3 right-3 z-10"
       style={{ bottom: "calc(env(safe-area-inset-bottom) + 12px)" }}
     >
-      {error && <p className="mb-1.5 mx-3 text-bad text-xs">{error}</p>}
+      {error && <p role="alert" className="mb-1.5 mx-3 text-bad text-xs">{error}</p>}
       <div className="rounded-full backdrop-blur-xl bg-white/[0.06] px-2 py-1.5 flex items-center gap-1.5">
       <div className="flex-1 min-w-0">
         {user ? (

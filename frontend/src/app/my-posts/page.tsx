@@ -56,7 +56,7 @@ export default function MyPostsPage() {
           </div>
 
           {fetchError && (
-            <p className="text-bad text-sm px-4">{fetchError}</p>
+            <p role="alert" className="text-bad text-sm px-4">{fetchError}</p>
           )}
 
           {/* Loading: pulsing slab rows where the posts will appear */}

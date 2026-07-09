@@ -155,7 +155,7 @@ function NewChatOverlay({ onClose, onCreated }: { onClose: () => void; onCreated
             className="field rounded-full mt-2 text-sm py-2.5"
           />
         )}
-        {error && <p className="text-bad text-xs mt-2">{error}</p>}
+        {error && <p role="alert" className="text-bad text-xs mt-2">{error}</p>}
       </div>
 
       <div className="flex-1 overflow-y-auto px-3">

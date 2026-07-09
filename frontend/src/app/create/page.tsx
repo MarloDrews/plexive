@@ -114,6 +114,14 @@ export default function CreatePage() {
   // Guards against a slow response for an earlier query landing after a later one.
   const searchSeq = useRef(0)
 
+  // Submitting swaps the whole wizard for the success card. Focus has to follow
+  // it, or it stays on the vanished submit button and a screen reader never
+  // learns the post went through (A11Y-016). The heading is the landing point.
+  const successRef = useRef<HTMLHeadingElement>(null)
+  useEffect(() => {
+    if (step === "success") successRef.current?.focus()
+  }, [step])
+
   useEffect(() => {
     if (step !== 2) return
     const trimmed = searchQuery.trim()
@@ -571,7 +579,8 @@ export default function CreatePage() {
       <div className="h-[100dvh] bg-surface-0 flex justify-center">
         <div className="w-full max-w-[430px] h-[100dvh] relative flex items-center justify-center px-6">
           <div className="card px-8 py-10 text-center w-full max-w-xs flex flex-col items-center gap-4">
-            <p className="font-serif text-ink text-2xl font-medium">Post submitted</p>
+            {/* tabIndex -1: a focus target, not a tab stop. */}
+            <h1 ref={successRef} tabIndex={-1} className="font-serif text-ink text-2xl font-medium outline-none">Post submitted</h1>
             <p className="text-ink-dim text-sm">
               {createdStatus === "published" ? "It is now live in the feed." : "It will appear once approved."}
             </p>
@@ -708,7 +717,7 @@ export default function CreatePage() {
 
               <SourcesEditor items={sources} onChange={setSources} labelPlaceholder="Source name..." error={errors.s_sources} />
 
-              {serverError && <p className="text-bad text-sm mb-3">{serverError}</p>}
+              {serverError && <p role="alert" className="text-bad text-sm mb-3">{serverError}</p>}
               <button onClick={handleSubmit} disabled={submitting} className="btn btn-primary h-12 w-full mt-4">
                 {submitting ? "Submitting..." : "Submit post"}
               </button>
@@ -807,10 +816,10 @@ export default function CreatePage() {
               {/* Submit */}
               {errors.image_urls && (
                 <div className="bg-bad/10 rounded-2xl px-4 py-3 mb-3">
-                  <p className="text-bad text-sm">{errors.image_urls}</p>
+                  <p role="alert" className="text-bad text-sm">{errors.image_urls}</p>
                 </div>
               )}
-              {serverError && <p className="text-bad text-sm mb-3">{serverError}</p>}
+              {serverError && <p role="alert" className="text-bad text-sm mb-3">{serverError}</p>}
               <button
                 onClick={handleSubmit}
                 disabled={submitting}

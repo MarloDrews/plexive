@@ -319,7 +319,7 @@ export default function ProfilePage() {
               className="hidden"
             />
           </div>
-          {avatarError && <p className="text-bad text-xs mb-2">{avatarError}</p>}
+          {avatarError && <p role="alert" className="text-bad text-xs mb-2">{avatarError}</p>}
           <h1 className="flex items-center gap-1.5 font-serif text-ink text-2xl font-medium">
             @{user.username}
             {user.is_verified > 0 && <VerifiedBadge size={20} level={user.is_verified} />}
@@ -414,7 +414,7 @@ export default function ProfilePage() {
               {bioLoading ? "Saving..." : "Save bio"}
             </button>
           </div>
-          {bioError && <p className="text-bad text-xs mt-1">{bioError}</p>}
+          {bioError && <p role="alert" className="text-bad text-xs mt-1">{bioError}</p>}
         </div>
 
         {/* Follow Requests (private accounts only) */}
@@ -441,7 +441,7 @@ export default function ProfilePage() {
             </button>
             {showRequests && (
               <div id="follow-requests-panel" className="px-5 pb-5 flex flex-col gap-3">
-                {requestError && <p className="text-bad text-xs">{requestError}</p>}
+                {requestError && <p role="alert" className="text-bad text-xs">{requestError}</p>}
                 {pendingRequests.length === 0 ? (
                   <p className="text-ink-muted text-sm">No pending requests.</p>
                 ) : (
@@ -501,7 +501,7 @@ export default function ProfilePage() {
                 }`} />
               </button>
             </div>
-            {privacyError && <p className="text-bad text-xs px-5 pb-3 -mt-1">{privacyError}</p>}
+            {privacyError && <p role="alert" className="text-bad text-xs px-5 pb-3 -mt-1">{privacyError}</p>}
           </div>
 
           {/* Change username */}
@@ -530,7 +530,7 @@ export default function ProfilePage() {
                   required
                   className={inputClass}
                 />
-                {usernameError && <p className="text-bad text-sm">{usernameError}</p>}
+                {usernameError && <p role="alert" className="text-bad text-sm">{usernameError}</p>}
                 <button type="submit" disabled={usernameLoading} className={submitClass}>
                   {usernameLoading ? "Saving..." : "Save username"}
                 </button>
@@ -574,7 +574,7 @@ export default function ProfilePage() {
                   required
                   className={inputClass}
                 />
-                {passwordError && <p className="text-bad text-sm">{passwordError}</p>}
+                {passwordError && <p role="alert" className="text-bad text-sm">{passwordError}</p>}
                 <button type="submit" disabled={passwordLoading} className={submitClass}>
                   {passwordLoading ? "Saving..." : "Save password"}
                 </button>
@@ -619,7 +619,7 @@ export default function ProfilePage() {
                   required
                   className={inputClass}
                 />
-                {deleteError && <p className="text-bad text-sm">{deleteError}</p>}
+                {deleteError && <p role="alert" className="text-bad text-sm">{deleteError}</p>}
                 <button
                   type="submit"
                   disabled={deleteLoading}

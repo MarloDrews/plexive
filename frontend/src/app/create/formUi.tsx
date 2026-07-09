@@ -14,9 +14,12 @@ export interface Interest {
 export const inputCls = "field text-sm py-3"
 export const labelCls = "label-caps mb-2 mt-4 block"
 
-export function FieldError({ msg }: { msg: string | undefined }) {
+// role="alert" so a validation message that appears after submit is announced
+// without moving focus (A11Y-016). The optional id lets a caller wire the
+// message to its input with aria-describedby.
+export function FieldError({ msg, id }: { msg: string | undefined; id?: string }) {
   if (!msg) return null
-  return <p className="text-bad text-xs mt-1">{msg}</p>
+  return <p id={id} role="alert" className="text-bad text-xs mt-1">{msg}</p>
 }
 
 export function Accordion({

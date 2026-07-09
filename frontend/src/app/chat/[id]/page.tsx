@@ -105,7 +105,7 @@ function Composer({
       className="px-3 py-2"
       style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 8px)" }}
     >
-      {error && <p className="text-bad text-xs pb-1.5">{error}</p>}
+      {error && <p role="alert" className="text-bad text-xs pb-1.5">{error}</p>}
       <div className="flex items-end gap-2">
         <textarea
           aria-label="Message"
@@ -342,11 +342,14 @@ export default function ConversationPage() {
               </p>
             )}
           </div>
-          {status !== "open" && (
-            <span className="text-ink-muted text-xs shrink-0">
-              {status === "connecting" ? "connecting…" : "offline"}
-            </span>
-          )}
+          {/* The wrapper is always present so the pill's arrival is announced. */}
+          <span aria-live="polite" className="shrink-0">
+            {status !== "open" && (
+              <span className="text-ink-muted text-xs">
+                {status === "connecting" ? "connecting…" : "offline"}
+              </span>
+            )}
+          </span>
         </div>
 
         {/* Messages */}
