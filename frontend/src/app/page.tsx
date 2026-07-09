@@ -295,7 +295,10 @@ export default function Home() {
                 ) : tab.id === "train" ? (
                   <Marathon onExit={handleExitToFeed} />
                 ) : (
-                  <Battle onExit={handleExitToFeed} />
+                  // active gates the battle socket (M143): swiping away
+                  // disconnects it, so a background tab is never silently
+                  // challengeable and never keeps an idle socket retrying.
+                  <Battle onExit={handleExitToFeed} active={activeIndex === i} />
                 )}
               </div>
             )

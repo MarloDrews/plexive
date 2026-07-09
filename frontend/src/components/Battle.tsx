@@ -42,6 +42,11 @@ interface UserResult {
 interface Props {
   // Switch back to the feed from the summary's secondary button.
   onExit?: () => void
+  // Whether the Battle tab is the visible pager page. The socket only
+  // connects while active (M143/FE-RENDER-040/BUG-042): a tab the user swiped
+  // away from disconnects, so it cannot silently accept challenges in the
+  // background or keep an idle socket retrying.
+  active?: boolean
 }
 
 // A label-caps stat (tiny label over a mono value), tinted by `color`.
@@ -56,7 +61,7 @@ function ScoreStat({ label, value, color }: { label: string; value: number; colo
   )
 }
 
-export default function Battle({ onExit }: Props) {
+export default function Battle({ onExit, active = true }: Props) {
   const { user } = useAuth()
 
   const [stage, setStage] = useState<Stage>("lobby")
@@ -66,6 +71,11 @@ export default function Battle({ onExit }: Props) {
   // pattern that breaks when React invokes the updater twice).
   const stageRef = useRef<Stage>("lobby")
   stageRef.current = stage
+
+  // The server-issued id of the battle this client is in (M142/BUG-010): every
+  // opponent_* frame carries one, so frames from a battle that is already over
+  // are dropped instead of corrupting the current duel.
+  const battleIdRef = useRef<string | null>(null)
 
   // User search (lobby).
   const [query, setQuery] = useState("")
@@ -88,6 +98,10 @@ export default function Battle({ onExit }: Props) {
   const [myScore, setMyScore] = useState(0)
   const [oppScore, setOppScore] = useState(0)
   const [oppDone, setOppDone] = useState(false)
+  // Mirrored for the stable socket handler (like stageRef): opponent_left
+  // must not discard a battle whose result is already known (BUG-043).
+  const oppDoneRef = useRef(false)
+  oppDoneRef.current = oppDone
 
   // Per-question answer state.
   const [selected, setSelected] = useState<number | null>(null)
@@ -111,6 +125,7 @@ export default function Battle({ onExit }: Props) {
 
   function resetToLobby() {
     committedRef.current = false
+    battleIdRef.current = null
     setStage("lobby")
     setSeq([])
     setCount(0)
@@ -122,12 +137,28 @@ export default function Battle({ onExit }: Props) {
     setLastCorrect(null)
   }
 
-  // Inbound socket frames drive the whole duel.
+  // Inbound socket frames drive the whole duel. Frames carrying a battle_id
+  // that does not match the current battle are stale (a duel that already
+  // ended) and are dropped (M142/BUG-010/BUG-087).
   const handleEvent = useCallback((e: BattleInbound) => {
+    const stale = (battleId?: string) =>
+      battleId !== undefined && battleId !== battleIdRef.current
     switch (e.type) {
       case "battle_start": {
+        if (
+          e.battle_id === battleIdRef.current &&
+          stageRef.current !== "lobby" &&
+          stageRef.current !== "summary"
+        ) {
+          // Duplicate start for the battle we are already in: a mutual
+          // challenge converges on one room server-side and both handlers
+          // re-send the same start frame (BUG-010). Resetting would wipe
+          // progress mid-duel.
+          break
+        }
         const next = buildSequence(e.seed, e.count)
         committedRef.current = false
+        battleIdRef.current = e.battle_id ?? null
         setOpponent(e.opponent)
         setSeq(next)
         setCount(e.count)
@@ -143,25 +174,48 @@ export default function Battle({ onExit }: Props) {
         break
       }
       case "opponent_progress":
+        if (stale(e.battle_id)) break
         setOppScore(e.score)
         break
       case "opponent_finish":
+        if (stale(e.battle_id)) break
         setOppScore(e.score)
         setOppDone(true)
         break
       case "opponent_left":
         // Sibling setters over the stage ref instead of a side effect inside
-        // the setStage updater (updaters must stay pure).
+        // the setStage updater (updaters must stay pure). Ignored when the
+        // opponent's final score is already in (BUG-043): the duel is decided,
+        // their disconnect changes nothing.
+        if (stale(e.battle_id) || oppDoneRef.current) break
         if (stageRef.current !== "lobby" && stageRef.current !== "summary") {
+          battleIdRef.current = null
           setMessage("Your opponent left the battle.")
           setStage("lobby")
         }
         break
       case "opponent_unavailable":
-        setMessage(`@${e.username ?? "That user"} is not online. Ask them to open the Battle tab.`)
+        setMessage(
+          e.reason === "busy"
+            ? `@${e.username ?? "That user"} is in another battle right now.`
+            : `@${e.username ?? "That user"} is not online. They need the Battle tab open.`
+        )
         setStage((s) => (s === "waiting" ? "lobby" : s))
         break
       case "error":
+        if (e.code === "stale_battle") {
+          // A frame of ours from a battle that is already over; nothing to do.
+          break
+        }
+        if (e.code === "not_in_battle" && stageRef.current !== "lobby" && stageRef.current !== "summary") {
+          // The server has no room for us (it tore the battle down while we
+          // kept playing): the duel is over, stop stranding the player on a
+          // dead screen (BUG-011).
+          battleIdRef.current = null
+          setMessage("The battle ended.")
+          setStage("lobby")
+          break
+        }
         setMessage(e.detail ?? "Something went wrong.")
         setStage((s) => (s === "waiting" ? "lobby" : s))
         break
@@ -170,7 +224,21 @@ export default function Battle({ onExit }: Props) {
     }
   }, [])
 
-  const { status, challenge, progress, finish } = useBattleSocket(!!user, handleEvent)
+  const { status, challenge, progress, finish } = useBattleSocket(!!user && active, handleEvent)
+
+  // A closed socket mid-duel means the server already tore the room down and
+  // notified the opponent (disconnect teardown, M142/BUG-011): drop back to
+  // the lobby with a message instead of playing on against nobody. Also fires
+  // when the user swipes away from the tab (the socket disconnects on
+  // inactive), so returning shows a clean lobby.
+  useEffect(() => {
+    if (status === "closed" && stage !== "lobby" && stage !== "summary") {
+      battleIdRef.current = null
+      committedRef.current = false
+      setMessage("Connection lost. The battle ended.")
+      setStage("lobby")
+    }
+  }, [status, stage])
 
   // Debounced user search (mirrors the search screen's Accounts tab).
   useEffect(() => {
@@ -244,7 +312,14 @@ export default function Battle({ onExit }: Props) {
     const newScore = myScore + (correct ? 1 : 0)
     setMyScore(newScore)
     setLastCorrect(correct)
-    progress(index, correct, newScore)
+    // A failed send means the socket (and with it the server-side room) is
+    // gone: end the battle visibly instead of playing on against nobody
+    // (BUG-011; the old code ignored this return value).
+    if (!progress(index, correct, newScore, battleIdRef.current ?? undefined)) {
+      setMessage("Connection lost. The battle ended.")
+      resetToLobby()
+      return
+    }
     setStage("feedback")
   }
 
@@ -268,7 +343,11 @@ export default function Battle({ onExit }: Props) {
     // strand the duel on a blank, unfinishable screen.
     if (nextIndex >= Math.min(count, seq.length)) {
       // myScore already includes the answer just revealed.
-      finish(myScore)
+      if (!finish(myScore, battleIdRef.current ?? undefined)) {
+        setMessage("Connection lost. The battle ended.")
+        resetToLobby()
+        return
+      }
       setStage("done")
       return
     }
@@ -454,10 +533,12 @@ export default function Battle({ onExit }: Props) {
   }
 
   function renderWaiting() {
+    // No accept step exists in the protocol (pairing is instant), so the copy
+    // must not claim one (BUG-042); the opponent just needs the tab open.
     return (
       <MessageSlab>
         <p className="text-ink text-base font-semibold">Waiting for @{opponent}...</p>
-        <p className="text-ink-dim text-sm">They need the Battle tab open to accept.</p>
+        <p className="text-ink-dim text-sm">They need the Battle tab open.</p>
         <button className="btn btn-ghost px-5 py-2.5" onClick={resetToLobby}>
           Cancel
         </button>
@@ -513,10 +594,15 @@ export default function Battle({ onExit }: Props) {
   }
 
   function renderDone() {
+    // An exit control so an opponent who never finishes cannot strand the
+    // player on a screen with no way out (BUG-011).
     return (
       <MessageSlab>
         <p className="text-ink text-base font-semibold">You finished &mdash; {myScore} correct</p>
         <p className="text-ink-dim text-sm">Waiting for @{opponent} to finish...</p>
+        <button className="btn btn-ghost px-5 py-2.5" onClick={resetToLobby}>
+          Back to lobby
+        </button>
       </MessageSlab>
     )
   }
@@ -563,6 +649,15 @@ export default function Battle({ onExit }: Props) {
 
   return (
     <div className="h-full overflow-y-auto overscroll-y-contain px-4 pt-20 pb-24">
+      {/* The lobby renders `message` itself; every other stage shows it here so
+          server errors are never invisible mid-battle (BUG-011). */}
+      {message && stage !== "lobby" && !!user && (
+        <div className="mb-4">
+          <MessageSlab>
+            <p className="text-ink-dim text-sm">{message}</p>
+          </MessageSlab>
+        </div>
+      )}
       {body}
     </div>
   )
