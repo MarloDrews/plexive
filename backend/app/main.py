@@ -83,20 +83,22 @@ async def lifespan(_app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 # Never a wildcard: the allowed origin list comes from the environment in
-# production and falls back to the local dev frontend.
+# production and falls back to the local dev frontend. Trailing slashes are
+# stripped because the browser's Origin header never carries one, so
+# "https://app.example.com/" would silently match nothing (BUG-071/M153).
 ALLOWED_ORIGINS = [
-    origin.strip()
+    origin.strip().rstrip("/")
     for origin in os.getenv("FRONTEND_ORIGIN", "http://localhost:3000").split(",")
-    if origin.strip() and origin.strip() != "*"
+    if origin.strip().rstrip("/") and origin.strip() != "*"
 ]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=ALLOWED_ORIGINS,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+if not ALLOWED_ORIGINS:
+    # FRONTEND_ORIGIN="" or "*" would otherwise CORS-block every browser
+    # request with no hint at the cause; fail the boot loudly instead
+    # (BUG-071/M153).
+    raise RuntimeError(
+        "FRONTEND_ORIGIN resolved to an empty origin list. Set it to the real "
+        "frontend URL(s), comma-separated; a wildcard is never allowed."
+    )
 
 # Defense-in-depth cap on request bodies. Uploads enforce their own much
 # smaller limits via chunked reads; this stops oversized JSON payloads.
@@ -185,6 +187,18 @@ class BodySizeLimitMiddleware:
 
 
 app.add_middleware(BodySizeLimitMiddleware, max_bytes=MAX_BODY_BYTES)
+
+# Registered AFTER the body cap so CORS is the OUTERMOST layer (last added
+# wraps everything): the cap's 413 then carries the CORS headers and the
+# frontend can read it instead of seeing an opaque network error
+# (BUG-071/M153).
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=ALLOWED_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(admin_router.router, prefix="/api")
 app.include_router(auth_router.router, prefix="/api")

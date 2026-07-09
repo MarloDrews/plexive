@@ -38,7 +38,11 @@ if len(JWT_SECRET) < _MIN_SECRET_LENGTH:
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_DAYS = 30
 
-_bearer = HTTPBearer()
+# auto_error=False everywhere: HTTPBearer's own error for a MISSING header is
+# a 403, while an invalid token yields 401, so clients keying re-auth on 401
+# mishandled the cleared-storage case (BUG-072/M153). get_current_user raises
+# the 401 itself so both "no credentials" and "bad credentials" are 401 with
+# WWW-Authenticate: Bearer.
 _optional_bearer = HTTPBearer(auto_error=False)
 
 
@@ -94,9 +98,15 @@ def _token_version_matches(user: Optional[User], token_version: int) -> bool:
 
 
 def get_current_user(
-    credentials: HTTPAuthorizationCredentials = Depends(_bearer),
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(_optional_bearer),
     db: Session = Depends(get_db),
 ) -> User:
+    if credentials is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     user_id, token_version = decode_access_token(credentials.credentials)
     # Deliberately one users lookup per authenticated request (not cached): it is
     # what keeps is_active revocation immediate -- a soft-deleted user is locked
