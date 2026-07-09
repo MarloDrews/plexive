@@ -1,6 +1,7 @@
 import asyncio
 import contextlib
 import os
+import time
 from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
@@ -37,6 +38,27 @@ def _assert_single_worker() -> None:
             )
 
 
+def _run_startup_ddl() -> None:
+    """create_all with the boot race tolerated (M146/ARCH-014).
+
+    create_all is check-then-create, not atomic: two instances starting at
+    once (deploy overlap, scale-out mistake) can both see a table missing and
+    the loser dies on a duplicate-object error, likely restart-looping. One
+    delayed retry makes that benign: the second attempt sees the winner's
+    tables and no-ops; a transient DB blip at boot gets the same second
+    chance (BUG-077). RUN_STARTUP_DDL=0 skips boot DDL entirely (live-DB
+    schema changes go through the manual scripts/ migrations anyway); Alembic
+    as a deploy step stays the deferred long-term answer.
+    """
+    if os.getenv("RUN_STARTUP_DDL", "1") == "0":
+        return
+    try:
+        Base.metadata.create_all(bind=engine)
+    except Exception:
+        time.sleep(1)
+        Base.metadata.create_all(bind=engine)
+
+
 async def _limiter_sweep_loop() -> None:
     """Periodic rate-limiter cleanup, run as a background task so the sweep
     never executes inline in a request thread or on a websocket frame
@@ -50,7 +72,7 @@ async def _limiter_sweep_loop() -> None:
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     _assert_single_worker()
-    Base.metadata.create_all(bind=engine)
+    _run_startup_ddl()
     sweep_task = asyncio.create_task(_limiter_sweep_loop())
     yield
     sweep_task.cancel()
