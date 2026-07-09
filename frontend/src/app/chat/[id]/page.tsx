@@ -181,7 +181,9 @@ export default function ConversationPage() {
     },
     [conversationId]
   )
-  const { status, error, send, clearError } = useChatSocket(onSocketMessage)
+  // Keyed on the restored auth state (M143/BUG-050): logging in while this
+  // page is mounted now connects the socket, and logging out closes it.
+  const { status, error, send, clearError } = useChatSocket(!authLoading && !!user, onSocketMessage)
 
   const loadInitial = useCallback(async () => {
     setNotFound(false)

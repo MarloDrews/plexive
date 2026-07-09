@@ -13,35 +13,58 @@ import { TOKEN_KEY, wsUrl } from "@/lib/storage"
 
 export type BattleInbound =
   | { type: "auth_ok"; user_id: number }
-  | { type: "battle_start"; seed: number; count: number; opponent: string }
-  | { type: "opponent_progress"; index: number; correct: boolean; score: number }
-  | { type: "opponent_finish"; score: number }
-  | { type: "opponent_left" }
-  | { type: "opponent_unavailable"; username?: string }
-  | { type: "error"; detail?: string }
+  | { type: "battle_start"; battle_id: string; seed: number; count: number; opponent: string }
+  | { type: "opponent_progress"; battle_id?: string; index: number; correct: boolean; score: number }
+  | { type: "opponent_finish"; battle_id?: string; score: number }
+  | { type: "opponent_left"; battle_id?: string }
+  | { type: "opponent_unavailable"; username?: string; reason?: "offline" | "busy" }
+  | { type: "error"; detail?: string; code?: string }
   | { type: "pong" }
 
 type SocketStatus = "connecting" | "open" | "closed"
 
-// Opens one battle socket for the signed-in user and keeps it alive for the
-// lifetime of the calling component. `loggedIn` gates the connection (and
-// reconnects it if the user logs in after mount); guests get a closed socket.
-export function useBattleSocket(loggedIn: boolean, onEvent: (e: BattleInbound) => void) {
+// Reconnect backoff (M143/FE-RENDER-040): 1s doubling to a 30s cap instead of
+// the old fixed 3s loop. 4401/4403 closes are deterministic rejections, so
+// they stop the retry chain; a login/tab change re-keys the effect.
+const RETRY_BASE_MS = 1000
+const RETRY_MAX_MS = 30000
+const CLOSE_UNAUTHORIZED = 4401
+const CLOSE_INSECURE = 4403
+
+// Opens one battle socket while `enabled` is true. The caller passes
+// loggedIn AND tab-active (M143/FE-RENDER-040/BUG-042): a Battle tab the user
+// swiped away from disconnects, so a hidden tab can no longer sit
+// challengeable in the background and idle sockets stop retrying forever.
+export function useBattleSocket(enabled: boolean, onEvent: (e: BattleInbound) => void) {
   const [status, setStatus] = useState<SocketStatus>("connecting")
   const wsRef = useRef<WebSocket | null>(null)
+  const authedRef = useRef(false)
   const onEventRef = useRef(onEvent)
   onEventRef.current = onEvent
 
   useEffect(() => {
-    const token = typeof window !== "undefined" ? localStorage.getItem(TOKEN_KEY) : null
-    if (!loggedIn || !token) {
+    if (!enabled) {
       setStatus("closed")
       return
     }
     let unmounted = false
     let retryTimer: ReturnType<typeof setTimeout>
+    let attempts = 0
+
+    function scheduleRetry() {
+      const delay = Math.min(RETRY_BASE_MS * 2 ** attempts, RETRY_MAX_MS)
+      attempts += 1
+      retryTimer = setTimeout(connect, delay)
+    }
 
     function connect() {
+      // Read the token fresh on every attempt (BUG-050): a rotated token is
+      // picked up by the next connect instead of replaying a stale capture.
+      const token = typeof window !== "undefined" ? localStorage.getItem(TOKEN_KEY) : null
+      if (!token) {
+        setStatus("closed")
+        return
+      }
       // The constructor throws synchronously on a malformed URL (e.g. a missing
       // API base). Treat that like a failed connection and schedule a retry, so
       // the throw does not escape the reconnect timer and permanently kill the
@@ -52,16 +75,21 @@ export function useBattleSocket(loggedIn: boolean, onEvent: (e: BattleInbound) =
       } catch {
         if (unmounted) return
         setStatus("closed")
-        retryTimer = setTimeout(connect, 3000)
+        scheduleRetry()
         return
       }
       wsRef.current = ws
+      authedRef.current = false
       setStatus("connecting")
       ws.onopen = () => ws.send(JSON.stringify({ type: "auth", token }))
       ws.onmessage = (e) => {
         try {
           const data = JSON.parse(e.data) as BattleInbound
-          if (data.type === "auth_ok") setStatus("open")
+          if (data.type === "auth_ok") {
+            attempts = 0
+            authedRef.current = true
+            setStatus("open")
+          }
           onEventRef.current(data)
         } catch {
           // Ignore malformed frames.
@@ -69,10 +97,12 @@ export function useBattleSocket(loggedIn: boolean, onEvent: (e: BattleInbound) =
       }
       // Reconnect is driven by onclose; onerror only silences the console warning.
       ws.onerror = () => {}
-      ws.onclose = () => {
+      ws.onclose = (e) => {
+        authedRef.current = false
         if (unmounted) return
         setStatus("closed")
-        retryTimer = setTimeout(connect, 3000)
+        if (e.code === CLOSE_UNAUTHORIZED || e.code === CLOSE_INSECURE) return
+        scheduleRetry()
       }
     }
 
@@ -80,13 +110,16 @@ export function useBattleSocket(loggedIn: boolean, onEvent: (e: BattleInbound) =
     return () => {
       unmounted = true
       clearTimeout(retryTimer)
+      authedRef.current = false
       wsRef.current?.close()
     }
-  }, [loggedIn])
+  }, [enabled])
 
   function sendFrame(frame: object): boolean {
     const ws = wsRef.current
-    if (!ws || ws.readyState !== WebSocket.OPEN) return false
+    // Gate on auth_ok, not just readyState (BUG-093): between onopen and
+    // auth_ok a send would report success and then be dropped server-side.
+    if (!authedRef.current || !ws || ws.readyState !== WebSocket.OPEN) return false
     ws.send(JSON.stringify(frame))
     return true
   }
@@ -97,13 +130,14 @@ export function useBattleSocket(loggedIn: boolean, onEvent: (e: BattleInbound) =
   }, [])
 
   // Report one answered question; the server mirrors it to the opponent.
-  const progress = useCallback((index: number, correct: boolean, score: number): boolean => {
-    return sendFrame({ type: "progress", index, correct, score })
+  // battle_id lets the server drop frames from a battle that is already over.
+  const progress = useCallback((index: number, correct: boolean, score: number, battleId?: string): boolean => {
+    return sendFrame({ type: "progress", index, correct, score, battle_id: battleId })
   }, [])
 
   // Report the final score once all questions are answered.
-  const finish = useCallback((score: number): boolean => {
-    return sendFrame({ type: "finish", score })
+  const finish = useCallback((score: number, battleId?: string): boolean => {
+    return sendFrame({ type: "finish", score, battle_id: battleId })
   }, [])
 
   return { status, challenge, progress, finish }
