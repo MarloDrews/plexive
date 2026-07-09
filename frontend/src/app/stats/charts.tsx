@@ -297,6 +297,7 @@ export function CategorySection({ title, charts }: { title: string; charts: Char
             <button
               key={c.label}
               onClick={() => setSelected(i)}
+              aria-pressed={selected === i}
               className={`btn shrink-0 px-3.5 py-1.5 text-[0.8125rem] ${
                 selected === i ? "bg-white/[0.12] text-ink" : "btn-quiet"
               }`}

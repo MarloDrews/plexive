@@ -149,9 +149,12 @@ function NewChatOverlay({ onClose, onCreated }: { onClose: () => void; onCreated
         {results.map((u) => {
           const isSelected = selected.some((s) => s.username === u.username)
           return (
+            // Multi-select, so checkbox semantics rather than aria-pressed.
             <button
               key={u.username}
               onClick={() => toggle(u)}
+              role="checkbox"
+              aria-checked={isSelected}
               className="w-full flex items-center gap-3 py-2.5 text-left cursor-pointer"
             >
               <Avatar username={u.username} avatarUrl={u.avatar_url} size={40} verified={u.is_verified} />
@@ -159,7 +162,7 @@ function NewChatOverlay({ onClose, onCreated }: { onClose: () => void; onCreated
                 @{u.username}
                 {u.is_verified > 0 && <VerifiedBadge size={14} level={u.is_verified} />}
               </span>
-              <span className={`w-5 h-5 rounded-full border flex items-center justify-center ${isSelected ? "bg-lamp border-lamp" : "border-edge-strong"}`}>
+              <span aria-hidden="true" className={`w-5 h-5 rounded-full border flex items-center justify-center ${isSelected ? "bg-lamp border-lamp" : "border-edge-strong"}`}>
                 {isSelected && (
                   <svg viewBox="0 0 24 24" fill="none" stroke="var(--color-surface-0)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3">
                     <path d="M20 6L9 17l-5-5" />

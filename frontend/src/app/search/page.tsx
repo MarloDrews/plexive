@@ -9,10 +9,13 @@ import { FORMAT_IDS, FORMAT_STYLES, type FormatId } from "@/lib/formats"
 import { apiFetch } from "@/lib/api"
 import { useAuth } from "@/lib/auth"
 import { useSwipeTabs } from "@/lib/useSwipeTabs"
+import { tabPanelProps } from "@/lib/tablist"
 import BottomNav from "@/components/BottomNav"
 import SegmentedTabs from "@/components/SegmentedTabs"
 import VerifiedBadge from "@/components/VerifiedBadge"
 import Avatar from "@/components/Avatar"
+
+const SEARCH_TABS_ID = "search-tabs"
 
 const FORMAT_CHIPS: { label: string; value: FormatId | "" }[] = [
   { label: "All", value: "" },
@@ -333,6 +336,8 @@ export default function SearchPage() {
               onSelect={selectTab}
               tabRefs={tabRefs}
               indicatorRef={indicatorRef}
+              idBase={SEARCH_TABS_ID}
+              ariaLabel="Search results"
             />
           )}
 
@@ -346,6 +351,7 @@ export default function SearchPage() {
                   <button
                     key={chip.value}
                     onClick={() => setFormatFilter(chip.value)}
+                    aria-pressed={isActive}
                     className={`chip shrink-0 px-3 py-1 text-xs ${
                       isActive
                         ? style
@@ -370,7 +376,7 @@ export default function SearchPage() {
           {/* Skeletons appear only when there is nothing to show yet; with
               previous results on screen they stay visible while the debounced
               refetch is in flight and swap in place when it lands. */}
-          <div className={pageClass}>
+          <div className={pageClass} {...tabPanelProps(SEARCH_TABS_ID, 0)}>
             {!hasQuery ? (
               idleMessage
             ) : postsLoading && results === null ? (
@@ -389,7 +395,7 @@ export default function SearchPage() {
             )}
           </div>
 
-          <div className={pageClass}>
+          <div className={pageClass} {...tabPanelProps(SEARCH_TABS_ID, 1)}>
             {!hasQuery ? (
               idleMessage
             ) : usersLoading && userResults === null ? (

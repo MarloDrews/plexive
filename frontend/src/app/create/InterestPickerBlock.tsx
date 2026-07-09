@@ -39,6 +39,7 @@ const InterestPickerBlock = memo(function InterestPickerBlock({
                 <button
                   key={interest.slug}
                   onClick={() => onToggle(interest.slug)}
+                  aria-pressed={isSelected}
                   className={`rounded-full px-2.5 py-1 text-xs font-medium transition-colors duration-150 ${
                     isSelected
                       ? "bg-white/[0.12] text-ink cursor-pointer"

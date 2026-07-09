@@ -616,6 +616,7 @@ export default function CreatePage() {
                     <button
                       key={fmt.id}
                       onClick={() => handleSelectFormat(fmt.id)}
+                      aria-pressed={selected}
                       className={`rounded-3xl p-5 text-left transition-colors border-2 ${selected ? `${fmt.accent} bg-white/[0.08]` : "border-transparent bg-white/[0.04]"} cursor-pointer`}
                     >
                       <div className="font-semibold text-ink text-sm">{fmt.name}</div>

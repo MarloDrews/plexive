@@ -5,10 +5,13 @@ import dynamic from "next/dynamic"
 import { useAuth } from "@/lib/auth"
 import { getSavedPostIds } from "@/lib/savedPosts"
 import { useSwipeTabs } from "@/lib/useSwipeTabs"
+import { tabPanelProps } from "@/lib/tablist"
 import BottomNav from "@/components/BottomNav"
 import SegmentedTabs from "@/components/SegmentedTabs"
 import StatsErrorBoundary from "./StatsErrorBoundary"
 import type { GlobalStats, MyStats } from "./types"
+
+const STATS_TABS_ID = "stats-tabs"
 
 // While a tab chunk downloads, show the same pulsing slabs its data-loading
 // state uses, so chunk load and data load are indistinguishable.
@@ -72,6 +75,8 @@ export default function StatsPage() {
           onSelect={selectTab}
           tabRefs={tabRefs}
           indicatorRef={indicatorRef}
+          idBase={STATS_TABS_ID}
+          ariaLabel="Stats sections"
         />
       </div>
 
@@ -85,7 +90,7 @@ export default function StatsPage() {
         {/* Per-tab error boundaries (inside the page-level one): a render
             crash in one tab degrades that tab alone; the switcher keeps
             working and the other tabs stay usable. */}
-        <div className={pageClass}>
+        <div className={pageClass} {...tabPanelProps(STATS_TABS_ID, 0)}>
           {activatedIndices.has(0) && (
             <StatsErrorBoundary>
               {globalLoading ? (
@@ -101,7 +106,7 @@ export default function StatsPage() {
           )}
         </div>
 
-        <div className={pageClass}>
+        <div className={pageClass} {...tabPanelProps(STATS_TABS_ID, 1)}>
           {activatedIndices.has(1) && (
             <StatsErrorBoundary>
               {!user ? (
@@ -126,7 +131,7 @@ export default function StatsPage() {
           )}
         </div>
 
-        <div className={pageClass}>
+        <div className={pageClass} {...tabPanelProps(STATS_TABS_ID, 2)}>
           {activatedIndices.has(2) && (
             <StatsErrorBoundary>
               {!user ? (

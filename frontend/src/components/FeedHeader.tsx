@@ -2,6 +2,11 @@
 
 import type { MutableRefObject, RefObject } from "react"
 import type { FormatId } from "@/lib/formats"
+import { handleTabListKeyDown, tabId, tabPanelId } from "@/lib/tablist"
+
+// Namespaces the feed pager's tab/panel ids; app/page.tsx puts the matching
+// tabPanelId on each pager page.
+export const FEED_TABS_ID = "feed-tabs"
 
 // One feed tab as defined by the TABS array in app/page.tsx.
 export interface FeedTab {
@@ -65,6 +70,9 @@ export default function FeedHeader({
             circle, center padding keeps edge tabs snappable. */}
         <div
           ref={tabStripRef}
+          role="tablist"
+          aria-label="Feed"
+          onKeyDown={(e) => handleTabListKeyDown(e, tabs.length, tabs.findIndex((t) => t.id === activeTab), onTabClick, tabRefs)}
           className="relative flex overflow-x-scroll snap-x snap-mandatory h-11 items-center rounded-full backdrop-blur-xl bg-white/[0.06] mr-[52px] px-[calc(50%-40px)]"
         >
           {tabs.map((tab, i) => {
@@ -74,6 +82,12 @@ export default function FeedHeader({
                 key={tab.id}
                 ref={(el) => { tabRefs.current[i] = el }}
                 onClick={() => onTabClick(i)}
+                role="tab"
+                id={tabId(FEED_TABS_ID, i)}
+                aria-selected={isActive}
+                aria-controls={tabPanelId(FEED_TABS_ID, i)}
+                // Roving tabindex: Tab reaches the strip once, arrows move within.
+                tabIndex={isActive ? 0 : -1}
                 className={`snap-center shrink-0 px-4 h-11 flex items-center justify-center cursor-pointer transition-colors duration-200 ${
                   isActive ? "text-ink font-semibold" : "text-ink-muted font-medium"
                 }`}
@@ -85,6 +99,7 @@ export default function FeedHeader({
                 <span className="relative z-10 flex items-center gap-1.5 text-sm whitespace-nowrap">
                   {tab.format && (
                     <span
+                      aria-hidden="true"
                       className={`w-1.5 h-1.5 rounded-full shrink-0 transition-opacity duration-200 ${
                         isActive ? "opacity-100" : "opacity-0"
                       }`}
@@ -100,6 +115,7 @@ export default function FeedHeader({
               scroll-content space. JS owns inline left and width. */}
           <div
             ref={indicatorRef}
+            aria-hidden="true"
             className="absolute top-1/2 -translate-y-1/2 h-9 rounded-full bg-white/[0.10] pointer-events-none"
             style={{ left: 0 }}
           />

@@ -10,6 +10,7 @@ import { getSavedPostIds } from "@/lib/savedPosts"
 import { getLikedPostIds } from "@/lib/likedPosts"
 import { fetchPostsByIds } from "@/lib/fetchPosts"
 import { useSwipeTabs } from "@/lib/useSwipeTabs"
+import { tabPanelProps } from "@/lib/tablist"
 import BottomNav from "@/components/BottomNav"
 import SegmentedTabs from "@/components/SegmentedTabs"
 import VerifiedBadge from "@/components/VerifiedBadge"
@@ -17,6 +18,8 @@ import PostRow from "@/components/PostRow"
 import Spinner from "@/components/Spinner"
 import Avatar from "@/components/Avatar"
 import FollowListSheet, { type ListUser } from "@/components/FollowListSheet"
+
+const PROFILE_TABS_ID = "profile-tabs"
 
 interface ProfileData {
   username: string
@@ -316,6 +319,8 @@ export default function PublicProfilePage() {
               onSelect={selectTab}
               tabRefs={tabRefs}
               indicatorRef={indicatorRef}
+              idBase={PROFILE_TABS_ID}
+              ariaLabel="Profile sections"
             />
 
             {/* Tab content — swipeable pager inside the vertical scroller;
@@ -329,13 +334,13 @@ export default function PublicProfilePage() {
                 ref={pagerRef}
                 className="flex items-start overflow-x-scroll overflow-y-hidden snap-x snap-mandatory"
               >
-                <div ref={(el) => { pageRefs.current[0] = el }} className="w-full shrink-0 snap-start px-4 pt-3 min-h-[160px]">
+                <div ref={(el) => { pageRefs.current[0] = el }} {...tabPanelProps(PROFILE_TABS_ID, 0)} className="w-full shrink-0 snap-start px-4 pt-3 min-h-[160px]">
                   <PostsTab posts={posts} />
                 </div>
-                <div ref={(el) => { pageRefs.current[1] = el }} className="w-full shrink-0 snap-start px-4 pt-3 min-h-[160px]">
+                <div ref={(el) => { pageRefs.current[1] = el }} {...tabPanelProps(PROFILE_TABS_ID, 1)} className="w-full shrink-0 snap-start px-4 pt-3 min-h-[160px]">
                   <PostList posts={savedPosts} emptyMessage="Nothing here yet." />
                 </div>
-                <div ref={(el) => { pageRefs.current[2] = el }} className="w-full shrink-0 snap-start px-4 pt-3 min-h-[160px]">
+                <div ref={(el) => { pageRefs.current[2] = el }} {...tabPanelProps(PROFILE_TABS_ID, 2)} className="w-full shrink-0 snap-start px-4 pt-3 min-h-[160px]">
                   <PostList posts={likedPosts} emptyMessage="Nothing here yet." />
                 </div>
               </div>

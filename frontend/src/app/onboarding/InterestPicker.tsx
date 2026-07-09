@@ -146,6 +146,7 @@ export default function InterestPicker() {
                       <button
                         key={i.id}
                         onClick={() => toggle(i.slug)}
+                        aria-pressed={isSelected}
                         className={`chip ${
                           isSelected
                             ? "chip-on font-semibold"
@@ -173,6 +174,7 @@ export default function InterestPicker() {
                       <button
                         key={i.id}
                         onClick={() => toggle(i.slug)}
+                        aria-pressed={isSelected}
                         className={`chip ${
                           isSelected
                             ? "chip-on font-semibold"

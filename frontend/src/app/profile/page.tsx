@@ -420,6 +420,8 @@ export default function ProfilePage() {
           <div className="mx-6 mb-4 card overflow-hidden">
             <button
               onClick={() => setShowRequests((v) => !v)}
+              aria-expanded={showRequests}
+              aria-controls="follow-requests-panel"
               className="w-full px-5 py-4 flex items-center justify-between text-left"
             >
               <span className="text-ink text-sm font-medium flex items-center gap-2">
@@ -436,7 +438,7 @@ export default function ProfilePage() {
               </svg>
             </button>
             {showRequests && (
-              <div className="px-5 pb-5 flex flex-col gap-3">
+              <div id="follow-requests-panel" className="px-5 pb-5 flex flex-col gap-3">
                 {requestError && <p className="text-bad text-xs">{requestError}</p>}
                 {pendingRequests.length === 0 ? (
                   <p className="text-ink-muted text-sm">No pending requests.</p>
@@ -485,10 +487,12 @@ export default function ProfilePage() {
               <button
                 onClick={handleTogglePrivacy}
                 disabled={privacyLoading}
+                role="switch"
+                aria-checked={user.is_private}
                 className={`relative w-11 h-6 rounded-full transition-colors duration-200 disabled:opacity-50 ${
                   user.is_private ? "bg-lamp" : "bg-white/[0.10]"
                 }`}
-                aria-label="Toggle private account"
+                aria-label="Private account"
               >
                 <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-ink rounded-full transition-transform duration-200 ${
                   user.is_private ? "translate-x-5" : "translate-x-0"
@@ -502,6 +506,8 @@ export default function ProfilePage() {
           <div className="border-b border-edge">
             <button
               onClick={() => togglePanel("username")}
+              aria-expanded={open === "username"}
+              aria-controls="settings-panel-username"
               className="w-full px-5 py-4 flex items-center justify-between text-left"
             >
               <span className="text-ink text-sm font-medium">Change username</span>
@@ -511,7 +517,7 @@ export default function ProfilePage() {
               </svg>
             </button>
             {open === "username" && (
-              <form onSubmit={handleChangeUsername} className="px-5 pb-5 flex flex-col gap-3">
+              <form id="settings-panel-username" onSubmit={handleChangeUsername} className="px-5 pb-5 flex flex-col gap-3">
                 <input
                   type="text"
                   placeholder="New username"
@@ -533,6 +539,8 @@ export default function ProfilePage() {
           <div className="border-b border-edge">
             <button
               onClick={() => togglePanel("password")}
+              aria-expanded={open === "password"}
+              aria-controls="settings-panel-password"
               className="w-full px-5 py-4 flex items-center justify-between text-left"
             >
               <span className="text-ink text-sm font-medium">Change password</span>
@@ -542,7 +550,7 @@ export default function ProfilePage() {
               </svg>
             </button>
             {open === "password" && (
-              <form onSubmit={handleChangePassword} className="px-5 pb-5 flex flex-col gap-3">
+              <form id="settings-panel-password" onSubmit={handleChangePassword} className="px-5 pb-5 flex flex-col gap-3">
                 <input
                   type="password"
                   placeholder="Current password"
@@ -583,6 +591,8 @@ export default function ProfilePage() {
           <div>
             <button
               onClick={() => togglePanel("delete")}
+              aria-expanded={open === "delete"}
+              aria-controls="settings-panel-delete"
               className="w-full px-5 py-4 flex items-center justify-between text-left"
             >
               <span className="text-bad text-sm">Delete account</span>
@@ -592,7 +602,7 @@ export default function ProfilePage() {
               </svg>
             </button>
             {open === "delete" && (
-              <form onSubmit={handleDeleteAccount} className="px-5 pb-5 flex flex-col gap-3">
+              <form id="settings-panel-delete" onSubmit={handleDeleteAccount} className="px-5 pb-5 flex flex-col gap-3">
                 <p className="text-ink-dim text-sm">This will permanently delete your account and all your data.</p>
                 <input
                   type="password"
