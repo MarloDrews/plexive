@@ -10,8 +10,8 @@ See CROSS_POST_VARIANCE.md for the format.
 
 ### Reframe opener
 - longer-sentence reversal (belief carried into a long sentence) - 6
-- mid-scene concrete open (lead on the fact, no flat belief-then-punch) - 5
-- flat declarative on the headline fact/number (gold-style, no reversal or imperative) - 2
+- mid-scene concrete open (lead on the fact, no flat belief-then-punch) - 7
+- flat declarative on the headline fact/number (gold-style, no reversal or imperative) - 4
 - staccato reversal punch (flat belief, then a 3-6 word negation) - 3
 - number-first mismatch (lead on the number gap) - 2
 - concrete-test / behavioral-mirror open - 5
@@ -24,16 +24,17 @@ See CROSS_POST_VARIANCE.md for the format.
 - flat belief-rule declarative, overturned in prose (not a staccato punch) - 3
 - flat claim, thesis up front ("The danger was documented early.") - 1
 - imperative scene, watch-it-happen ("Watch an octopus escape.") - 1
+- second-person naive-conditional ("Buy X and you get Y", belief carried in an imperative) - 1
 
 ### Closing line
 - deep-time / long-duration aphorism - 4
 - spatial / elemental image - 2
 - identity / boundary reflection - 4
-- quiet-utility, present-day consequence - 4
+- quiet-utility, present-day consequence - 5
 - elevated "written across/into [X]" aphorism - 1
 - concrete callback to the opening object - 1
 - flat callback to the opener motif - 1
-- measured causal present-day (tied to the cause) - 4
+- measured causal present-day (tied to the cause) - 5
 - present-day, mildly urgent (loss outpacing knowledge) - 1
 - flat trade-off / cost statement - 1
 - blunt principle / rule statement - 4
@@ -42,8 +43,8 @@ See CROSS_POST_VARIANCE.md for the format.
 - flat observation on why a belief persisted - 1
 - flat mechanism restatement (de-landed, no aphorism) - 1
 - earned antithesis / symmetry landing (real opposition) - 1
-- flat unsolved-status close (de-landed) - 1
-- flattened / de-landed close (ends plain, no landing) - 4
+- flat unsolved-status close (de-landed) - 2
+- flattened / de-landed close (ends plain, no landing) - 6
 
 ### Story pivot
 - "the explanation waited until [year], when [role] [Name]" - 1
@@ -52,10 +53,10 @@ See CROSS_POST_VARIANCE.md for the format.
 - single-episode experiment, doubt beat, no why-pivot - 3
 - evidence settles it (no fresh dated scientist) - 1
 - relay across several actors (answer arrives from elsewhere) - 3
-- discoverer + confirmer, replication holds - 2
-- old prediction, dated confirmation ("the case broke open on [date]") - 2
+- discoverer + confirmer, replication holds - 3
+- old prediction, dated confirmation ("the case broke open on [date]") - 3
 - process/recovery narrative (get the sample, then read it) - 1
-- heresy then vindication (defended for years, then proof) - 3
+- heresy then vindication (defended for years, then proof) - 4
 - eureka scene, discoverer's reaction, no vindication arc - 2
 - found, then lost, then re-established - 1
 - finding resisted / ignored after proof (inverse vindication) - 1
@@ -65,6 +66,20 @@ See CROSS_POST_VARIANCE.md for the format.
 - naming chain, delayed understanding (no lone hero, no vindication) - 1
 
 ## Recent batches
+
+### 2026-07-10-a
+Batch coordination: kept exactly one landing per post and rotated the slot (Ebbinghaus=bigger_picture,
+Jevons=surprises, Nuclear=angle, Prions=angle, Vagus=bigger_picture); de-landed the rest to plain closes.
+Kept Jevons's naive-conditional surprises opener + recast Vagus's to a mid-scene counted-fibers open; kept
+Jevons's "the same shape" highway bridge + retitled the Prions angle off "the same trick"; recast Nuclear's
+"vivid, not often" reflex-antithesis bigger_picture opener to plain; reordered Ebbinghaus's teaser triad off
+the shared [figure][why][reframe] order (lead is now the reframe); reworded the Vagus quiz off "afferent" to
+"sensory". No fact, number, name, quote, or source changed.
+- ebbinghaus: opener flat declarative truth ("Most of what you forget, you forget fast") / close quiet-utility present-day ("shows up a week later, in what is still there", batch keeper) / pivot discoverer + confirmer, replication holds (Ebbinghaus 1879-1885, Murre & Dros 2015) [mechanism]
+- jevons: opener second-person naive-conditional ("Buy a car that sips less fuel and you burn less fuel", batch keeper) / close flattened / de-landed ("caps the total or prices it"; kept landing at surprises "burn past whatever the first ones saved") / pivot old prediction, later revival + naming chain (Jevons 1865, ignored a century, Khazzoom + Brookes 1980s, Saunders 1992) [reasoning-trap]
+- nuclear: opener flat declarative truth ("sits with wind and solar, among the safest") / close flattened / de-landed ("cost, waste, and where the sun and wind are strong"; kept landing at angle "already folded into nuclear's 0.03"); bigger_picture opener recast off the "vivid, not often" reflex antithesis / pivot none (no story section) [scale-number]
+- prions: opener concrete mid-scene ("The agent hollowing out those brains carried no genetic code") / close flat unsolved-status, de-landed ("the question researchers are now working to answer"; kept landing at angle "from a cow, through a meal, into a human brain") / pivot heresy then vindication (Prusiner outcast, named 1982, 1997 Nobel) [delayed-discovery]
+- vagus: opener mid-scene concrete, lead on the counted fact (recast off the naive-conditional to "roughly four in five fibers carry word up") / close measured causal present-day ("a wire straight to the brain", batch keeper) / pivot none (no story section) [experience-it]
 
 ### 2026-07-05-d
 Batch coordination: kept eyes' "learned to see" as the one earned crafted close, softened condorcet
