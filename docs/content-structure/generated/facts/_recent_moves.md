@@ -10,63 +10,97 @@ See CROSS_POST_VARIANCE.md for the format.
 
 ### Reframe opener
 - longer-sentence reversal (belief carried into a long sentence) - 6
-- mid-scene concrete open (lead on the fact, no flat belief-then-punch) - 11
-- flat declarative on the headline fact/number (gold-style, no reversal or imperative) - 6
+- mid-scene concrete open (lead on the fact, no flat belief-then-punch) - 15
+- flat declarative on the headline fact/number (gold-style, no reversal or imperative) - 8
 - staccato reversal punch (flat belief, then a 3-6 word negation) - 3
 - number-first mismatch (lead on the number gap) - 2
 - concrete-test / behavioral-mirror open - 5
 - flat "X does Y fast" declarative, then prose pivot - 1
-- object-in-hand imperative - 3
+- object-in-hand imperative - 4
 - accounting "start with" reframe - 2
-- threshold-fact / boundary-value opener - 2
-- flat paradox / two-true-claims statement - 3
-- concede-then-pivot ("[X] is not, by itself, [Y]") - 1
-- flat belief-rule declarative, overturned in prose (not a staccato punch) - 3
+- threshold-fact / boundary-value opener - 3
+- flat paradox / two-true-claims statement - 4
+- concede-then-pivot ("[X] is not, by itself, [Y]") - 2
+- flat belief-rule declarative, overturned in prose (not a staccato punch) - 4
 - flat claim, thesis up front ("The danger was documented early.") - 1
-- imperative scene, watch-it-happen ("Watch an octopus escape.") - 2
-- second-person naive-conditional ("Buy X and you get Y", belief carried in an imperative) - 2
+- imperative scene, watch-it-happen ("Watch an octopus escape.", "Look at the back of your hand") - 4
+- second-person naive-conditional ("Buy X and you get Y", belief carried in an imperative) - 3
+- flat declarative, then a twist (state it, then undercut: "the largest... almost no one has seen it") - 1
 
 ### Closing line
 - deep-time / long-duration aphorism - 4
-- spatial / elemental image - 3
+- spatial / elemental image - 5
 - identity / boundary reflection - 4
-- quiet-utility, present-day consequence - 6
+- quiet-utility, present-day consequence - 7
 - elevated "written across/into [X]" aphorism - 1
 - concrete callback to the opening object - 1
 - flat callback to the opener motif - 1
-- measured causal present-day (tied to the cause) - 6
+- measured causal present-day (tied to the cause) - 8
 - present-day, mildly urgent (loss outpacing knowledge) - 1
 - flat trade-off / cost statement - 1
-- blunt principle / rule statement - 4
-- practical how-to imperative - 3
+- blunt principle / rule statement - 5
+- practical how-to imperative - 4
 - flat caution, de-landed (do not assume X snaps back) - 1
 - flat observation on why a belief persisted - 1
 - flat mechanism restatement (de-landed, no aphorism) - 1
-- earned antithesis / symmetry landing (real opposition) - 2
-- flat unsolved-status close (de-landed) - 3
-- flattened / de-landed close (ends plain, no landing) - 6
-- reframe-turn landing (the fact's flip kept at surprises) - 4
+- earned antithesis / symmetry landing (real opposition) - 3
+- flat unsolved-status close (de-landed) - 4
+- flattened / de-landed close (ends plain, no landing) - 10
+- reframe-turn landing (the fact's flip kept at surprises/story) - 6
 
 ### Story pivot
 - "the explanation waited until [year], when [role] [Name]" - 1
-- subject-first, "[Name] [verb]ed in [year]" - 2
+- subject-first, "[Name] [verb]ed in [year]" - 3
 - long dormancy, "then in [year] the [role] went looking" - 3
 - single-episode experiment, doubt beat, no why-pivot - 3
 - evidence settles it (no fresh dated scientist) - 1
-- relay across several actors (answer arrives from elsewhere) - 4
-- discoverer + confirmer, replication holds - 4
-- old prediction, dated confirmation ("the case broke open on [date]") - 4
-- process/recovery narrative (get the sample, then read it) - 1
-- heresy then vindication (defended for years, then proof) - 6
-- eureka scene, discoverer's reaction, no vindication arc - 3
-- found, then lost, then re-established - 1
+- relay across several actors (answer arrives from elsewhere) - 5
+- discoverer + confirmer, replication holds - 6
+- old prediction, dated confirmation ("the case broke open on [date]") - 5
+- process/recovery narrative (get the sample, then read it) - 2
+- heresy then vindication (defended for years, then proof) - 8
+- eureka scene, discoverer's reaction, no vindication arc - 4
+- found, then lost, then re-established - 2
 - finding resisted / ignored after proof (inverse vindication) - 1
 - untested/invented claim -> century of repetition -> modern debunk - 3
-- view hardens into lore, then modern overturn (correct-for-its-time science overreaches) - 1
+- view hardens into lore, then modern overturn (correct-for-its-time science overreaches) - 2
 - worry investigated, then dismissed (analyst finds no effect) - 1
 - naming chain, delayed understanding (no lone hero, no vindication) - 1
 
 ## Recent batches
+
+### 2026-07-10-c
+Batch coordination: kept one earned landing per post and de-landed the rest positionally (ended units
+on a plain fact/clause, not just softened wording): benfords=story, copper=angles[0], jevons=angles[1],
+msg=angles[1], serotonin=angles[1], neanderthal=bigger_picture, ebbinghaus=bigger_picture,
+vagus=bigger_picture, wald=bigger_picture, largest=surprises, eyewitness=angles[0],
+drowning=bigger_picture(safety); cathedral/prions/nuclear already plain, untouched. Recast benfords'
+"Picture" surprises opener to a flat declarative (kept wald's "Picture the damage map"). Recast largest's
+"How do you prove...?" how_we_know opener to method-first (kept prions'). Reworded copper's "went quiet
+for most of a century" story pivot (kept jevons' "ignored for over a century"). Varied wald's "the same
+trap" angle title off its teaser duplication. Recast benfords' settled/unsettled open_questions opener off
+the seesaw (kept ebbinghaus' "still argued"). Thinned msg's three "not" angle turns to one earned ("follows
+the label, not the food") and dropped serotonin's three antithesis landings to one; dropped neanderthal's
+"did not lose and vanish" (kept the misconception echo). De-landed the batch's strongest antithesis closes
+(copper "never stopped working / stopped using it", serotonin "treat better than explain", msg "durability
+of a scary story"). Reworded benfords + jevons payoff-spend teasers. Tightened vagus' triple-stated
+surprises. Removed largest's bigger_picture "only trees" echo of its surprises image. No fact, number,
+name, quote, or source changed.
+- benfords: opener flat declarative setup, overturned in prose (recast off "Picture the nine digits") / close earned ironic reversal kept at story ("Benford's name is the one that stuck"), surprises/how_we_know/angles[2]/bigger_picture de-landed, open_questions opener off the seesaw / pivot relay across several actors (Newcomb 1881, Benford 1938, Hill 1995) [reasoning-trap]
+- cathedral: opener flat paradox / two-true-claims ("Two things are true at once") / close flat unsolved-status kept at bigger_picture ("genuinely unfinished"), untouched exemplar / pivot none [myth-corrected]
+- copper: opener object-in-hand imperative ("Wipe the same film of MRSA") / close reframe-turn kept at angles[0] ("not the instant most people picture"); surprises/angles[1]/angles[2]/bigger_picture de-landed / pivot found, dormant, re-established, reworded off "went quiet for most of a century" (Egypt, Nägeli 1893, EPA 2008, ICU 2013) [delayed-discovery]
+- drowning: opener threshold/number fragment ("Twenty to sixty seconds") / close practical safety directive kept at bigger_picture ("Keep your eyes on the water"); how_we_know de-landed / pivot none [myth-corrected]
+- ebbinghaus: opener flat declarative truth ("Most of what you forget, you forget fast") / close quiet-utility present-day kept at bigger_picture ("in what is still there"); surprises + angles[1] de-landed / pivot discoverer + confirmer, replication holds (Ebbinghaus 1879-1885, Murre & Dros 2015) [mechanism]
+- eyewitness: opener mid-scene concrete ("The witness is sure of what she saw") / close plain-trailing, surprises de-landed ("never a recording" cut), one mild landing at angles[0] / pivot heresy then vindication (Loftus 1974, DNA exonerations) [reasoning-trap]
+- jevons: opener second-person naive-conditional ("Buy a car that sips less fuel") / close plain-trailing, surprises + angles[0] de-landed ("the night" crescendo trimmed), mild landing at angles[1] / pivot old prediction, later revival + naming chain (Jevons 1865, ignored over a century, Khazzoom + Brookes 1980s, Saunders 1992) [reasoning-trap]
+- largest: opener flat declarative + twist ("largest living thing... almost no one has ever seen it") / close image kept at surprises ("dirt and trees"); story + bigger_picture de-landed ("only trees" echo removed), how_we_know opener off "How do you prove...?" / pivot discoverer + confirmer, two teams a decade apart (Michigan 1992, Oregon 2003) [scale-number]
+- msg: opener mid-scene concrete narrative ("In 1968 a doctor... wrote") / close one earned "not" kept at angles[1] ("follows the label, not the food"); surprises/angles[0]/bigger_picture de-landed, two angle titles off "not" / pivot eureka scene, no vindication (Ikeda/umami 1908) [myth-corrected]
+- neanderthal: opener imperative scene ("Look at the back of your hand") / close measured present-day kept at bigger_picture ("it never stopped copying"), "did not lose and vanish" dropped; surprises reordered + angles[1] de-landed / pivot process/recovery narrative (Pääbo clean-room, 2010 genome, 2022 Nobel) [delayed-discovery]
+- nuclear: opener flat declarative claim / close plain-trailing throughout (0 landings, plain exemplar), untouched / pivot none [scale-number]
+- prions: opener concrete mid-scene ("carried no genetic code") / close spatial image kept at angles[0] ("from a cow, through a meal, into a human brain"), near-plain exemplar, how_we_know "How do you prove a germ has no genes?" kept / pivot heresy then vindication (Prusiner outcast, named 1982, 1997 Nobel) [delayed-discovery]
+- serotonin: opener concede-then-pivot ("Grant all of that") / close plain-trailing, surprises/angles[0]/bigger_picture de-landed (three antithesis landings cut to one at angles[1]) / pivot view hardens into lore, then modern overturn (Schildkraut 1965, SSRIs 1990s, Moncrieff 2022) [reasoning-trap]
+- vagus: opener mid-scene concrete counted fact ("roughly four in five fibers carry reports up"), triple-state tightened / close measured causal present-day kept at bigger_picture ("a wire straight to the brain") / pivot none [experience-it]
+- wald: opener imperative scene, kept ("Picture the damage map") / close blunt thesis principle kept at bigger_picture ("ask who is missing"); surprises/angles[0]/angles[1] de-landed, story death-fact plain, "the same trap" title varied / pivot subject-first dated, single-episode ("In 1943... Wald saw the flaw") [reasoning-trap]
 
 ### 2026-07-10-b
 Batch coordination: kept exactly one landing per post and de-landed the rest positionally (benfords=story,
@@ -156,10 +190,3 @@ theory*; split the loss one_line semicolon.
 - gold: opener object-in-hand imperative / close concrete callback to the ring / pivot old prediction, dated confirmation
 - antarctica: opener discovery-scene + date (mid-scene concrete) / close measured causal present-day / pivot process/recovery narrative
 - fossil: opener accounting "start with" reframe / close identity-boundary reflection / pivot heresy then vindication
-
-### 2026-07-03-d
-- gps: opener longer-sentence reversal / close quiet-utility present-day / pivot single-episode experiment
-- roman: opener staccato reversal (batch keeper) / close deep-time duration / pivot "waited until 2017, when Jackson"
-- cells: opener longer-sentence reversal / close identity-boundary reflection / pivot dormancy + "then 1996 Bianchi went looking"
-- trees: opener mid-scene concrete / close spatial-elemental image / pivot subject-first "de Saussure ... in 1804"
-- mediterranean: opener longer-sentence reversal / close deep-time zoom-out / pivot evidence settles it
