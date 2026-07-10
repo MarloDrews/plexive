@@ -24,7 +24,7 @@
     "headline": "Steam engines that used 75% less coal for the same work helped Britain burn more coal than ever before.",
     "teasers": [
       "One economist saw it coming in 1865",
-      "Why cheaper light did not save energy",
+      "Cheaper light did not save energy",
       "The trap inside every efficiency promise"
     ],
     "post_difficulty": 2
@@ -72,12 +72,12 @@
       "content": [
         {
           "title": "Cheaper light did not shrink the energy bill",
-          "body": "Lighting is the cleanest case on record. Jeff Tsao and colleagues traced three centuries of it across five lighting technologies, from tallow candles through gas lamps to LEDs. A unit of light grew thousands of times cheaper. People did not pocket the difference: they lit streets, offices, billboards, screens, the night. The total energy poured into lighting only climbed.",
+          "body": "Lighting is the cleanest case on record. Jeff Tsao and colleagues traced three centuries of it across five lighting technologies, from tallow candles through gas lamps to LEDs. A unit of light grew thousands of times cheaper. People did not pocket the difference: they lit streets, offices, billboards, screens, the night.",
           "visual_svg": "<svg viewBox='0 34 400 216' xmlns='http://www.w3.org/2000/svg' fill='none'><g stroke='currentColor' stroke-width='2' stroke-linecap='round' opacity='0.5'><line x1='58' y1='40' x2='58' y2='210'/><line x1='58' y1='210' x2='366' y2='210'/></g><path d='M74 66 C165 118, 255 172, 348 196' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' opacity='0.7'/><path d='M74 200 C165 186, 255 116, 348 58' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><text x='150' y='96' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.75' text-anchor='start'>Cost of light</text><text x='258' y='80' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>Light used</text><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'><text x='74' y='230'>1700</text><text x='348' y='230'>2000</text></g></svg>"
         },
         {
           "title": "Add lanes and the traffic fills them",
-          "body": "The same shape shows up on the highway. Gilles Duranton and Matthew Turner measured lane-kilometers and driving across US cities, and found the two rise almost one for one. Faster travel is cheaper travel, so people take more trips and move farther from where they work. Build 10% more road and you get roughly 10% more driving, until the new lanes are as jammed as the old.",
+          "body": "The same shape shows up on the highway. Gilles Duranton and Matthew Turner measured lane-kilometers and driving across US cities, and found the two rise almost one for one. Faster travel is cheaper travel, so people take more trips and move farther from where they work. Build 10% more road and you get roughly 10% more driving.",
           "visual_svg": "<svg viewBox='0 34 400 216' xmlns='http://www.w3.org/2000/svg' fill='none'><g stroke='currentColor' stroke-width='2' stroke-linecap='round' opacity='0.5'><line x1='62' y1='40' x2='62' y2='210'/><line x1='62' y1='210' x2='362' y2='210'/></g><line x1='74' y1='198' x2='344' y2='58' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><text x='250' y='108' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>rise in step</text><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.7'><text x='212' y='238' text-anchor='middle'>More lanes</text><text x='28' y='125' text-anchor='middle' transform='rotate(-90 28 125)'>More driving</text></g></svg>"
         }
       ]
@@ -85,7 +85,7 @@
     {
       "type": "bigger_picture",
       "order": 9,
-      "content": "Efficiency is not wasted here. But efficiency and conservation are different goals, and reaching one does not hand you the other. Make a resource cheaper to use and people use more of it, so the total keeps climbing as long as the world wants more of what it buys. That worry now trails every promise that a more efficient data center will draw less power. If the aim is less coal, or less carbon, efficiency has to run beside something that caps the total or prices it."
+      "content": "Efficiency still delivers real gains here. But efficiency and conservation are different goals, and reaching one does not hand you the other. Make a resource cheaper to use and people use more of it, so the total keeps climbing as long as the world wants more of what it buys. That worry now trails every promise that a more efficient data center will draw less power. If the aim is less coal, or less carbon, efficiency has to run beside something that caps the total or prices it."
     },
     {
       "type": "quiz",
