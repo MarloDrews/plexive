@@ -45,7 +45,7 @@
     {
       "type": "surprises",
       "order": 3,
-      "content": "By the numbers that count deaths, nuclear power sits with wind and solar, among the safest sources there are. That is the reverse of how it is usually ranked. The fear comes from a few dramatic accidents. The deaths come from air. The exhaust of burning coal, oil, and gas kills millions each year, quietly and without a headline."
+      "content": "By the numbers that count deaths, nuclear power sits with wind and solar, among the safest sources there are. That is the reverse of how it is usually ranked. The deaths come from air. The exhaust of burning coal, oil, and gas kills millions each year, while the fear stays fixed on a few dramatic accidents."
     },
     {
       "type": "angles",
@@ -53,7 +53,7 @@
       "content": [
         {
           "title": "Air pollution does most of the killing",
-          "body": "The death rate folds in two very different kinds of harm. For fossil fuels, it is mostly the air. Fine soot and gases from combustion settle in lungs and arteries, quietly shortening lives across the world, year after year. For nuclear, it is mostly the rare, catastrophic accident. One harm is a steady background hum. The other is a spike every few decades. Both go into the same figure.",
+          "body": "The death rate folds in two very different kinds of harm, both counted in the same figure. One is a steady background hum, the other a spike every few decades. For fossil fuels, it is mostly the air. Fine soot and gases from combustion settle in lungs and arteries, quietly shortening lives across the world, year after year. For nuclear, it is mostly the rare, catastrophic accident.",
           "visual_svg": "<svg viewBox='0 92 400 116' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='118' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Coal's toll, by cause</text><rect x='40' y='140' width='294' height='28' rx='8' stroke='var(--accent)' stroke-width='2.5' fill='var(--accent)' fill-opacity='0.18'/><rect x='340' y='140' width='34' height='28' rx='8' stroke='currentColor' stroke-width='2' opacity='0.5'/><text x='187' y='190' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>air pollution</text><text x='357' y='190' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.7' text-anchor='middle'>accidents</text></svg>"
         },
         {
@@ -66,7 +66,7 @@
     {
       "type": "bigger_picture",
       "order": 9,
-      "content": "We rate danger by how vivid it is, not how often it happens. A meltdown has a date and a place. Air pollution has neither. So the source that has killed the fewest gets feared the most. What we choose to build still turns on cost, waste, and where the sun and wind are strong. On the narrow question of deaths per unit of energy, though, the answer has been clear for years."
+      "content": "We judge danger mostly by how vivid it is. A meltdown has a date and a place; air pollution has neither, so its far larger toll barely registers. On the narrow question of deaths per unit of energy, the answer has been clear for years. What we choose to build still turns on cost, waste, and where the sun and wind are strong."
     },
     {
       "type": "quiz",
@@ -162,7 +162,7 @@
       "type": "open_questions",
       "order": 12,
       "content": {
-        "body": "The hardest number to pin down is Chernobyl's long-term toll. Estimating deaths from low doses of radiation spread across decades and a whole continent is genuinely difficult, and honest experts differ by thousands. Whether very low levels of radiation carry risk in proportion to the dose, or almost none at all, is itself unsettled. That is why the range stays wide.",
+        "body": "The hardest number to pin down is Chernobyl's long-term toll. Estimating deaths from low doses of radiation spread across decades and a whole continent is genuinely difficult, and honest experts differ by thousands. Whether very low levels of radiation carry risk in proportion to the dose, or almost none at all, is itself unsettled.",
         "items": [
           "How many cancers did Chernobyl's fallout cause across Europe?",
           "Does very low-dose radiation harm in proportion to dose, or barely at all?"
