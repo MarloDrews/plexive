@@ -17,7 +17,7 @@
     "headline": "In real-world data, about 30% of numbers start with the digit 1, nearly three times what equal chance would predict.",
     "teasers": [
       "The tell that exposes a faked ledger",
-      "Why 1 shows up far more than 9",
+      "1 leads far more than 9",
       "A worn page that reached a courtroom"
     ],
     "post_difficulty": 2
@@ -55,13 +55,13 @@
     {
       "type": "how_we_know",
       "order": 5,
-      "content": "Benford established it the plain way: he counted. The same skewed digits surfaced in river areas and molecular weights, in death rates and baseball box scores, in the street numbers of famous scientists. You can check it yourself in an afternoon. Pull any real dataset that ranges over several orders of magnitude, tally the leading digits, and the tilt appears. It shows up whenever the numbers were free to vary. That reliability, more than any single dataset, is what lifts it past a curiosity."
+      "content": "Benford established it the plain way: he counted. Those skewed digits surfaced in river areas and molecular weights, in death rates and baseball box scores, in the street numbers of famous scientists. You can check it yourself in an afternoon. Pull any real dataset that ranges over several orders of magnitude, tally the leading digits, and the tilt appears. It shows up whenever the numbers were free to vary."
     },
     {
       "type": "story",
       "order": 7,
       "content": {
-        "body": "In 1881 the astronomer Simon Newcomb noticed something odd about his logarithm tables. The early pages, the ones for numbers that start with 1, were smudged and frayed while the back pages stayed clean. He worked out the digit frequencies and published a short note. Nobody followed it up. Frank Benford, a physicist at General Electric, ran into the same worn pages 57 years later and refused to let them go. He gathered 20,229 numbers, confirmed the tilt reached far past logarithm tables, and laid it out in a 1938 paper, *The Law of Anomalous Numbers*. Why the pattern holds waited until 1995, when the mathematician Theodore Hill proved that numbers pooled from many distributions settle into this exact shape. Newcomb had seen it 114 years earlier, but Benford's name is the one that stuck.",
+        "body": "In 1881 the astronomer Simon Newcomb noticed something odd about his logarithm tables. The early pages, the ones for numbers that start with 1, were smudged and frayed while the back pages stayed clean. He worked out the digit frequencies and published a short note. Nobody followed it up. Frank Benford, a physicist at General Electric, ran into the identical wear in his own logarithm tables 57 years after Newcomb, and refused to let them go. He gathered 20,229 numbers, confirmed the tilt reached far past logarithm tables, and laid it out in a 1938 paper, *The Law of Anomalous Numbers*. Why the pattern holds waited until 1995, when the mathematician Theodore Hill proved that numbers pooled from many distributions settle into this exact shape. Newcomb had seen it 114 years earlier, but Benford's name is the one that stuck.",
         "key_figures": [
           {
             "name": "Simon Newcomb",
@@ -99,23 +99,23 @@
       "content": [
         {
           "title": "Faked books spread the leading digits too evenly",
-          "body": "When people invent numbers, they reach for an even spread, roughly the same share under each digit. Real data does the opposite, piling onto 1 and thinning toward 9. Forensic accountants live in that gap. Mark Nigrini built the method from a study of individual income tax returns, and found that faked figures flatten the natural curve. Investigators now run the digit test on tax filings, expense reports, and vendor payments. A flat curve is where they start digging.",
+          "body": "When people invent numbers, they reach for an even spread, roughly the same share under each digit. Real data does the opposite, piling onto 1 and thinning toward 9. Forensic accountants live in that gap. Mark Nigrini built the method from a study of individual income tax returns, and found that faked figures flatten the natural curve. Investigators now run the digit test on tax filings, expense reports, and vendor payments.",
           "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='40' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Invented numbers spread out</text><line x1='40' y1='250' x2='360' y2='250' stroke='currentColor' stroke-width='2' opacity='0.45' stroke-linecap='round'/><polyline points='56,84 90,153 124,181 158,197 192,207 226,213 260,218 294,222 328,225' stroke='currentColor' stroke-width='2' opacity='0.55' stroke-dasharray='5 6' stroke-linecap='round' stroke-linejoin='round'/><text x='56' y='78' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.6' text-anchor='start'>honest data</text><g fill='var(--accent)' fill-opacity='0.12' stroke='var(--accent)' stroke-width='2.5'><rect x='45' y='184' width='22' height='66' rx='5'/><rect x='79' y='186' width='22' height='64' rx='5'/><rect x='113' y='182' width='22' height='68' rx='5'/><rect x='147' y='187' width='22' height='63' rx='5'/><rect x='181' y='183' width='22' height='67' rx='5'/><rect x='215' y='185' width='22' height='65' rx='5'/><rect x='249' y='182' width='22' height='68' rx='5'/><rect x='283' y='186' width='22' height='64' rx='5'/><rect x='317' y='184' width='22' height='66' rx='5'/></g><text x='226' y='170' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>faked</text><g fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' opacity='0.75' text-anchor='middle'><text x='56' y='270'>1</text><text x='90' y='270'>2</text><text x='124' y='270'>3</text><text x='158' y='270'>4</text><text x='192' y='270'>5</text><text x='226' y='270'>6</text><text x='260' y='270'>7</text><text x='294' y='270'>8</text><text x='328' y='270'>9</text></g></svg>"
         },
         {
           "title": "The pattern needs numbers that can roam",
-          "body": "Benford only appears when a quantity is free to range across orders of magnitude. Adult heights in centimeters sit between about 140 and 210, so nearly all of them start with 1, for a dull reason that has nothing to do with the law. Assigned numbers behave the same way. Zip codes, phone numbers, and ID numbers are handed out rather than grown, so their digits fall wherever a clerk decided. Feed the test data like that and it returns nonsense."
+          "body": "Benford only appears when a quantity is free to range across orders of magnitude. Adult heights in centimeters sit between about 140 and 210, so nearly all of them start with 1, for a dull reason that has nothing to do with the law. Assigned numbers behave the same way. Zip codes, phone numbers, and ID numbers are handed out rather than grown, so their digits fall wherever a clerk decided."
         },
         {
           "title": "Switch the units and the pattern survives",
-          "body": "Measure the world's rivers in miles and their leading digits follow Benford. Convert every length to kilometers and they still do, even though every number just changed. That stubbornness is the real clue. If the pattern depended on your choice of unit, it would be a bookkeeping quirk. Because it survives the switch, it has to be a property of how the quantities themselves are spread. The same indifference to units is why it turns up in dollars, populations, and physical constants alike."
+          "body": "Measure the world's rivers in miles and their leading digits follow Benford. Convert every length to kilometers and they still do, even though every number just changed. That stubbornness is the real clue. If the pattern depended on your choice of unit, it would be a bookkeeping quirk. It survives the switch, so it must come from how the quantities are spread."
         }
       ]
     },
     {
       "type": "bigger_picture",
       "order": 9,
-      "content": "The lasting point is that real numbers carry a signature. Quantities born of measuring and compounding ride on a logarithmic scale, and that scale tips their leading digits toward 1 whether anyone means it to or not. Numbers a person invents rarely do. Human guesses come out too even. That small mismatch is the whole basis of the fraud test. A century after a smudge on a logarithm page gave the pattern away, the same skew is used to audit ledgers, elections, and lab data."
+      "content": "The lasting point is that real numbers carry a signature. Quantities born of measuring and compounding ride on a logarithmic scale, and that scale tips their leading digits toward 1 whether anyone means it to or not. Numbers a person invents rarely do. Human guesses come out too even. That small mismatch is the whole basis of the fraud test."
     },
     {
       "type": "quiz",
