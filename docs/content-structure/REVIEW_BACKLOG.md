@@ -281,3 +281,27 @@ sources. Each entry stays `open` until a researcher confirms or resolves it.
 - finding: the post has no open_questions section, though the magnitude of economy-wide rebound (partial rebound vs full backfire/Khazzoom-Brookes) is a genuine live debate it gestures at. Skipping the optional section is allowed and the post is coherent without it, but an open_questions naming how much rebound reverses savings economy-wide would strengthen it.
 - needs: a fresh sourced claim about the economy-wide rebound debate (does rebound fully reverse savings, and by how much), not just the numbers already in the post. Deferred because writing it responsibly requires a new source, not a mechanical edit; the post is unchanged.
 - added: 2026-07-10, 2026-07-10-b
+
+### eyewitness-memory-reconstructed
+- status: open
+- finding: sources/story cite "252 of 367" DNA-exoneration cases (explicitly scoped 1989-2020, internally consistent at 69%, and the load-bearing 69% eyewitness-misidentification share is still current), so the post is not in error. The live Innocence Project page now reports 375 total DNA exonerations.
+- needs: a web-enabled pass to confirm the current total (375) and its source before refreshing the count. Deferred because updating the figure is a new claim requiring the current source, not a same-source edit; the post is unchanged.
+- added: 2026-07-10, 2026-07-10-c
+
+### serotonin-hypothesis-depression-unsupported
+- status: open
+- finding: surprises claims antidepressants are "taken by roughly 1 in 7 adults in England." The NHS figure is nearer 1 in 6 (about 17% prescribed in 2017/18) and higher in more recent reporting (~1 in 5); "1 in 7" understates prevalence and no source in the post backs the specific number.
+- needs: the updated NHS/NHSBSA prescribing figure plus its source to correct the number. Deferred because a new figure requires a new source, not a same-source edit; the post is unchanged (the separate "Harvard psychiatrist" Schildkraut affiliation was corrected to "American" in the same-source correction pass).
+- added: 2026-07-10, 2026-07-10-c
+
+### vagus-nerve-gut-to-brain
+- status: open
+- finding: how_we_know states Agostoni et al. 1957 counted "about 30,000 in all. Roughly 24,000 were sensory" in the cat vagus. The load-bearing ~80% afferent ratio is confirmed (Bonaz 2018) and 24,000/30,000 is internally consistent with it, but the absolute total (~30,000) could not be verified against the 1957 paper; some later electron-microscope counts put the cervical vagus nearer 40,000.
+- needs: the primary Agostoni 1957 paper (or a reliable secondary) to confirm the exact totals, or the specific count is softened. Deferred because confirming/softening the absolute number requires the primary source, not a same-source edit; the post is unchanged. (Separate from the 2026-07-10-a entry on the ~80% afferent figure's animal-count provenance.)
+- added: 2026-07-10, 2026-07-10-c
+
+### msg-invented-syndrome
+- status: open
+- finding: two source-access notes. (1) The Geha et al. 2000 JACI double-blind challenge link (jacionline.org) returns HTTP 403 (paywalled/bot-blocked), so a reader likely cannot reach it, though the double-blind claim is also backed by the already-cited FDA Q&A and Freeman 2006. (2) The primary 1968 Kwok letter is sourced to a personal blog transcript (roblog.co.uk) rather than an authoritative archive; the transcript is faithful, so this is host quality, not a factual problem.
+- needs: a web-enabled pass to swap Geha to an open-access citation or add a PMID, and to point the Kwok letter at the NEJM archive if available. Deferred because both are source changes requiring new URLs, not a same-source edit; the post is unchanged.
+- added: 2026-07-10, 2026-07-10-c
