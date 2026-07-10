@@ -44,12 +44,12 @@
       "type": "story",
       "order": 7,
       "content": {
-        "body": "The idea did not begin as a confident claim. In 1965 the Harvard psychiatrist Joseph Schildkraut proposed that mood might track brain chemicals like norepinephrine, and he was careful to call it unproven. Two years later others pointed the same idea at serotonin. When Prozac and the other SSRIs arrived in the late 1980s, the story got simple and certain: depression is a chemical imbalance, and this pill corrects it. That version sold. It calmed patients and fit a prescription, and it spread through advertising far faster than the evidence behind it. Researchers grew skeptical for decades, but no one had lined up all the evidence in one place. In 2022 a team led by the psychiatrist Joanna Moncrieff finally did, and found the support was not there.",
+        "body": "The idea did not begin as a confident claim. In 1965 the American psychiatrist Joseph Schildkraut proposed that mood might track brain chemicals like norepinephrine, and he was careful to call it unproven. Two years later others pointed the same idea at serotonin. When Prozac and the other SSRIs arrived in the late 1980s, the story got simple and certain: depression is a chemical imbalance, and this pill corrects it. That version sold. It calmed patients and fit a prescription, and it spread through advertising far faster than the evidence behind it. Researchers grew skeptical for decades, but no one had lined up all the evidence in one place. In 2022 a team led by the psychiatrist Joanna Moncrieff finally did, and found the support was not there.",
         "key_figures": [
           {
             "name": "Joseph Schildkraut",
             "role": "Proposed the monoamine hypothesis",
-            "one_line": "The Harvard psychiatrist whose 1965 paper first tied mood to brain chemicals, while warning the idea was unproven.",
+            "one_line": "The American psychiatrist whose 1965 paper first tied mood to brain chemicals, while warning the idea was unproven.",
             "lifespan": "1934-2006",
             "birth_year": 1934,
             "featured": false
