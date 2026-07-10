@@ -45,7 +45,7 @@
     {
       "type": "surprises",
       "order": 3,
-      "content": "Run a nerve between the brain and the gut and you would expect it to carry orders down. The brain, you assume, steers digestion. In the vagus, roughly four in five fibers run the other way, carrying word up from the gut, heart, and lungs. Only a minority send commands back down. The brain spends most of this channel listening."
+      "content": "In the vagus, roughly four in five fibers carry word up from the gut, heart, and lungs to the brain. The usual picture has it backwards, with the brain sending digestion its orders down the nerve. Most of the traffic runs the other way. Only a minority of fibers carry commands back down."
     },
     {
       "type": "tangible",
@@ -69,12 +69,12 @@
       "content": [
         {
           "title": "The gut reports far more than fullness",
-          "body": "Push on a full stomach and the vagus feels the stretch. It senses far more than fullness, though. Cells lining the gut release hormones like CCK and GLP-1, and vagal endings read them within seconds. Microbes add their own chemistry: the short-chain fatty acids they make from fiber, and even fragments of bacterial coats that flag an immune threat. What travels up is a running chemical report of the gut's state.",
+          "body": "Push on a full stomach and the vagus feels the stretch. It senses far more than fullness, though. What travels up is a running chemical report of the gut's state: cells lining the gut release hormones like CCK and GLP-1, and vagal endings read them within seconds. Microbes add their own chemistry too, the short-chain fatty acids they make from fiber, and even fragments of bacterial coats that flag an immune threat.",
           "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><circle cx='200' cy='44' r='24' stroke='currentColor' stroke-width='2.5'/><text x='200' y='49' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>Brain</text><g stroke='var(--accent)' stroke-width='2' stroke-linecap='round' opacity='0.8'><path d='M70 244 Q160 200 196 152'/><path d='M135 246 Q175 205 199 152'/><path d='M200 248 V152'/><path d='M265 246 Q225 205 201 152'/><path d='M330 244 Q240 200 204 152'/></g><path d='M200 150 V80' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><path d='M200 80 l-7 13 m7 -13 l7 13' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle' opacity='0.8'><text x='70' y='266'>stretch</text><text x='135' y='266'>nutrients</text><text x='200' y='266'>hormones</text><text x='265' y='266'>microbes</text><text x='330' y='266'>immune</text></g></svg>"
         },
         {
           "title": "Doctors learned to talk back on it",
-          "body": "Because so much rides this nerve, medicine learned to send signals into it. A small implant pulses the vagus. It has eased hard-to-control epilepsy since 1997, and treatment-resistant depression since 2005. Even a mostly-sensory nerve, driven from outside, shifts activity across the brain.",
+          "body": "Because so much rides this nerve, medicine learned to send signals into it. A small implant pulses the vagus. Driven from outside, even this mostly-sensory nerve shifts activity across the brain. It has eased hard-to-control epilepsy since 1997 and treatment-resistant depression since 2005.",
           "visual_svg": "<svg viewBox='0 96 400 96' xmlns='http://www.w3.org/2000/svg' fill='none'><line x1='60' y1='140' x2='360' y2='140' stroke='currentColor' stroke-width='2' stroke-linecap='round' opacity='0.5'/><circle cx='130' cy='140' r='6' fill='var(--accent)'/><circle cx='290' cy='140' r='6' fill='var(--accent)'/><g font-family='var(--font-mono), ui-monospace, monospace' font-size='15' font-weight='700' text-anchor='middle' fill='var(--accent)'><text x='130' y='118'>1997</text><text x='290' y='118'>2005</text></g><g font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle' fill='currentColor' opacity='0.8'><text x='130' y='170'>epilepsy</text><text x='290' y='170'>depression</text></g></svg>"
         }
       ]
@@ -100,7 +100,7 @@
           "explanation": "About four in five vagal fibers are sensory, carrying reports from the gut, heart, and lungs up to the brain. Only the minority send commands the other way."
         },
         {
-          "question": "What does the afferent majority suggest about the brain's role in digestion?",
+          "question": "What does the sensory majority suggest about the brain's role in digestion?",
           "options": [
             "The brain issues a detailed command for each step",
             "The gut largely runs itself and keeps the brain informed",
@@ -111,7 +111,7 @@
           "explanation": "Most of the traffic is the gut reporting up, not the brain directing down. The gut sets its own pace and briefs the brain rather than waiting for orders."
         },
         {
-          "question": "How was the roughly 80% afferent figure established?",
+          "question": "How was the roughly 80% sensory figure established?",
           "options": [
             "By asking people what they felt",
             "By stimulating the nerve and timing reflexes",
@@ -133,7 +133,7 @@
           "explanation": "The gut has its own network of neurons that drives digestion locally. Peristalsis carries on even in an isolated segment of gut, without any input from the brain."
         },
         {
-          "question": "Besides stretch, what else do vagal afferents report from the gut?",
+          "question": "Besides stretch, what else do the vagus's sensory fibers report from the gut?",
           "options": [
             "Nothing beyond fullness",
             "Only pain",
