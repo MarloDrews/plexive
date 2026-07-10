@@ -1,0 +1,193 @@
+{
+  "tags": [
+    "human-body",
+    "public-health",
+    "everyday-science"
+  ],
+  "connections": [],
+  "feed_card": {
+    "headline": "Drowning is almost always silent and fast: no waving, no shouting, and often only 20 to 60 seconds on the surface before a person goes under.",
+    "teasers": [
+      "Why a drowning person makes no sound",
+      "The struggle everyone pictures is wrong",
+      "How close the nearest adult usually is"
+    ],
+    "post_difficulty": 1
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "Drowning is almost always silent and fast: no waving, no shouting, and often only 20 to 60 seconds on the surface before a person goes under."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 20 400 218' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='42' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Two very different pictures</text><path d='M30 150 q22 -9 44 0 t44 0 t44 0 t44 0 t44 0 t44 0 t44 0' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><g stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' opacity='0.7'><circle cx='110' cy='100' r='13'/><path d='M110 113 V150'/><path d='M110 122 L86 84 M110 122 L134 84'/></g><g stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'><path d='M84 138 l-6 -8 M136 138 l6 -8 M110 132 l0 -9'/></g><g stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='290' cy='138' r='13'/><path d='M290 151 V180'/><path d='M290 150 L260 157 M290 150 L320 157'/></g><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' text-anchor='middle'><text x='110' y='208' font-size='14' font-weight='600' opacity='0.75'>on screen</text><text x='110' y='226' font-size='13' opacity='0.55'>arms up, loud</text></g><text x='290' y='208' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>real drowning</text><text x='290' y='226' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.55' text-anchor='middle'>silent, upright</text></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "Twenty to sixty seconds. That is how long a drowning person can stay at the surface before going under, and for most of it they make almost no noise. The thrashing, splashing, arm-waving struggle everyone pictures is not what drowning looks like. A drowning body drops into an automatic mode with no room for anything voluntary. The mouth barely clears the water, long enough to gasp a breath and no more, so there is no air to shout with. The arms press down and out to lever the mouth up, so they cannot wave. From a few yards away it can read as someone treading water, or playing."
+    },
+    {
+      "type": "tangible",
+      "order": 4,
+      "content": {
+        "items": [
+          "Twenty seconds is less time than it takes to send a text or walk back from the towel.",
+          "Because a drowning child makes almost no sound, the only reliable warning is an adult's eyes on the water.",
+          "A child can go from playing to silent and vertical while an adult glances down at a phone."
+        ],
+        "visual_svg": "<svg viewBox='0 78 400 140' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='98' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>How long before they slip under</text><rect x='40' y='150' width='320' height='12' rx='6' stroke='currentColor' stroke-width='2' opacity='0.4'/><rect x='120' y='147' width='160' height='18' rx='9' fill='var(--accent)' fill-opacity='0.18' stroke='var(--accent)' stroke-width='2.5'/><text x='200' y='138' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='700' text-anchor='middle'>20 to 60 s</text><g fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' opacity='0.7'><text x='40' y='186' text-anchor='start'>0s</text><text x='120' y='186' text-anchor='middle'>20s</text><text x='280' y='186' text-anchor='middle'>60s</text><text x='360' y='186' text-anchor='end'>80s</text></g><text x='200' y='208' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='12' opacity='0.55' text-anchor='middle'>and silent the whole time</text></svg>"
+      }
+    },
+    {
+      "type": "how_we_know",
+      "order": 5,
+      "content": "The pattern was mapped by Francesco Pia, a lifeguard and researcher who filmed real rescues at Orchard Beach in the Bronx starting in 1972. Watching the footage frame by frame, he saw the same silent, upright struggle again and again, and named it the instinctive drowning response. The physiology is not mysterious. Breathing is automatic and takes priority, while speech and waving are voluntary acts a drowning brain cannot spare. When the choice comes down to a breath or a shout, the body takes the breath. There is nothing left over to signal with."
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "It usually happens in plain sight",
+          "body": "Drowning is not a remote danger. It is the leading cause of death for children ages 1 to 4 in the United States, and among young children who drown, about half go under within 25 yards of a parent or another adult. In roughly 1 in 10 of those cases, the adult watches it happen and never registers the danger. The child is doing none of the things people scan for. Being close by is no help when the signs are this quiet.",
+          "visual_svg": "<svg viewBox='0 92 400 150' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='112' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Where young children drown</text><rect x='40' y='150' width='150' height='44' rx='14' fill='var(--accent)' fill-opacity='0.14' stroke='var(--accent)' stroke-width='2.5'/><text x='115' y='170' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>within 25 yards</text><text x='115' y='186' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='12' text-anchor='middle'>of an adult</text><rect x='210' y='150' width='150' height='44' rx='14' stroke='currentColor' stroke-width='2' opacity='0.55'/><text x='285' y='177' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>farther off</text><text x='200' y='228' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='middle'>about half of the cases</text></svg>"
+        },
+        {
+          "title": "There is a louder kind of trouble, and this is not it",
+          "body": "Not everyone struggling in the water is in the instinctive drowning response. Someone in aquatic distress can still shout, wave, and grab a thrown line. They have not yet lost voluntary control. That is the version movies show, and it is real, though it is the earlier, more rescuable stage. True drowning is quieter and closer to the end. The quiet swimmer is often the one nearest to going under, and the easiest to overlook."
+        },
+        {
+          "title": "The signs are subtle, but they are learnable",
+          "body": "The cues are quiet, not absent. Watch for a head low in the water with the mouth at the surface, or tipped back with the mouth open. Look for eyes that are glassy and unfocused, or closed, with hair fallen across the face. The body hangs vertical with no real kick, and the arms seem to climb an invisible ladder that goes nowhere. A quick test is to call out, “Are you okay?” Someone who can answer usually is, and a blank stare back is a reason to move."
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "The real hazard is not only the water. It is the picture in our heads. We expect an emergency to be loud and unmistakable, so a silent one slips past the very people close enough to stop it. Learning what drowning actually looks like costs nothing, and it can turn a bystander into a rescuer. The real thing is quiet and upright, over in under a minute. The practical rule is short. Keep your eyes on the water, and go check on any swimmer who has gone quiet and still."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "Why can a drowning person usually not call for help?",
+          "options": [
+            "They are too embarrassed to shout",
+            "Breathing takes priority, and the mouth clears the water only long enough to gasp, not to shout",
+            "The cold water freezes their vocal cords",
+            "They do not realize they are drowning"
+          ],
+          "answer_index": 1,
+          "explanation": "The respiratory system serves breathing first. A drowning person's mouth is above water just long enough to grab a breath, leaving no spare air, or time, to form a shout."
+        },
+        {
+          "question": "Why can't a drowning person wave their arms to signal?",
+          "options": [
+            "Their arms press down on the water to lift the mouth to breathe, an automatic move they cannot override",
+            "Their arms cramp from the cold",
+            "They are holding their breath and stay still",
+            "They are waving, but too fast to see"
+          ],
+          "answer_index": 0,
+          "explanation": "The instinctive drowning response uses the arms to push down and lever the mouth upward. That reflex takes over voluntary control, so deliberately waving or reaching for a rescue line is not available."
+        },
+        {
+          "question": "Why does this response leave so little time to act?",
+          "options": [
+            "Rescuers are usually far away",
+            "The water is usually very deep",
+            "A person can only stay at the surface about 20 to 60 seconds before submerging",
+            "Drowning people tend to swim away from help"
+          ],
+          "answer_index": 2,
+          "explanation": "From the onset of the response, most people last only 20 to 60 seconds at the surface. That short, silent window is why noticing early matters so much."
+        },
+        {
+          "question": "A parent is 20 feet away watching kids swim. Why is that not a guarantee of safety?",
+          "options": [
+            "20 feet is too far to reach anyone in time",
+            "Parents are usually distracted by their phones",
+            "Children hide when they get into trouble",
+            "Drowning is silent and can look like treading water, so being near does not mean noticing"
+          ],
+          "answer_index": 3,
+          "explanation": "About half of young children who drown do so within 25 yards of an adult, and in some cases the adult is watching. Nearness only helps if you can recognize the quiet signs."
+        },
+        {
+          "question": "How does aquatic distress differ from the instinctive drowning response?",
+          "options": [
+            "Distress is more dangerous than true drowning",
+            "In distress a person can still shout, wave, and grab a line; in true drowning they cannot",
+            "They are two names for the same thing",
+            "Distress only happens to weak swimmers"
+          ],
+          "answer_index": 1,
+          "explanation": "A person in distress still has voluntary control and can assist their own rescue. Once the instinctive drowning response takes over, that control is gone, and the struggle turns silent."
+        },
+        {
+          "question": "You call “Are you okay?” to a swimmer who has gone still and vertical, and get only a blank stare. What does that suggest?",
+          "options": [
+            "They are fine and just resting",
+            "They are ignoring you on purpose",
+            "They may be drowning and unable to respond, and need help now",
+            "They are a weak swimmer but in no danger"
+          ],
+          "answer_index": 2,
+          "explanation": "A drowning person cannot spare breath or attention to answer. Silence and a blank look in response to a direct question are warning signs, not reassurance."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "A drowning person will splash and yell for help.",
+          "reality": "That is aquatic distress, or the movies. Real drowning tends to be silent and still-looking, because the body cannot spare breath or arm movement to signal."
+        },
+        {
+          "myth": "If a child is drowning nearby, you will hear it.",
+          "reality": "There is rarely any noise. Most young drownings are quiet, and many happen within a few steps of an adult who never hears a thing."
+        },
+        {
+          "myth": "Someone bobbing quietly and upright in the water is just resting.",
+          "reality": "That can be exactly what drowning looks like. A head low with the mouth at the waterline and legs that are not kicking is a reason to check, not to relax."
+        }
+      ]
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Vittone M. Drowning Doesn't Look Like Drowning (Slate, 2013)",
+          "url": "https://slate.com/technology/2013/06/rescuing-drowning-children-how-to-know-when-someone-is-in-trouble-in-the-water.html",
+          "type": "article"
+        },
+        {
+          "label": "Vittone M. Drowning Doesn't Look Like Drowning (with Francesco Pia's Instinctive Drowning Response), U.S. Army republication",
+          "url": "https://www.army.mil/article/109852/drowning_doesnt_look_like_drowning",
+          "type": "article"
+        },
+        {
+          "label": "Frank Pia (lifeguard and drowning researcher; Instinctive Drowning Response, RID factors)",
+          "url": "https://en.wikipedia.org/wiki/Frank_Pia",
+          "type": "wikipedia"
+        },
+        {
+          "label": "CDC. Drowning Facts (leading cause of death for US children ages 1-4)",
+          "url": "https://www.cdc.gov/drowning/data-research/facts/index.html",
+          "type": "article"
+        }
+      ]
+    }
+  ]
+}
