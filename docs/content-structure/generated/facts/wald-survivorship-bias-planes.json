@@ -1,0 +1,192 @@
+{
+  "tags": [
+    "decision-making",
+    "statistics",
+    "mental-models"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Survivorship bias"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "To armor a bomber, you reinforce the spots where the planes that came back were never hit.",
+    "teasers": [
+      "Why you armor the parts with no holes",
+      "What the planes that never returned would show",
+      "The same trap hides in every success story"
+    ],
+    "post_difficulty": 1
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "To armor a bomber, you reinforce the spots where the planes that came back were never hit."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='28' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Where returning bombers were hit</text><g stroke='currentColor' stroke-width='2' opacity='0.6' stroke-linejoin='round'><rect x='186' y='56' width='28' height='192' rx='14'/><rect x='64' y='130' width='272' height='32' rx='16'/><rect x='150' y='224' width='100' height='20' rx='10'/></g><g fill='currentColor' opacity='0.65'><circle cx='92' cy='146' r='4'/><circle cx='118' cy='140' r='4'/><circle cx='276' cy='142' r='4'/><circle cx='300' cy='150' r='4'/><circle cx='200' cy='110' r='4'/><circle cx='196' cy='150' r='4'/><circle cx='205' cy='188' r='4'/><circle cx='198' cy='214' r='4'/><circle cx='170' cy='232' r='4'/><circle cx='232' cy='236' r='4'/></g><g stroke='var(--accent)' stroke-width='2.5'><circle cx='200' cy='80' r='13'/><circle cx='132' cy='146' r='9'/><circle cx='168' cy='146' r='9'/><circle cx='232' cy='146' r='9'/><circle cx='268' cy='146' r='9'/></g><text x='200' y='282' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>Armor the parts with no holes</text></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "Picture the damage map: a bomber home from a raid, wings and fuselage stitched with bullet holes. Armor the places hit most, and you have done the obvious thing. It is also exactly wrong. Every plane in that data survived. The holes mark where a bomber can be shot and still limp home. The clean spots, the engines and the cockpit, are where a fatal hit lands, so those planes never came back to be counted. What you can see is a map of the survivable places to be hit."
+    },
+    {
+      "type": "story",
+      "order": 7,
+      "content": {
+        "body": "In 1943 the American military had a practical question, and took it to a group of statisticians at Columbia. Bombers were being shot down over Europe, and the brass wanted to know where to add armor, which is heavy and cannot go everywhere. They brought diagrams of where returning planes had been hit. Abraham Wald, a Hungarian mathematician on the team, saw the flaw at once. The data was only the survivors. The planes in front of him had all come back. The ones shot through the engines were lying in fields in France. His memos worked it out with real statistics, not a slogan, estimating how likely a hit to each area was to be fatal. Wald died in a plane crash in 1950, on a lecture tour in India.",
+        "key_figures": [
+          {
+            "name": "Abraham Wald",
+            "role": "Spotted the survivorship bias",
+            "one_line": "The statistician who realized the bullet-hole data came only from planes that survived, and reversed the armor conclusion.",
+            "lifespan": "1902-1950",
+            "birth_year": 1902,
+            "featured": true
+          }
+        ],
+        "visual_svg": "<svg viewBox='0 0 400 210' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='30' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Where the data comes from</text><rect x='34' y='62' width='150' height='112' rx='14' stroke='currentColor' stroke-width='2' opacity='0.55'/><rect x='216' y='62' width='150' height='112' rx='14' stroke='var(--accent)' stroke-width='2.5' stroke-dasharray='7 6'/><text x='109' y='104' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>Returned</text><text x='109' y='132' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' text-anchor='middle' opacity='0.8'>all our data</text><text x='291' y='104' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>Shot down</text><text x='291' y='130' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' text-anchor='middle'>the answer</text><text x='291' y='148' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' text-anchor='middle'>is here</text></svg>"
+      }
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "The same trap sits behind every success story",
+          "body": "Survivorship bias reaches well past the war. Study only the companies that made it, and their shared habits look like the recipe for success. But thousands of failed firms did the same things. Star fund managers, viral songs, lucky founders: we admire the winners and never line them up against everyone who ran the identical play and lost. The sample lies by leaving the losers out.",
+          "visual_svg": "<svg viewBox='0 0 400 240' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='30' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>What survives is the tip</text><line x1='30' y1='128' x2='370' y2='128' stroke='currentColor' stroke-width='1.5' opacity='0.35' stroke-dasharray='6 6'/><path d='M176 128 L224 128 L206 72 L194 72 Z' stroke='var(--accent)' stroke-width='2.5' fill='var(--accent)' fill-opacity='0.15'/><path d='M176 128 L224 128 L302 214 L98 214 Z' stroke='currentColor' stroke-width='2' opacity='0.5' stroke-linejoin='round'/><text x='250' y='96' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='start'>we study these</text><text x='200' y='190' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>the failures, unseen</text></svg>"
+        },
+        {
+          "title": "Old things look better because the junk is gone",
+          "body": "It is why the past can seem better made. The flimsy furniture, the bad buildings, the forgettable songs of 1900 mostly did not survive, so what is left is a filtered best-of. Survivors only. We compare the finest antiques with today's average and decide they do not make them like they used to. In truth they made plenty of junk, and time threw it away."
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "Wald's real move was not clever arithmetic. It was noticing that his data had a hole shaped exactly like the answer. Every dataset is a set of survivors: the customers who did not leave, the patients well enough to reach the study, the trials someone bothered to publish. The information you need is often sitting in the cases that dropped out before you started counting. Wald's fix was simple to state and hard to remember. Before you trust the pattern in front of you, ask who is missing."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "Why should armor go where returning planes have the fewest bullet holes?",
+          "options": [
+            "Those areas are structurally the weakest part of the plane",
+            "Enemy fire rarely strikes those areas in the first place",
+            "Planes hit there tended not to survive, so they are missing from the data entirely",
+            "Armor happens to be lighter in those spots"
+          ],
+          "answer_index": 2,
+          "explanation": "The returning planes show the survivable hits. A clean engine or cockpit does not mean those spots were never struck. It means a plane struck there usually went down and never came back to be studied."
+        },
+        {
+          "question": "What made the bullet-hole data misleading?",
+          "options": [
+            "The holes were miscounted in the field",
+            "It included only planes that made it back, a sample filtered by survival",
+            "Enemy gunners aimed only at the wings",
+            "The planes were inspected too quickly to be accurate"
+          ],
+          "answer_index": 1,
+          "explanation": "The dataset was defined by having survived. Any conclusion drawn from it is a conclusion about survivors, which is exactly not the group you are trying to protect."
+        },
+        {
+          "question": "A venture firm studies only its winning investments to find the traits of a winner. What is the flaw?",
+          "options": [
+            "Winning companies have no measurable traits",
+            "Success cannot be studied with statistics",
+            "The sample is far too large to analyze",
+            "The failed investments, which may share the very same traits, are left out"
+          ],
+          "answer_index": 3,
+          "explanation": "If failed startups had the same habits, those habits do not explain the wins. Without the losers in the sample, you cannot tell a cause from a coincidence."
+        },
+        {
+          "question": "Someone says antiques prove they built furniture better back then. How does survivorship bias apply?",
+          "options": [
+            "Only the sturdiest pieces lasted long enough to become antiques, while the rest broke and vanished",
+            "Old furniture genuinely had no flaws",
+            "Antiques on the market are mostly reproductions",
+            "Wood becomes stronger as it ages"
+          ],
+          "answer_index": 0,
+          "explanation": "The flimsy furniture of the past is gone, so today's antiques are a filtered best-of. Comparing survivors with the full range of what is made now is not a fair test."
+        },
+        {
+          "question": "What is the general lesson from Wald's reasoning?",
+          "options": [
+            "Always add more armor than you think you need",
+            "Trust a conclusion only if the dataset is very large",
+            "Before trusting a pattern, ask which cases are missing from the data",
+            "Successful examples are always the most reliable data"
+          ],
+          "answer_index": 2,
+          "explanation": "The trap is treating the visible sample as the whole picture. The habit that beats it is to ask who or what dropped out before the counting began."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "The famous airplane diagram with red dots comes from Wald's report.",
+          "reality": "Wald's 1943 memos had no pictures. The diagram everyone shares was drawn decades later to illustrate the idea, and some versions even put the marks in the wrong places."
+        },
+        {
+          "myth": "Wald just made a clever remark about bullet holes.",
+          "reality": "The insight sounds like a quip, but the work was hard statistics. His memos estimated, area by area, how likely a hit was to bring a plane down, correcting for the aircraft he could never examine."
+        },
+        {
+          "myth": "Survivorship bias means you should ignore success stories.",
+          "reality": "It means you cannot read them alone. A winner is only informative next to all the others who did the same thing and lost, so the fix is to hunt down the missing cases, not to look away from the winners."
+        }
+      ]
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Survivorship bias",
+          "url": "https://en.wikipedia.org/wiki/Survivorship_bias",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Abraham Wald",
+          "url": "https://en.wikipedia.org/wiki/Abraham_Wald",
+          "type": "wikipedia"
+        },
+        {
+          "label": "The Legend of Abraham Wald (AMS Feature Column, 2016)",
+          "url": "https://www.ams.org/publicoutreach/feature-column/fc-2016-06",
+          "type": "article"
+        },
+        {
+          "label": "Abraham Wald and the airplane diagram with red bullet holes: the origin story (Cameron Moll)",
+          "url": "https://www.cameronmoll.com/journal/abraham-wald-red-bullet-holes-origin-story",
+          "type": "article"
+        },
+        {
+          "label": "Abraham Wald biography (MacTutor History of Mathematics)",
+          "url": "https://mathshistory.st-andrews.ac.uk/Biographies/Wald/",
+          "type": "article"
+        }
+      ]
+    }
+  ]
+}
