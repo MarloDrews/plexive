@@ -38,7 +38,7 @@
     {
       "type": "surprises",
       "order": 3,
-      "content": "Picture the damage map: a bomber home from a raid, wings and fuselage stitched with bullet holes. Armor the places hit most, and you have done the obvious thing. It is also exactly wrong. Every plane in that data survived. The holes mark where a bomber can be shot and still limp home. The clean spots, the engines and the cockpit, are where a fatal hit lands, so those planes never came back to be counted. What you can see is a map of the survivable places to be hit."
+      "content": "Picture the damage map: a bomber home from a raid, wings and fuselage stitched with bullet holes. Armor the places hit most, and you have done the obvious thing. It is also exactly wrong. Every plane in that data survived. The holes mark where a bomber can be shot and still limp home. The clean spots, the engines and the cockpit, are where a fatal hit lands, so those planes never came back to be counted."
     },
     {
       "type": "story",
@@ -63,13 +63,13 @@
       "order": 8,
       "content": [
         {
-          "title": "The same trap sits behind every success story",
-          "body": "Survivorship bias reaches well past the war. Study only the companies that made it, and their shared habits look like the recipe for success. But thousands of failed firms did the same things. Star fund managers, viral songs, lucky founders: we admire the winners and never line them up against everyone who ran the identical play and lost. The sample lies by leaving the losers out.",
+          "title": "You never see the ones who failed",
+          "body": "Survivorship bias reaches well past the war. Study only the companies that made it, and their shared habits look like the recipe for success. But thousands of failed firms did the same things. Star fund managers, viral songs, lucky founders: we admire the winners and never line them up against everyone who ran the identical play and lost.",
           "visual_svg": "<svg viewBox='0 0 400 240' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='30' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>What survives is the tip</text><line x1='30' y1='128' x2='370' y2='128' stroke='currentColor' stroke-width='1.5' opacity='0.35' stroke-dasharray='6 6'/><path d='M176 128 L224 128 L206 72 L194 72 Z' stroke='var(--accent)' stroke-width='2.5' fill='var(--accent)' fill-opacity='0.15'/><path d='M176 128 L224 128 L302 214 L98 214 Z' stroke='currentColor' stroke-width='2' opacity='0.5' stroke-linejoin='round'/><text x='250' y='96' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='start'>we study these</text><text x='200' y='190' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>the failures, unseen</text></svg>"
         },
         {
           "title": "Old things look better because the junk is gone",
-          "body": "It is why the past can seem better made. The flimsy furniture, the bad buildings, the forgettable songs of 1900 mostly did not survive, so what is left is a filtered best-of. Survivors only. We compare the finest antiques with today's average and decide they do not make them like they used to. In truth they made plenty of junk, and time threw it away."
+          "body": "It is why the past can seem better made. The flimsy furniture, the bad buildings, the forgettable songs of 1900 mostly did not survive, so what is left is a filtered best-of. Survivors only. Plenty of junk was made; time simply threw it away, leaving the best to compare against today's average."
         }
       ]
     },
