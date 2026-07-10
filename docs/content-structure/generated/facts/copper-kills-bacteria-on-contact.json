@@ -1,0 +1,225 @@
+{
+  "tags": [
+    "materials-science",
+    "medicine",
+    "everyday-science"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Oligodynamic effect"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "Copper kills 99.9% of the MRSA on it within 2 hours, while stainless steel keeps those bacteria alive for days.",
+    "teasers": [
+      "The shiny surface is the dirtier one",
+      "Why hospitals swapped it out for steel",
+      "Named in a paper its discoverer never saw"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "Copper kills 99.9% of the MRSA on it within 2 hours, while stainless steel keeps those bacteria alive for days."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='30' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Bacteria left alive on the surface</text><g stroke='currentColor' stroke-width='2' stroke-linecap='round' opacity='0.5'><line x1='60' y1='60' x2='60' y2='250'/><line x1='60' y1='250' x2='368' y2='250'/></g><line x1='150' y1='60' x2='150' y2='250' stroke='currentColor' stroke-width='1.5' opacity='0.35' stroke-dasharray='5 5'/><path d='M74 78 C 150 84, 260 96, 356 110' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' opacity='0.7'/><path d='M74 78 C 104 120, 126 232, 150 244 L 356 244' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><text x='250' y='90' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' opacity='0.8' text-anchor='middle'>Stainless steel</text><text x='250' y='236' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>Copper</text><g fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' opacity='0.7' text-anchor='middle'><text x='74' y='270'>start</text><text x='150' y='270'>2 hr</text><text x='338' y='270'>days later</text></g><text x='30' y='155' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.65' text-anchor='middle' transform='rotate(-90 30 155)'>alive</text></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "Wipe the same film of MRSA onto two surfaces. On one, nearly all of it is dead within 2 hours. On the other the bacteria are still alive days later, ready for the next hand. The killer is copper. The reservoir is the stainless steel we trust because it looks clean. Steel is inert. It does nothing to what lands on it, and doing nothing is the problem."
+    },
+    {
+      "type": "story",
+      "order": 7,
+      "content": {
+        "body": "Copper's germ-killing was known long before anyone knew about germs. Egyptian physicians stored water and dressed wounds in copper more than 4,000 years ago, and the Smith Papyrus wrote the practice down. Why it worked stayed a mystery for millennia. In 1893 the Swiss botanist Karl Wilhelm von Nägeli finally gave it a name, the oligodynamic effect, the power of tiny traces of metal to kill microbes. His paper appeared two years after he died. The thread then went quiet for most of a century. Hospital superbugs revived it. In 2008 the US EPA registered copper alloys as the first solid materials proven to kill bacteria. A 2013 trial found that ICU rooms fitted with copper had 58% fewer infections.",
+        "key_figures": [
+          {
+            "name": "Karl Wilhelm von Nägeli",
+            "role": "Named the oligodynamic effect",
+            "one_line": "The Swiss botanist who in 1893 named the power of trace metals to kill microbes, in a paper published after his death.",
+            "lifespan": "1817-1891",
+            "birth_year": 1817,
+            "featured": true,
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/f/fc/Carl_Wilhelm_N%C3%A4geli_%281817-1891%29.jpg",
+            "image_attribution": "Unknown, “Carl Wilhelm Nägeli (1817-1891)”, Public Domain (Wikimedia Commons)"
+          }
+        ]
+      }
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "Ions do the killing, step by step",
+          "body": "Bare copper leaks a steady trickle of ions. Those ions punch through a bacterium's outer membrane, flood in, and set off bursts of reactive oxygen that fry proteins and shred its DNA. The cell has no defense tuned for a metal surface it never evolved against. Death takes minutes to hours, not the instant most people picture.",
+          "visual_svg": "<svg viewBox='0 0 400 170' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='28' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>How copper kills on contact</text><rect x='20' y='70' width='96' height='56' rx='14' stroke='var(--accent)' stroke-width='2.5'/><rect x='152' y='70' width='96' height='56' rx='14' stroke='currentColor' stroke-width='2' opacity='0.6'/><rect x='284' y='70' width='96' height='56' rx='14' stroke='currentColor' stroke-width='2' opacity='0.6'/><g stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' opacity='0.55'><path d='M116 98 h36'/><path d='M152 98 l-12 -6 m12 6 l-12 6'/><path d='M248 98 h36'/><path d='M284 98 l-12 -6 m12 6 l-12 6'/></g><g font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle'><text x='68' y='94' fill='var(--accent)'>Copper</text><text x='68' y='112' fill='var(--accent)'>ions</text><text x='200' y='94' fill='currentColor'>Membrane</text><text x='200' y='112' fill='currentColor'>breached</text><text x='332' y='94' fill='currentColor'>DNA</text><text x='332' y='112' fill='currentColor'>shredded</text></g></svg>"
+        },
+        {
+          "title": "We took this defense off our doorknobs",
+          "body": "Old brass hardware was quietly self-sanitizing. Brass is mostly copper, so every brass doorknob, rail, and push plate was killing what people left on it. Over the last century we switched to stainless steel and plastic, cheaper and cleaner-looking. The trade was invisible, a surface that fights back for one that only looks the part."
+        },
+        {
+          "title": "It works on viruses too, including this one",
+          "body": "The same trickle of ions wrecks viruses. When researchers dabbed SARS-CoV-2 onto different surfaces early in the pandemic, it stayed infectious for up to 3 days on plastic and stainless steel. On copper it was dead within about 4 hours. A door handle that clears the virus by itself is worth more than one that stores it.",
+          "visual_svg": "<svg viewBox='0 0 400 160' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='24' y='28' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='start'>SARS-CoV-2 stays infectious</text><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='start'><text x='24' y='74'>Copper</text><text x='24' y='118'>Steel</text></g><rect x='120' y='60' width='16' height='20' rx='6' fill='var(--accent)' fill-opacity='0.18' stroke='var(--accent)' stroke-width='2.5'/><rect x='120' y='104' width='260' height='20' rx='6' stroke='currentColor' stroke-width='2' opacity='0.6'/><g font-family='var(--font-mono), ui-monospace, monospace' font-size='14' font-weight='700'><text x='144' y='75' fill='var(--accent)' text-anchor='start'>4 hr</text><text x='372' y='119' fill='currentColor' text-anchor='end'>72 hr</text></g></svg>"
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "Copper is not a new discovery but a rediscovery. Humans had a passive, always-on defense against the bugs on shared surfaces, and over a century we replaced it with materials that do nothing but look clean. Antibiotic resistance is making that trade look expensive. Copper is coming back to some hospital rooms and transit rails, slowly. It is held up by cost, by the tarnish people dislike, and by trials still arguing over how much it helps in practice. The metal never stopped working. We stopped using it."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "Stainless steel looks cleaner than tarnished copper, yet it is the worse surface for hygiene. Why?",
+          "options": [
+            "Steel is porous and soaks bacteria into its surface",
+            "Steel is inert, so bacteria survive on it for days, while copper actively kills them",
+            "Steel reacts with cleaning products in a way that feeds bacteria",
+            "Copper is simply cleaned more often by staff"
+          ],
+          "answer_index": 1,
+          "explanation": "A clean look is not the same as a clean surface. Steel does nothing to what lands on it, so pathogens persist for days, whereas copper leaks ions that kill them."
+        },
+        {
+          "question": "How does a copper surface actually kill a bacterium on contact?",
+          "options": [
+            "It smothers the cell by cutting off its oxygen",
+            "It freezes the water inside the cell",
+            "Copper ions breach the membrane and set off damage that destroys the cell's DNA",
+            "It turns the surface acidic enough to dissolve the cell"
+          ],
+          "answer_index": 2,
+          "explanation": "Ions released from the metal pierce the membrane, flood the cell, and trigger reactive oxygen that wrecks proteins and DNA. The microbe has no defense built for a metal surface."
+        },
+        {
+          "question": "A hospital lacquers its copper railings to keep them shiny. What happens to the antimicrobial effect?",
+          "options": [
+            "It grows stronger under the coating",
+            "It is unaffected, since the copper is still underneath",
+            "It only works against viruses now",
+            "It stops, because contact killing needs the copper bare"
+          ],
+          "answer_index": 3,
+          "explanation": "Contact killing depends on ions leaving the metal surface. A lacquer, wax, or paint layer seals them off, so the effect disappears even though copper is right underneath."
+        },
+        {
+          "question": "What did the 2013 ICU study add beyond the laboratory result?",
+          "options": [
+            "That copper kills 99.9% of bacteria in a dish",
+            "That copper surfaces cut real patient infections, by about 58%",
+            "That copper removes the need for routine cleaning",
+            "That copper works only against MRSA"
+          ],
+          "answer_index": 1,
+          "explanation": "Lab tests show killing on a clean coupon of metal. The trial showed that copper in the room translated into fewer actual infections among patients, not just fewer bacteria on a surface."
+        },
+        {
+          "question": "The SARS-CoV-2 surface study is evidence that copper's effect...",
+          "options": [
+            "works only on bacteria, never on viruses",
+            "extends to viruses, which died far faster on copper than on steel",
+            "makes people immune to the virus",
+            "depends on strong sunlight to work"
+          ],
+          "answer_index": 1,
+          "explanation": "The virus stayed infectious for days on steel and plastic but only hours on copper. The ion-driven damage is not specific to bacteria."
+        },
+        {
+          "question": "Why did old brass doorknobs make a building more hygienic than modern steel ones?",
+          "options": [
+            "Brass is mostly copper, so the knobs killed microbes left on them",
+            "Brass is smoother and easier to wipe clean",
+            "Brass knobs came pre-coated with disinfectant",
+            "People happened to touch brass knobs less often"
+          ],
+          "answer_index": 0,
+          "explanation": "Brass is a copper alloy, so a brass knob is an antimicrobial surface. Swapping to inert steel removed a passive defense nobody knew was working."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "Any clean-looking metal surface is hygienic.",
+          "reality": "Stainless steel and aluminium are inert, and bacteria can sit on them alive for days. Only a few metals, copper and silver among them, actually kill microbes on contact."
+        },
+        {
+          "myth": "Antimicrobial copper means a surface never needs cleaning.",
+          "reality": "It is a backstop between cleanings, not a replacement for them. A heavy layer of grime or a spill can shield microbes from the metal underneath, so the surface still has to be wiped."
+        },
+        {
+          "myth": "Copper zaps germs the instant they touch it.",
+          "reality": "The 99.9% figure is measured over 2 hours, not seconds. It also needs bare copper: a painted, waxed, or lacquered finish blocks the ions and the killing with them."
+        }
+      ]
+    },
+    {
+      "type": "open_questions",
+      "order": 12,
+      "content": {
+        "body": "The Petri dish is not a hospital. Copper's kill is airtight in the lab. But the one ICU trial that found fewer infections was small, and a real building is harder: surfaces get grimy, coatings creep on, budgets get tight. Whether copper pays back its cost at that scale is still open.",
+        "items": [
+          "Does the infection drop hold across a whole hospital, or only in a small controlled ward?",
+          "How fast do tarnish, wear, and cleaning films blunt the effect in daily use?"
+        ]
+      }
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Antimicrobial properties of copper",
+          "url": "https://en.wikipedia.org/wiki/Antimicrobial_properties_of_copper",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Oligodynamic effect (Nägeli, 1893)",
+          "url": "https://en.wikipedia.org/wiki/Oligodynamic_effect",
+          "type": "wikipedia"
+        },
+        {
+          "label": "U.S. EPA approves registration of antimicrobial copper alloys (Copper Development Association, 2008)",
+          "url": "https://www.copper.org/about/pressreleases/2008/pr2008_Mar_25.html",
+          "type": "article"
+        },
+        {
+          "label": "Salgado CD et al. Copper surfaces reduce the rate of healthcare-acquired infections in the ICU. Infect Control Hosp Epidemiol 2013;34(5):479-486",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/23571364/",
+          "type": "paper"
+        },
+        {
+          "label": "Vincent M et al. Contact killing and antimicrobial properties of copper. J Appl Microbiol 2018;124(5):1032-1046",
+          "url": "https://enviromicro-journals.onlinelibrary.wiley.com/doi/10.1111/jam.13681",
+          "type": "paper"
+        },
+        {
+          "label": "van Doremalen N et al. Aerosol and surface stability of SARS-CoV-2 as compared with SARS-CoV-1. N Engl J Med 2020;382:1564-1567",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7121658/",
+          "type": "paper"
+        }
+      ]
+    }
+  ]
+}
