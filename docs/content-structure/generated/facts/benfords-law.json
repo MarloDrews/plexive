@@ -17,7 +17,7 @@
     "headline": "In real-world data, about 30% of numbers start with the digit 1, nearly three times what equal chance would predict.",
     "teasers": [
       "The tell that exposes a faked ledger",
-      "1 leads far more than 9",
+      "A bias hiding in almost every dataset",
       "A worn page that reached a courtroom"
     ],
     "post_difficulty": 2
@@ -38,7 +38,7 @@
     {
       "type": "surprises",
       "order": 3,
-      "content": "Picture the nine digits a number can begin with. Each looks as likely as the next, so 1 should lead about 11% of the time, no more than 9. Real data says otherwise. In stock prices, city populations, and street numbers, the digit 1 comes first close to 30% of the time, while 9 barely clears 4.6%. The skew runs the same direction almost everywhere you look. What bends it is the scale these quantities are measured on."
+      "content": "A number can begin with any of nine digits, and each looks as likely as the next, so 1 should lead about 11% of the time, no more than 9. Real data says otherwise. In stock prices, city populations, and street numbers, the digit 1 comes first close to 30% of the time, while 9 barely clears 4.6%. The skew runs the same direction almost everywhere you look."
     },
     {
       "type": "tangible",
@@ -55,7 +55,7 @@
     {
       "type": "how_we_know",
       "order": 5,
-      "content": "Benford established it the plain way: he counted. Those skewed digits surfaced in river areas and molecular weights, in death rates and baseball box scores, in the street numbers of famous scientists. You can check it yourself in an afternoon. Pull any real dataset that ranges over several orders of magnitude, tally the leading digits, and the tilt appears. It shows up whenever the numbers were free to vary."
+      "content": "Benford established it the plain way: he counted. Those skewed digits surfaced in river areas and molecular weights, in death rates and baseball box scores, in the street numbers of famous scientists. You can check it yourself in an afternoon. Pull any real dataset that ranges over several orders of magnitude, tally the leading digits, and the tilt appears."
     },
     {
       "type": "story",
@@ -108,14 +108,14 @@
         },
         {
           "title": "Switch the units and the pattern survives",
-          "body": "Measure the world's rivers in miles and their leading digits follow Benford. Convert every length to kilometers and they still do, even though every number just changed. That stubbornness is the real clue. If the pattern depended on your choice of unit, it would be a bookkeeping quirk. It survives the switch, so it must come from how the quantities are spread."
+          "body": "Measure the world's rivers in miles and their leading digits follow Benford. Convert every length to kilometers and they still do, even though every number just changed. That stubbornness is the real clue. If the pattern depended on your choice of unit, it would be a bookkeeping quirk. It survives the switch."
         }
       ]
     },
     {
       "type": "bigger_picture",
       "order": 9,
-      "content": "The lasting point is that real numbers carry a signature. Quantities born of measuring and compounding ride on a logarithmic scale, and that scale tips their leading digits toward 1 whether anyone means it to or not. Numbers a person invents rarely do. Human guesses come out too even. That small mismatch is the whole basis of the fraud test."
+      "content": "The lasting point is that real numbers carry a signature. Quantities born of measuring and compounding ride on a logarithmic scale, and that scale tips their leading digits toward 1 whether anyone means it to or not. Numbers a person invents rarely do. Human guesses come out too even."
     },
     {
       "type": "quiz",
@@ -211,7 +211,7 @@
       "type": "open_questions",
       "order": 12,
       "content": {
-        "body": "The law is reliable enough to use, but a full account of which real datasets obey it, and how closely, is still being worked out. No single distribution is Benford on its own. The pattern emerges from mixtures and processes that mathematicians are still mapping. Its use as evidence is shakier than headlines suggest, especially for elections, where precinct vote counts often sit in too narrow a range for the test to carry weight.",
+        "body": "Which real datasets obey the law, and how closely, is still being worked out. No single distribution is Benford on its own. The pattern emerges from mixtures and processes that mathematicians are still mapping. Its use as evidence is shakier than headlines suggest, especially for elections, where precinct vote counts often sit in too narrow a range for the test to carry weight.",
         "items": [
           "Which natural processes yield clean Benford data, and which only come close?",
           "How much weight should a leading-digit test carry as courtroom or election evidence?"
