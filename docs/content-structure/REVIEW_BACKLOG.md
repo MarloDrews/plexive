@@ -269,3 +269,9 @@ sources. Each entry stays `open` until a researcher confirms or resolves it.
 - finding: story.body attributes the first weighing test to "home economists finally weighed roasts in the 1930s". The general point (weighing shows seared meat loses as much moisture or more) is confirmed, and the Liebig-1847 and McGee-1984 attributions check out, but the specific 1930s decade and the "home economists" actors could not be confirmed against any source; the verified moisture-loss figures (13% plain vs 19% seared) trace to a modern experiment, not a 1930s study.
 - needs: a citation for a genuine early (1930s-era) weighing study to keep the sentence, or the sentence is reworded to drop the unverified decade/actors. Deferred to backlog because the safe path is a new source; not rewritten here to avoid altering the claim without one. The post is unchanged.
 - added: 2026-07-06, 2026-07-05-d
+
+### vagus-nerve-gut-to-brain
+- status: open
+- finding: the "~80% afferent" figure (headline / surprises / see_it) is the standard textbook value but derives from 1957 cat data (Agostoni et al.); the newest direct human cervical-vagus counts put sensory fibers nearer 73-74%. The post is not wrong: it honestly attributes the number to the cat count in how_we_know and hedges with "about" / "roughly four in five". A brief qualifier that the figure comes from animal counts and modern human data runs lower would strengthen it.
+- needs: a human cervical-vagus fiber-count paper to cite the ~73-74% figure; adding it is a new claim requiring a new source, so it routes here rather than a same-source edit. Optional, low priority; the post is unchanged.
+- added: 2026-07-10, 2026-07-10-a
