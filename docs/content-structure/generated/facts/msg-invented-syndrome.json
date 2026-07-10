@@ -1,0 +1,230 @@
+{
+  "tags": [
+    "food-science",
+    "nutrition",
+    "public-health"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "The nocebo effect"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "“Chinese Restaurant Syndrome” was invented by one anecdotal letter in 1968, and 50 years of controlled tests have never reproduced its symptoms.",
+    "teasers": [
+      "The four paragraphs that started a scare",
+      "The molecule your parmesan is full of",
+      "Why the reaction follows the label"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "“Chinese Restaurant Syndrome” was invented by one anecdotal letter in 1968, and 50 years of controlled tests have never reproduced its symptoms."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 55 400 218' xmlns='http://www.w3.org/2000/svg' fill='none'><circle cx='80' cy='102' r='26' stroke='currentColor' stroke-width='2.5'/><path d='M80 76 q7 -8 16 -5' stroke='currentColor' stroke-width='2' opacity='0.7' stroke-linecap='round'/><text x='80' y='150' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.8' text-anchor='middle'>tomato</text><path d='M320 78 L344 102 L320 126 L296 102 Z' stroke='currentColor' stroke-width='2.5' stroke-linejoin='round'/><text x='320' y='150' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.8' text-anchor='middle'>MSG</text><g stroke='currentColor' stroke-width='2' opacity='0.55' stroke-linecap='round' stroke-linejoin='round'><path d='M98 122 L160 174'/><path d='M160 174 l-14 -3 m14 3 l-4 -14'/><path d='M302 122 L240 174'/><path d='M240 174 l14 -3 m-14 3 l4 -14'/></g><rect x='150' y='182' width='100' height='40' rx='14' fill='var(--accent)' fill-opacity='0.12' stroke='var(--accent)' stroke-width='2.5'/><path d='M168 207 L182 197 L196 207 L210 197 L224 207' stroke='var(--accent)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/><text x='200' y='245' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='700' text-anchor='middle'>glutamate</text><text x='200' y='267' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='middle'>the body cannot tell them apart</text></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "Start with the letter itself. In 1968 a doctor named Robert Ho Man Kwok wrote to a medical journal describing numbness and palpitations after Chinese meals. Four paragraphs, one man's experience, no patients, no data, no control group. He was not even sure of the cause, and floated the cooking wine and the sodium before he reached the MSG. The journal printed it under the heading “Chinese Restaurant Syndrome,” readers wrote in to agree, and a name hardened into a diagnosis. Nothing had been measured. A guess had been handed a title."
+    },
+    {
+      "type": "tangible",
+      "order": 4,
+      "content": {
+        "items": [
+          "A wedge of aged parmesan holds around 1,200 mg of free glutamate per 100 g, more than sits in most dishes anyone adds MSG to.",
+          "Ripe tomatoes, dried mushrooms, soy sauce, and cured ham are all rich in the very same molecule.",
+          "Even human breast milk is full of free glutamate, one of the first flavors anyone ever tastes."
+        ],
+        "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='40' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Free glutamate, mg per 100g</text><line x1='40' y1='250' x2='360' y2='250' stroke='currentColor' stroke-width='2' opacity='0.45' stroke-linecap='round'/><rect x='79' y='90' width='62' height='160' rx='6' fill='var(--accent)' fill-opacity='0.15' stroke='var(--accent)' stroke-width='2.5'/><rect x='169' y='217' width='62' height='33' rx='6' stroke='currentColor' stroke-width='2' opacity='0.55'/><rect x='259' y='226' width='62' height='24' rx='6' stroke='currentColor' stroke-width='2' opacity='0.55'/><text x='110' y='82' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='15' font-weight='700' text-anchor='middle'>~1,200</text><text x='200' y='209' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' font-weight='700' opacity='0.8' text-anchor='middle'>~250</text><text x='290' y='218' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' font-weight='700' opacity='0.8' text-anchor='middle'>~180</text><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle'><text x='110' y='272'>parmesan</text><text x='200' y='272' opacity='0.8'>tomato</text><text x='290' y='272' opacity='0.8'>mushroom</text></g><text x='200' y='290' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='12' opacity='0.55' text-anchor='middle'>the same molecule as MSG</text></svg>"
+      }
+    },
+    {
+      "type": "how_we_know",
+      "order": 5,
+      "content": "When researchers finally tested the claim properly, it dissolved. In double-blind trials, people who swear MSG makes them ill cannot pick it out from a placebo. Give the two in identical capsules or hidden in food, and the symptoms track what people believe they ate, not what they actually ate. Very large doses on an empty stomach, several grams of pure MSG with no food, can produce mild sensations in some people. That is a different claim from a restaurant meal harming you. Across the controlled literature, normal amounts in a meal do nothing a placebo does not."
+    },
+    {
+      "type": "story",
+      "order": 7,
+      "content": {
+        "body": "The molecule at the center of the panic was first pinned down by a scientist chasing a better broth. In 1908 Kikunae Ikeda, a chemist in Tokyo, wondered why a kelp stock tasted savory. The flavor was not sweet, sour, salty, or bitter. He boiled down about 12 kilograms of kelp and pulled out roughly 30 grams of the substance behind it. It was glutamate. He named the taste umami, and within a year the extract was on sale as a seasoning. It was the same molecule that makes a ripe tomato taste rich.",
+        "key_figures": [
+          {
+            "name": "Kikunae Ikeda",
+            "role": "Discovered umami and isolated glutamate",
+            "one_line": "In 1908 he extracted glutamate from kelp and identified umami, the savory fifth taste.",
+            "lifespan": "1864-1936",
+            "birth_year": 1864,
+            "featured": true,
+            "image_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Kikunae_Ikeda.jpg",
+            "image_attribution": "Unknown author, “Kikunae Ikeda”, public domain (Wikimedia Commons)"
+          }
+        ]
+      }
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "The panic had a target, and it was not chemistry",
+          "body": "MSG was already everywhere in American food when the scare began. It sat in canned soup, cured meats, snack seasonings, and bouillon cubes, eaten for decades without complaint. The fear switched on only when the additive was tied to Chinese restaurants. The syndrome was named for a cuisine, not a compound, and the same glutamate in a bag of chips or a wedge of parmesan never earned a warning label."
+        },
+        {
+          "title": "The reaction follows the label, not the food",
+          "body": "The tell is what happens when people do not know what they ate. Blinded, the same person who reacts to a dish they are told contains MSG feels nothing when the label is removed. Expectation is doing the work. This is the nocebo effect, the darker twin of placebo, where believing something will hurt you produces real, felt symptoms. The distress is real, and the trigger is the expectation the label creates.",
+          "visual_svg": "<svg viewBox='0 68 400 178' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='88' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>The reaction follows the label</text><rect x='36' y='100' width='140' height='40' rx='14' fill='var(--accent)' fill-opacity='0.12' stroke='var(--accent)' stroke-width='2.5'/><text x='106' y='125' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>told: has MSG</text><g stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M176 120 H222'/><path d='M222 120 l-12 -6 m12 6 l-12 6'/></g><rect x='224' y='100' width='140' height='40' rx='14' fill='var(--accent)' fill-opacity='0.12' stroke='var(--accent)' stroke-width='2.5'/><text x='294' y='125' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>reports symptoms</text><rect x='36' y='176' width='140' height='40' rx='14' stroke='currentColor' stroke-width='2' opacity='0.6'/><text x='106' y='201' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.85' text-anchor='middle'>told: nothing</text><g stroke='currentColor' stroke-width='2' opacity='0.55' stroke-linecap='round' stroke-linejoin='round'><path d='M176 196 H222'/><path d='M222 196 l-12 -6 m12 6 l-12 6'/></g><rect x='224' y='176' width='140' height='40' rx='14' stroke='currentColor' stroke-width='2' opacity='0.6'/><text x='294' y='201' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.85' text-anchor='middle'>feels fine</text><text x='200' y='236' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='12' opacity='0.55' text-anchor='middle'>identical food in both rows</text></svg>"
+        },
+        {
+          "title": "Glutamate is not an intruder in the body",
+          "body": "Glutamate is not some industrial invader. It is the most common excitatory neurotransmitter in the human brain, and the body makes it and uses it constantly. The gut treats the glutamate from MSG exactly as it treats the glutamate from a tomato, breaking both down the same way. A molecule this fundamental to normal physiology was never a plausible villain."
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "The MSG scare is a case study in how a single unverified claim outruns the evidence against it. The letter was never a study. It was a question, printed once, that a nervous public and a wave of me-too anecdotes turned into settled fact, and no amount of careful science has fully undone it. Menus still advertise “No MSG” to reassure people about a molecule already in their parmesan. That is the strange durability of a scary story. The proof arrived decades ago. The reputation has not caught up."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "Why is the origin of “MSG syndrome” considered weak evidence?",
+          "options": [
+            "It began as one person's anecdote, with no data and no control group",
+            "The letter was written by someone with no medical training",
+            "It rested on a study that was later retracted",
+            "The symptoms were never described in any detail"
+          ],
+          "answer_index": 0,
+          "explanation": "The whole idea traces to a single 1968 letter reporting one doctor's own symptoms. There was no experiment, no comparison group, and no measurement, just a guess that acquired a name."
+        },
+        {
+          "question": "In double-blind tests, what best predicts whether someone reports MSG symptoms?",
+          "options": [
+            "The amount of MSG actually in the food",
+            "The person's body weight",
+            "Whether they believe the food contains MSG",
+            "How spicy the food is"
+          ],
+          "answer_index": 2,
+          "explanation": "When people cannot tell MSG from a placebo, symptoms follow belief rather than the dose. That is the nocebo effect: expecting harm can produce genuine, felt symptoms."
+        },
+        {
+          "question": "How does the glutamate in MSG compare to the glutamate in a tomato?",
+          "options": [
+            "It is a synthetic version the body handles differently",
+            "They are unrelated chemicals with similar names",
+            "MSG glutamate is always far more concentrated per bite than any food",
+            "It is the same molecule, and the body handles both identically"
+          ],
+          "answer_index": 3,
+          "explanation": "Glutamate is glutamate. The body cannot distinguish the molecule added as MSG from the glutamate naturally abundant in tomatoes, cheese, and mushrooms, and it breaks both down the same way."
+        },
+        {
+          "question": "Why did the scare attach to Chinese food rather than to MSG in general?",
+          "options": [
+            "Chinese restaurants used far more MSG than any other kind of food",
+            "The additive was tied to one cuisine, while the same glutamate filled Western processed foods eaten without alarm",
+            "MSG was invented in China",
+            "Only Chinese cooking releases glutamate when heated"
+          ],
+          "answer_index": 1,
+          "explanation": "Americans had eaten MSG in soups, snacks, and cured meats for decades. The panic began only when the additive was linked to Chinese restaurants, which points at culture more than chemistry."
+        },
+        {
+          "question": "What is the honest caveat about MSG and symptoms?",
+          "options": [
+            "It is impossible for anyone to react to it under any conditions",
+            "It causes lasting harm in a small number of people",
+            "Very large doses on an empty stomach may cause mild, brief sensations in some people, unlike a normal meal",
+            "It triggers a true allergic reaction in most people"
+          ],
+          "answer_index": 2,
+          "explanation": "Careful studies do not claim a perfect zero. A few grams of pure MSG taken without food can produce mild, short-lived sensations in some people, which is nothing like the illness attributed to an ordinary meal."
+        },
+        {
+          "question": "What is umami, the taste that MSG delivers?",
+          "options": [
+            "A savory taste produced by glutamate, alongside sweet, sour, salty, and bitter",
+            "A synthetic flavor with no natural source",
+            "Another word for saltiness",
+            "The taste of the sodium in MSG"
+          ],
+          "answer_index": 0,
+          "explanation": "Umami is the savory taste of glutamate, identified by Kikunae Ikeda in 1908. It is the depth you taste in broth, aged cheese, and ripe tomatoes, all of them naturally rich in glutamate."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "MSG is a chemical, unlike the natural ingredients in food.",
+          "reality": "Glutamate is a normal part of food and of your own body. The compound in MSG is the same one that makes tomatoes, cheese, and mushrooms taste savory."
+        },
+        {
+          "myth": "A “No MSG” label means the dish is free of glutamate.",
+          "reality": "It only means none was added as MSG. The dish can still be full of natural glutamate from aged cheese or a slow-simmered broth, which the body treats no differently."
+        },
+        {
+          "myth": "MSG is completely inert and could never affect anyone.",
+          "reality": "For most people, at the amounts in a meal, it does nothing a placebo does not. A few individuals given several grams at once on an empty stomach report mild, short-lived sensations, far from the feared illness."
+        }
+      ]
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "The Rotten Science Behind the MSG Scare (Science History Institute)",
+          "url": "https://www.sciencehistory.org/stories/magazine/the-rotten-science-behind-the-msg-scare/",
+          "type": "article"
+        },
+        {
+          "label": "Kwok RHM. Chinese-Restaurant Syndrome. New England Journal of Medicine 1968;278:796 (full text of the letter)",
+          "url": "https://roblog.co.uk/files/robert-ho-man-kwok-letter.txt",
+          "type": "article"
+        },
+        {
+          "label": "Freeman M. Reconsidering the effects of monosodium glutamate: A literature review. Journal of the American Academy of Nurse Practitioners 2006;18(10):482-486",
+          "url": "https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1745-7599.2006.00160.x",
+          "type": "paper"
+        },
+        {
+          "label": "Geha RS et al. Multicenter, double-blind, placebo-controlled, multiple-challenge evaluation of reported reactions to monosodium glutamate. Journal of Allergy and Clinical Immunology 2000",
+          "url": "https://www.jacionline.org/article/S0091-6749(00)44233-8/fulltext",
+          "type": "paper"
+        },
+        {
+          "label": "FDA. Questions and Answers on Monosodium glutamate (MSG)",
+          "url": "https://www.fda.gov/food/food-additives-petitions/questions-and-answers-monosodium-glutamate-msg",
+          "type": "article"
+        },
+        {
+          "label": "Kikunae Ikeda (Umami Information Center)",
+          "url": "https://www.umamiinfo.com/ikedakikunae/",
+          "type": "article"
+        }
+      ]
+    }
+  ]
+}
