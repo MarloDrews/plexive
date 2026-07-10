@@ -1,0 +1,228 @@
+{
+  "tags": [
+    "psychology",
+    "cognitive-biases",
+    "law"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "The misinformation effect"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "Eyewitness memory is reconstructed at recall, not recorded, so a leading question can add details that were never there, and mistaken witnesses figure in 69% of DNA exonerations.",
+    "teasers": [
+      "Why certainty and accuracy come apart",
+      "One verb that planted broken glass",
+      "How praise builds a confidence that was not there"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "Eyewitness memory is reconstructed at recall, not recorded, so a leading question can add details that were never there, and mistaken witnesses figure in 69% of DNA exonerations."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='40' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='700' text-anchor='middle'>Broken glass they recalled</text><text x='200' y='60' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='middle'>there was none in the film</text><line x1='40' y1='250' x2='360' y2='250' stroke='currentColor' stroke-width='2' opacity='0.45' stroke-linecap='round'/><rect x='90' y='90' width='60' height='160' rx='6' fill='var(--accent)' fill-opacity='0.15' stroke='var(--accent)' stroke-width='2.5'/><rect x='175' y='180' width='60' height='70' rx='6' stroke='currentColor' stroke-width='2' opacity='0.55'/><rect x='260' y='190' width='60' height='60' rx='6' stroke='currentColor' stroke-width='2' opacity='0.55'/><text x='120' y='82' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='15' font-weight='700' text-anchor='middle'>32%</text><text x='205' y='172' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='14' font-weight='700' opacity='0.8' text-anchor='middle'>14%</text><text x='290' y='182' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='14' font-weight='700' opacity='0.8' text-anchor='middle'>12%</text><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle'><text x='120' y='272'>“smashed”</text><text x='205' y='272' opacity='0.8'>“hit”</text><text x='290' y='272' opacity='0.8'>control</text></g><text x='200' y='290' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='12' opacity='0.55' text-anchor='middle'>the verb in the question</text></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "Start by granting what feels obvious. The witness is not lying, and she is sure of what she saw. The trouble runs deeper than honesty. Memory does not record an event and replay it on demand. Each time you recall something, your brain rebuilds it from fragments. Anything that reaches you in between, a stray question, a photo, an overheard remark, can be stitched into that rebuild. Elizabeth Loftus spent decades showing how little it takes. Swap one verb in a question, from “hit” to “smashed,” and people report higher speeds and recall broken glass that was never in the film. The witness did nothing wrong. Her memory was never a recording to begin with."
+    },
+    {
+      "type": "story",
+      "order": 7,
+      "content": {
+        "body": "In the 1970s a confident eyewitness was treated by most courts as close to proof. Elizabeth Loftus doubted memory was solid enough to carry that weight. In a 1974 study with John Palmer, 150 people watched a filmed car crash. One word in the follow-up question moved their answers: those asked how fast the cars “smashed” guessed about 41 mph, those asked how fast they “hit” about 34. A week later, the “smashed” group was twice as likely to recall broken glass, though the film showed none. Feedback can push the other way just as easily. Tell a witness “Good, you got him” after a lineup and their remembered certainty climbs, even when the pick was wrong. Mistaken identification helped convict 252 of the people the Innocence Project later cleared by DNA, most of them identified by a witness who was certain.",
+        "key_figures": [
+          {
+            "name": "Elizabeth Loftus",
+            "role": "Showed memory can be rewritten",
+            "one_line": "Her 1974 experiments proved a single word in a question can change what a witness remembers.",
+            "lifespan": "born 1944",
+            "birth_year": 1944,
+            "featured": true
+          }
+        ],
+        "visual_svg": "<svg viewBox='0 42 400 220' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='62' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>How a memory is recalled</text><rect x='25' y='120' width='95' height='58' rx='14' stroke='currentColor' stroke-width='2' opacity='0.6'/><rect x='152' y='120' width='95' height='58' rx='14' stroke='currentColor' stroke-width='2' opacity='0.6'/><rect x='280' y='120' width='100' height='58' rx='14' stroke='currentColor' stroke-width='2' opacity='0.6'/><g stroke='currentColor' stroke-width='2' opacity='0.55' stroke-linecap='round' stroke-linejoin='round'><path d='M120 149 h32'/><path d='M152 149 l-12 -6 m12 6 l-12 6'/><path d='M247 149 h33'/><path d='M280 149 l-12 -6 m12 6 l-12 6'/></g><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle'><text x='72' y='154' opacity='0.85'>fragments</text><text x='199' y='154' opacity='0.85'>rebuild</text><text x='330' y='154' opacity='0.85'>one memory</text></g><rect x='150' y='222' width='100' height='30' rx='15' fill='var(--accent)' fill-opacity='0.14' stroke='var(--accent)' stroke-width='2'/><text x='200' y='241' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='12' font-weight='700' text-anchor='middle'>a leading question</text><g stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M200 222 V184'/><path d='M200 184 l-6 12 m6 -12 l6 12'/></g></svg>"
+      }
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "A word of praise can manufacture certainty",
+          "body": "Confidence feels like it rises straight from the memory, but it can be installed from outside. In the lineup studies of Gary Wells and Amy Bradfield, witnesses picked a face from a lineup that did not contain the culprit, so every pick was wrong. When an administrator said “Good, you identified the suspect,” witnesses did not only feel surer. They recalled having had a better view, having decided faster, having been certain from the start. The identification never changed. What changed was everything the witness remembered about making it.",
+          "visual_svg": "<svg viewBox='0 60 400 180' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='90' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Certainty can slide after the fact</text><rect x='40' y='150' width='320' height='10' rx='5' stroke='currentColor' stroke-width='2' opacity='0.4'/><text x='44' y='184' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='start'>unsure</text><text x='356' y='184' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='end'>certain</text><circle cx='130' cy='155' r='6' fill='currentColor' opacity='0.7'/><text x='130' y='132' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>at the lineup</text><g stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M144 141 H291'/><path d='M291 141 l-11 -6 m11 6 l-11 6'/></g><circle cx='300' cy='155' r='7' fill='var(--accent)'/><text x='300' y='132' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>at trial</text><text x='200' y='210' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='12' opacity='0.55' text-anchor='middle'>the pick never changed</text></svg>"
+        },
+        {
+          "title": "Stress and a weapon make it worse, not sharper",
+          "body": "Intuition says a terrifying moment burns itself into memory. Often it does the reverse. When a weapon is present, attention narrows onto the gun or knife. The face above it gets far less of the witness's attention, an effect labs call weapon focus. High stress tends to degrade identification accuracy rather than heighten it. The vivid, unforgettable feeling of the memory is real. It is not a measure of how accurate the memory is."
+        },
+        {
+          "title": "The errors run worst across racial lines",
+          "body": "People recognize faces from their own racial group more reliably than faces from other groups, a well-documented pattern called the cross-race effect. It raises the risk of a mistaken identification, and a substantial share of the DNA exoneration cases involved a witness naming someone of a different race. The effect comes from familiarity. A brain gets sharper at telling apart the kinds of faces it sees often, and clumsier with the ones it rarely meets."
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "The unsettling part is not that memory fails. It fails invisibly, filling its own gaps so smoothly that the person never feels the seam. So a sincere, confident witness can be wrong and never doubt it, and “I know what I saw” can carry a courtroom while meaning less than it sounds. The science has slowly reached the law. Studies like these pushed police toward double-blind lineups, confidence statements recorded before any feedback, and clearer instructions to juries. Each reform tries to capture the memory early, before feedback and repetition can quietly reshape it."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "Why can a sincere, confident eyewitness still be badly mistaken?",
+          "options": [
+            "They are usually exaggerating how certain they feel",
+            "Confidence and accuracy are unrelated because witnesses just guess",
+            "Memory is rebuilt at recall and can absorb later information without the person noticing",
+            "Extreme stress erases the memory completely"
+          ],
+          "answer_index": 2,
+          "explanation": "Recall is reconstruction, not playback. The brain reassembles the event from fragments and can fold in anything encountered since, and the result feels no less real than a genuine one."
+        },
+        {
+          "question": "In Loftus and Palmer's study, why did changing the verb from “hit” to “smashed” matter?",
+          "options": [
+            "The word entered the reconstructed memory, raising speed estimates and even adding broken glass",
+            "The faster cars in that group caused more real damage",
+            "Participants wanted to give the researcher the answer she expected",
+            "Smashed cars are simply more memorable than hit ones"
+          ],
+          "answer_index": 0,
+          "explanation": "The verb was suggestion, and it became part of what people remembered. Those who heard “smashed” recalled higher speeds and, a week later, broken glass that was never in the film."
+        },
+        {
+          "question": "An officer says “Good, you got him” right after a witness picks a face. What does research predict?",
+          "options": [
+            "The witness becomes more cautious about the choice",
+            "Nothing changes, since the identification is already made",
+            "The witness will usually switch to a different face",
+            "The witness's remembered confidence rises, even if the pick was wrong"
+          ],
+          "answer_index": 3,
+          "explanation": "Confirming feedback inflates recalled confidence, along with claims of a better view and a faster decision. In the studies that showed this, the lineup held no culprit, so every boosted identification was mistaken."
+        },
+        {
+          "question": "Why does a weapon at a crime scene often reduce eyewitness accuracy?",
+          "options": [
+            "Witnesses shut their eyes in fear and see nothing at all",
+            "Attention narrows onto the weapon, so the face gets encoded less well",
+            "Weapons trigger unusually complete, detailed memories",
+            "The stress sharpens memory for the face but not the weapon"
+          ],
+          "answer_index": 1,
+          "explanation": "Known as weapon focus, the effect pulls attention to the threat. The gun or knife is remembered well, and the face above it far less well, the opposite of what intuition expects."
+        },
+        {
+          "question": "Which lineup practice best guards against these errors?",
+          "options": [
+            "Letting the case detective run the lineup and encourage the witness",
+            "Telling the witness the real suspect is definitely in the lineup",
+            "Recording the witness's confidence right after the pick, before any feedback",
+            "Waiting several months so the memory has time to settle"
+          ],
+          "answer_index": 2,
+          "explanation": "An administrator who does not know the suspect cannot cue the witness, and a confidence statement taken immediately captures certainty before feedback can inflate it. Both are core reforms from the research."
+        },
+        {
+          "question": "What is the honest limit on eyewitness confidence, according to recent research?",
+          "options": [
+            "Confidence at the first, clean identification can be informative, but confidence at trial has often been reshaped",
+            "Eyewitness confidence is always meaningless",
+            "Confidence expressed at trial is the most reliable measure of all",
+            "Only visibly nervous witnesses are ever accurate"
+          ],
+          "answer_index": 0,
+          "explanation": "Confidence recorded at the initial identification, under clean conditions, does track accuracy to a degree. By trial, months of feedback and repetition have usually intervened, so courtroom certainty means much less."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "A vivid, detailed memory is a sign that it is accurate.",
+          "reality": "Detail and vividness track how strong a memory feels, not how faithful it is. A confidently held false memory can be every bit as rich as a true one."
+        },
+        {
+          "myth": "Only careless or dishonest people misremember what they saw.",
+          "reality": "The reconstruction happens in every normal brain. Careful, honest, intelligent witnesses form false memories under the same conditions as everyone else."
+        },
+        {
+          "myth": "If the witness is sure, the identification is safe.",
+          "reality": "Certainty can be inflated after the fact by feedback and repetition. It carries the most weight at the very first identification, under clean conditions, and much less by the time of a trial."
+        }
+      ]
+    },
+    {
+      "type": "open_questions",
+      "order": 12,
+      "content": {
+        "body": "The field has swung hard on one question: how much an eyewitness's confidence is worth. For years the answer was close to nothing, after study upon study tied loud confidence to wrong answers. Newer work argues the picture is subtler. Confidence expressed at the very first identification, before any feedback and under careful conditions, does carry real information about accuracy. The open problem is practical. Real lineups are rarely that clean, and by the time a witness reaches court, months of certainty-building have usually intervened.",
+        "items": [
+          "How much should a jury trust confidence recorded at the first, uncontaminated identification?",
+          "Can real lineups be run cleanly enough for that early confidence to mean what the lab says?"
+        ]
+      }
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Innocence Project. DNA Exonerations in the United States (1989-2020) (eyewitness misidentification in 69%, 252 of 367 cases)",
+          "url": "https://innocenceproject.org/dna-exonerations-in-the-united-states/",
+          "type": "article"
+        },
+        {
+          "label": "Innocence Project. Eyewitness Misidentification",
+          "url": "https://innocenceproject.org/eyewitness-misidentification/",
+          "type": "article"
+        },
+        {
+          "label": "Loftus EF, Palmer JC. Reconstruction of automobile destruction. Journal of Verbal Learning and Verbal Behavior 1974;13:585-589",
+          "url": "https://www.sciencedirect.com/science/article/abs/pii/S0022537174800113",
+          "type": "paper"
+        },
+        {
+          "label": "Steblay NK, Wells GL, Douglass AB. The eyewitness post-identification feedback effect 15 years later. Psychology, Public Policy, and Law 2014",
+          "url": "https://www.innocenceproject.org/wp-content/uploads/2016/04/Steblay_Wells_Douglass_2014_PPPL.pdf",
+          "type": "paper"
+        },
+        {
+          "label": "National Research Council. Identifying the Culprit: Assessing Eyewitness Identification. National Academies Press 2014",
+          "url": "https://nap.nationalacademies.org/catalog/18891/identifying-the-culprit-assessing-eyewitness-identification",
+          "type": "book"
+        },
+        {
+          "label": "Wixted JT, Wells GL. The Relationship Between Eyewitness Confidence and Identification Accuracy. Psychological Science in the Public Interest 2017;18(1):10-65",
+          "url": "https://journals.sagepub.com/doi/10.1177/1529100616686966",
+          "type": "paper"
+        },
+        {
+          "label": "Elizabeth Loftus",
+          "url": "https://en.wikipedia.org/wiki/Elizabeth_Loftus",
+          "type": "wikipedia"
+        }
+      ]
+    }
+  ]
+}
