@@ -1,0 +1,223 @@
+{
+  "tags": [
+    "materials-science",
+    "everyday-science",
+    "chemistry"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Viscosity"
+      },
+      "featured": true
+    },
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Amorphous solid"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "Old cathedral windows are thicker at the bottom because of how they were made, not because glass flows: a visible sag would take about 10^23 years.",
+    "teasers": [
+      "Two facts that sound like a contradiction",
+      "What a spinning disc did to every pane",
+      "Why 2,000-year-old bottles never sagged"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "Old cathedral windows are thicker at the bottom because of how they were made, not because glass flows: a visible sag would take about 10^23 years."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 42 400 228' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='110' y='60' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Blown and spun</text><path d='M45 150 Q110 126 175 150 Q110 174 45 150 Z' stroke='currentColor' stroke-width='2.5' stroke-linejoin='round'/><line x1='110' y1='131' x2='110' y2='169' stroke='currentColor' stroke-width='2' opacity='0.6' stroke-linecap='round'/><text x='110' y='205' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>thick center</text><g stroke='currentColor' stroke-width='2' opacity='0.55' stroke-linecap='round' stroke-linejoin='round'><path d='M192 150 h34'/><path d='M226 150 l-12 -6 m12 6 l-12 6'/></g><text x='300' y='60' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Cut into a pane</text><path d='M296 78 L304 78 L318 236 L274 236 Z' stroke='currentColor' stroke-width='2.5' stroke-linejoin='round'/><path d='M274 236 L318 236 L314 200 L277 200 Z' fill='var(--accent)' fill-opacity='0.18' stroke='var(--accent)' stroke-width='2.5' stroke-linejoin='round'/><line x1='266' y1='242' x2='326' y2='242' stroke='currentColor' stroke-width='2' opacity='0.5' stroke-linecap='round'/><text x='296' y='262' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>thick edge down</text></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "Two things are true at once. The glass in a medieval window really is thicker along one edge, usually the bottom. And glass really does not flow at room temperature. The myth papers over the tension by picturing the pane oozing down over 600 years. That part is wrong. The honest answer predates the window: panes were blown as spinning discs, thick in the middle and thin at the rim, so every sheet came out uneven before anyone cut it. Glaziers set the heavy edge at the bottom, where it looked steady."
+    },
+    {
+      "type": "tangible",
+      "order": 4,
+      "content": {
+        "items": [
+          "Written out, 10^23 is a 1 followed by 23 zeros of years: a visible sag would take trillions of times the current age of the universe.",
+          "Even medieval glass, softer and quicker to flow than a modern pane, would creep only about 1 nanometer over a billion years.",
+          "Roman bottles blown 2,000 years ago still hold their shape, with no glass pooled at the base."
+        ],
+        "visual_svg": "<svg viewBox='0 60 400 180' xmlns='http://www.w3.org/2000/svg' fill='none'><line x1='40' y1='150' x2='360' y2='150' stroke='currentColor' stroke-width='2' opacity='0.5' stroke-linecap='round'/><g stroke='currentColor' stroke-width='2' opacity='0.45' stroke-linecap='round'><line x1='40' y1='144' x2='40' y2='156'/><line x1='107' y1='146' x2='107' y2='154'/><line x1='173' y1='144' x2='173' y2='156'/><line x1='240' y1='146' x2='240' y2='154'/><line x1='307' y1='146' x2='307' y2='154'/><line x1='360' y1='144' x2='360' y2='156'/></g><line x1='173' y1='128' x2='173' y2='150' stroke='currentColor' stroke-width='2' opacity='0.7' stroke-linecap='round'/><circle cx='173' cy='128' r='4' fill='currentColor'/><text x='173' y='120' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.8' text-anchor='middle'>universe</text><text x='173' y='172' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' opacity='0.7' text-anchor='middle'>10^10 yr</text><line x1='347' y1='104' x2='347' y2='150' stroke='var(--accent)' stroke-width='2.5' stroke-linecap='round'/><circle cx='347' cy='104' r='5' fill='var(--accent)'/><text x='356' y='96' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='end'>glass sags</text><text x='356' y='172' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='14' font-weight='700' text-anchor='end'>10^23 yr</text><path d='M181 190 H339' stroke='currentColor' stroke-width='1.5' opacity='0.5' stroke-linecap='round'/><path d='M181 190 l8 -5 m-8 5 l8 5 M339 190 l-8 -5 m8 5 l-8 5' stroke='currentColor' stroke-width='1.5' opacity='0.5' stroke-linecap='round' stroke-linejoin='round'/><text x='260' y='210' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>13 more zeros</text><text x='200' y='230' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='12' opacity='0.55' text-anchor='middle'>years, powers of 10</text></svg>"
+      }
+    },
+    {
+      "type": "how_we_know",
+      "order": 5,
+      "content": "You get the number by watching how glass stiffens as it cools, then extending that curve down to room temperature. Edgar Zanotto ran the calculation in 1998 and found a flow time longer than cosmic history. In 2017 a Corning team including Ozgur Gulbiten and John Mauro measured medieval glass itself, and even its lower viscosity left any flow far too slow to catch. Then there is the physical record. Roman and Egyptian vessels, thousands of years old and often paper-thin, sit in museums with no glass pooled at the foot."
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "Two-thousand-year-old glass has not slumped either",
+          "body": "If gravity could pull window glass downward, the oldest glass on Earth should be the most deformed. It is not. Roman perfume bottles and Egyptian beads, some blown or cast more than 2,000 years ago, keep crisp shapes and thin walls with no sag at the base. Corning scientists ran the test the slow way too, simulating geologic spans of gravity on glass samples, and still measured no flow. The ancient objects were the control group all along.",
+          "image_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Green_glass_dropper_bottle,_Roman,_100-500_CE_Wellcome_L0058041.jpg",
+          "image_caption": "A Roman glass bottle from between 100 and 500 CE, still crisp after more than 1,500 years.",
+          "image_attribution": "Wellcome Collection, “Green glass dropper bottle, Roman, 100-500 CE”, CC BY 4.0 (Wikimedia Commons)"
+        },
+        {
+          "title": "Glass really is a strange kind of solid",
+          "body": "The myth survives because it sits beside something true. Glass has no neat crystal lattice. Its atoms are frozen in the jumble they held as a liquid. That is why it has no sharp melting point and only softens gradually as it heats. That disordered structure is what the word “glassy” actually names. It leaves glass a genuine oddity among solids, though at room temperature it stays as rigid as any of them.",
+          "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='46' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Same atoms, different order</text><line x1='200' y1='70' x2='200' y2='250' stroke='currentColor' stroke-width='1.5' opacity='0.3' stroke-dasharray='6 6'/><g stroke='currentColor' stroke-width='1.5' opacity='0.3' stroke-linecap='round'><line x1='55' y1='100' x2='175' y2='100'/><line x1='55' y1='135' x2='175' y2='135'/><line x1='55' y1='170' x2='175' y2='170'/><line x1='55' y1='205' x2='175' y2='205'/><line x1='55' y1='100' x2='55' y2='205'/><line x1='85' y1='100' x2='85' y2='205'/><line x1='115' y1='100' x2='115' y2='205'/><line x1='145' y1='100' x2='145' y2='205'/><line x1='175' y1='100' x2='175' y2='205'/></g><g fill='currentColor' opacity='0.75'><circle cx='55' cy='100' r='5'/><circle cx='85' cy='100' r='5'/><circle cx='115' cy='100' r='5'/><circle cx='145' cy='100' r='5'/><circle cx='175' cy='100' r='5'/><circle cx='55' cy='135' r='5'/><circle cx='85' cy='135' r='5'/><circle cx='115' cy='135' r='5'/><circle cx='145' cy='135' r='5'/><circle cx='175' cy='135' r='5'/><circle cx='55' cy='170' r='5'/><circle cx='85' cy='170' r='5'/><circle cx='115' cy='170' r='5'/><circle cx='145' cy='170' r='5'/><circle cx='175' cy='170' r='5'/><circle cx='55' cy='205' r='5'/><circle cx='85' cy='205' r='5'/><circle cx='115' cy='205' r='5'/><circle cx='145' cy='205' r='5'/><circle cx='175' cy='205' r='5'/></g><g fill='var(--accent)'><circle cx='222' cy='112' r='5'/><circle cx='252' cy='100' r='5'/><circle cx='285' cy='120' r='5'/><circle cx='320' cy='106' r='5'/><circle cx='350' cy='128' r='5'/><circle cx='234' cy='150' r='5'/><circle cx='268' cy='140' r='5'/><circle cx='303' cy='158' r='5'/><circle cx='340' cy='150' r='5'/><circle cx='226' cy='190' r='5'/><circle cx='260' cy='180' r='5'/><circle cx='295' cy='196' r='5'/><circle cx='330' cy='186' r='5'/><circle cx='352' cy='172' r='5'/><circle cx='248' cy='216' r='5'/><circle cx='300' cy='220' r='5'/><circle cx='334' cy='208' r='5'/></g><text x='115' y='245' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.8' text-anchor='middle'>crystal</text><text x='292' y='245' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>glass</text></svg>"
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "The thickness in a cathedral window records a workshop, not a slow collapse. That correction reaches past one myth. A mechanical, gravity-driven story is easy to picture and hard to dislodge, so it outran the duller truth for generations, even among people who worked with the glass. The stranger part is that the science is not fully closed. Physicists can promise glass will not visibly flow on any timescale that matters, yet they still cannot say exactly what a glass is, or what happens as a cooling liquid locks into one. That part of the story is genuinely unfinished."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "Why is a medieval cathedral window often thicker at the bottom?",
+          "options": [
+            "Glass slowly flowed downward over the centuries",
+            "The panes were cut from uneven spun discs and set heavy-side down",
+            "The base was reinforced to bear the window's weight",
+            "Heat rising from below softened and thickened the bottom"
+          ],
+          "answer_index": 1,
+          "explanation": "Crown glass was blown and spun into a disc that was thick in the middle and thin at the edge, so every pane was uneven before it went in. Glaziers set the heavy edge at the bottom, where it looked stable."
+        },
+        {
+          "question": "Roman glass bottles 2,000 years old show no sagging. Why does that matter here?",
+          "options": [
+            "Roman glass had a chemistry that has since changed",
+            "The bottles were stored lying down, unlike windows",
+            "Glass far older than any window still keeps its shape, which flow would not allow",
+            "Two thousand years is simply too short for glass to move"
+          ],
+          "answer_index": 2,
+          "explanation": "Ancient glass is the natural test. Objects far older than any cathedral window keep crisp shapes, exactly what you would expect if glass does not flow at ordinary temperatures."
+        },
+        {
+          "question": "How did scientists arrive at the huge flow time for glass at room temperature?",
+          "options": [
+            "By measuring old windows and projecting the change backward",
+            "By measuring how glass stiffens as it cools and extending that to room temperature",
+            "By running a computer simulation for 10^23 steps",
+            "By estimating, since glass flow cannot really be measured"
+          ],
+          "answer_index": 1,
+          "explanation": "Zanotto took the way glass viscosity climbs as it cools and extended that curve down to room temperature. The result is a flow time far longer than the universe has existed."
+        },
+        {
+          "question": "What makes glass genuinely unusual among ordinary solids?",
+          "options": [
+            "Its atoms sit in a disordered, liquid-like arrangement rather than a crystal",
+            "It is slowly turning back into sand",
+            "It pours like a very thick syrup if left upright",
+            "It has no atoms locked in place at all"
+          ],
+          "answer_index": 0,
+          "explanation": "Glass has no crystal lattice and no sharp melting point; its atoms are frozen in the disorder of a liquid. That makes it a strange solid, but a solid all the same at room temperature."
+        },
+        {
+          "question": "A friend points to a wavy old windowpane as proof that glass flows. What is the best correction?",
+          "options": [
+            "The waviness comes from how the sheet was made, and glass does not flow at room temperature",
+            "Only very old glass flows; modern glass does not",
+            "It flowed, but so slowly it took the full age of the universe",
+            "Glass flows only where sunlight warms it"
+          ],
+          "answer_index": 0,
+          "explanation": "The ripples and uneven thickness are features of the blowing and spinning, not signs of movement. At room temperature glass is rigid, and even far older glass shows no flow."
+        },
+        {
+          "question": "Given all this, what about glass is still genuinely unsettled in physics?",
+          "options": [
+            "Whether glass will eventually flow",
+            "Exactly what happens as a cooling liquid turns into a glass",
+            "Why glass is transparent",
+            "How to make a pane thicker at the bottom on purpose"
+          ],
+          "answer_index": 1,
+          "explanation": "The glass transition, the moment a cooling liquid locks into a rigid but disordered state, is still not fully explained. It is often named one of the deepest open problems in solid-state physics."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "You can see the glass flowing in old church windows.",
+          "reality": "The ripples and thick edges are frozen features from the blowing and spinning, present the day the pane was cut. Nothing has moved since."
+        },
+        {
+          "myth": "Glass is a supercooled liquid, so it slowly flows.",
+          "reality": "Glass is an amorphous solid. It shares a liquid's disordered structure, but at room temperature it is rigid and does not flow on any human or geological timescale."
+        },
+        {
+          "myth": "All old windows are thicker at the bottom, which proves the glass slumped.",
+          "reality": "The heavy edge was usually set at the bottom, but that was the glazier's choice for a steady look, not a rule. The unevenness traces to the spun disc, wherever the thick edge happened to go."
+        }
+      ]
+    },
+    {
+      "type": "open_questions",
+      "order": 12,
+      "content": {
+        "body": "The flow question is closed, but a larger one about glass is not. Nobody has a complete theory of the glass transition, the point where a cooling liquid stops flowing and sets into a rigid, disordered solid without ever crystallizing. It looks like a phase change and behaves like one, yet it matches none of the standard descriptions cleanly. Philip Anderson called it the deepest unsolved problem in the theory of solids. That was decades ago. The judgment still holds.",
+        "items": [
+          "What exactly happens, atom by atom, when a liquid becomes a glass?",
+          "Is the glass transition a genuine phase change, or only something that resembles one?"
+        ]
+      }
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Zanotto ED. Do cathedral glasses flow? American Journal of Physics 1998;66(5):392-395",
+          "url": "https://pubs.aip.org/aapt/ajp/article/66/5/392/1039802/Do-cathedral-glasses-flow",
+          "type": "paper"
+        },
+        {
+          "label": "Gulbiten O, Mauro JC et al. Viscous flow of medieval cathedral glass (American Ceramic Society summary)",
+          "url": "https://ceramics.org/ceramic-tech-today/glass-viscosity-calculations-definitively-debunk-the-myth-of-observable-flow-in-medieval-windows/",
+          "type": "article"
+        },
+        {
+          "label": "Is glass liquid or solid? (UC Riverside physics FAQ)",
+          "url": "https://math.ucr.edu/home/baez/physics/General/Glass/glass.html",
+          "type": "article"
+        },
+        {
+          "label": "Glass",
+          "url": "https://en.wikipedia.org/wiki/Glass",
+          "type": "wikipedia"
+        },
+        {
+          "label": "The Nature of Glass Remains Anything but Clear (on the unsolved glass transition)",
+          "url": "https://www.lehigh.edu/imi/teched/GlassProp/papers/NYT_ArticleGlassTransition.pdf",
+          "type": "article"
+        }
+      ]
+    }
+  ]
+}
