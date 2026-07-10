@@ -38,7 +38,7 @@
     {
       "type": "surprises",
       "order": 3,
-      "content": "Antidepressants are among the most prescribed drugs on Earth, taken by roughly 1 in 7 adults in England, and for many people they help. Grant all of that. It still says nothing about a serotonin shortage. A treatment working does not prove the illness is a lack of that treatment, any more than a headache is a shortage of aspirin. That was the quiet leap in the chemical-imbalance story. The drugs came first, and the tidy explanation was fitted on afterward."
+      "content": "Antidepressants are among the most prescribed drugs on Earth, taken by roughly 1 in 7 adults in England, and for many people they help. Grant all of that. It still says nothing about a serotonin shortage. A treatment working does not prove the illness is a lack of that treatment, any more than a headache is a shortage of aspirin. That was the quiet leap in the chemical-imbalance story."
     },
     {
       "type": "story",
@@ -72,7 +72,7 @@
       "content": [
         {
           "title": "The slogan outran the science",
-          "body": "By the 1990s, drug advertisements told patients plainly that depression was a chemical imbalance their medication would correct. The scientific literature never said that. A 2005 analysis laid the two side by side and found a wide gap: the ads asserted a settled cause, the research had only a shaky, unconfirmed hypothesis. The message the public absorbed was the marketing, not the evidence.",
+          "body": "By the 1990s, drug advertisements told patients plainly that depression was a chemical imbalance their medication would correct. The scientific literature never said that. A 2005 analysis laid the two side by side and found a wide gap: the ads asserted a settled cause, the research had only a shaky, unconfirmed hypothesis.",
           "visual_svg": "<svg viewBox='0 0 400 200' xmlns='http://www.w3.org/2000/svg' fill='none'><line x1='200' y1='34' x2='200' y2='178' stroke='currentColor' stroke-width='1.5' opacity='0.3' stroke-dasharray='6 6'/><rect x='28' y='44' width='150' height='120' rx='14' stroke='currentColor' stroke-width='2' opacity='0.55'/><rect x='222' y='44' width='150' height='120' rx='14' stroke='var(--accent)' stroke-width='2.5'/><text x='103' y='74' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>The message</text><text x='297' y='74' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>The evidence</text><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' text-anchor='middle' opacity='0.85'><text x='103' y='112'>Low serotonin</text><text x='103' y='132'>causes it</text></g><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' text-anchor='middle'><text x='297' y='112'>No consistent</text><text x='297' y='132'>link found</text></g></svg>"
         },
         {
@@ -84,7 +84,7 @@
     {
       "type": "bigger_picture",
       "order": 9,
-      "content": "The lasting lesson is about the gap between what was known and what was said. Depression is real and often disabling. For many, treatment genuinely helps. What was oversold was the explanation: a tidy chemical story stood in for a cause no one had actually found. We can treat depression better than we can explain it. In the brain, we still do not know what it is."
+      "content": "The lasting lesson is about the gap between what was known and what was said. Depression is real and often disabling. For many, treatment genuinely helps. What was oversold was the explanation: a tidy chemical story stood in for a cause no one had actually found."
     },
     {
       "type": "quiz",
