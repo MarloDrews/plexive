@@ -38,13 +38,13 @@
     {
       "type": "surprises",
       "order": 3,
-      "content": "Wipe the same film of MRSA onto two surfaces. On one, nearly all of it is dead within 2 hours. On the other the bacteria are still alive days later, ready for the next hand. The killer is copper. The reservoir is the stainless steel we trust because it looks clean. Steel is inert. It does nothing to what lands on it, and doing nothing is the problem."
+      "content": "Wipe the same film of MRSA onto two surfaces. On one, nearly all of it is dead within 2 hours. On the other the bacteria are still alive days later, ready for the next hand. The killer is copper. The reservoir is the stainless steel we trust because it looks clean. Steel is inert. It does nothing to what lands on it."
     },
     {
       "type": "story",
       "order": 7,
       "content": {
-        "body": "Copper's germ-killing was known long before anyone knew about germs. Egyptian physicians stored water and dressed wounds in copper more than 4,000 years ago, and the Smith Papyrus wrote the practice down. Why it worked stayed a mystery for millennia. In 1893 the Swiss botanist Karl Wilhelm von Nägeli finally gave it a name, the oligodynamic effect, the power of tiny traces of metal to kill microbes. His paper appeared two years after he died. The thread then went quiet for most of a century. Hospital superbugs revived it. In 2008 the US EPA registered copper alloys as the first solid materials proven to kill bacteria. A 2013 trial found that ICU rooms fitted with copper had 58% fewer infections.",
+        "body": "Copper's germ-killing was known long before anyone knew about germs. Egyptian physicians stored water and dressed wounds in copper more than 4,000 years ago, and the Smith Papyrus wrote the practice down. Why it worked stayed a mystery for millennia. In 1893 the Swiss botanist Karl Wilhelm von Nägeli finally gave it a name, the oligodynamic effect, the power of tiny traces of metal to kill microbes. His paper appeared two years after he died. The idea gathered dust until hospital superbugs pulled it back. In 2008 the US EPA registered copper alloys as the first solid materials proven to kill bacteria. A 2013 trial found that ICU rooms fitted with copper had 58% fewer infections.",
         "visual_svg": "<svg viewBox='0 0 400 190' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='28' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Known, named, then rediscovered</text><line x1='54' y1='100' x2='356' y2='100' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><circle cx='64' cy='100' r='6' fill='currentColor' opacity='0.6'/><circle cx='168' cy='100' r='6' fill='currentColor' opacity='0.6'/><circle cx='272' cy='100' r='6' fill='currentColor' opacity='0.6'/><circle cx='356' cy='100' r='7' fill='var(--accent)'/><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle'><text x='64' y='80'>Egypt</text><text x='168' y='80'>Named</text><text x='272' y='80'>EPA listed</text></g><text x='356' y='80' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>ICU proof</text><g fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' opacity='0.7' text-anchor='middle'><text x='64' y='126'>4,000 yrs</text><text x='168' y='126'>1893</text><text x='272' y='126'>2008</text></g><text x='356' y='126' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' font-weight='700' text-anchor='middle'>2013</text></svg>",
         "key_figures": [
           {
@@ -71,11 +71,11 @@
         },
         {
           "title": "We took this defense off our doorknobs",
-          "body": "Old brass hardware was quietly self-sanitizing. Brass is mostly copper, so every brass doorknob, rail, and push plate was killing what people left on it. Over the last century we switched to stainless steel and plastic, cheaper and cleaner-looking. The trade was invisible, a surface that fights back for one that only looks the part."
+          "body": "Old brass hardware was quietly self-sanitizing. Brass is mostly copper, so every brass doorknob, rail, and push plate was killing what people left on it. Over the last century we switched to stainless steel and plastic, cheaper and cleaner-looking. The trade went unnoticed."
         },
         {
           "title": "It works on viruses too, including this one",
-          "body": "The same trickle of ions wrecks viruses. When researchers dabbed SARS-CoV-2 onto different surfaces early in the pandemic, it stayed infectious for up to 3 days on plastic and stainless steel. On copper it was dead within about 4 hours. A door handle that clears the virus by itself is worth more than one that stores it.",
+          "body": "The same trickle of ions wrecks viruses. When researchers dabbed SARS-CoV-2 onto different surfaces early in the pandemic, it stayed infectious for up to 3 days on plastic and stainless steel. On copper it was dead within about 4 hours.",
           "visual_svg": "<svg viewBox='0 0 400 160' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='24' y='28' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='start'>SARS-CoV-2 stays infectious</text><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='start'><text x='24' y='74'>Copper</text><text x='24' y='118'>Plastic</text></g><rect x='120' y='60' width='16' height='20' rx='6' fill='var(--accent)' fill-opacity='0.18' stroke='var(--accent)' stroke-width='2.5'/><rect x='120' y='104' width='260' height='20' rx='6' stroke='currentColor' stroke-width='2' opacity='0.6'/><g font-family='var(--font-mono), ui-monospace, monospace' font-size='14' font-weight='700'><text x='144' y='75' fill='var(--accent)' text-anchor='start'>4 hr</text><text x='372' y='119' fill='currentColor' text-anchor='end'>72 hr</text></g></svg>"
         }
       ]
@@ -83,7 +83,7 @@
     {
       "type": "bigger_picture",
       "order": 9,
-      "content": "Copper is not a new discovery but a rediscovery. Humans had a passive, always-on defense against the bugs on shared surfaces, and over a century we replaced it with materials that do nothing but look clean. Antibiotic resistance is making that trade look expensive. Copper is coming back to some hospital rooms and transit rails, slowly. It is held up by cost, by the tarnish people dislike, and by trials still arguing over how much it helps in practice. The metal never stopped working. We stopped using it."
+      "content": "Copper is not a new discovery but a rediscovery. Humans had a passive, always-on defense against the bugs on shared surfaces, and over a century we replaced it with materials that do nothing but look clean. Antibiotic resistance is making that trade look expensive. Copper is coming back to some hospital rooms and transit rails, slowly. It is held up by cost, by the tarnish people dislike, and by trials still arguing over how much it helps in practice."
     },
     {
       "type": "quiz",
