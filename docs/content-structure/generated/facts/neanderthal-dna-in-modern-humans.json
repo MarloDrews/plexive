@@ -1,0 +1,243 @@
+{
+  "tags": [
+    "genetics",
+    "evolution",
+    "anthropology",
+    "paleontology"
+  ],
+  "connections": [
+    {
+      "format": "facts",
+      "ref": {
+        "title": "Fossil viruses in your DNA"
+      },
+      "featured": false
+    },
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Introgression"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "Every person whose ancestry lies outside Africa carries 1% to 4% Neanderthal DNA.",
+    "teasers": [
+      "What a 40,000-year-old bone proved about you",
+      "The continent thought to carry none",
+      "The gene that shaped who got severe COVID"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "Every person whose ancestry lies outside Africa carries 1% to 4% Neanderthal DNA."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='30' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Neanderthal DNA by ancestry</text><line x1='40' y1='240' x2='360' y2='240' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><g stroke='currentColor' stroke-width='2' opacity='0.55'><rect x='60' y='84' width='64' height='156' rx='6'/><rect x='168' y='60' width='64' height='180' rx='6'/></g><rect x='276' y='216' width='64' height='24' rx='6' stroke='var(--accent)' stroke-width='2.5' fill='var(--accent)' fill-opacity='0.15'/><g fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='14' font-weight='700' text-anchor='middle'><text x='92' y='76'>2.0%</text><text x='200' y='52'>2.3%</text></g><text x='308' y='208' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='14' font-weight='700' text-anchor='middle'>0.3%</text><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle'><text x='92' y='262'>European</text><text x='200' y='262'>East Asian</text><text x='308' y='262'>African</text></g><text x='200' y='285' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='middle'>share of the whole genome</text></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "Look at the back of your hand. The genes shaping that skin were partly written by a species gone for 40,000 years. We file Neanderthals under extinct, a failed side branch. The filing is wrong. They bred with us before the end, and their code kept copying for 40,000 years after the last of them died. More of it is alive today, spread across 8 billion people, than ever existed in the Neanderthals themselves."
+    },
+    {
+      "type": "tangible",
+      "order": 4,
+      "content": {
+        "items": [
+          "In a genome of 3 billion letters, the Neanderthal share runs to tens of millions of them, recopied whenever a cell of yours divides.",
+          "The mixing happened about 47,000 years ago, roughly 1,900 generations back, and the Neanderthals were gone within about 7,000 years of it.",
+          "Their lineage had split from ours more than 500,000 years earlier, so this was a reunion of very distant cousins."
+        ],
+        "visual_svg": "<svg viewBox='0 0 400 210' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='28' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>A brief overlap, a lasting trace</text><line x1='45' y1='110' x2='360' y2='110' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><g stroke='currentColor' stroke-width='2' opacity='0.6' stroke-linecap='round'><line x1='60' y1='100' x2='60' y2='120'/><line x1='230' y1='100' x2='230' y2='120'/><line x1='275' y1='100' x2='275' y2='120'/></g><line x1='230' y1='140' x2='352' y2='140' stroke='var(--accent)' stroke-width='3' stroke-linecap='round'/><circle cx='352' cy='140' r='4' fill='var(--accent)'/><text x='291' y='162' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>DNA still here</text><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle'><text x='60' y='92'>Split</text><text x='230' y='92'>Mixing</text><text x='275' y='92'>Gone</text><text x='355' y='92'>Now</text></g><g fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' opacity='0.65' text-anchor='middle'><text x='60' y='190'>500k+ yrs</text><text x='230' y='190'>47k</text><text x='275' y='190'>40k</text></g></svg>"
+      }
+    },
+    {
+      "type": "how_we_know",
+      "order": 5,
+      "content": "The proof is not that we resemble Neanderthals. Plenty of shared DNA is just old inheritance from a common ancestor. The tell is an asymmetry. Sequence a Neanderthal bone, then line it up against living people: non-Africans share more of its rare variants than Africans do. Chance and common ancestry cannot make the pattern that lopsided. Something passed sideways, from Neanderthals into the ancestors of everyone who left Africa. Reading that DNA at all was the hard part. It comes out of the bone shattered and swamped by bacterial and modern human contamination."
+    },
+    {
+      "type": "story",
+      "order": 7,
+      "content": {
+        "body": "DNA was supposed to be unrecoverable from old bones. It rots, and what survives comes smeared with the DNA of everyone who ever handled the fossil. Svante Pääbo spent years building clean-room methods stubborn enough to beat that. In 2010 his lab in Leipzig published a draft of the entire Neanderthal genome, read from bones tens of thousands of years old. The result stunned the field. Neanderthals had not merely died out. They had bred with the ancestors of everyone who left Africa. The same lab soon pulled a second lost lineage, the Denisovans, from a single finger bone in a Siberian cave. In 2022 Pääbo took the Nobel Prize in Physiology or Medicine, the prize his own father had won 40 years before.",
+        "key_figures": [
+          {
+            "name": "Svante Pääbo",
+            "role": "Sequenced the first Neanderthal genome",
+            "one_line": "His Leipzig lab read the Neanderthal genome from ancient bone in 2010 and found it woven into living people.",
+            "lifespan": "born 1955",
+            "birth_year": 1955,
+            "featured": true,
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/2/26/Professor_Svante_Paabo_ForMemRS_%28cropped%29.jpg",
+            "image_attribution": "Duncan Hull, “Professor Svante Paabo ForMemRS”, CC BY-SA 4.0 (Wikimedia Commons)"
+          }
+        ]
+      }
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "These genes are not idle passengers",
+          "body": "Some of the inherited stretches were useful, and they stuck. Neanderthal versions pile up in the genes for skin, hair and immunity, the equipment for the cold Eurasia our ancestors were entering. One stretch on chromosome 3 roughly doubles the risk of severe COVID-19, and about 1 in 6 Europeans carries it against half of South Asia. In East Asia and Africa it is almost gone.",
+          "visual_svg": "<svg viewBox='0 0 400 190' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='24' y='26' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='start'>Who carries the risk variant</text><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='start'><text x='24' y='72'>South Asia</text><text x='24' y='112'>Europe</text><text x='24' y='152'>East Asia</text></g><rect x='140' y='58' width='190' height='20' rx='6' fill='var(--accent)' fill-opacity='0.18' stroke='var(--accent)' stroke-width='2.5'/><g stroke='currentColor' stroke-width='2' opacity='0.55'><rect x='140' y='98' width='61' height='20' rx='6'/><rect x='140' y='138' width='6' height='20' rx='3'/></g><g fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='14' font-weight='700' text-anchor='start'><text x='340' y='73' fill='var(--accent)'>50%</text><text x='211' y='113'>16%</text><text x='156' y='153'>~1%</text></g></svg>"
+        },
+        {
+          "title": "Africa was never the exception",
+          "body": "The original studies found Neanderthal DNA only outside Africa, and that became the headline. In 2020, a sharper method called IBDmix looked inside African genomes and found it there too, about 0.3% on average. Most of it came home the long way, carried back into Africa by people who had already mixed with Neanderthals in Eurasia. No living human population is a clean control group."
+        },
+        {
+          "title": "Neanderthals were not the only ghost in the genome",
+          "body": "The same sequencing turned up a second vanished people, the Denisovans, known first from a single finger bone in a Siberian cave. They left their mark on a different map. People in New Guinea and across Melanesia carry 4% to 6% Denisovan DNA, a larger dose than anyone carries of Neanderthal. At least two lost human groups live on inside us, sorted by which route our ancestors took out of Africa."
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "The human family used to be drawn as a tree, our branch the one that made it and the rest dead ends. The genomes turned that tree into a web. Two branches met, and they mixed. What the Neanderthals left is still running in you: in the immune response, the skin, the odd tilt of risk in a pandemic. They did not lose and vanish. A good part of them was taken up into us, and it never stopped copying."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "Why do people of non-African descent carry more Neanderthal DNA than African populations?",
+          "options": [
+            "Neanderthals originally evolved in Africa",
+            "The interbreeding happened in Eurasia, after modern humans had left Africa",
+            "African populations lost their Neanderthal DNA to natural selection",
+            "Non-Africans descend directly from Neanderthals"
+          ],
+          "answer_index": 1,
+          "explanation": "Modern humans met Neanderthals in Eurasia around 47,000 years ago, so the populations that migrated out carried the DNA onward. Africans carry a small amount, much of it from later back-migration."
+        },
+        {
+          "question": "A stretch of your DNA matches a Neanderthal's. How do researchers argue it was inherited from Neanderthals and not from a shared ancestor?",
+          "options": [
+            "The matching stretch is identical letter for letter",
+            "Neanderthal DNA is chemically distinct and easy to spot",
+            "Non-Africans share more of the Neanderthal's rare variants than Africans do, an asymmetry shared ancestry cannot explain",
+            "The match only ever falls in genes for skin and hair"
+          ],
+          "answer_index": 2,
+          "explanation": "Common ancestry would leave African and non-African people equally similar to Neanderthals. The lopsided extra similarity in non-Africans is the fingerprint of gene flow, not of a shared deep ancestor."
+        },
+        {
+          "question": "What did the 2020 IBDmix analysis change about the standard picture?",
+          "options": [
+            "It showed Neanderthals never actually went extinct",
+            "It found that African populations also carry Neanderthal DNA, about 0.3%",
+            "It proved Neanderthals first arose in Africa",
+            "It doubled the Neanderthal estimate for Europeans"
+          ],
+          "answer_index": 1,
+          "explanation": "Earlier methods missed it, but African genomes do carry a small amount, much of it carried back by people returning from Eurasia. The clean line between African and non-African was an artifact of the method."
+        },
+        {
+          "question": "How can more Neanderthal DNA exist today than when Neanderthals were alive?",
+          "options": [
+            "A few Neanderthals may still survive undiscovered",
+            "Their DNA mutates and multiplies faster inside us",
+            "Laboratories have synthesized extra copies",
+            "Billions of living people each carry a couple of percent, far outnumbering the Neanderthals who ever lived"
+          ],
+          "answer_index": 3,
+          "explanation": "Any one person carries little, but roughly 2% across 8 billion people sums to more surviving Neanderthal sequence than existed in the small Neanderthal population itself."
+        },
+        {
+          "question": "The Neanderthal variant on chromosome 3 is a good example of what?",
+          "options": [
+            "Inherited archaic DNA that still affects health, here raising severe-COVID risk",
+            "A gene that makes its carriers immune to infection",
+            "DNA that does nothing and simply drifts along",
+            "A mutation unique to Neanderthals that humans never received"
+          ],
+          "answer_index": 0,
+          "explanation": "Some inherited stretches are functional. This one roughly doubles the odds of severe COVID-19 and is common in South Asia and Europe, nearly absent elsewhere."
+        },
+        {
+          "question": "How does the interbreeding evidence change the shape of the human family tree?",
+          "options": [
+            "It confirms modern humans descend in a straight line from Neanderthals",
+            "It proves only one human species ever existed",
+            "It shows separate branches interbred, so the tree is better drawn as a web",
+            "It shows Neanderthals and modern humans never actually met"
+          ],
+          "answer_index": 2,
+          "explanation": "Separate species were assumed to be reproductively sealed off. The genomes show gene flow between branches, so lineages that had split could still rejoin."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "We are descended from Neanderthals.",
+          "reality": "They are a sister lineage, not a rung on our ladder. Our line and theirs split from a common ancestor more than 500,000 years ago, then met again and interbred. The DNA comes from cousins, not from ancestors in a straight line."
+        },
+        {
+          "myth": "Only non-Africans carry any Neanderthal DNA.",
+          "reality": "African genomes carry roughly 0.3%, missed until better methods went looking in 2020. Much of it rode back into Africa with people returning from Eurasia."
+        },
+        {
+          "myth": "Neanderthals were dim brutes who lost out to smarter humans.",
+          "reality": "They made tools, used fire, and buried their dead across hundreds of thousands of years. And they did not cleanly lose. A part of them was absorbed into the survivors and is still here."
+        }
+      ]
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Green RE et al. A draft sequence of the Neandertal genome. Science 2010;328:710-722",
+          "url": "https://www.science.org/doi/10.1126/science.1188021",
+          "type": "paper"
+        },
+        {
+          "label": "The Nobel Prize in Physiology or Medicine 2022: Svante Pääbo",
+          "url": "https://www.nobelprize.org/prizes/medicine/2022/paabo/facts/",
+          "type": "article"
+        },
+        {
+          "label": "Vernot B, Akey JM. Resurrecting surviving Neandertal lineages from modern human genomes. Science 2014;343:1017-1021",
+          "url": "https://www.science.org/doi/10.1126/science.1245938",
+          "type": "paper"
+        },
+        {
+          "label": "New study identifies Neanderthal ancestry in African populations (Princeton, on Chen et al., Cell 2020)",
+          "url": "https://www.princeton.edu/news/2020/01/30/new-study-identifies-neanderthal-ancestry-african-populations-and-describes-its",
+          "type": "article"
+        },
+        {
+          "label": "Neandertal gene variant increases risk of severe COVID-19 (Max Planck Society; Zeberg & Pääbo, Nature 2020)",
+          "url": "https://www.mpg.de/15451493/neandertal-genes-covid19",
+          "type": "article"
+        },
+        {
+          "label": "Reich D et al. Genetic history of an archaic hominin group from Denisova Cave in Siberia. Nature 2010;468:1053-1060",
+          "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4306417/",
+          "type": "paper"
+        },
+        {
+          "label": "Neanderthal genetics",
+          "url": "https://en.wikipedia.org/wiki/Neanderthal_genetics",
+          "type": "wikipedia"
+        }
+      ]
+    }
+  ]
+}
