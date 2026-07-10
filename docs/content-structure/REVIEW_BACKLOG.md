@@ -275,3 +275,9 @@ sources. Each entry stays `open` until a researcher confirms or resolves it.
 - finding: the "~80% afferent" figure (headline / surprises / see_it) is the standard textbook value but derives from 1957 cat data (Agostoni et al.); the newest direct human cervical-vagus counts put sensory fibers nearer 73-74%. The post is not wrong: it honestly attributes the number to the cat count in how_we_know and hedges with "about" / "roughly four in five". A brief qualifier that the figure comes from animal counts and modern human data runs lower would strengthen it.
 - needs: a human cervical-vagus fiber-count paper to cite the ~73-74% figure; adding it is a new claim requiring a new source, so it routes here rather than a same-source edit. Optional, low priority; the post is unchanged.
 - added: 2026-07-10, 2026-07-10-a
+
+### jevons-paradox-efficiency
+- status: open
+- finding: the post has no open_questions section, though the magnitude of economy-wide rebound (partial rebound vs full backfire/Khazzoom-Brookes) is a genuine live debate it gestures at. Skipping the optional section is allowed and the post is coherent without it, but an open_questions naming how much rebound reverses savings economy-wide would strengthen it.
+- needs: a fresh sourced claim about the economy-wide rebound debate (does rebound fully reverse savings, and by how much), not just the numbers already in the post. Deferred because writing it responsibly requires a new source, not a mechanical edit; the post is unchanged.
+- added: 2026-07-10, 2026-07-10-b
