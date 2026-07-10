@@ -47,7 +47,7 @@
     {
       "type": "how_we_know",
       "order": 5,
-      "content": "The pattern was mapped by Francesco Pia, a lifeguard and researcher who filmed real rescues at Orchard Beach in the Bronx starting in 1972. Watching the footage frame by frame, he saw the same silent, upright struggle again and again, and named it the instinctive drowning response. The physiology is not mysterious. Breathing is automatic and takes priority, while speech and waving are voluntary acts a drowning brain cannot spare. When the choice comes down to a breath or a shout, the body takes the breath. There is nothing left over to signal with."
+      "content": "The pattern was mapped by Francesco Pia, a lifeguard and researcher who filmed real rescues at Orchard Beach in the Bronx starting in 1972. Watching the footage frame by frame, he saw the same silent, upright struggle again and again, and named it the instinctive drowning response. The physiology is not mysterious. Breathing is automatic and takes priority, while speech and waving are voluntary acts a drowning brain cannot spare. When the choice comes down to a breath or a shout, the body takes the breath."
     },
     {
       "type": "angles",
@@ -55,23 +55,23 @@
       "content": [
         {
           "title": "It usually happens in plain sight",
-          "body": "Drowning is not a remote danger. It is the leading cause of death for children ages 1 to 4 in the United States, and among young children who drown, about half go under within 25 yards of a parent or another adult. In roughly 1 in 10 of those cases, the adult watches it happen and never registers the danger. The child is doing none of the things people scan for. Being close by is no help when the signs are this quiet.",
+          "body": "Drowning is not a remote danger. It is the leading cause of death for children ages 1 to 4 in the United States, and among young children who drown, about half go under within 25 yards of a parent or another adult. The child is doing none of the things people scan for. In roughly 1 in 10 of those cases, the adult watches it happen and never registers the danger.",
           "visual_svg": "<svg viewBox='0 92 400 150' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='112' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Where young children drown</text><rect x='40' y='150' width='150' height='44' rx='14' fill='var(--accent)' fill-opacity='0.14' stroke='var(--accent)' stroke-width='2.5'/><text x='115' y='170' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>within 25 yards</text><text x='115' y='186' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='12' text-anchor='middle'>of an adult</text><rect x='210' y='150' width='150' height='44' rx='14' stroke='currentColor' stroke-width='2' opacity='0.55'/><text x='285' y='177' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.7' text-anchor='middle'>farther off</text><text x='200' y='228' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.6' text-anchor='middle'>about half of the cases</text></svg>"
         },
         {
           "title": "There is a louder kind of trouble, and this is not it",
-          "body": "Not everyone struggling in the water is in the instinctive drowning response. Someone in aquatic distress can still shout, wave, and grab a thrown line. They have not yet lost voluntary control. That is the version movies show, and it is real, though it is the earlier, more rescuable stage. True drowning is quieter and closer to the end. The quiet swimmer is often the one nearest to going under, and the easiest to overlook."
+          "body": "Not everyone struggling in the water is in the instinctive drowning response. Someone in aquatic distress can still shout, wave, and grab a thrown line. They have not yet lost voluntary control. That is the version movies show, and it is real, though it is the earlier, more rescuable stage."
         },
         {
-          "title": "The signs are subtle, but they are learnable",
-          "body": "The cues are quiet, not absent. Watch for a head low in the water with the mouth at the surface, or tipped back with the mouth open. Look for eyes that are glassy and unfocused, or closed, with hair fallen across the face. The body hangs vertical with no real kick, and the arms seem to climb an invisible ladder that goes nowhere. A quick test is to call out, “Are you okay?” Someone who can answer usually is, and a blank stare back is a reason to move."
+          "title": "What the quiet signs look like",
+          "body": "The cues are quiet, not absent. Watch for a head low in the water with the mouth at the surface, or tipped back with the mouth open. Look for eyes that are glassy and unfocused, or closed, with hair fallen across the face. The body hangs vertical with no real kick, and the arms seem to climb an invisible ladder that goes nowhere. A quick test is to call out, “Are you okay?” Someone who can answer usually is. A blank stare back means they may not be able to."
         }
       ]
     },
     {
       "type": "bigger_picture",
       "order": 9,
-      "content": "The real hazard is not only the water. It is the picture in our heads. We expect an emergency to be loud and unmistakable, so a silent one slips past the very people close enough to stop it. Learning what drowning actually looks like costs nothing, and it can turn a bystander into a rescuer. The real thing is quiet and upright, over in under a minute. The practical rule is short. Keep your eyes on the water, and go check on any swimmer who has gone quiet and still."
+      "content": "The water is only part of the hazard. The rest is the picture in our heads. We expect an emergency to be loud and unmistakable, so a silent one slips past the very people close enough to stop it. Learning what drowning actually looks like costs nothing, and it can turn a bystander into a rescuer. The real thing is quiet and upright, over in under a minute. The practical rule is short. Keep your eyes on the water, and go check on any swimmer who has gone quiet and still."
     },
     {
       "type": "quiz",
