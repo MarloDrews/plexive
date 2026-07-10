@@ -62,13 +62,13 @@
     {
       "type": "how_we_know",
       "order": 5,
-      "content": "How do you prove that 2,385 acres of separate mushrooms and dying trees are one creature and not thousands? You dig up samples from across the site and grow them in the lab side by side. Cells from the same individual merge without a fight. Cells from two different individuals throw up a dark barrier where they meet. Genetic fingerprints then confirm it: across the whole area, the DNA is identical. Nobody counted rings. The age is a calculation. Measure how fast the fungus spreads outward each year, then divide the distance it has covered. That gives thousands of years, with a wide margin of error."
+      "content": "Proving that 2,385 acres of separate mushrooms and dying trees are one creature and not thousands takes lab work. You dig up samples from across the site and grow them side by side. Cells from the same individual merge without a fight. Cells from two different individuals throw up a dark barrier where they meet. Genetic fingerprints then confirm it: across the whole area, the DNA is identical. Nobody counted rings. The age is a calculation. Measure how fast the fungus spreads outward each year, then divide the distance it has covered. That gives thousands of years, with a wide margin of error."
     },
     {
       "type": "story",
       "order": 7,
       "content": {
-        "body": "Two teams, a decade apart, set this record between them. In 1992 researchers in Michigan sampled a honey fungus across a hardwood forest and proved the scattered growth was one individual, about 1,500 years old. The size was striking, but the real prize was the method: a way to show that separate-looking fungus is a single clone. A decade later, Forest Service researchers carried that method to the Blue Mountains of eastern Oregon, hunting the cause of dying conifers. When they mapped the clones in 2003, one sprawled across 2,385 acres. The dead trees had been the clue the whole time.",
+        "body": "Two teams, a decade apart, set this record between them. In 1992 researchers in Michigan sampled a honey fungus across a hardwood forest and proved the scattered growth was one individual, about 1,500 years old. The size was striking, but the real prize was the method: a way to show that separate-looking fungus is a single clone. A decade later, Forest Service researchers carried that method to the Blue Mountains of eastern Oregon, hunting the cause of dying conifers. When they mapped the clones in 2003, one sprawled across 2,385 acres.",
         "image_url": "https://upload.wikimedia.org/wikipedia/commons/3/35/Armillaria_Ostoyae_mushrooms_at_the_base_of_a_live_infected_grand_fir_-_The_Malheur_National_Forest_Location_of_the_World%27s_Largest_Living_Organism_%28The_Humongous_Fungus%29_-_fsbdev3_033146_%28page_5_crop%29.jpg",
         "image_caption": "Honey fungus mushrooms at the base of a grand fir it is killing, in the Malheur National Forest.",
         "image_attribution": "Craig L. Schmitt and Michael L. Tatum, “Armillaria ostoyae, Malheur National Forest”, Public Domain (Wikimedia Commons)"
@@ -92,7 +92,7 @@
     {
       "type": "bigger_picture",
       "order": 9,
-      "content": "The strange part is not the size. It is the word “single”. Every mushroom, every cord in the soil across those 2,385 acres carries the same genome, grown from one spore that landed there thousands of years ago. Most of that body is not alive at once. The fungus dies at the center while it advances at the edges, the way a ripple keeps its shape while the water moves through it. It stretches our idea of what one living thing is. You can stand in an Oregon forest, on the largest individual on Earth, and see only trees."
+      "content": "The strange part is not the size. It is the word “single”. Every mushroom, every cord in the soil across those 2,385 acres carries the same genome, grown from one spore that landed there thousands of years ago. Most of that body is not alive at once. The fungus dies at the center while it advances at the edges, the way a ripple keeps its shape while the water moves through it. It stretches our idea of what one living thing is."
     },
     {
       "type": "quiz",
