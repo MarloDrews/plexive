@@ -1,0 +1,227 @@
+{
+  "tags": [
+    "mental-health",
+    "neuroscience",
+    "medicine"
+  ],
+  "connections": [
+    {
+      "format": "concepts",
+      "ref": {
+        "title": "Correlation and causation"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "A 2022 review of all the serotonin evidence found no consistent link to depression.",
+    "teasers": [
+      "Where the chemical-imbalance story came from",
+      "Why a drug can help without fixing a cause",
+      "What it changes for treatment, and what it doesn't"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "A 2022 review of all the serotonin evidence found no consistent link to depression."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><rect x='36' y='24' width='328' height='38' rx='16' stroke='var(--accent)' stroke-width='2.5' fill='var(--accent)' fill-opacity='0.12'/><text x='200' y='49' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='15' font-weight='700' text-anchor='middle'>No consistent link to depression</text><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' text-anchor='start'><text x='44' y='104'>Serotonin levels</text><text x='44' y='146'>Serotonin receptors</text><text x='44' y='188'>Transporter (SERT)</text><text x='44' y='230'>Depletion studies</text><text x='44' y='272'>The SERT gene</text></g><g stroke='currentColor' stroke-width='2' opacity='0.5'><circle cx='322' cy='99' r='9'/><circle cx='322' cy='141' r='9'/><circle cx='322' cy='183' r='9'/><circle cx='322' cy='225' r='9'/><circle cx='322' cy='267' r='9'/></g></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "Antidepressants are among the most prescribed drugs on Earth, taken by roughly 1 in 7 adults in England, and for many people they help. Grant all of that. It still says nothing about a serotonin shortage. A treatment working does not prove the illness is a lack of that treatment, any more than a headache is a shortage of aspirin. That was the quiet leap in the chemical-imbalance story. The drugs came first, and the tidy explanation was fitted on afterward."
+    },
+    {
+      "type": "story",
+      "order": 7,
+      "content": {
+        "body": "The idea did not begin as a confident claim. In 1965 the Harvard psychiatrist Joseph Schildkraut proposed that mood might track brain chemicals like norepinephrine, and he was careful to call it unproven. Two years later others pointed the same idea at serotonin. When Prozac and the other SSRIs arrived in the late 1980s, the story got simple and certain: depression is a chemical imbalance, and this pill corrects it. That version sold. It calmed patients and fit a prescription, and it spread through advertising far faster than the evidence behind it. Researchers grew skeptical for decades, but no one had lined up all the evidence in one place. In 2022 a team led by the psychiatrist Joanna Moncrieff finally did, and found the support was not there.",
+        "key_figures": [
+          {
+            "name": "Joseph Schildkraut",
+            "role": "Proposed the monoamine hypothesis",
+            "one_line": "The Harvard psychiatrist whose 1965 paper first tied mood to brain chemicals, while warning the idea was unproven.",
+            "lifespan": "1934-2006",
+            "birth_year": 1934,
+            "featured": false
+          },
+          {
+            "name": "Joanna Moncrieff",
+            "role": "Led the 2022 umbrella review",
+            "one_line": "The psychiatrist who assembled the scattered serotonin evidence in one review and found no consistent support.",
+            "lifespan": "born 1966",
+            "birth_year": 1966,
+            "featured": true
+          }
+        ],
+        "visual_svg": "<svg viewBox='0 0 400 190' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='28' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>An idea ahead of its evidence</text><line x1='52' y1='100' x2='356' y2='100' stroke='currentColor' stroke-width='2' opacity='0.4' stroke-linecap='round'/><circle cx='74' cy='100' r='6' fill='currentColor' opacity='0.6'/><circle cx='205' cy='100' r='6' fill='currentColor' opacity='0.6'/><circle cx='340' cy='100' r='7' fill='var(--accent)'/><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' text-anchor='middle'><text x='74' y='80'>Proposed</text><text x='205' y='80'>Marketed</text></g><text x='340' y='80' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>No support</text><g fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' opacity='0.7' text-anchor='middle'><text x='74' y='126'>1965</text><text x='205' y='126'>1990s</text></g><text x='340' y='126' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' font-weight='700' text-anchor='middle'>2022</text></svg>"
+      }
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "The slogan outran the science",
+          "body": "By the 1990s, drug advertisements told patients plainly that depression was a chemical imbalance their medication would correct. The scientific literature never said that. A 2005 analysis laid the two side by side and found a wide gap: the ads asserted a settled cause, the research had only a shaky, unconfirmed hypothesis. The message the public absorbed was the marketing, not the evidence.",
+          "visual_svg": "<svg viewBox='0 0 400 200' xmlns='http://www.w3.org/2000/svg' fill='none'><line x1='200' y1='34' x2='200' y2='178' stroke='currentColor' stroke-width='1.5' opacity='0.3' stroke-dasharray='6 6'/><rect x='28' y='44' width='150' height='120' rx='14' stroke='currentColor' stroke-width='2' opacity='0.55'/><rect x='222' y='44' width='150' height='120' rx='14' stroke='var(--accent)' stroke-width='2.5'/><text x='103' y='74' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>The message</text><text x='297' y='74' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>The evidence</text><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' text-anchor='middle' opacity='0.85'><text x='103' y='112'>Low serotonin</text><text x='103' y='132'>causes it</text></g><g fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' text-anchor='middle'><text x='297' y='112'>No consistent</text><text x='297' y='132'>link found</text></g></svg>"
+        },
+        {
+          "title": "The experts had quietly moved on",
+          "body": "Among researchers, the simple low-serotonin theory had been fading for years. The review did not move the frontier of the science. It corrected the public record, which still ran on the old story. Some critics say it knocked down a claim serious scientists had already set aside. Fair enough. But that claim was the one most patients had been handed."
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "The lasting lesson is about the gap between what was known and what was said. Depression is real and often disabling. For many, treatment genuinely helps. What was oversold was the explanation: a tidy chemical story stood in for a cause no one had actually found. We can treat depression better than we can explain it. In the brain, we still do not know what it is."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "What is the core reasoning error in the chemical-imbalance story?",
+          "options": [
+            "Assuming that because a drug relieves an illness, the illness must be a shortage of that drug",
+            "Believing serotonin cannot be measured anywhere in the body",
+            "Confusing serotonin with norepinephrine",
+            "Assuming depression is not a real condition"
+          ],
+          "answer_index": 0,
+          "explanation": "A drug can relieve a problem without the problem being a lack of that drug. Aspirin eases a headache, but a headache is not an aspirin deficiency."
+        },
+        {
+          "question": "What kind of study was the 2022 review, and why does that matter?",
+          "options": [
+            "A single new experiment measuring serotonin in patients",
+            "A survey of how patients feel about their medication",
+            "An umbrella review that pooled the existing evidence across every main line of serotonin research",
+            "A trial testing whether SSRIs outperform a placebo"
+          ],
+          "answer_index": 2,
+          "explanation": "It gathered the best existing reviews across metabolites, receptors, the transporter, depletion studies, and genetics. Because it spans all the main lines at once, it is hard to dismiss as one contrarian result."
+        },
+        {
+          "question": "Someone reads about the review and concludes antidepressants are useless. What is wrong with that?",
+          "options": [
+            "Nothing, that is what the review found",
+            "The review was about the cause of depression, not about whether the drugs help",
+            "The review only examined a single antidepressant",
+            "The review proved the drugs work perfectly"
+          ],
+          "answer_index": 1,
+          "explanation": "Cause and treatment are separate questions. The review addressed whether low serotonin causes depression, not whether medications relieve it, which is studied on its own."
+        },
+        {
+          "question": "Why did the chemical-imbalance idea spread so widely despite thin evidence?",
+          "options": [
+            "Brain scans had clearly confirmed it",
+            "Governments required doctors to use the explanation",
+            "No competing theory of depression existed",
+            "It was a simple story that fit the new drugs and was pushed hard through advertising"
+          ],
+          "answer_index": 3,
+          "explanation": "A clean, reassuring explanation that matched a pill was easy to communicate and to market, so it outran the cautious, unsettled state of the actual research."
+        },
+        {
+          "question": "Which conclusion does the review NOT let us draw?",
+          "options": [
+            "There is no consistent evidence linking low serotonin to depression",
+            "The public message ran ahead of the science",
+            "We now know what actually causes depression",
+            "The low-serotonin claim was never firmly established"
+          ],
+          "answer_index": 2,
+          "explanation": "The review says what the cause is not, not what it is. What actually drives depression remains genuinely open."
+        },
+        {
+          "question": "Serotonin still does many jobs in the brain. What specifically did the review challenge?",
+          "options": [
+            "That serotonin exists at all",
+            "That the brain uses chemical messengers",
+            "That antidepressants touch serotonin in any way",
+            "The specific claim that a shortage of serotonin causes depression"
+          ],
+          "answer_index": 3,
+          "explanation": "The target was narrow: not serotonin's existence or its many roles, but the particular idea that too little of it is what makes people depressed."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "The review means antidepressants don't work.",
+          "reality": "It looked at the cause, not the cure. Whether SSRIs help is a separate question with its own evidence, and for many people they do help. Nothing here is a reason to stop a medication that is working. That is a decision to make with a doctor."
+        },
+        {
+          "myth": "This proves depression is all in your head and not a real illness.",
+          "reality": "Depression is a real and often disabling condition. The finding narrows one explanation for it. It does not question that the suffering is real."
+        },
+        {
+          "myth": "Scientists showed serotonin has nothing to do with mood.",
+          "reality": "Serotonin does plenty in the brain and body. The claim under the microscope was narrow: that a shortage of it causes depression. That is the part the evidence does not support."
+        }
+      ]
+    },
+    {
+      "type": "open_questions",
+      "order": 12,
+      "content": {
+        "body": "If not a serotonin shortage, then what? Depression looks less like one broken chemical and more like many roads to one place: chronic stress, inflammation, the brain's own rewiring, and hard life circumstances. How the drugs help is its own puzzle. They clearly do something for many people, just not by topping up serotonin. Newer work chases inflammation, stress hormones, and the brain's own remodeling, but no clear cause has arrived.",
+        "items": [
+          "Is depression one condition or many, each with its own biology?",
+          "Why do some people improve on antidepressants and others not at all?"
+        ]
+      }
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Moncrieff J et al. The serotonin theory of depression: a systematic umbrella review of the evidence. Molecular Psychiatry 2022",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/35854107/",
+          "type": "paper"
+        },
+        {
+          "label": "Lacasse JR, Leo J. Serotonin and depression: a disconnect between the advertisements and the scientific literature. PLoS Medicine 2005",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC1277931/",
+          "type": "paper"
+        },
+        {
+          "label": "Ang B, Horowitz M, Moncrieff J. Is the chemical imbalance an urban legend? SSM - Mental Health 2022",
+          "url": "https://www.sciencedirect.com/science/article/pii/S266656032200038X",
+          "type": "paper"
+        },
+        {
+          "label": "Schildkraut JJ. The catecholamine hypothesis of affective disorders. Am J Psychiatry 1965;122:509-522",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/5319766/",
+          "type": "paper"
+        },
+        {
+          "label": "A response to the serotonin theory of depression umbrella review (King's College London, 2022)",
+          "url": "https://www.kcl.ac.uk/news/a-response-to-the-serotonin-theory-of-depression-a-systematic-umbrella-review-of-the-evidence",
+          "type": "article"
+        },
+        {
+          "label": "Serotonin or Not, Antidepressants Work (Psychiatric Times, 2022)",
+          "url": "https://www.psychiatrictimes.com/view/serotonin-or-not-antidepressants-work",
+          "type": "article"
+        }
+      ]
+    }
+  ]
+}
