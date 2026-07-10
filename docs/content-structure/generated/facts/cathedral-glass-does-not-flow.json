@@ -45,7 +45,7 @@
     {
       "type": "surprises",
       "order": 3,
-      "content": "Two things are true at once. The glass in a medieval window really is thicker along one edge, usually the bottom. And glass really does not flow at room temperature. The myth papers over the tension by picturing the pane oozing down over 600 years. That part is wrong. The honest answer predates the window: panes were blown as spinning discs, thick in the middle and thin at the rim, so every sheet came out uneven before anyone cut it. Glaziers set the heavy edge at the bottom, where it looked steady."
+      "content": "Two things are true at once. The glass in a medieval window really is thicker along one edge, usually the bottom. And glass does not flow at room temperature. The myth papers over the tension by picturing the pane oozing down over 600 years. That part is wrong. The honest answer predates the window: panes were blown as spinning discs, thick in the middle and thin at the rim, so every sheet came out uneven before anyone cut it. Glaziers set the heavy edge at the bottom, where it looked steady."
     },
     {
       "type": "tangible",
@@ -70,7 +70,7 @@
       "content": [
         {
           "title": "Two-thousand-year-old glass has not slumped either",
-          "body": "If gravity could pull window glass downward, the oldest glass on Earth should be the most deformed. It is not. Roman perfume bottles and Egyptian beads, some blown or cast more than 2,000 years ago, keep crisp shapes and thin walls with no sag at the base. Corning scientists reached the same verdict by the numbers, measuring the glass's viscosity and calculating that even medieval panes would creep only about a nanometer in a billion years. The ancient objects were the control group all along.",
+          "body": "If gravity could pull window glass downward, the oldest glass on Earth should be the most deformed. It is not. Roman perfume bottles and Egyptian beads, some blown or cast more than 2,000 years ago, keep crisp shapes and thin walls with no sag at the base. Corning scientists reached the same verdict by the numbers, measuring the glass's viscosity and calculating that even medieval panes would creep only about a nanometer in a billion years.",
           "image_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Green_glass_dropper_bottle,_Roman,_100-500_CE_Wellcome_L0058041.jpg",
           "image_caption": "A Roman glass bottle from between 100 and 500 CE, still crisp after more than 1,500 years.",
           "image_attribution": "Wellcome Collection, “Green glass dropper bottle, Roman, 100-500 CE”, CC BY 4.0 (Wikimedia Commons)"
@@ -181,7 +181,7 @@
       "type": "open_questions",
       "order": 12,
       "content": {
-        "body": "The flow question is closed, but a larger one about glass is not. Nobody has a complete theory of the glass transition, the point where a cooling liquid stops flowing and sets into a rigid, disordered solid without ever crystallizing. It looks like a phase change and behaves like one, yet it matches none of the standard descriptions cleanly. Philip Anderson called it the deepest unsolved problem in the theory of solids. That was decades ago. The judgment still holds.",
+        "body": "No one has a complete theory of the glass transition, the point where a cooling liquid stops flowing and sets into a rigid, disordered solid without ever crystallizing. Philip Anderson called it the deepest unsolved problem in the theory of solids. That was decades ago, and the judgment still holds. It looks like a phase change and behaves like one, yet it matches none of the standard descriptions cleanly.",
         "items": [
           "What exactly happens, atom by atom, when a liquid becomes a glass?",
           "Is the glass transition a genuine phase change, or only something that resembles one?"
