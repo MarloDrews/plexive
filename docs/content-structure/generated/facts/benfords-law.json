@@ -1,0 +1,257 @@
+{
+  "tags": [
+    "statistics",
+    "mathematics",
+    "critical-thinking"
+  ],
+  "connections": [
+    {
+      "format": "facts",
+      "ref": {
+        "title": "Simpson's paradox"
+      },
+      "featured": false
+    }
+  ],
+  "feed_card": {
+    "headline": "In real-world data, about 30% of numbers start with the digit 1, nearly three times what equal chance would predict.",
+    "teasers": [
+      "The tell that exposes a faked ledger",
+      "Why 1 shows up far more than 9",
+      "A worn page that reached a courtroom"
+    ],
+    "post_difficulty": 2
+  },
+  "sections": [
+    {
+      "type": "headline",
+      "order": 1,
+      "content": "In real-world data, about 30% of numbers start with the digit 1, nearly three times what equal chance would predict."
+    },
+    {
+      "type": "see_it",
+      "order": 2,
+      "content": {
+        "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><line x1='40' y1='250' x2='366' y2='250' stroke='currentColor' stroke-width='2' opacity='0.45' stroke-linecap='round'/><g stroke='currentColor' stroke-width='2' opacity='0.5'><rect x='86' y='153' width='26' height='97' rx='5'/><rect x='120' y='181' width='26' height='69' rx='5'/><rect x='154' y='197' width='26' height='53' rx='5'/><rect x='188' y='207' width='26' height='43' rx='5'/><rect x='222' y='213' width='26' height='37' rx='5'/><rect x='256' y='218' width='26' height='32' rx='5'/><rect x='290' y='222' width='26' height='28' rx='5'/><rect x='324' y='225' width='26' height='25' rx='5'/></g><rect x='52' y='84' width='26' height='166' rx='5' fill='var(--accent)' fill-opacity='0.15' stroke='var(--accent)' stroke-width='2.5'/><line x1='46' y1='189' x2='356' y2='189' stroke='currentColor' stroke-width='1.5' opacity='0.4' stroke-dasharray='6 6'/><text x='352' y='183' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.6' text-anchor='end'>11.1% if equal</text><text x='65' y='76' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='15' font-weight='700' text-anchor='middle'>30.1%</text><g fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' font-weight='600' opacity='0.8' text-anchor='middle'><text x='65' y='268'>1</text><text x='99' y='268'>2</text><text x='133' y='268'>3</text><text x='167' y='268'>4</text><text x='201' y='268'>5</text><text x='235' y='268'>6</text><text x='269' y='268'>7</text><text x='303' y='268'>8</text><text x='337' y='268'>9</text></g><text x='200' y='288' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.65' text-anchor='middle'>Leading digit</text></svg>"
+      }
+    },
+    {
+      "type": "surprises",
+      "order": 3,
+      "content": "Picture the nine digits a number can begin with. Each looks as likely as the next, so 1 should lead about 11% of the time, no more than 9. Real data says otherwise. In stock prices, city populations, and street numbers, the digit 1 comes first close to 30% of the time, while 9 barely clears 4.6%. The skew runs the same direction almost everywhere you look. What bends it is the scale these quantities are measured on."
+    },
+    {
+      "type": "tangible",
+      "order": 4,
+      "content": {
+        "items": [
+          "On a ratio scale, where each step multiplies instead of adds, the gap between 1 and 2 takes up almost a third of the whole run to 10.",
+          "A quantity climbing by small percentages therefore lingers with a 1 in front far longer than with a 9, because that first stretch is the widest.",
+          "In Benford's tally the leading 1s outnumbered the 9s by more than six to one."
+        ],
+        "visual_svg": "<svg viewBox='0 78 400 150' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='96' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.7' text-anchor='middle'>One ratio scale from 1 to 10</text><rect x='40' y='141' width='96' height='44' rx='10' fill='var(--accent)' fill-opacity='0.14' stroke='var(--accent)' stroke-width='2.5'/><line x1='40' y1='185' x2='360' y2='185' stroke='currentColor' stroke-width='2' opacity='0.5' stroke-linecap='round'/><g stroke='currentColor' stroke-width='2' opacity='0.5' stroke-linecap='round'><line x1='40' y1='178' x2='40' y2='192'/><line x1='136' y1='178' x2='136' y2='192'/><line x1='193' y1='180' x2='193' y2='190'/><line x1='233' y1='180' x2='233' y2='190'/><line x1='264' y1='180' x2='264' y2='190'/><line x1='289' y1='180' x2='289' y2='190'/><line x1='310' y1='180' x2='310' y2='190'/><line x1='329' y1='180' x2='329' y2='190'/><line x1='345' y1='180' x2='345' y2='190'/><line x1='360' y1='178' x2='360' y2='192'/></g><g fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' opacity='0.75' text-anchor='middle'><text x='40' y='208'>1</text><text x='136' y='208'>2</text><text x='193' y='208'>3</text><text x='233' y='208'>4</text><text x='264' y='208'>5</text><text x='289' y='208'>6</text><text x='310' y='208'>7</text><text x='329' y='208'>8</text><text x='345' y='208'>9</text><text x='360' y='208'>10</text></g><text x='88' y='168' fill='var(--accent)' font-family='var(--font-mono), ui-monospace, monospace' font-size='14' font-weight='700' text-anchor='middle'>1 to 2</text></svg>"
+      }
+    },
+    {
+      "type": "how_we_know",
+      "order": 5,
+      "content": "Benford established it the plain way: he counted. The same skewed digits surfaced in river areas and molecular weights, in death rates and baseball box scores, in the street numbers of famous scientists. You can check it yourself in an afternoon. Pull any real dataset that ranges over several orders of magnitude, tally the leading digits, and the tilt appears. It shows up whenever the numbers were free to vary. That reliability, more than any single dataset, is what lifts it past a curiosity."
+    },
+    {
+      "type": "story",
+      "order": 7,
+      "content": {
+        "body": "In 1881 the astronomer Simon Newcomb noticed something odd about his logarithm tables. The early pages, the ones for numbers that start with 1, were smudged and frayed while the back pages stayed clean. He worked out the digit frequencies and published a short note. Nobody followed it up. Frank Benford, a physicist at General Electric, ran into the same worn pages 57 years later and refused to let them go. He gathered 20,229 numbers, confirmed the tilt reached far past logarithm tables, and laid it out in a 1938 paper, *The Law of Anomalous Numbers*. Why the pattern holds waited until 1995, when the mathematician Theodore Hill proved that numbers pooled from many distributions settle into this exact shape. Newcomb had seen it 114 years earlier, but Benford's name is the one that stuck.",
+        "key_figures": [
+          {
+            "name": "Simon Newcomb",
+            "role": "First noticed the pattern",
+            "one_line": "In 1881 he traced the worn front pages of logarithm tables to a real bias in leading digits.",
+            "lifespan": "1835-1909",
+            "birth_year": 1835,
+            "featured": false,
+            "image_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Simon_Newcomb_01.jpg",
+            "image_attribution": "Harris & Ewing, “Simon Newcomb”, public domain (Library of Congress)"
+          },
+          {
+            "name": "Frank Benford",
+            "role": "Rediscovered and generalized it",
+            "one_line": "In 1938 he tallied 20,229 numbers from 20 fields and showed the digit bias holds across natural data.",
+            "lifespan": "1883-1948",
+            "birth_year": 1883,
+            "featured": true
+          },
+          {
+            "name": "Theodore P. Hill",
+            "role": "Proved why it holds",
+            "one_line": "In 1995 he showed that numbers pooled from many distributions fall into the Benford pattern by necessity.",
+            "lifespan": "born 1943",
+            "birth_year": 1943,
+            "featured": false
+          }
+        ]
+      }
+    },
+    {
+      "type": "angles",
+      "order": 8,
+      "content": [
+        {
+          "title": "Faked books spread the leading digits too evenly",
+          "body": "When people invent numbers, they reach for an even spread, roughly the same share under each digit. Real data does the opposite, piling onto 1 and thinning toward 9. Forensic accountants live in that gap. Mark Nigrini built the method from a study of individual income tax returns, and found that faked figures flatten the natural curve. Investigators now run the digit test on tax filings, expense reports, and vendor payments. A flat curve is where they start digging.",
+          "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='40' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Invented numbers spread out</text><line x1='40' y1='250' x2='360' y2='250' stroke='currentColor' stroke-width='2' opacity='0.45' stroke-linecap='round'/><polyline points='56,84 90,153 124,181 158,197 192,207 226,213 260,218 294,222 328,225' stroke='currentColor' stroke-width='2' opacity='0.55' stroke-dasharray='5 6' stroke-linecap='round' stroke-linejoin='round'/><text x='56' y='78' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='600' opacity='0.6' text-anchor='start'>honest data</text><g fill='var(--accent)' fill-opacity='0.12' stroke='var(--accent)' stroke-width='2.5'><rect x='45' y='184' width='22' height='66' rx='5'/><rect x='79' y='186' width='22' height='64' rx='5'/><rect x='113' y='182' width='22' height='68' rx='5'/><rect x='147' y='187' width='22' height='63' rx='5'/><rect x='181' y='183' width='22' height='67' rx='5'/><rect x='215' y='185' width='22' height='65' rx='5'/><rect x='249' y='182' width='22' height='68' rx='5'/><rect x='283' y='186' width='22' height='64' rx='5'/><rect x='317' y='184' width='22' height='66' rx='5'/></g><text x='226' y='170' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='700' text-anchor='middle'>faked</text><g fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='13' opacity='0.75' text-anchor='middle'><text x='56' y='270'>1</text><text x='90' y='270'>2</text><text x='124' y='270'>3</text><text x='158' y='270'>4</text><text x='192' y='270'>5</text><text x='226' y='270'>6</text><text x='260' y='270'>7</text><text x='294' y='270'>8</text><text x='328' y='270'>9</text></g></svg>"
+        },
+        {
+          "title": "The pattern needs numbers that can roam",
+          "body": "Benford only appears when a quantity is free to range across orders of magnitude. Adult heights in centimeters sit between about 140 and 210, so nearly all of them start with 1, for a dull reason that has nothing to do with the law. Assigned numbers behave the same way. Zip codes, phone numbers, and ID numbers are handed out rather than grown, so their digits fall wherever a clerk decided. Feed the test data like that and it returns nonsense."
+        },
+        {
+          "title": "Switch the units and the pattern survives",
+          "body": "Measure the world's rivers in miles and their leading digits follow Benford. Convert every length to kilometers and they still do, even though every number just changed. That stubbornness is the real clue. If the pattern depended on your choice of unit, it would be a bookkeeping quirk. Because it survives the switch, it has to be a property of how the quantities themselves are spread. The same indifference to units is why it turns up in dollars, populations, and physical constants alike."
+        }
+      ]
+    },
+    {
+      "type": "bigger_picture",
+      "order": 9,
+      "content": "The lasting point is that real numbers carry a signature. Quantities born of measuring and compounding ride on a logarithmic scale, and that scale tips their leading digits toward 1 whether anyone means it to or not. Numbers a person invents rarely do. Human guesses come out too even. That small mismatch is the whole basis of the fraud test. A century after a smudge on a logarithm page gave the pattern away, the same skew is used to audit ledgers, elections, and lab data."
+    },
+    {
+      "type": "quiz",
+      "order": 10,
+      "content": [
+        {
+          "question": "Why does the digit 1 lead so much more often than 9 in natural data?",
+          "options": [
+            "The quantities ride on a logarithmic scale, which is wider at its low end",
+            "Small numbers are simply more common in the world than large ones",
+            "People and instruments tend to round measurements down toward 1",
+            "It is a coincidence that fades once you gather enough data"
+          ],
+          "answer_index": 0,
+          "explanation": "On a logarithmic scale the span from 1 to 2 is much wider than the span from 8 to 9, so a quantity is likelier to be caught with a 1 in front. Data that ranges across orders of magnitude inherits that spacing."
+        },
+        {
+          "question": "Which of these datasets would you expect NOT to follow the pattern?",
+          "options": [
+            "The populations of the world's cities",
+            "The lengths of every river on Earth",
+            "The heights of adult humans in centimeters",
+            "The dollar amounts on a year of invoices"
+          ],
+          "answer_index": 2,
+          "explanation": "Benford needs data that ranges over several orders of magnitude. Adult heights in centimeters sit in a narrow band from roughly 140 to 210, so almost all of them start with 1 for reasons that have nothing to do with the law."
+        },
+        {
+          "question": "Why can auditors use the pattern to catch invented numbers?",
+          "options": [
+            "Forgers tend to repeat the same few digits over and over",
+            "People making up figures spread the leading digits too evenly",
+            "Fabricated numbers always avoid the digit 1 entirely",
+            "Real accounting data never follows any pattern"
+          ],
+          "answer_index": 1,
+          "explanation": "Genuine data piles onto 1 and thins toward 9, while human guesses come out closer to an even spread. A suspiciously flat distribution of leading digits marks books worth a closer look."
+        },
+        {
+          "question": "A dataset badly fails a Benford test. What does that tell an investigator?",
+          "options": [
+            "The data were definitely fabricated",
+            "The data must span too few orders of magnitude",
+            "Nothing useful, since the test is unreliable",
+            "Something is worth investigating, but it is not proof of fraud"
+          ],
+          "answer_index": 3,
+          "explanation": "Plenty of honest datasets break the pattern, often because they cover a narrow range or use assigned numbers. A failed test points investigators somewhere to look, not to a verdict."
+        },
+        {
+          "question": "Change a set of river lengths from miles to kilometers. What happens to the leading-digit pattern?",
+          "options": [
+            "It stays the same, because the pattern does not depend on the unit",
+            "It flattens out, since every number changes",
+            "It reverses, so 9 becomes the most common",
+            "It holds for one unit and breaks for the other"
+          ],
+          "answer_index": 0,
+          "explanation": "The pattern is scale invariant: multiplying every number by a fixed conversion factor leaves the distribution of leading digits untouched. That independence from units is a clue that it comes from how the quantities are spread, not from how they are measured."
+        },
+        {
+          "question": "Because the bias runs so strongly toward low digits, roughly what share of numbers in Benford data start with 1 or 2?",
+          "options": [
+            "About 22%",
+            "About one third",
+            "Nearly half",
+            "About one fifth"
+          ],
+          "answer_index": 2,
+          "explanation": "The digit 1 leads about 30% of the time and 2 about 18%, so together they front nearly half of all numbers. The nine digits are far from equally likely."
+        }
+      ]
+    },
+    {
+      "type": "misconceptions",
+      "order": 11,
+      "content": [
+        {
+          "myth": "Benford's law works on any list of numbers.",
+          "reality": "It only shows up in data that ranges over several orders of magnitude and grows from a natural process. Bounded ranges like adult heights, and assigned numbers like zip codes, do not follow it."
+        },
+        {
+          "myth": "If a dataset breaks the pattern, someone faked the numbers.",
+          "reality": "Many honest datasets break it, usually because they cover a narrow range or were never free to grow. A deviation flags data for a closer look, and no more than that."
+        },
+        {
+          "myth": "The pattern is a coincidence with no real explanation.",
+          "reality": "It falls out of scale invariance, and in 1995 Theodore Hill proved the case where many distributions are mixed together. The regularity has a solid mathematical basis."
+        }
+      ]
+    },
+    {
+      "type": "open_questions",
+      "order": 12,
+      "content": {
+        "body": "The law is reliable enough to use, but a full account of which real datasets obey it, and how closely, is still being worked out. No single distribution is Benford on its own. The pattern emerges from mixtures and processes that mathematicians are still mapping. Its use as evidence is shakier than headlines suggest, especially for elections, where precinct vote counts often sit in too narrow a range for the test to carry weight.",
+        "items": [
+          "Which natural processes yield clean Benford data, and which only come close?",
+          "How much weight should a leading-digit test carry as courtroom or election evidence?"
+        ]
+      }
+    },
+    {
+      "type": "sources",
+      "order": 13,
+      "content": [
+        {
+          "label": "Benford's law",
+          "url": "https://en.wikipedia.org/wiki/Benford%27s_law",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Frank Benford",
+          "url": "https://en.wikipedia.org/wiki/Frank_Benford",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Simon Newcomb",
+          "url": "https://en.wikipedia.org/wiki/Simon_Newcomb",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Hill TP. A Statistical Derivation of the Significant-Digit Law. Statistical Science 1995;10(4):354-363",
+          "url": "https://digitalcommons.calpoly.edu/rgp_rsr/28/",
+          "type": "paper"
+        },
+        {
+          "label": "Mark Nigrini (Benford's law in forensic accounting and tax fraud detection)",
+          "url": "https://en.wikipedia.org/wiki/Mark_Nigrini",
+          "type": "wikipedia"
+        },
+        {
+          "label": "Hill TP. A Widespread Error in the Use of Benford's Law to Detect Election and Other Fraud. arXiv:2011.13015 (2020)",
+          "url": "https://arxiv.org/abs/2011.13015",
+          "type": "paper"
+        }
+      ]
+    }
+  ]
+}
