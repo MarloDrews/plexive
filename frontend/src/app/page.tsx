@@ -29,16 +29,25 @@ const Battle = dynamic(() => import("@/components/Battle"), {
   ssr: false,
   loading: () => <div className="h-full bg-surface-0" />,
 })
+// Net ships as its own lazy chunk too: it pulls in react-force-graph (canvas +
+// d3-force), which must stay out of the entry chunk and off the server (ssr:
+// false -- the library touches window/canvas at import).
+const Net = dynamic(() => import("@/components/Net"), {
+  ssr: false,
+  loading: () => <div className="h-full bg-surface-0" />,
+})
 
 const TABS: FeedTab[] = [
   // The feed has no format-specific tabs (books, people, etc.); format filtering
-  // lives only in the search view now, matching the mobile tab set. These four
+  // lives only in the search view now, matching the mobile tab set. These five
   // non-format tabs carry no accent dot; the capsule itself stays neutral.
   // Following sits left of For You, but For You stays the default open tab.
-  // Train and Battle sit right of For You (matching the mobile tab order); they
-  // host their own components instead of a card feed (see the pager map below).
+  // Net, Train and Battle sit right of For You and host their own full-screen
+  // components instead of a card feed (see the pager map below): Net renders the
+  // interactive post graph, Train the marathon, Battle the head-to-head.
   { id: "following", label: "Following", format: null, accent: "#eceeff" },
   { id: "for-you", label: "For You", format: null, accent: "#eceeff" },
+  { id: "net", label: "Net", format: null, accent: "#eceeff" },
   { id: "train", label: "Train", format: null, accent: "#eceeff" },
   { id: "battle", label: "Battle", format: null, accent: "#eceeff" },
 ]
@@ -296,6 +305,25 @@ export default function Home() {
       >
         {TABS.map((tab, i) => {
           const isActivated = activatedIndices.has(i)
+          // Net hosts its own full-screen graph. Gate on activation so the graph
+          // fetch and the canvas mount only happen once the tab is first opened
+          // (the empty page keeps swiping cheap, like Train/Battle); the active
+          // flag pauses the force simulation while the tab is swiped away.
+          if (tab.id === "net") {
+            return (
+              <div
+                key={tab.id}
+                {...tabPanelProps(FEED_TABS_ID, i, activeIndex === i)}
+                className="w-full shrink-0 snap-start h-[100dvh] bg-surface-0"
+              >
+                {!isActivated ? (
+                  <div className="h-full bg-surface-0" />
+                ) : (
+                  <Net active={activeIndex === i} />
+                )}
+              </div>
+            )
+          }
           // Train and Battle host their own full-screen component instead of a
           // card feed. Gate on activation so the marathon does not run and the
           // battle socket does not connect until the tab is first opened (the
