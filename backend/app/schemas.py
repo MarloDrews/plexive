@@ -531,6 +531,54 @@ class PostListOut(PostOut):
         return []
 
 
+# ---------------------------------------------------------------------------
+# Net graph (post network view)
+# ---------------------------------------------------------------------------
+
+class GraphNode(BaseModel):
+    # One post as a graph node: a lightweight projection (no feed_card/sections
+    # body) since the Net view only needs to place, color and label the node.
+    id: int
+    format: str
+    title: str
+    tags: List[str] = []
+    primary_category_name: str | None = None
+    # Number of quiz questions in the post (0 = no quiz section). The client
+    # marks a node green once the viewer has answered all quiz_total questions.
+    quiz_total: int = 0
+
+    @field_validator("tags", mode="before")
+    @classmethod
+    def clean_tags(cls, v):
+        # Same tolerance as PostOut.clean_tags: a seed/legacy row whose tags is
+        # not a list of strings must not 500 the whole graph response.
+        if not isinstance(v, list):
+            return []
+        return [t for t in v if isinstance(t, str)]
+
+
+class GraphEdge(BaseModel):
+    # An undirected link between two posts, source < target by construction.
+    # weight is the tag Jaccard similarity in [0, 1]; a "bridge" edge (added to
+    # keep the graph one connected component) can carry a near-zero weight.
+    source: int
+    target: int
+    weight: float
+    kind: str = "tag"  # "tag" | "bridge" (v2 extension point: "link")
+
+
+class GraphResponse(BaseModel):
+    nodes: List[GraphNode] = []
+    edges: List[GraphEdge] = []
+
+
+class AnsweredOut(BaseModel):
+    # post_id -> number of distinct quiz questions the current user has answered.
+    # Empty for logged-out callers. The client greens a node when this count
+    # reaches the node's quiz_total (GraphNode.quiz_total).
+    counts: dict[int, int] = {}
+
+
 class UploadResponse(BaseModel):
     url: str
 

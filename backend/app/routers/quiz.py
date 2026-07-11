@@ -2,14 +2,16 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel
+from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from ..auth import get_current_user, get_optional_user_strict
+from ..auth import get_current_user, get_optional_user, get_optional_user_strict
 from ..database import get_db
 from ..elo import apply_answer, elo_summary
 from ..models import Post, QuizAnswer, User
 from ..rate_limit import check_rate_limit
+from ..schemas import AnsweredOut
 from ._shared import get_target_user, get_visible_post
 
 router = APIRouter(tags=["quiz"])
@@ -178,6 +180,32 @@ def get_quiz_state(
             "explanation": item.get("explanation"),
         })
     return {"answers": out}
+
+
+@router.get("/quiz/answered", response_model=AnsweredOut)
+def get_answered(
+    # Soft auth: a logged-out or stale-token caller just gets no answered posts
+    # (empty map) instead of a 401 -- the Net view still renders, only without
+    # green nodes. This is a pure read, so no reason to fail the whole graph on
+    # an expired token the way get_optional_user_strict would.
+    current_user: Optional[User] = Depends(get_optional_user),
+    db: Session = Depends(get_db),
+):
+    """Per-post count of distinct quiz questions the current user has answered.
+
+    The uq_quiz_answer constraint on (user_id, post_id, question_index) makes
+    COUNT(*) per post equal the number of distinct questions answered. The client
+    greens a node when this count reaches the node's quiz_total (GraphNode).
+    """
+    if current_user is None:
+        return AnsweredOut(counts={})
+    rows = (
+        db.query(QuizAnswer.post_id, func.count(QuizAnswer.id))
+        .filter(QuizAnswer.user_id == current_user.id)
+        .group_by(QuizAnswer.post_id)
+        .all()
+    )
+    return AnsweredOut(counts={post_id: n for post_id, n in rows})
 
 
 @router.get("/users/{username}/elo")
