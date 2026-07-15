@@ -52,9 +52,39 @@ interface Props {
 // ARENA_PLAYERS ever changes server-side, this grid has to change with it.
 const ARENA_SLOTS = 4
 
+// Waiting-room tile geometry, all derived from TILE_RATIO so the three numbers
+// cannot drift apart. The avatar is half the tile's WIDTH and sits centred in
+// the tile's upper half, which the badge artwork is drawn around.
+const TILE_RATIO = 1.5 // tile height / tile width
+const AVATAR_WIDTH = 0.5 // avatar diameter / tile width
+// Centre of the upper half, as a fraction of the tile's width.
+const UPPER_HALF_CENTRE = TILE_RATIO / 4
+// The avatar's top edge as a percentage of the tile's HEIGHT, because that is
+// what CSS `top` resolves against.
+const AVATAR_TOP_PCT = ((UPPER_HALF_CENTRE - AVATAR_WIDTH / 2) / TILE_RATIO) * 100
+
+// The tile is a fluid grid cell, so half its width is only knowable at render
+// time -- and Avatar sizes its picture in px, because the image optimiser needs
+// a number. Hence the measurement. clientWidth is the padding box: the same box
+// the badge art and the avatar are positioned against.
+function useTileWidth() {
+  const ref = useRef<HTMLDivElement>(null)
+  const [width, setWidth] = useState(0)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const observer = new ResizeObserver(() => setWidth(el.clientWidth))
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+  return [ref, width] as const
+}
+
 // One waiting-room tile: a joined player, or an empty seat still being filled.
 // Portrait 1:1.5 so four tiles read as a lobby rather than a row of chips.
 function QueueTile({ player, isMe }: { player: ArenaQueuePlayer | null; isMe: boolean }) {
+  const [ref, width] = useTileWidth()
+  const avatarSize = Math.round(width * AVATAR_WIDTH)
   if (!player) {
     return (
       <div
@@ -67,14 +97,15 @@ function QueueTile({ player, isMe }: { player: ArenaQueuePlayer | null; isMe: bo
     )
   }
   // An equipped badge supplies the tile's own artwork, so the flat fill would
-  // only wash it out. The isMe border stays either way: which seat is yours is
-  // information, not decoration, and it must not depend on a cosmetic.
+  // only wash it out. Your own seat is marked by the isMe fill and by seat
+  // order (queueSlots puts you first); the outline and the name are uniform.
   const badge = badgeSrc(player.badge_id)
   return (
     <div
-      className="relative aspect-[1/1.5] rounded-3xl border overflow-hidden flex flex-col items-center justify-center gap-3 px-3"
+      ref={ref}
+      className="relative aspect-[1/1.5] rounded-3xl border-2 overflow-hidden"
       style={{
-        borderColor: isMe ? "var(--color-lamp)" : "var(--color-edge)",
+        borderColor: "var(--color-ink-muted)",
         background: badge
           ? undefined
           : isMe ? "rgb(124 111 255 / 0.10)" : "rgb(255 255 255 / 0.04)",
@@ -92,19 +123,31 @@ function QueueTile({ player, isMe }: { player: ArenaQueuePlayer | null; isMe: bo
           className="absolute inset-0 w-full h-full object-cover pointer-events-none"
         />
       )}
-      <Avatar
-        username={player.username}
-        avatarUrl={player.avatar_url}
-        frameId={player.avatar_frame_id}
-        size={56}
-        className="relative"
-      />
-      <span
-        className="relative text-sm truncate max-w-full"
-        style={{ color: isMe ? "var(--color-lamp)" : "var(--color-ink)" }}
+      {/* Anchored to the avatar's top edge rather than centred, so the name
+          flows directly under the avatar and both sit in the tile's upper
+          half. Sized in px from the measurement above, so it is skipped on the
+          first frame, before the ResizeObserver has reported. */}
+      <div
+        className="absolute inset-x-0 flex flex-col items-center gap-2 px-3"
+        style={{ top: `${AVATAR_TOP_PCT}%` }}
       >
-        {isMe ? "You" : `@${player.username}`}
-      </span>
+        {avatarSize > 0 && (
+          <Avatar
+            username={player.username}
+            avatarUrl={player.avatar_url}
+            frameId={player.avatar_frame_id}
+            size={avatarSize}
+          />
+        )}
+        <span
+          // White over a black shadow so the name holds up against whatever the
+          // badge artwork puts behind it, light or dark.
+          className="text-base font-bold truncate max-w-full"
+          style={{ color: "#ffffff", textShadow: "0 1px 2px rgb(0 0 0 / 0.95), 0 2px 8px rgb(0 0 0 / 0.8)" }}
+        >
+          {player.username}
+        </span>
+      </div>
     </div>
   )
 }
