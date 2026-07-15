@@ -35,6 +35,7 @@ type Stage = "lobby" | "waiting" | "question" | "feedback" | "done" | "summary"
 interface UserResult {
   username: string
   avatar_url: string | null
+  avatar_frame_id: number | null
   is_verified: number
   is_self?: boolean
 }
@@ -263,8 +264,8 @@ export default function Battle({ onExit, active = true }: Props) {
   }, [query])
 
   // Load the user's following list once so the lobby can show friends ready to
-  // battle before any search. Returns the same {username, is_verified,
-  // avatar_url} shape the rows expect (is_self is absent, so rows stay tappable).
+  // battle before any search. Returns the same UserResult shape the rows expect
+  // (is_self is absent, so rows stay tappable).
   useEffect(() => {
     if (!user) {
       setFriends(null)
@@ -494,7 +495,7 @@ export default function Battle({ onExit, active = true }: Props) {
           u.is_self ? "opacity-50 cursor-default" : "cursor-pointer hover:bg-white/[0.07]"
         }`}
       >
-        <Avatar username={u.username} avatarUrl={u.avatar_url} size={44} verified={u.is_verified} />
+        <Avatar username={u.username} avatarUrl={u.avatar_url} frameId={u.avatar_frame_id} size={44} verified={u.is_verified} />
         <div className="flex-1 min-w-0 flex items-center gap-1.5">
           <span className="text-ink text-sm font-semibold truncate">@{u.username}</span>
           {u.is_verified > 0 && <VerifiedBadge size={14} level={u.is_verified} />}

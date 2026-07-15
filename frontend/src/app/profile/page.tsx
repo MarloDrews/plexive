@@ -51,7 +51,7 @@ export default function ProfilePage() {
   const [privacyError, setPrivacyError] = useState("")
 
   // Follow requests
-  const [pendingRequests, setPendingRequests] = useState<{ username: string; is_verified: number; avatar_url?: string | null; created_at: string }[]>([])
+  const [pendingRequests, setPendingRequests] = useState<{ username: string; is_verified: number; avatar_url?: string | null; avatar_frame_id?: number | null; created_at: string }[]>([])
   const [showRequests, setShowRequests] = useState(false)
   const [requestActionLoading, setRequestActionLoading] = useState<string | null>(null)
   const [requestError, setRequestError] = useState("")
@@ -298,7 +298,7 @@ export default function ProfilePage() {
         {/* Header — avatar + identity */}
         <div className="flex flex-col items-center pt-16 pb-6 px-6">
           <div className="relative mb-4">
-            <Avatar username={user.username} avatarUrl={user.avatar_url} size={88} verified={user.is_verified} className={avatarLoading ? "opacity-50" : ""} />
+            <Avatar username={user.username} avatarUrl={user.avatar_url} frameId={user.avatar_frame_id} size={88} verified={user.is_verified} className={avatarLoading ? "opacity-50" : ""} />
             <button
               onClick={() => avatarInputRef.current?.click()}
               disabled={avatarLoading}
@@ -448,7 +448,7 @@ export default function ProfilePage() {
                   pendingRequests.map((req) => (
                     <div key={req.username} className="flex items-center justify-between gap-3">
                       <Link href={`/profile/${req.username}`} className="flex items-center gap-2 min-w-0">
-                        <Avatar username={req.username} avatarUrl={req.avatar_url} size={32} verified={req.is_verified} />
+                        <Avatar username={req.username} avatarUrl={req.avatar_url} frameId={req.avatar_frame_id} size={32} verified={req.is_verified} />
                         <span className="text-ink text-sm font-medium truncate">@{req.username}</span>
                         {req.is_verified > 0 && <VerifiedBadge size={14} level={req.is_verified} />}
                       </Link>

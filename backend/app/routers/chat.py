@@ -105,6 +105,7 @@ def _serialize_conversation(c: Conversation, viewer_id: int, last_message: Optio
             {
                 "username": p.user.username,
                 "avatar_url": p.user.avatar_url,
+                "avatar_frame_id": p.user.avatar_frame_id,
                 "is_verified": p.user.is_verified,
             }
             for p in c.participants if p.user

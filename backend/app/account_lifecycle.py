@@ -73,9 +73,9 @@ def scramble_and_detach(db: Session, user: User) -> None:
     - Every follow edge involving the user is deleted, in both directions and
       any status, so lists, counts and request queues hold no dead entries.
     - email/username are scrambled to id-based values (freeing the originals),
-      bio and avatar are cleared, and the password hash is replaced with the
-      hash of a random secret so the stored value derives from nothing the
-      person ever typed.
+      bio, avatar and cosmetic accessories are cleared, and the password hash is
+      replaced with the hash of a random secret so the stored value derives from
+      nothing the person ever typed.
     - is_active goes False and token_version is bumped: every token dies and
       live websockets fail their next per-frame revalidation.
     """
@@ -90,6 +90,8 @@ def scramble_and_detach(db: Session, user: User) -> None:
     user.username = f"deleted-{user.id}"
     user.bio = None
     user.avatar_url = None
+    user.avatar_frame_id = None
+    user.badge_id = None
     user.password_hash = hash_password(secrets.token_hex(32))
     user.is_active = False
     user.token_version = (user.token_version or 0) + 1

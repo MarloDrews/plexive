@@ -15,6 +15,7 @@ export interface ChatMessage {
 export interface ChatParticipant {
   username: string
   avatar_url: string | null
+  avatar_frame_id: number | null
   is_verified: number
 }
 

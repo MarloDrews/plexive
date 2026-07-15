@@ -30,6 +30,7 @@ interface UserResult {
   is_private: boolean
   bio: string | null
   avatar_url: string | null
+  avatar_frame_id: number | null
   is_self: boolean
   follow_status: string | null
 }
@@ -85,7 +86,7 @@ function UserRow({ user, loggedIn }: { user: UserResult; loggedIn: boolean }) {
   // follow button sits above it and stays independently focusable.
   return (
     <div className="relative card px-4 py-3 flex items-center gap-3 hover:bg-white/[0.07] transition-colors duration-150">
-      <Avatar username={user.username} avatarUrl={user.avatar_url} size={44} verified={user.is_verified} />
+      <Avatar username={user.username} avatarUrl={user.avatar_url} frameId={user.avatar_frame_id} size={44} verified={user.is_verified} />
       <div className="flex-1 min-w-0">
         <p className="flex items-center gap-1.5 text-ink text-sm font-semibold truncate">
           <Link

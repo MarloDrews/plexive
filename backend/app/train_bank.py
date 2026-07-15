@@ -57,6 +57,62 @@ def _numeric_match(chosen: float, answer: float, minimum: float, step: float) ->
     return round((chosen - minimum) / step) == round((answer - minimum) / step)
 
 
+# --- Seeded duel sequence -------------------------------------------------
+#
+# The Arena (and Battle) clients derive their question sequence locally from a
+# server-issued seed: they seed an identical PRNG and shuffle their own copy of
+# the pool (frontend/src/lib/battle/seededQuestions.ts). Arena is RATED, so the
+# server must know which question sits at each index to grade an answer without
+# trusting the client -- that means reproducing the client's shuffle exactly.
+#
+# Parity rests on two things, both asserted by backend/tests/arena_test.py:
+#   1. TRAIN_QUESTIONS is in the SAME ORDER as the frontend `mockQuestions`
+#      array (dicts preserve insertion order), so index i means the same
+#      question on both sides before the shuffle.
+#   2. The math below is a faithful port of mulberry32 + the Fisher-Yates in
+#      frontend/src/lib/prng.ts and battle/seededQuestions.ts.
+# Changing either side without the other silently desyncs grading, so don't.
+
+_MASK32 = 0xFFFFFFFF
+
+
+def _i32(x: int) -> int:
+    """JS ToInt32: reinterpret the low 32 bits as signed."""
+    x &= _MASK32
+    return x - 0x100000000 if x & 0x80000000 else x
+
+
+def _imul(a: int, b: int) -> int:
+    """Math.imul on u32 bit patterns, returning u32 bits."""
+    return (_i32(a) * _i32(b)) & _MASK32
+
+
+def _mulberry32(seed: int):
+    """Port of mulberry32 from frontend/src/lib/prng.ts. Kept in u32 space
+    throughout; JS's int32 coercions are bit-identical to masking here."""
+    a = seed & _MASK32
+
+    def rand() -> float:
+        nonlocal a
+        a = (a + 0x6D2B79F5) & _MASK32
+        t = _imul(a ^ (a >> 15), (1 | a) & _MASK32)
+        t = ((t + _imul(t ^ (t >> 7), (61 | t) & _MASK32)) & _MASK32) ^ t
+        return ((t ^ (t >> 14)) & _MASK32) / 4294967296
+
+    return rand
+
+
+def sequence_ids(seed: int, count: int) -> list[str]:
+    """The ordered question ids for one duel, identical to the sequence the
+    clients derive from the same seed (seededShuffle then slice to count)."""
+    out = list(TRAIN_QUESTIONS.keys())
+    rand = _mulberry32(seed)
+    for i in range(len(out) - 1, 0, -1):
+        j = int(rand() * (i + 1))
+        out[i], out[j] = out[j], out[i]
+    return out[:count]
+
+
 def grade(question_id: str, chosen_index: Optional[int], chosen_value: Optional[float]) -> Optional[dict]:
     """Grade one Train answer against the bank.
 

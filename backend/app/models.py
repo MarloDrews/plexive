@@ -76,6 +76,10 @@ class Post(Base):
     def author_avatar_url(self):
         return self.author.avatar_url if self.author else None
 
+    @property
+    def author_avatar_frame_id(self):
+        return self.author.avatar_frame_id if self.author else None
+
 
 class PostEdge(Base):
     __tablename__ = "post_edges"
@@ -155,6 +159,18 @@ class User(Base):
     is_private    = Column(Boolean, default=False, nullable=False)
     bio           = Column(String, nullable=True)
     avatar_url    = Column(String, nullable=True)
+
+    # Cosmetic accessories, purely decorative and never a capability gate.
+    # avatar_frame_id: the overlay circle drawn on top of the profile picture.
+    # badge_id: the Arena (ranked) waiting-room tile artwork.
+    # The frontend owns the id -> artwork mapping (lib/accessories.ts); the
+    # backend only stores and serves the number, so adding a design needs no
+    # backend change. NULL -- or any id the frontend does not know -- renders
+    # the default look, which keeps an unknown value harmless rather than
+    # breaking the avatar. Nothing in the UI writes these yet: they are set by
+    # hand in the DB. Added to the live DB by scripts/add_accessory_columns.py.
+    avatar_frame_id = Column(Integer, nullable=True)
+    badge_id        = Column(Integer, nullable=True)
 
     # Single unified knowledge score (the "Knowledge score" and the Train Elo are
     # the same number). NULL until the user's first scored answer, then it behaves

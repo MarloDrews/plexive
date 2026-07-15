@@ -103,7 +103,7 @@ function CardFooter({ post, fc }: { post: Post; fc: Post["feed_card"] }) {
     <div className="flex items-center gap-2 pt-1 min-w-0">
       {post.author_username && (
         <span className="flex items-center gap-1.5 min-w-0">
-          <Avatar username={post.author_username} avatarUrl={post.author_avatar_url} size={24} />
+          <Avatar username={post.author_username} avatarUrl={post.author_avatar_url} frameId={post.author_avatar_frame_id} size={24} />
           <span className="text-xs text-ink-dim truncate">@{post.author_username}</span>
           {(post.author_is_verified ?? 0) > 0 && (
             <VerifiedBadge size={12} level={post.author_is_verified ?? 1} />

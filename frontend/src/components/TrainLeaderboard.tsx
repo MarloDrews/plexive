@@ -7,9 +7,10 @@ import { useAuth } from "@/lib/auth"
 import { jsonFetcher } from "@/lib/swr"
 import { LABEL_CAPS } from "./stage"
 
-// The Train intro leaderboard. Ranks users by the unified knowledge score (the
-// same number the marathon and profile show) via GET /api/train/leaderboard,
-// with a Friends/Global toggle:
+// The Arena lobby leaderboard. Ranks users by the unified knowledge score (the
+// same number Arena matches move and the profile shows) via GET
+// /api/train/leaderboard -- the endpoint keeps its name because it still serves
+// the mobile Train tab; only the web host moved. Friends/Global toggle:
 //   - Global: everyone, top 50, plus a pinned "You" row when the viewer sits
 //     outside the top 50 (from the response's `me`).
 //   - Friends: the viewer plus the accounts they follow; requires login.
@@ -40,7 +41,7 @@ interface LbResponse {
   truncated: boolean
 }
 
-// Lamp-tinted background for the viewer's own row (matches Marathon's option
+// Lamp-tinted background for the viewer's own row (matches the Arena option
 // coloring, which uses inline rgba rather than a Tailwind arbitrary value).
 const ME_BG = "rgb(124 111 255 / 0.12)"
 
@@ -142,7 +143,7 @@ export default function TrainLeaderboard() {
         <p className="text-ink-dim text-[13px] py-2">
           {scope === "global"
             ? "No scores yet. Answer a few questions to get on the board."
-            : "Nobody to rank yet — play Train to earn a score."}
+            : "Nobody to rank yet — play a match to earn a score."}
         </p>
       ) : scope === "friends" && !data.entries.some((e) => !e.is_me) ? (
         // Friends board with only the viewer in it: nudge them to follow people.

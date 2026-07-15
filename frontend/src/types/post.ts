@@ -439,6 +439,7 @@ export interface Post {
   author_username: string | null
   author_is_verified: number | null
   author_avatar_url: string | null
+  author_avatar_frame_id: number | null
   status: string
   created_at: string
   is_user_content: boolean

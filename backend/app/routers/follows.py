@@ -25,6 +25,7 @@ class FollowUserOut(BaseModel):
     is_verified: int
     is_private: bool
     avatar_url: Optional[str] = None
+    avatar_frame_id: Optional[int] = None
 
 
 def _follow_user_out(follow: Follow, user: User) -> FollowUserOut:
@@ -34,6 +35,7 @@ def _follow_user_out(follow: Follow, user: User) -> FollowUserOut:
         is_verified=user.is_verified,
         is_private=user.is_private,
         avatar_url=user.avatar_url,
+        avatar_frame_id=user.avatar_frame_id,
     )
 
 
@@ -43,6 +45,7 @@ class ProfileOut(BaseModel):
     is_private: bool
     bio: Optional[str]
     avatar_url: Optional[str]
+    avatar_frame_id: Optional[int] = None
     follower_count: int
     following_count: int
     post_count: int
@@ -254,6 +257,7 @@ def get_follow_requests(
             "username": f.follower.username,
             "is_verified": f.follower.is_verified,
             "avatar_url": f.follower.avatar_url,
+            "avatar_frame_id": f.follower.avatar_frame_id,
             # NULL created_at possible on raw-SQL inserted rows (BUG-076).
             "created_at": f.created_at.isoformat() if f.created_at else None,
         }
@@ -302,6 +306,7 @@ def get_profile(
         is_private=target.is_private,
         bio=target.bio,
         avatar_url=target.avatar_url,
+        avatar_frame_id=target.avatar_frame_id,
         follower_count=follower_count,
         following_count=following_count,
         post_count=post_count,
