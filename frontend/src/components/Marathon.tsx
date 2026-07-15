@@ -10,6 +10,7 @@ import { SLOW_MS, START_ELO } from "@/lib/train/elo"
 import type { AnswerResult, ChoiceQuestion, MarathonQuestion } from "@/types/train"
 import NumberSlider from "./NumberSlider"
 import FlameIcon from "./FlameIcon"
+import TrainLeaderboard from "./TrainLeaderboard"
 import { GlowCard, MessageSlab, LABEL_CAPS } from "./stage"
 
 // The full Train marathon experience as a self-contained component, ported from
@@ -466,7 +467,7 @@ export default function Marathon({ onExit }: Props) {
 
   function renderIntro() {
     return (
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-4">
         {/* Header: "Train" on the left, the rating in its own lamp-tinted box. */}
         <div className="flex items-center justify-between">
           <h1 className="font-serif font-medium text-[34px] text-ink">Train</h1>
@@ -489,7 +490,7 @@ export default function Marathon({ onExit }: Props) {
             question rendered blurred so the shape of the challenge shows but it
             stays unreadable until you start. */}
         <GlowCard>
-          <div className="px-6 py-7 flex flex-col gap-3.5 blur-[3px] select-none pointer-events-none">
+          <div className="px-6 py-6 flex flex-col gap-3.5 blur-[3px] select-none pointer-events-none">
             <p className="font-serif text-[22px] leading-[30px] text-ink">{PREVIEW_QUESTION.prompt}</p>
             <div className="flex flex-col gap-2.5">
               {PREVIEW_QUESTION.options.map((opt, i) => (
@@ -510,6 +511,12 @@ export default function Marathon({ onExit }: Props) {
             </button>
           </div>
         </GlowCard>
+
+        {/* Global/Friends knowledge leaderboard, ranked by the same Elo shown
+            above. Sits below the Start card so it never delays the play action,
+            but above the guest note so its header + first rows peek in above the
+            fold and invite a scroll, instead of hiding entirely below it. */}
+        <TrainLeaderboard />
 
         {!user && <GuestNote />}
       </div>
