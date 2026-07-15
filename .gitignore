@@ -29,3 +29,6 @@ node_modules/
 !.vscode/extensions.json
 
 docs/content-structure/generated/*/_batches/
+
+# User-uploaded content (runtime data, not source)
+user_uploads/
