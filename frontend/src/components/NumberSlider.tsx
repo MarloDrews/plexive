@@ -59,7 +59,7 @@ export default function NumberSlider({
   const trackRef = useRef<HTMLDivElement>(null)
   const [dragging, setDragging] = useState(false)
   // The live value while dragging stays LOCAL: every step crossing used to
-  // call onChange and re-render the whole parent screen (Marathon/Battle);
+  // call onChange and re-render the whole parent screen (Arena/Battle);
   // the parent now gets one onChange when the pointer is released.
   const [liveValue, setLiveValue] = useState<number | null>(null)
   const locked = !!disabled || !!showResult

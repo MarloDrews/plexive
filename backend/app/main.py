@@ -14,7 +14,7 @@ from .rate_limit import SWEEP_INTERVAL_SECONDS, sweep_idle_buckets
 load_dotenv()
 from . import models  # noqa: F401 — registers models with Base before create_all
 from .routers import admin as admin_router, auth as auth_router, comments as comments_router, events as events_router, feed, follows as follows_router, interests as interests_router, posts as posts_router, search as search_router, stats as stats_router
-from .routers import battle as battle_router, chat as chat_router, graph as graph_router, quiz as quiz_router, train as train_router, uploads as uploads_router
+from .routers import arena as arena_router, battle as battle_router, chat as chat_router, graph as graph_router, quiz as quiz_router, train as train_router, uploads as uploads_router
 
 
 def _assert_single_worker() -> None:
@@ -22,9 +22,11 @@ def _assert_single_worker() -> None:
 
     One Railway replica running one uvicorn worker. The in-memory rate limiter
     (app/rate_limit.py), the chat ConnectionManager, the BattleManager, the
-    pre-auth socket counters (app/ws_security.py) and the stats caches are all
-    process-local; at N processes every rate limit silently multiplies by N and
-    chat/battle delivery splits across processes. Fail the boot loudly instead
+    ArenaManager (queue + live matches), the pre-auth socket counters
+    (app/ws_security.py) and the stats caches are all process-local; at N
+    processes every rate limit silently multiplies by N, chat/battle delivery
+    splits across processes, and the arena queue shards into N queues that can
+    never fill a lobby between them. Fail the boot loudly instead
     of degrading silently. Replica count cannot be detected from inside the
     process; that half of the invariant lives in backend/railway.toml.
     """
@@ -74,10 +76,15 @@ async def lifespan(_app: FastAPI):
     _assert_single_worker()
     _run_startup_ddl()
     sweep_task = asyncio.create_task(_limiter_sweep_loop())
+    # The Arena matchmaker: pairs queued players and sweeps abandoned matches
+    # on its own tick, so no player's websocket frame pays for matchmaking
+    # (same reasoning as the limiter sweep, ARCH-009).
+    matchmaker_task = asyncio.create_task(arena_router.matchmaker_loop())
     yield
-    sweep_task.cancel()
-    with contextlib.suppress(asyncio.CancelledError):
-        await sweep_task
+    for task in (sweep_task, matchmaker_task):
+        task.cancel()
+        with contextlib.suppress(asyncio.CancelledError):
+            await task
 
 
 app = FastAPI(lifespan=lifespan)
@@ -216,6 +223,7 @@ app.include_router(graph_router.router, prefix="/api")
 app.include_router(train_router.router, prefix="/api")
 app.include_router(chat_router.router, prefix="/api")
 app.include_router(battle_router.router, prefix="/api")
+app.include_router(arena_router.router, prefix="/api")
 
 
 @app.get("/health")

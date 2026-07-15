@@ -1,6 +1,6 @@
 // Flame icon (the mobile FlameIcon path), filled when the streak is alive.
-// Shared by Marathon's StreakStat and the stats streak cards (which previously
-// rendered a literal fire emoji, against the project no-emoji rule).
+// Used by the stats streak cards (which previously rendered a literal fire
+// emoji, against the project no-emoji rule).
 export default function FlameIcon({
   size = 15,
   color,

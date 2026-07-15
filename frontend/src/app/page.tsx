@@ -16,12 +16,12 @@ import { tabPanelProps } from "@/lib/tablist"
 import { useSwipeTabs } from "@/lib/useSwipeTabs"
 import { useWindowedFeed } from "@/lib/useWindowedFeed"
 
-// Train and Battle ship as their own lazy chunks: their whole import graphs
-// (stage kit, sockets, question pools, Elo math) otherwise sit in the entry
-// chunk of the app's most-visited route while rendering is already gated on
-// tab activation. The loading fallback is the same empty surface the
-// non-activated tab shows, so nothing changes visually while the chunk loads.
-const Marathon = dynamic(() => import("@/components/Marathon"), {
+// Arena and Battle ship as their own lazy chunks: their whole import graphs
+// (stage kit, sockets, question pools) otherwise sit in the entry chunk of the
+// app's most-visited route while rendering is already gated on tab activation.
+// The loading fallback is the same empty surface the non-activated tab shows,
+// so nothing changes visually while the chunk loads.
+const Arena = dynamic(() => import("@/components/Arena"), {
   ssr: false,
   loading: () => <div className="h-full bg-surface-0" />,
 })
@@ -42,13 +42,13 @@ const TABS: FeedTab[] = [
   // lives only in the search view now, matching the mobile tab set. These five
   // non-format tabs carry no accent dot; the capsule itself stays neutral.
   // Following sits left of For You, but For You stays the default open tab.
-  // Net, Train and Battle sit right of For You and host their own full-screen
+  // Net, Arena and Battle sit right of For You and host their own full-screen
   // components instead of a card feed (see the pager map below): Net renders the
-  // interactive post graph, Train the marathon, Battle the head-to-head.
+  // interactive post graph, Arena the ranked 1v1v1v1, Battle the friendly 1v1.
   { id: "following", label: "Following", format: null, accent: "#eceeff" },
   { id: "for-you", label: "For You", format: null, accent: "#eceeff" },
   { id: "net", label: "Net", format: null, accent: "#eceeff" },
-  { id: "train", label: "Train", format: null, accent: "#eceeff" },
+  { id: "arena", label: "Arena", format: null, accent: "#eceeff" },
   { id: "battle", label: "Battle", format: null, accent: "#eceeff" },
 ]
 
@@ -324,11 +324,11 @@ export default function Home() {
               </div>
             )
           }
-          // Train and Battle host their own full-screen component instead of a
-          // card feed. Gate on activation so the marathon does not run and the
-          // battle socket does not connect until the tab is first opened (the
-          // empty page keeps swiping cheap, like TabPage's own placeholder).
-          if (tab.id === "train" || tab.id === "battle") {
+          // Arena and Battle host their own full-screen component instead of a
+          // card feed. Gate on activation so neither socket connects until the
+          // tab is first opened (the empty page keeps swiping cheap, like
+          // TabPage's own placeholder).
+          if (tab.id === "arena" || tab.id === "battle") {
             return (
               <div
                 key={tab.id}
@@ -337,8 +337,12 @@ export default function Home() {
               >
                 {!isActivated ? (
                   <div className="h-full bg-surface-0" />
-                ) : tab.id === "train" ? (
-                  <Marathon onExit={handleExitToFeed} />
+                ) : tab.id === "arena" ? (
+                  // active gates the arena socket the same way (M143):
+                  // swiping away disconnects, which also drops the player out
+                  // of the matchmaking queue rather than matching someone who
+                  // is not watching.
+                  <Arena onExit={handleExitToFeed} active={activeIndex === i} />
                 ) : (
                   // active gates the battle socket (M143): swiping away
                   // disconnects it, so a background tab is never silently
