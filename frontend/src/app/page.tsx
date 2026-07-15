@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import useSWR from "swr"
@@ -44,6 +44,11 @@ const TABS: FeedTab[] = [
 ]
 
 const DEFAULT_TAB_INDEX = TABS.findIndex((t) => t.id === "for-you")
+
+// useLayoutEffect must not run on the server (React warns that it does nothing
+// there). The feed only exists on the client, so fall back to useEffect during
+// SSR purely to keep that warning out of the console.
+const useIsomorphicLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect
 
 // A per-session feed seed, generated once and reused for the whole session.
 // The backend jitters For You order per request but is deterministic under a
@@ -118,21 +123,41 @@ function TabPage({
   // below and offer a retry.
   const posts: Post[] | null = isFollowingTab ? (error ? [] : data ?? null) : data ?? null
 
+  // Read the saved scroll target for this tab once, up front (without consuming
+  // it), so the window below can mount the target card on the very first paint.
+  // A mandatory-snap feed has no snap target at the restored offset otherwise,
+  // and snaps back toward the top.
+  const [restoreIndex] = useState(() => {
+    if (typeof window === "undefined") return 0
+    try {
+      const raw = sessionStorage.getItem("feedScrollPosition")
+      if (!raw) return 0
+      const { index, tabId } = JSON.parse(raw)
+      return tabId === tab.id && typeof index === "number" ? index : 0
+    } catch {
+      return 0
+    }
+  })
+
   // Window the card list: only the active card plus a small overscan stay
   // mounted; the rest collapse into dvh spacers so DOM size no longer grows
-  // with the corpus.
-  const { start, end } = useWindowedFeed(scrollRef, posts?.length ?? 0)
+  // with the corpus. Seeded with restoreIndex so the target card is mounted
+  // before the scroll position is restored below.
+  const { start, end } = useWindowedFeed(scrollRef, posts?.length ?? 0, restoreIndex)
 
-  useEffect(() => {
+  // Layout effect (runs before paint) so the scroll lands on the target card
+  // without a visible snap-to-top flash. Uses the saved index: every card is
+  // one viewport tall, so scrollTop = index * clientHeight.
+  useIsomorphicLayoutEffect(() => {
     if (posts === null || !scrollRef.current) return
     const raw = sessionStorage.getItem("feedScrollPosition")
     if (!raw) return
     try {
-      const { scrollTop, tabId } = JSON.parse(raw)
+      const { index, tabId } = JSON.parse(raw)
       // Only the matching tab consumes (and clears) the entry; a mismatch leaves
       // it for the correct tab.
       if (tabId !== tab.id) return
-      scrollRef.current.scrollTop = scrollTop
+      scrollRef.current.scrollTop = index * scrollRef.current.clientHeight
       sessionStorage.removeItem("feedScrollPosition")
     } catch {
       // Corrupt entry: drop it so it cannot wedge scroll restore.

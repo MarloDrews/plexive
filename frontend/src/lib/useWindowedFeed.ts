@@ -10,14 +10,18 @@ const OVERSCAN = 2
 // scrollTop / viewport height, and the off-window items collapse into two
 // spacers sized in dvh (pure CSS: total scroll height and every card offset
 // stay correct even when the dynamic viewport unit changes under mobile
-// browser chrome). Scroll restore keeps working because a programmatic
-// scrollTop write fires the scroll listener, which re-centers the window.
+// browser chrome). Scroll restore keeps working because the window is seeded
+// with the restored index (initialIndex): the target card is then already
+// mounted when the scroll position is restored, so a valid snap target exists
+// at that offset -- a mandatory-snap feed has none there otherwise and snaps
+// back toward the top.
 // Returns the [start, end) slice of the list to actually mount.
 export function useWindowedFeed(
   scrollRef: RefObject<HTMLElement | null>,
-  count: number
+  count: number,
+  initialIndex = 0
 ): { start: number; end: number } {
-  const [activeIndex, setActiveIndex] = useState(0)
+  const [activeIndex, setActiveIndex] = useState(initialIndex)
 
   useEffect(() => {
     const el = scrollRef.current
@@ -29,8 +33,14 @@ export function useWindowedFeed(
       setActiveIndex((prev) => (prev === idx ? prev : idx))
     }
     // Pick up an already-restored scroll position (and re-clamp on count
-    // changes, e.g. a revalidated feed list).
-    onScroll()
+    // changes, e.g. a revalidated feed list). Guard on a non-zero scrollTop:
+    // on first mount the container is still at the top while the restore is
+    // pending (posts load a tick later), and an unguarded onScroll() would
+    // reset the seeded initialIndex back to 0 -- which unmounts the target
+    // card, so the pending scroll restore then has no snap target and jumps to
+    // the top. Real scroll events (including the programmatic restore write)
+    // still fire the listener below.
+    if (el.scrollTop > 0) onScroll()
     el.addEventListener("scroll", onScroll, { passive: true })
     return () => el.removeEventListener("scroll", onScroll)
   }, [scrollRef, count])

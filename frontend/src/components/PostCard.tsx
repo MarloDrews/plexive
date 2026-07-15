@@ -240,11 +240,16 @@ function PostCard({ post, activeTabId }: { post: Post; activeTabId: string }) {
   }
 
   function navigate() {
+    // Save the active card index (not raw scrollTop): every card is exactly
+    // one viewport tall, so index = scrollTop / clientHeight. The feed restores
+    // by seeding its window with this index so the target card is mounted before
+    // the scroll is restored (see useWindowedFeed / TabPage).
     const container = cardRef.current?.parentElement
-    if (container) {
+    if (container && container.clientHeight > 0) {
+      const index = Math.round(container.scrollTop / container.clientHeight)
       sessionStorage.setItem(
         "feedScrollPosition",
-        JSON.stringify({ scrollTop: container.scrollTop, tabId: activeTabId })
+        JSON.stringify({ index, tabId: activeTabId })
       )
     }
     sessionStorage.setItem("feedActiveTab", activeTabId)
