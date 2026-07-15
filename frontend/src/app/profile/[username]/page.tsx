@@ -27,6 +27,7 @@ interface ProfileData {
   is_private: boolean
   bio: string | null
   avatar_url: string | null
+  avatar_frame_id: number | null
   follower_count: number
   following_count: number
   post_count: number
@@ -236,7 +237,7 @@ export default function PublicProfilePage() {
         {/* Profile section */}
         <div className="px-4 pt-4 pb-2">
           {/* Avatar */}
-          <Avatar username={username} avatarUrl={profile.avatar_url} size={72} verified={profile.is_verified} className="mb-3" />
+          <Avatar username={username} avatarUrl={profile.avatar_url} frameId={profile.avatar_frame_id} size={72} verified={profile.is_verified} className="mb-3" />
 
           {/* Username + verified */}
           <div className="flex items-center gap-1.5 mb-0.5">

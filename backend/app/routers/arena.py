@@ -86,14 +86,31 @@ QUEUE_ROSTER_MAX = 8
 MATCH_TIMEOUT_SECONDS = 300.0
 
 
+@dataclass(frozen=True)
+class QueueIdentity:
+    """Everything the waiting room shows about a player, read in one DB trip:
+    the rating matchmaking sorts on plus the cosmetics the tile renders."""
+
+    rating: float
+    # None renders as an initial.
+    avatar_url: Optional[str] = None
+    # Cosmetic accessory ids (models.User); the frontend maps them to artwork
+    # and falls back to the default look for None or an unknown id.
+    avatar_frame_id: Optional[int] = None
+    badge_id: Optional[int] = None
+
+
 @dataclass
 class QueueEntry:
     user_id: int
     username: str
-    rating: float
     queued_at: float
-    # Shown in the other waiting players' roster; None renders as an initial.
-    avatar_url: Optional[str] = None
+    # Shown in the other waiting players' roster.
+    identity: QueueIdentity
+
+    @property
+    def rating(self) -> float:
+        return self.identity.rating
 
     def window(self, now: float) -> float:
         waited = now - self.queued_at
@@ -194,9 +211,7 @@ class ArenaManager:
 
     # --- queue ------------------------------------------------------------
 
-    async def enqueue(
-        self, user_id: int, username: str, rating: float, avatar_url: Optional[str] = None
-    ) -> str:
+    async def enqueue(self, user_id: int, username: str, identity: QueueIdentity) -> str:
         async with self._lock:
             if user_id in self._matches:
                 return "in_match"
@@ -204,8 +219,8 @@ class ArenaManager:
                 return "already_queued"
             self._queue.append(
                 QueueEntry(
-                    user_id=user_id, username=username, rating=rating,
-                    queued_at=time.monotonic(), avatar_url=avatar_url,
+                    user_id=user_id, username=username,
+                    queued_at=time.monotonic(), identity=identity,
                 )
             )
             return "queued"
@@ -230,7 +245,12 @@ class ArenaManager:
                 "type": "queue_update",
                 "waiting": len(self._queue),
                 "players": [
-                    {"username": e.username, "avatar_url": e.avatar_url}
+                    {
+                        "username": e.username,
+                        "avatar_url": e.identity.avatar_url,
+                        "avatar_frame_id": e.identity.avatar_frame_id,
+                        "badge_id": e.identity.badge_id,
+                    }
                     for e in self._queue[:QUEUE_ROSTER_MAX]
                 ],
             }
@@ -422,17 +442,22 @@ def _load_active_user(user_id: int) -> Optional[User]:
         db.close()
 
 
-def _queue_identity(user_id: int) -> Tuple[float, Optional[str]]:
-    """The rating matchmaking sorts on, plus the avatar the waiting room shows,
-    in one DB trip. An unrated player queues at the start rating rather than
-    being excluded, so a new account can still find a match."""
+def _queue_identity(user_id: int) -> QueueIdentity:
+    """Load what the waiting room needs about a player in one DB trip. An
+    unrated player queues at the start rating rather than being excluded, so a
+    new account can still find a match."""
     db = SessionLocal()
     try:
         user = db.query(User).filter(User.id == user_id).first()
         if user is None:
-            return START_RATING, None
+            return QueueIdentity(rating=START_RATING)
         rating = START_RATING if user.knowledge_rating is None else float(user.knowledge_rating)
-        return rating, user.avatar_url
+        return QueueIdentity(
+            rating=rating,
+            avatar_url=user.avatar_url,
+            avatar_frame_id=user.avatar_frame_id,
+            badge_id=user.badge_id,
+        )
     finally:
         db.close()
 
@@ -550,8 +575,8 @@ async def _handle_queue(websocket: WebSocket, user_id: int, username: str) -> No
     except HTTPException:
         await _error(websocket, "Too many queue attempts. Slow down.")
         return
-    rating, avatar_url = await anyio.to_thread.run_sync(_queue_identity, user_id)
-    outcome = await manager.enqueue(user_id, username, rating, avatar_url)
+    identity = await anyio.to_thread.run_sync(_queue_identity, user_id)
+    outcome = await manager.enqueue(user_id, username, identity)
     if outcome == "in_match":
         await _error(websocket, "Finish your current match first.", code="in_match")
         return
@@ -560,7 +585,7 @@ async def _handle_queue(websocket: WebSocket, user_id: int, username: str) -> No
         return
     await websocket.send_json({
         "type": "queued",
-        "rating": round(rating),
+        "rating": round(identity.rating),
         "needed": ARENA_PLAYERS,
         "waiting": await manager.queue_size(),
     })

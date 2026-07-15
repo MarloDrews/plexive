@@ -42,6 +42,11 @@ class UserOut(BaseModel):
     is_private: bool
     bio: str | None
     avatar_url: str | None
+    # Cosmetic accessory ids (models.User): the frame rides with every avatar so
+    # the overlay circle renders wherever the picture does. badge_id is
+    # self-scoped only -- the Arena roster carries the other players' badges.
+    avatar_frame_id: int | None = None
+    badge_id: int | None = None
 
 
 class PublicUserOut(BaseModel):
@@ -54,6 +59,7 @@ class PublicUserOut(BaseModel):
     is_verified: int
     avatar_url: str | None
     bio: str | None
+    avatar_frame_id: int | None = None
 
 
 # Upper bound on a single view's dwell (4 hours in ms). A forged duration_ms
@@ -463,6 +469,7 @@ class PostOut(BaseModel):
     author_username: str | None = None
     author_is_verified: int | None = None
     author_avatar_url: str | None = None
+    author_avatar_frame_id: int | None = None
     status: str = "published"
     created_at: datetime | None = None
     is_user_content: bool = False

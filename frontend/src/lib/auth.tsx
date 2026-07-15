@@ -28,6 +28,10 @@ export interface AuthUser {
   is_private: boolean
   bio: string | null
   avatar_url: string | null
+  // Cosmetic accessory ids (lib/accessories). Set by hand in the DB for now --
+  // no UI writes them, so nothing here updates them either.
+  avatar_frame_id: number | null
+  badge_id: number | null
 }
 
 interface AuthContextType {

@@ -8,6 +8,7 @@ export interface Comment {
   username: string
   is_verified: number
   avatar_url: string | null
+  avatar_frame_id: number | null
   body: string
   created_at: string
 }

@@ -20,7 +20,14 @@ export type ArenaPlayer = { username: string; rating: number }
 
 // One tile in the waiting room. The server re-sends the whole roster whenever
 // queue membership changes, so this is a snapshot, never a delta to apply.
-export type ArenaQueuePlayer = { username: string; avatar_url: string | null }
+// The two accessory ids are cosmetic (lib/accessories): null, or an id with no
+// design, renders the default tile.
+export type ArenaQueuePlayer = {
+  username: string
+  avatar_url: string | null
+  avatar_frame_id: number | null
+  badge_id: number | null
+}
 
 export type ArenaStanding = {
   username: string

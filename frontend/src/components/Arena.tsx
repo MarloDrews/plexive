@@ -12,6 +12,7 @@ import {
 import { buildSequence } from "@/lib/battle/seededQuestions"
 import type { MarathonQuestion } from "@/types/train"
 import Avatar from "./Avatar"
+import { badgeSrc } from "@/lib/accessories"
 import NumberSlider from "./NumberSlider"
 import TrainLeaderboard from "./TrainLeaderboard"
 import { GlowCard, MessageSlab, LABEL_CAPS } from "./stage"
@@ -65,17 +66,41 @@ function QueueTile({ player, isMe }: { player: ArenaQueuePlayer | null; isMe: bo
       </div>
     )
   }
+  // An equipped badge supplies the tile's own artwork, so the flat fill would
+  // only wash it out. The isMe border stays either way: which seat is yours is
+  // information, not decoration, and it must not depend on a cosmetic.
+  const badge = badgeSrc(player.badge_id)
   return (
     <div
-      className="aspect-[1/1.5] rounded-3xl border flex flex-col items-center justify-center gap-3 px-3"
+      className="relative aspect-[1/1.5] rounded-3xl border overflow-hidden flex flex-col items-center justify-center gap-3 px-3"
       style={{
         borderColor: isMe ? "var(--color-lamp)" : "var(--color-edge)",
-        background: isMe ? "rgb(124 111 255 / 0.10)" : "rgb(255 255 255 / 0.04)",
+        background: badge
+          ? undefined
+          : isMe ? "rgb(124 111 255 / 0.10)" : "rgb(255 255 255 / 0.04)",
       }}
     >
-      <Avatar username={player.username} avatarUrl={player.avatar_url} size={56} />
+      {badge && (
+        // Decorative backdrop behind the avatar and name. The art is authored
+        // 1:1.5 -- the tile's own ratio -- so object-cover crops nothing.
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={badge}
+          alt=""
+          aria-hidden="true"
+          draggable={false}
+          className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+        />
+      )}
+      <Avatar
+        username={player.username}
+        avatarUrl={player.avatar_url}
+        frameId={player.avatar_frame_id}
+        size={56}
+        className="relative"
+      />
       <span
-        className="text-sm truncate max-w-full"
+        className="relative text-sm truncate max-w-full"
         style={{ color: isMe ? "var(--color-lamp)" : "var(--color-ink)" }}
       >
         {isMe ? "You" : `@${player.username}`}
@@ -553,7 +578,12 @@ export default function Arena({ onExit, active = true }: Props) {
   // the roster broadcast to come back.
   function queueSlots(): (ArenaQueuePlayer | null)[] {
     const mine: ArenaQueuePlayer[] = user
-      ? [{ username: user.username, avatar_url: user.avatar_url }]
+      ? [{
+          username: user.username,
+          avatar_url: user.avatar_url,
+          avatar_frame_id: user.avatar_frame_id,
+          badge_id: user.badge_id,
+        }]
       : []
     const others = queuePlayers.filter((p) => p.username !== user?.username)
     const filled = [...mine, ...others].slice(0, ARENA_SLOTS)
