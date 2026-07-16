@@ -14,7 +14,9 @@ import type { MarathonQuestion } from "@/types/train"
 import Avatar from "./Avatar"
 import { badgeSrc } from "@/lib/accessories"
 import NumberSlider from "./NumberSlider"
+import WorldMapPicker from "./WorldMapPicker"
 import TrainLeaderboard from "./TrainLeaderboard"
+import { haversineKm, scoreLabel } from "@/lib/train/scoring"
 import { GlowCard, MessageSlab, LABEL_CAPS } from "./stage"
 
 // The Arena tab: RANKED 1v1v1v1. Four players in a similar knowledge-rating
@@ -46,6 +48,10 @@ interface Props {
   // disconnects, which also drops the player out of the queue rather than
   // matching someone who is not watching the screen.
   active?: boolean
+  // Fires true while the waiting room (the queueing stage) is showing, false
+  // otherwise. The page uses it to hide the bottom nav dock, which the
+  // full-screen waiting room owns instead.
+  onWaitingRoomChange?: (inWaitingRoom: boolean) => void
 }
 
 // Waiting-room slots. The 2x2 grid assumes a four-player match: if
@@ -183,7 +189,7 @@ function PlayerScore({ name, score, isMe, done, left }: {
   )
 }
 
-export default function Arena({ onExit, active = true }: Props) {
+export default function Arena({ onExit, active = true, onWaitingRoomChange }: Props) {
   const { user } = useAuth()
 
   const [stage, setStage] = useState<Stage>("lobby")
@@ -217,7 +223,12 @@ export default function Arena({ onExit, active = true }: Props) {
   // grade: the answer is locked in but the verdict has not landed yet.
   const [selected, setSelected] = useState<number | null>(null)
   const [sliderValue, setSliderValue] = useState(0)
+  // The dropped pin for a map question, in lat/lng; null until the player taps.
+  const [pin, setPin] = useState<{ lat: number; lng: number } | null>(null)
   const [lastCorrect, setLastCorrect] = useState<boolean | null>(null)
+  // Points the server awarded for the last answer (0..100); partial for numeric
+  // and map. Drives the graded feedback.
+  const [awarded, setAwarded] = useState<number | null>(null)
   const [pending, setPending] = useState(false)
 
   // Numeric questions start the slider at a random step, never on the correct
@@ -245,7 +256,9 @@ export default function Arena({ onExit, active = true }: Props) {
     setDone([])
     setLeft([])
     setSelected(null)
+    setPin(null)
     setLastCorrect(null)
+    setAwarded(null)
     setPending(false)
     setQueuedAt(null)
     setQueuePlayers([])
@@ -288,7 +301,9 @@ export default function Arena({ onExit, active = true }: Props) {
         setLeft([])
         setStandings([])
         setSelected(null)
+        setPin(null)
         setLastCorrect(null)
+        setAwarded(null)
         setPending(false)
         setMessage("")
         setQueuedAt(null)
@@ -300,9 +315,11 @@ export default function Arena({ onExit, active = true }: Props) {
       case "answer_result": {
         if (stale(e.match_id)) break
         // The server's verdict is the one that counts; our local pool only
-        // decides which option to highlight.
+        // decides which option/location to highlight. `awarded` is the graded
+        // points (partial for numeric/map); `score` is the running points total.
         setPending(false)
         setLastCorrect(e.correct)
+        setAwarded(e.awarded)
         setScores((s) => (user ? { ...s, [user.username]: e.score } : s))
         setStage("feedback")
         break
@@ -358,7 +375,7 @@ export default function Arena({ onExit, active = true }: Props) {
     }
   }, [user])
 
-  const { status, queue, cancel, answer } = useArenaSocket(!!user && active, handleEvent)
+  const { status, queue, cancel, answer, forceStart } = useArenaSocket(!!user && active, handleEvent)
 
   // A closed socket mid-match means the server tore the room down (or the user
   // swiped away, which disconnects): drop to the lobby rather than playing on
@@ -378,6 +395,15 @@ export default function Arena({ onExit, active = true }: Props) {
   useEffect(() => {
     if (stage === "done" && standings.length > 0) setStage("summary")
   }, [stage, standings])
+
+  // Tell the page when the waiting room is showing so it can hide the bottom
+  // nav dock, which the full-screen waiting room owns. The cleanup restores the
+  // dock on any exit, including the Arena unmounting mid-queue.
+  const inWaitingRoom = stage === "queueing"
+  useEffect(() => {
+    onWaitingRoomChange?.(inWaitingRoom)
+    return () => onWaitingRoomChange?.(false)
+  }, [inWaitingRoom, onWaitingRoomChange])
 
   // Queue timer, purely informational (the widening rating window lives
   // server-side). Ticks only while queueing, so nothing runs in the lobby.
@@ -403,10 +429,21 @@ export default function Arena({ onExit, active = true }: Props) {
     setStage("lobby")
   }
 
+  // TEMP (testing only, remove before launch): start a match now with whoever
+  // is already in the waiting room, even fewer than four players. The server
+  // replies with match_start, which drives the normal question stage.
+  function handleForceStart() {
+    if (status !== "open") {
+      setMessage("Connecting... try again in a moment.")
+      return
+    }
+    if (!forceStart()) setMessage("Could not start the match. Try again.")
+  }
+
   // Send the pick; the verdict arrives as answer_result. `pending` latches so a
   // double activation cannot send two answers for one question (the server
   // would reject the second as a bad index, but the UI should not depend on it).
-  function submit(choice: { chosenIndex?: number; chosenValue?: number }) {
+  function submit(choice: { chosenIndex?: number; chosenValue?: number; chosenLat?: number; chosenLng?: number }) {
     if (pending || stage !== "question" || !matchIdRef.current) return
     setPending(true)
     if (!answer(matchIdRef.current, index, choice)) {
@@ -429,6 +466,12 @@ export default function Arena({ onExit, active = true }: Props) {
     submit({ chosenValue: sliderValue })
   }
 
+  function handleSubmitMap() {
+    const cur = seq[index]
+    if (stage !== "question" || pending || !cur || cur.kind !== "map" || !pin) return
+    submit({ chosenLat: pin.lat, chosenLng: pin.lng })
+  }
+
   function handleNext() {
     const nextIndex = index + 1
     // Bounded by BOTH the server count and the derived sequence: buildSequence
@@ -442,7 +485,9 @@ export default function Arena({ onExit, active = true }: Props) {
     }
     setIndex(nextIndex)
     setSelected(null)
+    setPin(null)
     setLastCorrect(null)
+    setAwarded(null)
     startSlider(seq[nextIndex])
     setStage("question")
   }
@@ -457,7 +502,7 @@ export default function Arena({ onExit, active = true }: Props) {
   // and a spoken suffix carry the same state.
   function optionState(i: number): "correct" | "incorrect" | null {
     const cur = seq[index]
-    if (stage !== "feedback" || lastCorrect === null || !cur || cur.kind === "numeric") return null
+    if (stage !== "feedback" || lastCorrect === null || !cur || cur.kind === "numeric" || cur.kind === "map") return null
     if (i === cur.answerIndex) return "correct"
     if (i === selected) return "incorrect"
     return null
@@ -468,7 +513,7 @@ export default function Arena({ onExit, active = true }: Props) {
 
   function optionStyle(i: number): React.CSSProperties {
     const cur = seq[index]
-    if (stage !== "feedback" || lastCorrect === null || !cur || cur.kind === "numeric") {
+    if (stage !== "feedback" || lastCorrect === null || !cur || cur.kind === "numeric" || cur.kind === "map") {
       return { borderColor: "transparent", background: "rgb(255 255 255 / 0.06)", color: "var(--color-ink-body)" }
     }
     if (i === cur.answerIndex) {
@@ -515,7 +560,7 @@ export default function Arena({ onExit, active = true }: Props) {
     const cur = seq[index]
     if (!cur) return null
     if (cur.kind === "numeric") {
-      const answered = stage === "feedback" && lastCorrect !== null
+      const answered = stage === "feedback" && awarded !== null
       return (
         <div className="flex flex-col gap-4">
           <NumberSlider
@@ -527,12 +572,34 @@ export default function Arena({ onExit, active = true }: Props) {
             onChange={setSliderValue}
             disabled={answered || pending}
             showResult={answered}
-            correct={lastCorrect ?? undefined}
+            // Graded: a near miss still reads as a good result (green) above the
+            // 50-point tier, not a hard red like an exact-only match would.
+            correct={answered && awarded !== null ? scoreLabel(awarded).good : undefined}
             correctValue={cur.answerValue}
           />
           {stage === "question" && (
             <button className="btn btn-primary w-full py-3" onClick={handleSubmitNumeric} disabled={pending}>
               {pending ? "Checking..." : "Submit"}
+            </button>
+          )}
+        </div>
+      )
+    }
+    if (cur.kind === "map") {
+      const answered = stage === "feedback" && awarded !== null
+      return (
+        <div className="flex flex-col gap-4">
+          <WorldMapPicker
+            value={pin}
+            onChange={setPin}
+            disabled={pending || answered}
+            showResult={answered}
+            answer={{ lat: cur.answerLat, lng: cur.answerLng }}
+            answerLabel={cur.answerLabel}
+          />
+          {stage === "question" && (
+            <button className="btn btn-primary w-full py-3" onClick={handleSubmitMap} disabled={pending || !pin}>
+              {pending ? "Checking..." : pin ? "Submit pin" : "Tap the map to place a pin"}
             </button>
           )}
         </div>
@@ -696,6 +763,16 @@ export default function Arena({ onExit, active = true }: Props) {
           </div>
         </GlowCard>
 
+        {/* TEMP (testing only, remove before launch): start the match now with
+            however many players (1-4) are currently in the waiting room. */}
+        <button
+          className="btn btn-quiet w-full"
+          onClick={handleForceStart}
+          disabled={status !== "open"}
+        >
+          Start now ({joined} {joined === 1 ? "player" : "players"}) &middot; test
+        </button>
+
         <button className="btn btn-ghost w-full py-3" onClick={handleCancel}>
           Cancel
         </button>
@@ -724,8 +801,15 @@ export default function Arena({ onExit, active = true }: Props) {
 
   function renderFeedback() {
     const cur = seq[index]
-    if (!cur || lastCorrect === null) return null
-    const good = lastCorrect
+    if (!cur || awarded === null) return null
+    // Graded questions (numeric/map) show the points earned and a tier; choice
+    // stays a plain Correct/Incorrect.
+    const graded = cur.kind === "numeric" || cur.kind === "map"
+    const good = graded ? scoreLabel(awarded).good : !!lastCorrect
+    const headline = graded ? `${awarded} / 100 · ${scoreLabel(awarded).label}` : lastCorrect ? "Correct" : "Incorrect"
+    const distanceKm =
+      cur.kind === "map" && pin ? Math.round(haversineKm(pin.lat, pin.lng, cur.answerLat, cur.answerLng)) : null
+    const mapLabel = cur.kind === "map" ? cur.answerLabel : undefined
     const last = index + 1 >= Math.min(count, seq.length)
     return (
       <div className="flex flex-col gap-4">
@@ -736,9 +820,14 @@ export default function Arena({ onExit, active = true }: Props) {
               className="text-[11px] tracking-[0.16em] uppercase font-semibold"
               style={{ color: good ? "var(--color-good)" : "var(--color-bad)" }}
             >
-              {good ? "Correct" : "Incorrect"}
+              {headline}
             </span>
             <p className="font-serif text-[20px] leading-7 text-ink">{cur.prompt}</p>
+            {distanceKm !== null && (
+              <p className="text-ink-dim text-sm">
+                {distanceKm.toLocaleString()} km from {mapLabel ?? "the target"}.
+              </p>
+            )}
           </div>
         </GlowCard>
         {renderAnswerArea()}
@@ -757,7 +846,7 @@ export default function Arena({ onExit, active = true }: Props) {
         {renderStrip()}
         <MessageSlab>
           <p className="text-ink text-base font-semibold">
-            You finished &mdash; {(user && scores[user.username]) ?? 0} correct
+            You finished &mdash; {(user && scores[user.username]) ?? 0} points
           </p>
           <p className="text-ink-dim text-sm">
             {outstanding.length > 0

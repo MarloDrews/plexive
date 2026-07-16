@@ -285,6 +285,24 @@ class ArenaManager:
                 return group
         return None
 
+    async def force_match(self, user_id: int) -> Optional[Match]:
+        """TEMP (testing only, remove before launch): form a match immediately
+        from whoever is queued right now, even below ARENA_PLAYERS (1-3). The
+        requester must be queued. Lets a match be started without waiting for a
+        full lobby of four; ranked matches must otherwise fill normally."""
+        async with self._lock:
+            self._queue = [e for e in self._queue if e.user_id in self._sockets]
+            if not any(e.user_id == user_id for e in self._queue):
+                return None
+            # Requester first, then fill up to ARENA_PLAYERS from the rest of the
+            # queue in waiting order.
+            me = [e for e in self._queue if e.user_id == user_id]
+            others = [e for e in self._queue if e.user_id != user_id]
+            group = (me + others)[:ARENA_PLAYERS]
+            ids = {e.user_id for e in group}
+            self._queue = [e for e in self._queue if e.user_id not in ids]
+            return self._start_match_locked(group)
+
     def _start_match_locked(self, group: List[QueueEntry]) -> Match:
         seed = random.randint(1, 2_147_483_647)
         players = tuple(e.user_id for e in group)
@@ -308,6 +326,7 @@ class ArenaManager:
     async def record_answer(
         self, user_id: int, client_match_id: Optional[str], index: int,
         chosen_index: Optional[int], chosen_value: Optional[float],
+        chosen_lat: Optional[float] = None, chosen_lng: Optional[float] = None,
     ) -> Tuple[str, Optional[Match], Optional[dict]]:
         """Grade one answer against the server's own sequence and advance the
         player. Returns (outcome, match, info):
@@ -315,7 +334,12 @@ class ArenaManager:
           ("stale")       -> frame belongs to a finished match
           ("bad_index")   -> not the index this player owes an answer for
           ("done")        -> already finished their run
-          ("ok", match, {"correct", "score", "index", "complete"})
+          ("ok", match, {"correct", "awarded", "score", "index", "complete"})
+
+        `awarded` is the graded points this question earned (0..MAX_POINTS):
+        numeric and map answers can score PARTIAL credit that rises as the guess
+        nears the answer (train_bank), so the match score is a running points
+        total, not a correct-count. `correct` still marks full marks.
         """
         async with self._lock:
             match = self._matches.get(user_id)
@@ -329,22 +353,25 @@ class ArenaManager:
             if index != expected or index >= len(match.question_ids):
                 return "bad_index", None, None
 
-            result = grade(match.question_ids[index], chosen_index, chosen_value)
+            result = grade(
+                match.question_ids[index], chosen_index, chosen_value, chosen_lat, chosen_lng
+            )
             if result is None:
                 # The bank and the sequence come from the same dict, so this is
-                # unreachable short of a bank edit mid-match; treat as wrong
-                # rather than 500 the socket.
+                # unreachable short of a bank edit mid-match; score zero rather
+                # than 500 the socket.
                 logger.error("arena: unknown question id at index %s", index)
-                result = {"correct": False}
+                result = {"points": 0, "correct": False}
+            awarded = int(result["points"])
             correct = bool(result["correct"])
-            if correct:
-                match.scores[user_id] = match.scores.get(user_id, 0) + 1
+            match.scores[user_id] = match.scores.get(user_id, 0) + awarded
             match.next_index[user_id] = index + 1
             complete = match.next_index[user_id] >= len(match.question_ids)
             if complete:
                 match.finished.add(user_id)
             return "ok", match, {
                 "correct": correct,
+                "awarded": awarded,
                 "score": match.scores[user_id],
                 "index": index,
                 "complete": complete,
@@ -594,10 +621,36 @@ async def _handle_queue(websocket: WebSocket, user_id: int, username: str) -> No
     await _broadcast_queue()
 
 
+async def _handle_force_start(websocket: WebSocket, user_id: int) -> None:
+    """TEMP (testing only, remove before launch): start a match now with
+    whoever is in the waiting room, even fewer than four players."""
+    match = await manager.force_match(user_id)
+    if match is None:
+        await _error(websocket, "Join the queue first.", code="not_queued")
+        return
+    payload = {
+        "type": "match_start",
+        "match_id": match.match_id,
+        "seed": match.seed,
+        "count": ARENA_QUESTION_COUNT,
+        "players": [
+            {"username": match.usernames[uid], "rating": round(match.ratings[uid])}
+            for uid in match.players
+        ],
+    }
+    await manager.broadcast(match.players, payload)
+    # Those players just left the queue; refresh the roster for anyone still
+    # waiting (as the matchmaker does after forming a match).
+    await _broadcast_queue()
+
+
 async def _handle_answer(websocket: WebSocket, user_id: int, data: dict) -> None:
     index = data.get("index")
     chosen_index = data.get("chosen_index")
     chosen_value = data.get("chosen_value")
+    # A map answer is a dropped pin: latitude/longitude of the guess.
+    chosen_lat = data.get("chosen_lat")
+    chosen_lng = data.get("chosen_lng")
     if not isinstance(index, int) or isinstance(index, bool) or not 0 <= index < ARENA_QUESTION_COUNT:
         await _error(websocket, "answer requires index (int).")
         return
@@ -607,11 +660,17 @@ async def _handle_answer(websocket: WebSocket, user_id: int, data: dict) -> None
     if chosen_value is not None and (isinstance(chosen_value, bool) or not isinstance(chosen_value, (int, float))):
         await _error(websocket, "chosen_value must be a number.")
         return
+    # Bounds guard the pin so junk coordinates never reach grading (bool is an
+    # int subclass, so exclude it explicitly, as chosen_value does).
+    for name, val, lo, hi in (("chosen_lat", chosen_lat, -90.0, 90.0), ("chosen_lng", chosen_lng, -180.0, 180.0)):
+        if val is not None and (isinstance(val, bool) or not isinstance(val, (int, float)) or not lo <= val <= hi):
+            await _error(websocket, f"{name} must be a number within range.")
+            return
 
     match_id = data.get("match_id")
     outcome, match, info = await manager.record_answer(
         user_id, match_id if isinstance(match_id, str) and match_id else None,
-        index, chosen_index, chosen_value,
+        index, chosen_index, chosen_value, chosen_lat, chosen_lng,
     )
     if outcome == "none":
         await _error(websocket, "You are not in a match.", code="not_in_match")
@@ -632,6 +691,7 @@ async def _handle_answer(websocket: WebSocket, user_id: int, data: dict) -> None
         "match_id": match.match_id,
         "index": info["index"],
         "correct": info["correct"],
+        "awarded": info["awarded"],
         "score": info["score"],
     })
     await manager.broadcast(match.others(user_id), {
@@ -754,6 +814,14 @@ async def arena_websocket(websocket: WebSocket):
                 if await manager.dequeue(user_id):
                     await _broadcast_queue()
                 await websocket.send_json({"type": "queue_cancelled"})
+            elif msg_type == "force_start":
+                # TEMP (testing only, remove before launch): start a match now
+                # with whoever is in the waiting room, even below four players.
+                try:
+                    await _handle_force_start(websocket, user_id)
+                except Exception:
+                    logger.exception("arena force_start failed (user %s)", user_id)
+                    await _error(websocket, "Could not start the match. Try again.")
             elif msg_type == "answer":
                 try:
                     await _handle_answer(websocket, user_id, data)

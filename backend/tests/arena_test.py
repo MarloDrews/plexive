@@ -31,7 +31,7 @@ from fastapi.testclient import TestClient  # noqa: E402
 from app.database import Base, SessionLocal, engine  # noqa: E402
 from app.main import app  # noqa: E402
 from app.models import User  # noqa: E402
-from app.train_bank import TRAIN_QUESTIONS, sequence_ids  # noqa: E402
+from app.train_bank import TRAIN_QUESTIONS, grade, sequence_ids  # noqa: E402
 
 Base.metadata.create_all(bind=engine)
 client = TestClient(app)
@@ -70,12 +70,28 @@ def ws_auth(ws, token: str) -> dict:
 
 
 def answer_frame(match_id: str, qid: str, index: int, correct: bool) -> dict:
-    """An answer frame for question `qid`, deliberately right or wrong."""
+    """An answer frame for question `qid`, deliberately full marks or zero.
+
+    Scoring is now graded (a near miss earns partial points), so "wrong" here
+    means a MAXIMAL miss that scores exactly 0, keeping the score-spread math
+    below a clean multiple of MAX_POINTS: numeric far outside the slider range
+    (clamps to the worst miss), map at the antipode (~20000 km away)."""
     q = TRAIN_QUESTIONS[qid]
     frame = {"type": "answer", "match_id": match_id, "index": index}
-    if q["kind"] == "numeric":
-        value = q["answer_value"] if correct else q["answer_value"] + 2 * q.get("step", 1)
-        frame["chosen_value"] = value
+    kind = q["kind"]
+    if kind == "numeric":
+        if correct:
+            frame["chosen_value"] = q["answer_value"]
+        else:
+            frame["chosen_value"] = q["answer_value"] + 10 * (q["max"] - q["min"]) + 100
+    elif kind == "map":
+        if correct:
+            frame["chosen_lat"] = q["answer_lat"]
+            frame["chosen_lng"] = q["answer_lng"]
+        else:
+            frame["chosen_lat"] = -q["answer_lat"]
+            lng = q["answer_lng"]
+            frame["chosen_lng"] = lng - 180 if lng >= 0 else lng + 180
     else:
         frame["chosen_index"] = q["answer_index"] if correct else q["answer_index"] + 1
     return frame
@@ -108,11 +124,27 @@ check("sequence has no repeats", len(set(sequence_ids(99, 7))) == 7)
 check(
     "JS parity vector (seed 12345)",
     sequence_ids(12345, 7) == [
-        "geo-continents", "geo-country-most-population", "sci-photosynthesis-gas",
-        "sci-planet-red", "sci-bee-makes", "geo-sun-rise", "geo-capital-australia",
+        "sci-bee-makes", "lang-synonym-rapid", "geo-map-eiffel", "logic-clock-angle",
+        "geo-continents", "math-half-of-50", "geo-sun-rise",
     ],
     str(sequence_ids(12345, 7)),
 )
+
+# --- graded scoring (numeric + map partial credit) ------------------------
+# A near miss earns partial points that rise as the guess nears the answer; an
+# exact answer is full marks, a maximal miss is zero. grade() mirrors the
+# frontend scoring (frontend/src/lib/train/scoring.ts) so the client renders the
+# same number the server grades.
+check("choice right is full marks", grade("geo-sun-rise", chosen_index=2)["points"] == 100)
+check("choice wrong is zero", grade("geo-sun-rise", chosen_index=0)["points"] == 0)
+check("numeric exact is full marks", grade("sci-water-state", chosen_value=100)["points"] == 100)
+_near_num = grade("sci-water-state", chosen_value=110)  # 10 off on a 0..200 slider
+check("numeric near miss is partial", 0 < _near_num["points"] < 100, str(_near_num))
+check("numeric far miss is zero", grade("sci-water-state", chosen_value=99999)["points"] == 0)
+check("map exact is full marks", grade("geo-map-eiffel", chosen_lat=48.8584, chosen_lng=2.2945)["points"] == 100)
+_near_map = grade("geo-map-eiffel", chosen_lat=45.0, chosen_lng=5.0)  # a few hundred km off
+check("map near miss is partial", 0 < _near_map["points"] < 100, str(_near_map))
+check("map antipode is zero", grade("geo-map-eiffel", chosen_lat=-48.8584, chosen_lng=-177.7055)["points"] == 0)
 
 users = [
     register("arena.alice@example.com", "a_alice"),
@@ -172,12 +204,14 @@ with client, ExitStack() as stack:
     sockets[0].send_text(json.dumps(answer_frame(match_id, qids[0], 0, False)))
     res = drain_until(sockets[0], "answer_result")
     check("wrong answer graded false by the server", res["correct"] is False)
+    check("wrong answer awards no points", res["awarded"] == 0)
     check("wrong answer does not score", res["score"] == 0)
 
     sockets[0].send_text(json.dumps(answer_frame(match_id, qids[1], 1, True)))
     res = drain_until(sockets[0], "answer_result")
     check("right answer graded true by the server", res["correct"] is True)
-    check("right answer scores", res["score"] == 1)
+    check("right answer awards full points", res["awarded"] == 100)
+    check("right answer scores the points total", res["score"] == 100)
 
     # An answer relays to the other three.
     prog = drain_until(sockets[1], "opponent_progress")
@@ -214,7 +248,7 @@ with client, ExitStack() as stack:
     check("winner is 1st", by_name["a_bob"]["placement"] == 1)
     check("runner-up is 2nd", by_name["a_alice"]["placement"] == 2)
     check("ties share a placement", by_name["a_carol"]["placement"] == 3 and by_name["a_dave"]["placement"] == 3)
-    check("scores reported as graded", by_name["a_bob"]["score"] == 7 and by_name["a_carol"]["score"] == 3)
+    check("scores reported as graded points", by_name["a_bob"]["score"] == 700 and by_name["a_carol"]["score"] == 300)
     check("winner gains rating", by_name["a_bob"]["delta"] > 0)
     check("last place loses rating", by_name["a_dave"]["delta"] < 0)
     check("tied players get the same delta", by_name["a_carol"]["delta"] == by_name["a_dave"]["delta"])

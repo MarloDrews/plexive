@@ -13,48 +13,108 @@ grading-relevant fields are kept (id, difficulty, kind, and the answer); prompts
 and options live on the client.
 """
 
+import math
 from typing import Optional
 
-# difficulty: 1|2|3. kind: "choice" (answer_index) or "numeric" (answer_value +
-# min + step, graded with the same step-scaled match the slider uses).
+# difficulty: 1|2|3. kind: "choice" (answer_index), "numeric" (answer_value +
+# min + max + step) or "map" (answer_lat + answer_lng, graded by great-circle
+# distance). Numeric and map answers earn GRADED points (0..MAX_POINTS) that
+# rise as the guess nears the answer (see the scoring helpers below); choice is
+# all-or-nothing. "max" is now required on every numeric entry -- graded scoring
+# measures the miss as a fraction of the slider's full range.
 TRAIN_QUESTIONS: dict[str, dict] = {
     # -------- Difficulty 1 --------
-    "geo-continents": {"difficulty": 1, "kind": "numeric", "answer_value": 7, "min": 1, "step": 1},
-    "sci-water-state": {"difficulty": 1, "kind": "numeric", "answer_value": 100, "min": 0, "step": 5},
-    "math-half-of-50": {"difficulty": 1, "kind": "numeric", "answer_value": 25, "min": 0, "step": 1},
+    "geo-continents": {"difficulty": 1, "kind": "numeric", "answer_value": 7, "min": 1, "max": 12, "step": 1},
+    "sci-water-state": {"difficulty": 1, "kind": "numeric", "answer_value": 100, "min": 0, "max": 200, "step": 5},
+    "math-half-of-50": {"difficulty": 1, "kind": "numeric", "answer_value": 25, "min": 0, "max": 100, "step": 1},
     "lang-plural-mouse": {"difficulty": 1, "kind": "choice", "answer_index": 1},
     "geo-sun-rise": {"difficulty": 1, "kind": "choice", "answer_index": 2},
     "sci-bee-makes": {"difficulty": 1, "kind": "choice", "answer_index": 1},
-    "logic-days-week": {"difficulty": 1, "kind": "numeric", "answer_value": 7, "min": 1, "step": 1},
+    "logic-days-week": {"difficulty": 1, "kind": "numeric", "answer_value": 7, "min": 1, "max": 14, "step": 1},
     "color-mix-primary": {"difficulty": 1, "kind": "choice", "answer_index": 1},
     # -------- Difficulty 2 --------
     "geo-capital-australia": {"difficulty": 2, "kind": "choice", "answer_index": 2},
     "sci-planet-red": {"difficulty": 2, "kind": "choice", "answer_index": 1},
-    "hist-ww2-end": {"difficulty": 2, "kind": "numeric", "answer_value": 1945, "min": 1930, "step": 1},
-    "math-percent-of-200": {"difficulty": 2, "kind": "numeric", "answer_value": 30, "min": 0, "step": 5},
+    "hist-ww2-end": {"difficulty": 2, "kind": "numeric", "answer_value": 1945, "min": 1930, "max": 1960, "step": 1},
+    "math-percent-of-200": {"difficulty": 2, "kind": "numeric", "answer_value": 30, "min": 0, "max": 100, "step": 5},
     "lang-synonym-rapid": {"difficulty": 2, "kind": "choice", "answer_index": 1},
     "sci-largest-organ": {"difficulty": 2, "kind": "choice", "answer_index": 2},
     "geo-longest-river": {"difficulty": 2, "kind": "choice", "answer_index": 1},
     "logic-next-even": {"difficulty": 2, "kind": "choice", "answer_index": 1},
     # -------- Difficulty 3 --------
     "sci-speed-of-light": {"difficulty": 3, "kind": "choice", "answer_index": 2},
-    "hist-french-revolution": {"difficulty": 3, "kind": "numeric", "answer_value": 1789, "min": 1700, "step": 1},
+    "hist-french-revolution": {"difficulty": 3, "kind": "numeric", "answer_value": 1789, "min": 1700, "max": 1850, "step": 1},
     "math-prime-check": {"difficulty": 3, "kind": "choice", "answer_index": 2},
     "sci-element-symbol-na": {"difficulty": 3, "kind": "choice", "answer_index": 1},
     "geo-country-most-population": {"difficulty": 3, "kind": "choice", "answer_index": 2},
     "lang-antonym-scarce": {"difficulty": 3, "kind": "choice", "answer_index": 1},
     "sci-photosynthesis-gas": {"difficulty": 3, "kind": "choice", "answer_index": 2},
-    "logic-clock-angle": {"difficulty": 3, "kind": "numeric", "answer_value": 90, "min": 0, "step": 15},
+    "logic-clock-angle": {"difficulty": 3, "kind": "numeric", "answer_value": 90, "min": 0, "max": 180, "step": 15},
+    # -------- Map picker (drop a pin; graded by distance from the target) ------
+    "geo-map-eiffel": {"difficulty": 2, "kind": "map", "answer_lat": 48.8584, "answer_lng": 2.2945},
+    "geo-map-pyramids": {"difficulty": 2, "kind": "map", "answer_lat": 29.9792, "answer_lng": 31.1342},
+    "geo-map-kilimanjaro": {"difficulty": 3, "kind": "map", "answer_lat": -3.0674, "answer_lng": 37.3556},
+    "geo-map-sydney-opera": {"difficulty": 2, "kind": "map", "answer_lat": -33.8568, "answer_lng": 151.2153},
+    "geo-map-statue-liberty": {"difficulty": 2, "kind": "map", "answer_lat": 40.6892, "answer_lng": -74.0445},
+    "geo-map-taj-mahal": {"difficulty": 3, "kind": "map", "answer_lat": 27.1751, "answer_lng": 78.0421},
 }
 
 
-def _numeric_match(chosen: float, answer: float, minimum: float, step: float) -> bool:
-    """Step-scaled numeric match, mirroring frontend/src/lib/train/numeric.ts.
-    Every bank answer sits exactly on the min + k*step grid, so no half-rounding
-    ambiguity arises between Python's round and JS Math.round here."""
-    if not (step > 0):
-        return chosen == answer
-    return round((chosen - minimum) / step) == round((answer - minimum) / step)
+# --- Graded scoring (numeric + map) --------------------------------------
+#
+# A near miss earns partial credit that rises as the guess approaches the answer,
+# instead of the old all-or-nothing match. Points are an integer 0..MAX_POINTS:
+# full marks at the exact answer, then halving over a fixed "half-life" of
+# distance. Choice questions stay MAX_POINTS or 0.
+#
+# Mirrors frontend/src/lib/train/scoring.ts EXACTLY (same constants + rounding),
+# so a client renders the same number the server grades. Round-half-up matches
+# JS Math.round for the non-negative values here (Python's round is banker's).
+
+MAX_POINTS = 100
+# Numeric: points halve for every 10% of the slider's full range you are off.
+NUMERIC_HALFLIFE_FRAC = 0.10
+# Map: points halve for every 2000 km between your pin and the target.
+MAP_HALFLIFE_KM = 2000.0
+# Mean Earth radius (km) for the great-circle (haversine) distance.
+_EARTH_RADIUS_KM = 6371.0088
+
+
+def _round_half_up(x: float) -> int:
+    """Round half up; x is always >= 0 here so floor(x + 0.5) matches JS
+    Math.round (Python's built-in round is banker's rounding)."""
+    return int(math.floor(x + 0.5))
+
+
+def _decay_points(distance: float, half_life: float) -> int:
+    """Graded points: MAX_POINTS at distance 0, halving every `half_life`."""
+    if half_life <= 0:
+        return MAX_POINTS if distance <= 0 else 0
+    return _round_half_up(MAX_POINTS * 0.5 ** (distance / half_life))
+
+
+def _numeric_points(chosen: float, answer: float, minimum: float, maximum: float) -> int:
+    """Points for a numeric (slider) guess, by how far off it is as a fraction
+    of the slider's full range."""
+    span = maximum - minimum
+    if not (span > 0):
+        return MAX_POINTS if chosen == answer else 0
+    frac = min(1.0, abs(chosen - answer) / span)
+    return _decay_points(frac, NUMERIC_HALFLIFE_FRAC)
+
+
+def _haversine_km(lat1: float, lng1: float, lat2: float, lng2: float) -> float:
+    """Great-circle distance in km between two lat/lng points."""
+    p1, p2 = math.radians(lat1), math.radians(lat2)
+    dp = math.radians(lat2 - lat1)
+    dl = math.radians(lng2 - lng1)
+    a = math.sin(dp / 2) ** 2 + math.cos(p1) * math.cos(p2) * math.sin(dl / 2) ** 2
+    return 2 * _EARTH_RADIUS_KM * math.asin(min(1.0, math.sqrt(a)))
+
+
+def _map_points(lat: float, lng: float, ans_lat: float, ans_lng: float) -> int:
+    """Points for a map-pin guess, by great-circle distance from the target."""
+    return _decay_points(_haversine_km(lat, lng, ans_lat, ans_lng), MAP_HALFLIFE_KM)
 
 
 # --- Seeded duel sequence -------------------------------------------------
@@ -113,19 +173,36 @@ def sequence_ids(seed: int, count: int) -> list[str]:
     return out[:count]
 
 
-def grade(question_id: str, chosen_index: Optional[int], chosen_value: Optional[float]) -> Optional[dict]:
-    """Grade one Train answer against the bank.
+def grade(
+    question_id: str,
+    chosen_index: Optional[int] = None,
+    chosen_value: Optional[float] = None,
+    chosen_lat: Optional[float] = None,
+    chosen_lng: Optional[float] = None,
+) -> Optional[dict]:
+    """Grade one Train/Arena answer against the bank.
 
-    Returns {"difficulty": int, "correct": bool} or None if question_id is
-    unknown (the caller turns None into a 400 so garbage ids never score)."""
+    Returns {"difficulty": int, "points": int, "correct": bool} or None if
+    question_id is unknown (the caller turns None into a 400 so garbage ids
+    never score). `points` is 0..MAX_POINTS: choice is all-or-nothing, numeric
+    and map earn graded partial credit (_numeric_points / _map_points). `correct`
+    (full marks) is kept for callers that still score on a boolean -- the solo
+    Train marathon (routers/train.py) and the tests.
+
+    The lat/lng params default to None so the Train endpoint's existing
+    three-argument call keeps working: a map question with no pin scores 0."""
     q = TRAIN_QUESTIONS.get(question_id)
     if q is None:
         return None
-    if q["kind"] == "numeric":
-        if chosen_value is None:
-            correct = False
-        else:
-            correct = _numeric_match(chosen_value, q["answer_value"], q["min"], q.get("step", 1))
+    kind = q["kind"]
+    if kind == "numeric":
+        points = 0 if chosen_value is None else _numeric_points(
+            chosen_value, q["answer_value"], q["min"], q["max"]
+        )
+    elif kind == "map":
+        points = 0 if (chosen_lat is None or chosen_lng is None) else _map_points(
+            chosen_lat, chosen_lng, q["answer_lat"], q["answer_lng"]
+        )
     else:
-        correct = chosen_index is not None and chosen_index == q["answer_index"]
-    return {"difficulty": q["difficulty"], "correct": correct}
+        points = MAX_POINTS if (chosen_index is not None and chosen_index == q["answer_index"]) else 0
+    return {"difficulty": q["difficulty"], "points": points, "correct": points >= MAX_POINTS}

@@ -45,7 +45,9 @@ export type ArenaInbound =
   | { type: "queue_update"; waiting: number; players: ArenaQueuePlayer[] }
   | { type: "queue_cancelled" }
   | { type: "match_start"; match_id: string; seed: number; count: number; players: ArenaPlayer[] }
-  | { type: "answer_result"; match_id: string; index: number; correct: boolean; score: number }
+  // `awarded` is the graded points this question earned (0..100); numeric and
+  // map answers can score partial credit, so `score` is a running points total.
+  | { type: "answer_result"; match_id: string; index: number; correct: boolean; awarded: number; score: number }
   | { type: "opponent_progress"; match_id: string; username: string; index: number; score: number }
   | { type: "player_finished"; match_id: string; username: string; score: number }
   | { type: "player_left"; match_id: string; username: string }
@@ -156,19 +158,30 @@ export function useArenaSocket(enabled: boolean, onEvent: (e: ArenaInbound) => v
   // Leave the queue.
   const cancel = useCallback((): boolean => sendFrame({ type: "cancel" }), [])
 
-  // Submit what the player picked for question `index`. Exactly one of
-  // chosenIndex / chosenValue is set, per question kind; the server grades it.
+  // TEMP (testing only, remove before launch): start a match now with whoever
+  // is already in the waiting room, even fewer than four players.
+  const forceStart = useCallback((): boolean => sendFrame({ type: "force_start" }), [])
+
+  // Submit what the player picked for question `index`. Exactly one shape is
+  // set, per question kind -- chosenIndex (choice), chosenValue (numeric), or
+  // chosenLat+chosenLng (map pin); the server grades it.
   const answer = useCallback(
-    (matchId: string, index: number, choice: { chosenIndex?: number; chosenValue?: number }): boolean =>
+    (
+      matchId: string,
+      index: number,
+      choice: { chosenIndex?: number; chosenValue?: number; chosenLat?: number; chosenLng?: number },
+    ): boolean =>
       sendFrame({
         type: "answer",
         match_id: matchId,
         index,
         chosen_index: choice.chosenIndex,
         chosen_value: choice.chosenValue,
+        chosen_lat: choice.chosenLat,
+        chosen_lng: choice.chosenLng,
       }),
     [],
   )
 
-  return { status, queue, cancel, answer }
+  return { status, queue, cancel, answer, forceStart }
 }

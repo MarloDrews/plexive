@@ -6,9 +6,10 @@ import { useAuth } from "@/lib/auth"
 import { apiFetch } from "@/lib/api"
 import { useBattleSocket, type BattleInbound } from "@/lib/battleSocket"
 import { buildSequence } from "@/lib/battle/seededQuestions"
-import { numericMatch } from "@/lib/train/numeric"
+import { MAX_POINTS, mapPoints, numericPoints, scoreLabel, haversineKm } from "@/lib/train/scoring"
 import type { MarathonQuestion } from "@/types/train"
 import NumberSlider from "./NumberSlider"
+import WorldMapPicker from "./WorldMapPicker"
 import { GlowCard, MessageSlab, LABEL_CAPS } from "./stage"
 import Avatar from "@/components/Avatar"
 import VerifiedBadge from "@/components/VerifiedBadge"
@@ -107,7 +108,12 @@ export default function Battle({ onExit, active = true }: Props) {
   // Per-question answer state.
   const [selected, setSelected] = useState<number | null>(null)
   const [sliderValue, setSliderValue] = useState(0)
+  // The dropped pin for a map question, in lat/lng; null until the player taps.
+  const [pin, setPin] = useState<{ lat: number; lng: number } | null>(null)
   const [lastCorrect, setLastCorrect] = useState<boolean | null>(null)
+  // Points earned for the last answer (0..100); partial for numeric and map,
+  // which drives the graded feedback.
+  const [awarded, setAwarded] = useState<number | null>(null)
 
   // Numeric questions start the slider at a random step (never anchored on a
   // hintable midpoint), exactly like the Train marathon. Never on the correct
@@ -135,7 +141,9 @@ export default function Battle({ onExit, active = true }: Props) {
     setOppScore(0)
     setOppDone(false)
     setSelected(null)
+    setPin(null)
     setLastCorrect(null)
+    setAwarded(null)
   }
 
   // Inbound socket frames drive the whole duel. Frames carrying a battle_id
@@ -168,7 +176,9 @@ export default function Battle({ onExit, active = true }: Props) {
         setOppScore(0)
         setOppDone(false)
         setSelected(null)
+        setPin(null)
         setLastCorrect(null)
+        setAwarded(null)
         setMessage("")
         startSlider(next[0])
         setStage("question")
@@ -307,11 +317,16 @@ export default function Battle({ onExit, active = true }: Props) {
   // no selected-style latch, so rapid double activations could emit duplicate
   // progress frames and double-count the score.
   const committedRef = useRef(false)
-  function commitAnswer(correct: boolean) {
+  // `points` (0..100) is this answer's graded score -- partial for numeric/map,
+  // 100/0 for choice; `correct` marks full marks (relayed to the opponent, who
+  // only reads the running score). The score is now a points total, not a
+  // correct-count.
+  function commitAnswer(points: number, correct: boolean) {
     if (committedRef.current) return
     committedRef.current = true
-    const newScore = myScore + (correct ? 1 : 0)
+    const newScore = myScore + points
     setMyScore(newScore)
+    setAwarded(points)
     setLastCorrect(correct)
     // A failed send means the socket (and with it the server-side room) is
     // gone: end the battle visibly instead of playing on against nobody
@@ -326,15 +341,24 @@ export default function Battle({ onExit, active = true }: Props) {
 
   function handleSelect(i: number) {
     const cur = seq[index]
-    if (stage !== "question" || selected !== null || !cur || cur.kind === "numeric") return
+    if (stage !== "question" || selected !== null || !cur || cur.kind === "numeric" || cur.kind === "map") return
     setSelected(i)
-    commitAnswer(i === cur.answerIndex)
+    const correct = i === cur.answerIndex
+    commitAnswer(correct ? MAX_POINTS : 0, correct)
   }
 
   function handleSubmitNumeric() {
     const cur = seq[index]
     if (stage !== "question" || !cur || cur.kind !== "numeric") return
-    commitAnswer(numericMatch(sliderValue, cur.answerValue, cur.min, cur.step ?? 1))
+    const points = numericPoints(sliderValue, cur.answerValue, cur.min, cur.max)
+    commitAnswer(points, points >= MAX_POINTS)
+  }
+
+  function handleSubmitMap() {
+    const cur = seq[index]
+    if (stage !== "question" || !cur || cur.kind !== "map" || !pin) return
+    const points = mapPoints(pin.lat, pin.lng, cur.answerLat, cur.answerLng)
+    commitAnswer(points, points >= MAX_POINTS)
   }
 
   function handleNext() {
@@ -355,7 +379,9 @@ export default function Battle({ onExit, active = true }: Props) {
     committedRef.current = false
     setIndex(nextIndex)
     setSelected(null)
+    setPin(null)
     setLastCorrect(null)
+    setAwarded(null)
     startSlider(seq[nextIndex])
     setStage("question")
   }
@@ -381,7 +407,7 @@ export default function Battle({ onExit, active = true }: Props) {
   // same way optionStyle does.
   function optionState(i: number): "correct" | "incorrect" | null {
     const cur = seq[index]
-    if (stage !== "feedback" || lastCorrect === null || !cur || cur.kind === "numeric") return null
+    if (stage !== "feedback" || lastCorrect === null || !cur || cur.kind === "numeric" || cur.kind === "map") return null
     if (i === cur.answerIndex) return "correct"
     if (i === selected) return "incorrect"
     return null
@@ -394,7 +420,7 @@ export default function Battle({ onExit, active = true }: Props) {
   // the correct option in good, a wrong pick in bad, the rest dimmed.
   function optionStyle(i: number): React.CSSProperties {
     const cur = seq[index]
-    if (stage !== "feedback" || lastCorrect === null || !cur || cur.kind === "numeric") {
+    if (stage !== "feedback" || lastCorrect === null || !cur || cur.kind === "numeric" || cur.kind === "map") {
       return { borderColor: "transparent", background: "rgb(255 255 255 / 0.06)", color: "var(--color-ink-body)" }
     }
     if (i === cur.answerIndex) {
@@ -428,7 +454,7 @@ export default function Battle({ onExit, active = true }: Props) {
     const cur = seq[index]
     if (!cur) return null
     if (cur.kind === "numeric") {
-      const answered = stage === "feedback" && lastCorrect !== null
+      const answered = stage === "feedback" && awarded !== null
       return (
         <div className="flex flex-col gap-4">
           <NumberSlider
@@ -440,12 +466,33 @@ export default function Battle({ onExit, active = true }: Props) {
             onChange={setSliderValue}
             disabled={answered}
             showResult={answered}
-            correct={lastCorrect ?? undefined}
+            // Graded: a near miss above the 50-point tier still reads as green.
+            correct={answered && awarded !== null ? scoreLabel(awarded).good : undefined}
             correctValue={cur.answerValue}
           />
           {stage === "question" && (
             <button className="btn btn-primary w-full py-3" onClick={handleSubmitNumeric}>
               Submit
+            </button>
+          )}
+        </div>
+      )
+    }
+    if (cur.kind === "map") {
+      const answered = stage === "feedback" && awarded !== null
+      return (
+        <div className="flex flex-col gap-4">
+          <WorldMapPicker
+            value={pin}
+            onChange={setPin}
+            disabled={answered}
+            showResult={answered}
+            answer={{ lat: cur.answerLat, lng: cur.answerLng }}
+            answerLabel={cur.answerLabel}
+          />
+          {stage === "question" && (
+            <button className="btn btn-primary w-full py-3" onClick={handleSubmitMap} disabled={!pin}>
+              {pin ? "Submit pin" : "Tap the map to place a pin"}
             </button>
           )}
         </div>
@@ -593,8 +640,15 @@ export default function Battle({ onExit, active = true }: Props) {
 
   function renderFeedback() {
     const cur = seq[index]
-    if (!cur || lastCorrect === null) return null
-    const good = lastCorrect
+    if (!cur || awarded === null) return null
+    // Graded questions (numeric/map) show the points earned and a tier; choice
+    // stays a plain Correct/Incorrect.
+    const graded = cur.kind === "numeric" || cur.kind === "map"
+    const good = graded ? scoreLabel(awarded).good : !!lastCorrect
+    const headline = graded ? `${awarded} / 100 · ${scoreLabel(awarded).label}` : lastCorrect ? "Correct" : "Incorrect"
+    const distanceKm =
+      cur.kind === "map" && pin ? Math.round(haversineKm(pin.lat, pin.lng, cur.answerLat, cur.answerLng)) : null
+    const mapLabel = cur.kind === "map" ? cur.answerLabel : undefined
     const last = index + 1 >= count
     return (
       <div className="flex flex-col gap-4">
@@ -605,9 +659,14 @@ export default function Battle({ onExit, active = true }: Props) {
               className="text-[11px] tracking-[0.16em] uppercase font-semibold"
               style={{ color: good ? "var(--color-good)" : "var(--color-bad)" }}
             >
-              {good ? "Correct" : "Incorrect"}
+              {headline}
             </span>
             <p className="font-serif text-[20px] leading-7 text-ink">{cur.prompt}</p>
+            {distanceKm !== null && (
+              <p className="text-ink-dim text-sm">
+                {distanceKm.toLocaleString()} km from {mapLabel ?? "the target"}.
+              </p>
+            )}
           </div>
         </GlowCard>
         {renderAnswerArea()}
@@ -624,7 +683,7 @@ export default function Battle({ onExit, active = true }: Props) {
     // player on a screen with no way out (BUG-011).
     return (
       <MessageSlab>
-        <p className="text-ink text-base font-semibold">You finished &mdash; {myScore} correct</p>
+        <p className="text-ink text-base font-semibold">You finished &mdash; {myScore} points</p>
         <p className="text-ink-dim text-sm">Waiting for @{opponent} to finish...</p>
         <button className="btn btn-ghost px-5 py-2.5" onClick={resetToLobby}>
           Back to lobby
