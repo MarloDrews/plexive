@@ -284,6 +284,7 @@ with client, ExitStack() as stack:
     check("queue_update names who is waiting", [p["username"] for p in roster["players"]] == ["a_alice"], str(roster))
     check("queue_update counts the queue", roster["waiting"] == 1, str(roster))
     check("roster carries the avatar the tile renders", "avatar_url" in roster["players"][0], str(roster))
+    check("roster carries the verified level the tile renders", "is_verified" in roster["players"][0], str(roster))
     sockets[1].send_text(json.dumps({"type": "queue"}))
     roster = drain_until(sockets[0], "queue_update")
     check(

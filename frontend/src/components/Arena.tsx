@@ -12,7 +12,14 @@ import {
 import { buildSequence } from "@/lib/battle/seededQuestions"
 import type { MarathonQuestion } from "@/types/train"
 import Avatar from "./Avatar"
+import VerifiedBadge from "./VerifiedBadge"
 import { badgeSrc } from "@/lib/accessories"
+import {
+  BADGE_TILE,
+  BADGE_AVATAR_TOP_PCT,
+  BADGE_NAME_LINE_HEIGHT,
+  BADGE_NAME_SHADOW,
+} from "./ProfileBadgeCard"
 import NumberSlider from "./NumberSlider"
 import WorldMapPicker from "./WorldMapPicker"
 import TrainLeaderboard from "./TrainLeaderboard"
@@ -58,16 +65,11 @@ interface Props {
 // ARENA_PLAYERS ever changes server-side, this grid has to change with it.
 const ARENA_SLOTS = 4
 
-// Waiting-room tile geometry, all derived from TILE_RATIO so the three numbers
-// cannot drift apart. The avatar is half the tile's WIDTH and sits centred in
-// the tile's upper half, which the badge artwork is drawn around.
-const TILE_RATIO = 1.5 // tile height / tile width
-const AVATAR_WIDTH = 0.5 // avatar diameter / tile width
-// Centre of the upper half, as a fraction of the tile's width.
-const UPPER_HALF_CENTRE = TILE_RATIO / 4
-// The avatar's top edge as a percentage of the tile's HEIGHT, because that is
-// what CSS `top` resolves against.
-const AVATAR_TOP_PCT = ((UPPER_HALF_CENTRE - AVATAR_WIDTH / 2) / TILE_RATIO) * 100
+// Waiting-room tile geometry comes from the shared badge-tile standard
+// (ProfileBadgeCard's BADGE_TILE): every size is a fraction of the tile width,
+// so a fluid waiting-room tile is a proportional scale of the fixed profile
+// card. The avatar is half the width and sits centred in the tile's upper half,
+// which the badge artwork is drawn around.
 
 // The tile is a fluid grid cell, so half its width is only knowable at render
 // time -- and Avatar sizes its picture in px, because the image optimiser needs
@@ -90,14 +92,21 @@ function useTileWidth() {
 // Portrait 1:1.5 so four tiles read as a lobby rather than a row of chips.
 function QueueTile({ player, isMe }: { player: ArenaQueuePlayer | null; isMe: boolean }) {
   const [ref, width] = useTileWidth()
-  const avatarSize = Math.round(width * AVATAR_WIDTH)
+  const avatarSize = Math.round(width * BADGE_TILE.avatar)
+  const nameSize = Math.round(width * BADGE_TILE.name)
   if (!player) {
     return (
       <div
+        ref={ref}
         className="aspect-[1/1.5] rounded-3xl border border-dashed border-edge flex flex-col items-center justify-center gap-3 stage-pulse"
         style={{ background: "rgb(255 255 255 / 0.02)" }}
       >
-        <div className="rounded-full bg-surface-3 border border-edge" style={{ width: 56, height: 56 }} />
+        {/* Placeholder disc matches the filled tiles' avatar footprint (a 56px
+            fallback until the ResizeObserver reports) so seats stay uniform. */}
+        <div
+          className="rounded-full bg-surface-3 border border-edge"
+          style={{ width: avatarSize || 56, height: avatarSize || 56 }}
+        />
         <span className={LABEL_CAPS}>Waiting</span>
       </div>
     )
@@ -130,12 +139,19 @@ function QueueTile({ player, isMe }: { player: ArenaQueuePlayer | null; isMe: bo
         />
       )}
       {/* Anchored to the avatar's top edge rather than centred, so the name
-          flows directly under the avatar and both sit in the tile's upper
-          half. Sized in px from the measurement above, so it is skipped on the
-          first frame, before the ResizeObserver has reported. */}
+          flows directly under the avatar and both sit in the tile's upper half.
+          Gap, padding and name size are fractions of the measured width (the
+          BADGE_TILE standard), so this fluid tile is a proportional scale of the
+          fixed profile card. Sizes are skipped on the first frame, before the
+          ResizeObserver has reported. */}
       <div
-        className="absolute inset-x-0 flex flex-col items-center gap-2 px-3"
-        style={{ top: `${AVATAR_TOP_PCT}%` }}
+        className="absolute inset-x-0 flex flex-col items-center"
+        style={{
+          top: `${BADGE_AVATAR_TOP_PCT}%`,
+          gap: width * BADGE_TILE.gap,
+          paddingLeft: width * BADGE_TILE.padX,
+          paddingRight: width * BADGE_TILE.padX,
+        }}
       >
         {avatarSize > 0 && (
           <Avatar
@@ -146,12 +162,18 @@ function QueueTile({ player, isMe }: { player: ArenaQueuePlayer | null; isMe: bo
           />
         )}
         <span
-          // White over a black shadow so the name holds up against whatever the
-          // badge artwork puts behind it, light or dark.
-          className="text-base font-bold truncate max-w-full"
-          style={{ color: "#ffffff", textShadow: "0 1px 2px rgb(0 0 0 / 0.95), 0 2px 8px rgb(0 0 0 / 0.8)" }}
+          className="flex items-center gap-1 font-bold max-w-full"
+          style={{
+            color: "#ffffff",
+            fontSize: nameSize,
+            lineHeight: BADGE_NAME_LINE_HEIGHT,
+            textShadow: BADGE_NAME_SHADOW,
+          }}
         >
-          {player.username}
+          <span className="truncate">{player.username}</span>
+          {player.is_verified > 0 && (
+            <VerifiedBadge size={Math.round(width * BADGE_TILE.verified)} level={player.is_verified} />
+          )}
         </span>
       </div>
     </div>
@@ -693,6 +715,7 @@ export default function Arena({ onExit, active = true, onWaitingRoomChange }: Pr
           avatar_url: user.avatar_url,
           avatar_frame_id: user.avatar_frame_id,
           badge_id: user.badge_id,
+          is_verified: user.is_verified,
         }]
       : []
     const others = queuePlayers.filter((p) => p.username !== user?.username)

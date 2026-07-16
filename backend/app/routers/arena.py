@@ -98,6 +98,8 @@ class QueueIdentity:
     # and falls back to the default look for None or an unknown id.
     avatar_frame_id: Optional[int] = None
     badge_id: Optional[int] = None
+    # Verification level (0 = none); drives the verified badge on the tile.
+    is_verified: int = 0
 
 
 @dataclass
@@ -250,6 +252,7 @@ class ArenaManager:
                         "avatar_url": e.identity.avatar_url,
                         "avatar_frame_id": e.identity.avatar_frame_id,
                         "badge_id": e.identity.badge_id,
+                        "is_verified": e.identity.is_verified,
                     }
                     for e in self._queue[:QUEUE_ROSTER_MAX]
                 ],
@@ -484,6 +487,7 @@ def _queue_identity(user_id: int) -> QueueIdentity:
             avatar_url=user.avatar_url,
             avatar_frame_id=user.avatar_frame_id,
             badge_id=user.badge_id,
+            is_verified=user.is_verified,
         )
     finally:
         db.close()

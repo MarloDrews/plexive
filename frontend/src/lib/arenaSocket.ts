@@ -27,6 +27,8 @@ export type ArenaQueuePlayer = {
   avatar_url: string | null
   avatar_frame_id: number | null
   badge_id: number | null
+  // Verification level (0 = none); drives the tile's verified badge.
+  is_verified: number
 }
 
 export type ArenaStanding = {
