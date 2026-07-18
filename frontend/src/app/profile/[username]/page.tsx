@@ -252,7 +252,8 @@ export default function PublicProfilePage() {
             {/* Stats about the person */}
             <div className="flex-1 min-w-0 flex flex-col justify-center">
               <h1 className="sr-only">{username}</h1>
-              <div className="grid grid-cols-2 gap-x-3 gap-y-3">
+              {/* Post / Followers / Following share one row at the same height */}
+              <div className="grid grid-cols-3 gap-x-3">
                 <div className="text-center">
                   <p className="text-ink font-bold text-lg font-mono">{profile.post_count}</p>
                   <p className="text-ink-muted text-xs">Posts</p>
@@ -265,12 +266,13 @@ export default function PublicProfilePage() {
                   <p className="text-ink font-bold text-lg font-mono">{profile.following_count}</p>
                   <p className="text-ink-muted text-xs">Following</p>
                 </button>
-                <div className="text-center">
-                  <p className="text-lamp font-bold text-lg font-mono">
-                    {elo?.global_rating ?? "—"}
-                  </p>
-                  <p className="text-ink-muted text-xs">Knowledge</p>
-                </div>
+              </div>
+              {/* Knowledge score sits on its own line below the social counts */}
+              <div className="text-center mt-3">
+                <p className="text-lamp font-bold text-lg font-mono">
+                  {elo?.global_rating ?? "—"}
+                </p>
+                <p className="text-ink-muted text-xs">Knowledge</p>
               </div>
             </div>
           </div>
