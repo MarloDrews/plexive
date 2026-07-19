@@ -3,11 +3,13 @@
 Covers: the client/server question-sequence parity that server-side grading
 rests on; four queued players matched into ONE match with a shared seed;
 server-side grading (a client cannot assert its own correctness, M120/SEC-007);
-sequence position owned by the server (replayed / skipped / out-of-range index
-rejected); opponent_progress relay; placement standings with ties sharing a
-placement; placement-based rating deltas written to knowledge_rating; queue
-guards (double queue, queueing mid-match) and cancel; the waiting-room roster
-re-broadcast to everyone queued on every join and leave.
+lockstep rounds driven by the server (round_start with a per-question shot
+clock, player_answered lifting the answerer's badge, round_reveal grading the
+whole room at once); the round owned by the server (answering the wrong round /
+a stale match / an out-of-range index rejected); placement standings with ties
+sharing a placement; placement-based rating deltas written to knowledge_rating;
+queue guards (double queue, queueing mid-match) and cancel; the waiting-room
+roster re-broadcast to everyone queued on every join and leave.
 
 Run with: venv\\Scripts\\python.exe tests\\arena_test.py
 """
@@ -180,14 +182,32 @@ with client, ExitStack() as stack:
         "match_start names all four",
         {p["username"] for p in starts[0]["players"]} == {u["username"] for u in users},
     )
+    # match_start carries each player's cosmetics so the client can render the
+    # badge tiles without a second lookup.
+    check("match_start carries the avatar the badge renders", "avatar_url" in starts[0]["players"][0])
+    check("match_start carries the badge id the tile renders", "badge_id" in starts[0]["players"][0])
+
     match_id = starts[0]["match_id"]
     seed = starts[0]["seed"]
     qids = sequence_ids(seed, 7)
 
-    # --- the server owns sequence position --------------------------------
+    # --- the round opens for the whole room at once -----------------------
+    # Lockstep: the server drives the match, opening question 0 with its own
+    # shot clock. Everyone answers this shared question before the room advances.
+    opens = [drain_until(ws, "round_start") for ws in sockets]
+    check("round opens at question 0", all(o["index"] == 0 for o in opens))
+    check(
+        "round_start carries a positive shot clock",
+        isinstance(opens[0]["seconds"], int) and opens[0]["seconds"] > 0,
+        str(opens[0]),
+    )
+
+    # --- the server owns the round ----------------------------------------
+    # Answering a question the room is not on (index 3 while it is on 0) is
+    # rejected: a client cannot race ahead or replay.
     sockets[0].send_text(json.dumps(answer_frame(match_id, qids[3], 3, True)))
     err = drain_until(sockets[0], "error")
-    check("answering out of order rejected", err.get("code") == "bad_index")
+    check("answering the wrong round rejected", err.get("code") == "bad_index")
 
     sockets[0].send_text(json.dumps({"type": "answer", "match_id": "not-a-match", "index": 0, "chosen_index": 0}))
     err = drain_until(sockets[0], "error")
@@ -197,48 +217,51 @@ with client, ExitStack() as stack:
     err = drain_until(sockets[0], "error")
     check("out-of-range index rejected", err["type"] == "error")
 
-    # --- grading is server-side -------------------------------------------
-    # A deliberately wrong answer must come back correct:false. There is no
-    # `correct` or `score` field a client could send instead (contrast Battle,
-    # which relays a client-computed correct for its unrated duel).
-    sockets[0].send_text(json.dumps(answer_frame(match_id, qids[0], 0, False)))
-    res = drain_until(sockets[0], "answer_result")
-    check("wrong answer graded false by the server", res["correct"] is False)
-    check("wrong answer awards no points", res["awarded"] == 0)
-    check("wrong answer does not score", res["score"] == 0)
-
-    sockets[0].send_text(json.dumps(answer_frame(match_id, qids[1], 1, True)))
-    res = drain_until(sockets[0], "answer_result")
-    check("right answer graded true by the server", res["correct"] is True)
-    check("right answer awards full points", res["awarded"] == 100)
-    check("right answer scores the points total", res["score"] == 100)
-
-    # An answer relays to the other three.
-    prog = drain_until(sockets[1], "opponent_progress")
-    check("progress relayed to opponents", prog["username"] == "a_alice")
-    check("relayed progress carries the match_id", prog["match_id"] == match_id)
-
-    # --- play the match out to distinct scores ----------------------------
-    # alice already has 1/2 answered (wrong, right). Target finals:
+    # Per-player correctness plan across the 7 shared rounds. Totals:
     # alice 6, bob 7, carol 3, dave 3  -> bob 1st, alice 2nd, carol/dave tie 3rd.
-    targets = {0: 6, 1: 7, 2: 3, 3: 3}
-    progress = {0: 2, 1: 0, 2: 0, 3: 0}
-    correct_so_far = {0: 1, 1: 0, 2: 0, 3: 0}
+    plan = {
+        0: [False, True, True, True, True, True, True],    # a_alice -> 6
+        1: [True, True, True, True, True, True, True],      # a_bob   -> 7
+        2: [True, True, True, False, False, False, False],  # a_carol -> 3
+        3: [True, True, True, False, False, False, False],  # a_dave  -> 3
+    }
 
-    for p in range(4):
-        while progress[p] < 7:
-            i = progress[p]
-            want_right = correct_so_far[p] < targets[p]
-            sockets[p].send_text(json.dumps(answer_frame(match_id, qids[i], i, want_right)))
-            res = drain_until(sockets[p], "answer_result")
-            if want_right:
-                correct_so_far[p] += 1
-            check_ok = res["correct"] is want_right
-            if not check_ok:
-                raise AssertionError(f"player {p} index {i}: expected correct={want_right}, got {res}")
-            progress[p] += 1
+    # --- an answer lifts the answerer's badge for everyone ----------------
+    # Round 0 sent piecemeal so player_answered can be observed, then the
+    # server-side grade inspected in the reveal.
+    sockets[0].send_text(json.dumps(answer_frame(match_id, qids[0], 0, plan[0][0])))
+    pa = drain_until(sockets[1], "player_answered")
+    check("an answer lifts the answerer's badge for the others", pa["username"] == "a_alice")
+    check("player_answered carries the round index", pa["index"] == 0)
+    check("player_answered carries the match_id", pa["match_id"] == match_id)
+    check("player_answered leaks no score before the reveal", "score" not in pa)
 
-    check("scores land on the intended spread", correct_so_far == {0: 6, 1: 7, 2: 3, 3: 3})
+    for p in (1, 2, 3):
+        sockets[p].send_text(json.dumps(answer_frame(match_id, qids[0], 0, plan[p][0])))
+    reveals0 = [drain_until(ws, "round_reveal") for ws in sockets]
+    r0 = {r["username"]: r for r in reveals0[0]["results"]}
+
+    # --- grading is server-side, revealed to the whole room at once -------
+    # A deliberately wrong answer comes back correct:false; there is no `correct`
+    # or `score` a client could assert (contrast Battle's unrated duel).
+    check("wrong answer graded false by the server", r0["a_alice"]["correct"] is False)
+    check("wrong answer awards no points", r0["a_alice"]["awarded"] == 0)
+    check("wrong answer does not score", r0["a_alice"]["score"] == 0)
+    check("right answer graded true by the server", r0["a_bob"]["correct"] is True)
+    check("right answer awards full points", r0["a_bob"]["awarded"] == 100)
+    check("right answer scores the points total", r0["a_bob"]["score"] == 100)
+    check("reveal lists every player", len(reveals0[0]["results"]) == 4)
+
+    # --- play the remaining rounds out in lockstep ------------------------
+    for i in range(1, 7):
+        # Wait for the room to open the next round before answering it; sending
+        # early would hit the still-closed previous round.
+        opens = [drain_until(ws, "round_start") for ws in sockets]
+        check(f"round opens at question {i}", all(o["index"] == i for o in opens))
+        for p in range(4):
+            sockets[p].send_text(json.dumps(answer_frame(match_id, qids[i], i, plan[p][i])))
+        for ws in sockets:
+            drain_until(ws, "round_reveal")
 
     # --- results ----------------------------------------------------------
     results = [drain_until(ws, "match_result") for ws in sockets]

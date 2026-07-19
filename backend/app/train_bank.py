@@ -173,6 +173,42 @@ def sequence_ids(seed: int, count: int) -> list[str]:
     return out[:count]
 
 
+# --- Per-question time limit (Arena shot clock) --------------------------
+#
+# The Arena plays in lockstep: every player answers the SAME question within a
+# per-question time limit, then the round resolves for everyone at once
+# (routers/arena.py). The limit is longer for harder questions and for the kinds
+# that take longer to answer (dropping a map pin, dialling a slider). Only the
+# server needs this -- it runs the shot clock and sends the value to the clients
+# in the round_start frame -- so it lives here, not in the frontend pool.
+#
+# A question may override the computed value with an explicit "seconds" key in
+# TRAIN_QUESTIONS for a genuine one-off; otherwise the difficulty/kind formula
+# below decides.
+
+# Base seconds by difficulty (1|2|3): easier questions get less time.
+DIFFICULTY_SECONDS = {1: 20, 2: 30, 3: 40}
+# Extra seconds for kinds that take longer to answer than a tap.
+KIND_SECONDS_BONUS = {"map": 15, "numeric": 5}
+# Fallback if a question has an unexpected difficulty (should not happen).
+DEFAULT_SECONDS = 30
+
+
+def question_seconds(question_id: str) -> int:
+    """The answer time limit for one question, in whole seconds. An explicit
+    "seconds" on the bank entry wins; otherwise it is the difficulty base plus a
+    per-kind bonus. Unknown ids fall back to DEFAULT_SECONDS so a stray id never
+    hands out an unbounded round."""
+    q = TRAIN_QUESTIONS.get(question_id)
+    if q is None:
+        return DEFAULT_SECONDS
+    override = q.get("seconds")
+    if isinstance(override, int) and override > 0:
+        return override
+    base = DIFFICULTY_SECONDS.get(q.get("difficulty"), DEFAULT_SECONDS)
+    return base + KIND_SECONDS_BONUS.get(q.get("kind"), 0)
+
+
 def grade(
     question_id: str,
     chosen_index: Optional[int] = None,

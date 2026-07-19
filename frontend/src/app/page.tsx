@@ -218,9 +218,10 @@ function TabPage({
 export default function Home() {
   const router = useRouter()
   const [slugs, setSlugs] = useState<string[]>([])
-  // The Arena waiting room is full-screen and owns the bottom of the viewport,
-  // so the nav dock is hidden while it is showing (Arena reports the change).
-  const [arenaWaiting, setArenaWaiting] = useState(false)
+  // The Arena owns the bottom of the viewport while its waiting room OR a live
+  // match is showing (the match pins a strip of participant badges where the
+  // dock would sit), so the nav dock is hidden then (Arena reports the change).
+  const [arenaOwnsBottom, setArenaOwnsBottom] = useState(false)
   // The swipe pager, sliding indicator and active/activated tab state all
   // live in the shared hook; the indicator is the neutral pill fill whose
   // color never changes — the per-post accent switches hard with the
@@ -348,7 +349,7 @@ export default function Home() {
                   <Arena
                     onExit={handleExitToFeed}
                     active={activeIndex === i}
-                    onWaitingRoomChange={setArenaWaiting}
+                    onOwnsBottomChange={setArenaOwnsBottom}
                   />
                 ) : (
                   // active gates the battle socket (M143): swiping away
@@ -371,7 +372,7 @@ export default function Home() {
           )
         })}
       </div>
-      {!arenaWaiting && <BottomNav activeTab="feed" />}
+      {!arenaOwnsBottom && <BottomNav activeTab="feed" />}
       {/* The one toast element for every card's share feedback. */}
       <ToastHost />
     </PhoneFrame>

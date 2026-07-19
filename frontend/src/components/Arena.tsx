@@ -6,7 +6,9 @@ import { useAuth } from "@/lib/auth"
 import {
   useArenaSocket,
   type ArenaInbound,
+  type ArenaPlayer,
   type ArenaQueuePlayer,
+  type ArenaRoundResult,
   type ArenaStanding,
 } from "@/lib/arenaSocket"
 import { buildSequence } from "@/lib/battle/seededQuestions"
@@ -27,25 +29,29 @@ import { haversineKm, scoreLabel } from "@/lib/train/scoring"
 import { GlowCard, MessageSlab, LABEL_CAPS } from "./stage"
 
 // The Arena tab: RANKED 1v1v1v1. Four players in a similar knowledge-rating
-// range are pulled from a matchmaking queue and race through the same seeded
-// question sequence; finishing order moves everyone's rating.
+// range are pulled from a matchmaking queue and play the same seeded question
+// sequence in LOCKSTEP; finishing score moves everyone's rating.
 //
-// Shares Battle's shape (frosted glow slabs, seeded sequence derived locally
-// from the server's seed, live score strip) but differs where "ranked" demands
-// it:
+// Lockstep, server-driven (routers/arena.py): the whole room sits on one shared
+// question. The server opens a round (round_start, with a per-question shot
+// clock), everyone answers within the limit (answer_ack confirms ours,
+// player_answered lifts each badge), then the correct answer is revealed to the
+// room at once (round_reveal) and the match advances together. Nobody races
+// ahead, and nobody learns whether they were right before the shared reveal.
+//
+// Differences from Battle it keeps:
 //   - No opponent picking: you queue, the server matches you (lib/arenaSocket).
-//   - The SERVER grades every answer. We send the player's pick and wait for
-//     answer_result; we never compute the score we are rated on. The local
-//     question pool is used only to render the prompt and highlight the right
-//     answer afterwards.
-//   - The summary is a placement table with rating deltas, not a win/lose card.
+//   - The SERVER grades every answer. We send the player's pick and never a
+//     score; the local question pool only renders the prompt and, at the
+//     reveal, highlights the right answer.
+//   - The summary is a placement table with rating deltas.
 //
 // State machine:
-//   lobby -> queueing -> question <-> feedback -> done -> summary
-// Edge frames (match over, connection lost) drop back to the lobby with a
-// message.
+//   lobby -> queueing -> question <-> reveal -> ... -> summary
+// The server drives question<->reveal; match_result ends on summary. Edge
+// frames (match over, connection lost) drop back to the lobby with a message.
 
-type Stage = "lobby" | "queueing" | "question" | "feedback" | "done" | "summary"
+type Stage = "lobby" | "queueing" | "question" | "reveal" | "summary"
 
 interface Props {
   // Switch back to the feed from the summary's secondary button.
@@ -53,12 +59,12 @@ interface Props {
   // Whether the Arena tab is the visible pager page. The socket only connects
   // while active (as in Battle, M143/FE-RENDER-040/BUG-042): swiping away
   // disconnects, which also drops the player out of the queue rather than
-  // matching someone who is not watching the screen.
+  // matching (or stranding in a match) someone who is not watching the screen.
   active?: boolean
-  // Fires true while the waiting room (the queueing stage) is showing, false
-  // otherwise. The page uses it to hide the bottom nav dock, which the
-  // full-screen waiting room owns instead.
-  onWaitingRoomChange?: (inWaitingRoom: boolean) => void
+  // Fires true while the Arena owns the bottom of the viewport -- the
+  // full-screen waiting room AND a live match (whose badge strip sits where the
+  // dock would). The page uses it to hide the bottom nav dock.
+  onOwnsBottomChange?: (ownsBottom: boolean) => void
 }
 
 // Waiting-room slots. The 2x2 grid assumes a four-player match: if
@@ -180,38 +186,86 @@ function QueueTile({ player, isMe }: { player: ArenaQueuePlayer | null; isMe: bo
   )
 }
 
+// One player's badge in the bottom strip during a live match. Whoever has
+// answered the current round is lifted and fully opaque; whoever still owes an
+// answer sits lower and at 50%; a player who left is dimmed further. The equipped
+// badge art is the backdrop (the "badge with profile picture" the tile is named
+// for), with a scrim so the name and score stay legible over it.
+function PlayerBadge({ player, score, isMe, hasAnswered, hasLeft }: {
+  player: ArenaPlayer
+  score: number
+  isMe: boolean
+  hasAnswered: boolean
+  hasLeft: boolean
+}) {
+  const badge = badgeSrc(player.badge_id)
+  const lifted = hasAnswered && !hasLeft
+  return (
+    <div
+      className="relative flex-1 min-w-0 rounded-2xl border overflow-hidden transition-all duration-300 ease-out"
+      style={{
+        transform: lifted ? "translateY(-10px)" : "translateY(0)",
+        opacity: hasLeft ? 0.3 : hasAnswered ? 1 : 0.5,
+        borderColor: isMe ? "var(--color-lamp)" : "var(--color-edge)",
+        background: badge ? undefined : isMe ? "rgb(124 111 255 / 0.10)" : "rgb(255 255 255 / 0.04)",
+      }}
+    >
+      {badge && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={badge}
+          alt=""
+          aria-hidden="true"
+          draggable={false}
+          className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+        />
+      )}
+      {/* Legibility scrim over busy badge art. */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none"
+        style={{ background: "linear-gradient(to top, rgb(0 0 0 / 0.6), rgb(0 0 0 / 0.05))" }}
+      />
+      <div className="relative flex flex-col items-center gap-1 px-1.5 pt-2.5 pb-2">
+        <Avatar
+          username={player.username}
+          avatarUrl={player.avatar_url}
+          frameId={player.avatar_frame_id}
+          size={40}
+        />
+        <span className="flex items-center gap-0.5 max-w-full">
+          <span
+            className="truncate text-[11px] font-semibold"
+            style={{ color: "#ffffff", textShadow: BADGE_NAME_SHADOW }}
+          >
+            {isMe ? "You" : player.username}
+          </span>
+          {player.is_verified > 0 && <VerifiedBadge size={11} level={player.is_verified} />}
+        </span>
+        <span
+          className="font-mono text-[15px] leading-none"
+          style={{ color: "#ffffff", textShadow: BADGE_NAME_SHADOW }}
+        >
+          {score}
+        </span>
+        <span
+          className="text-[9px] h-3 leading-3"
+          style={{ color: hasLeft ? "var(--color-ink-muted)" : hasAnswered ? "var(--color-good)" : "var(--color-ink-muted)" }}
+        >
+          {hasLeft ? "left" : hasAnswered ? "ready" : "..."}
+        </span>
+      </div>
+    </div>
+  )
+}
+
 // Ordinal for a placement (1 -> 1st). Placements here are always 1..4.
 const ORDINALS = ["", "1st", "2nd", "3rd", "4th"] as const
 function ordinal(placement: number): string {
   return ORDINALS[placement] ?? `${placement}th`
 }
 
-// One player's live score in the top strip.
-function PlayerScore({ name, score, isMe, done, left }: {
-  name: string
-  score: number
-  isMe: boolean
-  done: boolean
-  left: boolean
-}) {
-  return (
-    <div className="flex flex-col items-center gap-0.5 min-w-0 flex-1">
-      <span className={`${LABEL_CAPS} truncate max-w-full ${isMe ? "text-lamp" : ""}`}>
-        {isMe ? "You" : `@${name}`}
-      </span>
-      <span
-        className="font-mono text-[22px] leading-none"
-        style={{ color: isMe ? "var(--color-lamp)" : "var(--color-ink)", opacity: left ? 0.4 : 1 }}
-      >
-        {score}
-      </span>
-      {/* Status under the number so the strip never reflows between states. */}
-      <span className="text-[9px] text-ink-muted h-3">{left ? "left" : done ? "done" : ""}</span>
-    </div>
-  )
-}
-
-export default function Arena({ onExit, active = true, onWaitingRoomChange }: Props) {
+export default function Arena({ onExit, active = true, onOwnsBottomChange }: Props) {
   const { user } = useAuth()
 
   const [stage, setStage] = useState<Stage>("lobby")
@@ -231,27 +285,33 @@ export default function Arena({ onExit, active = true, onWaitingRoomChange }: Pr
   const [elapsed, setElapsed] = useState(0)
 
   // Match state. `seq` is derived locally from the server's seed; it renders
-  // the prompts, but the score comes back from the server.
+  // the prompts, but the score and the round timing come from the server.
   const [seq, setSeq] = useState<MarathonQuestion[]>([])
   const [count, setCount] = useState(0)
   const [index, setIndex] = useState(0)
-  const [names, setNames] = useState<string[]>([])
+  const [players, setPlayers] = useState<ArenaPlayer[]>([])
   const [scores, setScores] = useState<Record<string, number>>({})
-  const [done, setDone] = useState<string[]>([])
+  // Usernames that have answered the CURRENT round (drives the badge lift).
+  const [answered, setAnswered] = useState<string[]>([])
   const [left, setLeft] = useState<string[]>([])
   const [standings, setStandings] = useState<ArenaStanding[]>([])
 
-  // Per-question answer state. `pending` covers the round trip to the server's
-  // grade: the answer is locked in but the verdict has not landed yet.
+  // Per-round answer state. `submitted` locks input once we have answered this
+  // round; the verdict is withheld until the shared reveal.
   const [selected, setSelected] = useState<number | null>(null)
   const [sliderValue, setSliderValue] = useState(0)
   // The dropped pin for a map question, in lat/lng; null until the player taps.
   const [pin, setPin] = useState<{ lat: number; lng: number } | null>(null)
-  const [lastCorrect, setLastCorrect] = useState<boolean | null>(null)
-  // Points the server awarded for the last answer (0..100); partial for numeric
-  // and map. Drives the graded feedback.
-  const [awarded, setAwarded] = useState<number | null>(null)
-  const [pending, setPending] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+  // Our own result for the revealed round: awarded points and full-marks flag;
+  // null while a question is open.
+  const [myReveal, setMyReveal] = useState<{ awarded: number; correct: boolean } | null>(null)
+
+  // Round shot clock. `roundEndsAt` is a wall-clock deadline (ms); `secondsLeft`
+  // is the derived countdown the interval below updates. The server is
+  // authoritative -- this is a visual guide that locks input when it hits zero.
+  const [roundEndsAt, setRoundEndsAt] = useState<number | null>(null)
+  const [secondsLeft, setSecondsLeft] = useState(0)
 
   // Numeric questions start the slider at a random step, never on the correct
   // answer (an unmoved submit would be a free correct) -- as in Battle.
@@ -267,21 +327,32 @@ export default function Arena({ onExit, active = true, onWaitingRoomChange }: Pr
     }
   }
 
+  // Reset the per-round input state for a freshly opened question.
+  function resetRound(q: MarathonQuestion | undefined) {
+    setSelected(null)
+    setPin(null)
+    setSubmitted(false)
+    setMyReveal(null)
+    setAnswered([])
+    startSlider(q)
+  }
+
   const resetToLobby = useCallback(() => {
     matchIdRef.current = null
     setStage("lobby")
     setSeq([])
     setCount(0)
     setIndex(0)
-    setNames([])
+    setPlayers([])
     setScores({})
-    setDone([])
+    setAnswered([])
     setLeft([])
     setSelected(null)
     setPin(null)
-    setLastCorrect(null)
-    setAwarded(null)
-    setPending(false)
+    setSubmitted(false)
+    setMyReveal(null)
+    setRoundEndsAt(null)
+    setSecondsLeft(0)
     setQueuedAt(null)
     setQueuePlayers([])
     setWaiting(0)
@@ -312,72 +383,87 @@ export default function Arena({ onExit, active = true, onWaitingRoomChange }: Pr
         setStage((s) => (s === "queueing" ? "lobby" : s))
         break
       case "match_start": {
+        // Set the room up; the first round_start (which the driver sends
+        // immediately after) opens question 0 and starts its clock.
         const next = buildSequence(e.seed, e.count)
         matchIdRef.current = e.match_id
         setSeq(next)
         setCount(e.count)
         setIndex(0)
-        setNames(e.players.map((p) => p.username))
+        setPlayers(e.players)
         setScores(Object.fromEntries(e.players.map((p) => [p.username, 0])))
-        setDone([])
-        setLeft([])
         setStandings([])
-        setSelected(null)
-        setPin(null)
-        setLastCorrect(null)
-        setAwarded(null)
-        setPending(false)
+        setLeft([])
+        resetRound(next[0])
+        setRoundEndsAt(null)
+        setSecondsLeft(0)
         setMessage("")
         setQueuedAt(null)
         setQueuePlayers([])
-        startSlider(next[0])
         setStage("question")
         break
       }
-      case "answer_result": {
+      case "round_start": {
         if (stale(e.match_id)) break
-        // The server's verdict is the one that counts; our local pool only
-        // decides which option/location to highlight. `awarded` is the graded
-        // points (partial for numeric/map); `score` is the running points total.
-        setPending(false)
-        setLastCorrect(e.correct)
-        setAwarded(e.awarded)
-        setScores((s) => (user ? { ...s, [user.username]: e.score } : s))
-        setStage("feedback")
+        setIndex(e.index)
+        resetRound(seq[e.index])
+        setRoundEndsAt(Date.now() + e.seconds * 1000)
+        setSecondsLeft(e.seconds)
+        setStage("question")
         break
       }
-      case "opponent_progress":
+      case "answer_ack":
         if (stale(e.match_id)) break
-        setScores((s) => ({ ...s, [e.username]: e.score }))
+        // We already locked in optimistically on submit; this just confirms it.
+        setSubmitted(true)
         break
-      case "player_finished":
+      case "player_answered":
+        if (stale(e.match_id) || e.index !== index) break
+        setAnswered((a) => (a.includes(e.username) ? a : [...a, e.username]))
+        break
+      case "round_reveal": {
         if (stale(e.match_id)) break
-        setScores((s) => ({ ...s, [e.username]: e.score }))
-        setDone((d) => (d.includes(e.username) ? d : [...d, e.username]))
+        // The round is resolved: reveal correctness and the updated scores for
+        // everyone. Scores are the server's running totals (authoritative).
+        setScores((s) => {
+          const next = { ...s }
+          for (const r of e.results) next[r.username] = r.score
+          return next
+        })
+        setAnswered(e.results.map((r) => r.username))
+        const mine = e.results.find((r: ArenaRoundResult) => r.username === user?.username)
+        if (mine) setMyReveal({ awarded: mine.awarded, correct: mine.correct })
+        setRoundEndsAt(null)
+        setStage("reveal")
         break
+      }
       case "player_left":
         if (stale(e.match_id)) break
         setLeft((l) => (l.includes(e.username) ? l : [...l, e.username]))
         break
       case "match_result":
         if (stale(e.match_id)) break
-        // Only bank the result here; the effect below decides WHEN to show it.
-        // The last player to finish gets match_result while still reading the
-        // final question's feedback, and jumping straight to the summary would
-        // snatch that feedback away mid-read.
         setStandings(e.standings)
-        // The result carries every player's post-match rating; keep ours so the
-        // lobby shows the new number without a refetch.
         {
           const mine = e.standings.find((s) => s.is_me)
           if (mine?.rating != null) setRating(mine.rating)
         }
         matchIdRef.current = null
+        setStage("summary")
         break
       case "error":
-        if (e.code === "stale_match" || e.code === "already_queued") break
+        // A closed/duplicate round is not worth a red banner: the client is
+        // already waiting for the reveal, so swallow these quietly.
         if (
-          (e.code === "not_in_match" || e.code === "already_finished") &&
+          e.code === "stale_match" ||
+          e.code === "already_queued" ||
+          e.code === "bad_index" ||
+          e.code === "already_answered"
+        ) {
+          break
+        }
+        if (
+          e.code === "not_in_match" &&
           stageRef.current !== "lobby" &&
           stageRef.current !== "summary"
         ) {
@@ -388,14 +474,13 @@ export default function Arena({ onExit, active = true, onWaitingRoomChange }: Pr
           setStage("lobby")
           break
         }
-        setPending(false)
         setMessage(e.detail ?? "Something went wrong.")
         setStage((s) => (s === "queueing" ? "lobby" : s))
         break
       default:
         break
     }
-  }, [user])
+  }, [index, seq, user])
 
   const { status, queue, cancel, answer, forceStart } = useArenaSocket(!!user && active, handleEvent)
 
@@ -410,22 +495,14 @@ export default function Arena({ onExit, active = true, onWaitingRoomChange }: Pr
     }
   }, [status, stage, resetToLobby])
 
-  // The result is revealed once the player has finished reading their own last
-  // feedback (stage "done") AND the server's standings are in -- in either
-  // order, which is why this is an effect rather than a jump inside the socket
-  // handler (the Battle done/oppDone pattern).
+  // Tell the page when the Arena owns the bottom of the viewport (waiting room
+  // or a live match), so it hides the bottom nav dock. The cleanup restores the
+  // dock on any exit, including the Arena unmounting mid-match.
+  const ownsBottom = stage === "queueing" || stage === "question" || stage === "reveal"
   useEffect(() => {
-    if (stage === "done" && standings.length > 0) setStage("summary")
-  }, [stage, standings])
-
-  // Tell the page when the waiting room is showing so it can hide the bottom
-  // nav dock, which the full-screen waiting room owns. The cleanup restores the
-  // dock on any exit, including the Arena unmounting mid-queue.
-  const inWaitingRoom = stage === "queueing"
-  useEffect(() => {
-    onWaitingRoomChange?.(inWaitingRoom)
-    return () => onWaitingRoomChange?.(false)
-  }, [inWaitingRoom, onWaitingRoomChange])
+    onOwnsBottomChange?.(ownsBottom)
+    return () => onOwnsBottomChange?.(false)
+  }, [ownsBottom, onOwnsBottomChange])
 
   // Queue timer, purely informational (the widening rating window lives
   // server-side). Ticks only while queueing, so nothing runs in the lobby.
@@ -434,6 +511,21 @@ export default function Arena({ onExit, active = true, onWaitingRoomChange }: Pr
     const timer = setInterval(() => setElapsed(Math.floor((Date.now() - queuedAt) / 1000)), 1000)
     return () => clearInterval(timer)
   }, [stage, queuedAt])
+
+  // Round countdown. Derives the displayed seconds from the server's deadline;
+  // the server closes the round for real, so a small clock skew only affects
+  // the number shown. Runs only while a question is open.
+  useEffect(() => {
+    if (stage !== "question" || roundEndsAt === null) return
+    // round_start already seeded secondsLeft, so the interval only has to keep
+    // it ticking down (setting state inside the interval callback, not the
+    // effect body -- matching the queue timer above).
+    const timer = setInterval(
+      () => setSecondsLeft(Math.max(0, Math.ceil((roundEndsAt - Date.now()) / 1000))),
+      250,
+    )
+    return () => clearInterval(timer)
+  }, [stage, roundEndsAt])
 
   function handleFind() {
     if (status !== "open") {
@@ -462,14 +554,17 @@ export default function Arena({ onExit, active = true, onWaitingRoomChange }: Pr
     if (!forceStart()) setMessage("Could not start the match. Try again.")
   }
 
-  // Send the pick; the verdict arrives as answer_result. `pending` latches so a
-  // double activation cannot send two answers for one question (the server
-  // would reject the second as a bad index, but the UI should not depend on it).
+  // Whether the player may still act on the open question: it must be open, we
+  // must not have answered yet, and the shot clock must not have run out.
+  const canAnswer = stage === "question" && !submitted && secondsLeft > 0
+
+  // Send the pick and lock the round optimistically (the badge lifts at once);
+  // answer_ack confirms it. A failed send means the socket is gone.
   function submit(choice: { chosenIndex?: number; chosenValue?: number; chosenLat?: number; chosenLng?: number }) {
-    if (pending || stage !== "question" || !matchIdRef.current) return
-    setPending(true)
+    if (!canAnswer || !matchIdRef.current) return
+    setSubmitted(true)
+    if (user) setAnswered((a) => (a.includes(user.username) ? a : [...a, user.username]))
     if (!answer(matchIdRef.current, index, choice)) {
-      setPending(false)
       setMessage("Connection lost. The match ended.")
       resetToLobby()
     }
@@ -477,41 +572,21 @@ export default function Arena({ onExit, active = true, onWaitingRoomChange }: Pr
 
   function handleSelect(i: number) {
     const cur = seq[index]
-    if (stage !== "question" || selected !== null || pending || !cur || cur.kind === "numeric") return
+    if (!canAnswer || selected !== null || !cur || cur.kind === "numeric" || cur.kind === "map") return
     setSelected(i)
     submit({ chosenIndex: i })
   }
 
   function handleSubmitNumeric() {
     const cur = seq[index]
-    if (stage !== "question" || pending || !cur || cur.kind !== "numeric") return
+    if (!canAnswer || !cur || cur.kind !== "numeric") return
     submit({ chosenValue: sliderValue })
   }
 
   function handleSubmitMap() {
     const cur = seq[index]
-    if (stage !== "question" || pending || !cur || cur.kind !== "map" || !pin) return
+    if (!canAnswer || !cur || cur.kind !== "map" || !pin) return
     submit({ chosenLat: pin.lat, chosenLng: pin.lng })
-  }
-
-  function handleNext() {
-    const nextIndex = index + 1
-    // Bounded by BOTH the server count and the derived sequence: buildSequence
-    // slices to the pool, so a count above the pool would otherwise strand the
-    // player on a blank screen (the Battle fix).
-    if (nextIndex >= Math.min(count, seq.length)) {
-      // The server already knows we finished (it counts our answers); it sends
-      // match_result once everyone is done.
-      setStage("done")
-      return
-    }
-    setIndex(nextIndex)
-    setSelected(null)
-    setPin(null)
-    setLastCorrect(null)
-    setAwarded(null)
-    startSlider(seq[nextIndex])
-    setStage("question")
   }
 
   function handleExit() {
@@ -520,11 +595,13 @@ export default function Arena({ onExit, active = true, onWaitingRoomChange }: Pr
 
   // --- Render helpers -------------------------------------------------------
 
+  const revealing = stage === "reveal"
+
   // Color is never the only marker of an answered option (A11Y-018): a glyph
   // and a spoken suffix carry the same state.
   function optionState(i: number): "correct" | "incorrect" | null {
     const cur = seq[index]
-    if (stage !== "feedback" || lastCorrect === null || !cur || cur.kind === "numeric" || cur.kind === "map") return null
+    if (!revealing || !cur || cur.kind === "numeric" || cur.kind === "map") return null
     if (i === cur.answerIndex) return "correct"
     if (i === selected) return "incorrect"
     return null
@@ -535,7 +612,7 @@ export default function Arena({ onExit, active = true, onWaitingRoomChange }: Pr
 
   function optionStyle(i: number): React.CSSProperties {
     const cur = seq[index]
-    if (stage !== "feedback" || lastCorrect === null || !cur || cur.kind === "numeric" || cur.kind === "map") {
+    if (!revealing || !cur || cur.kind === "numeric" || cur.kind === "map") {
       return { borderColor: "transparent", background: "rgb(255 255 255 / 0.06)", color: "var(--color-ink-body)" }
     }
     if (i === cur.answerIndex) {
@@ -547,42 +624,10 @@ export default function Arena({ onExit, active = true, onWaitingRoomChange }: Pr
     return { borderColor: "var(--color-edge)", background: "rgb(255 255 255 / 0.06)", color: "var(--color-ink-muted)" }
   }
 
-  // Me first, then the three rivals in match order.
-  function orderedNames(): string[] {
-    if (!user) return names
-    return [user.username, ...names.filter((n) => n !== user.username)]
-  }
-
-  function renderStrip() {
-    const ordered = orderedNames()
-    return (
-      <>
-        {/* Opponent scores arrive over the socket with nothing else to signal
-            them, so they are announced politely (settled values only). */}
-        <div aria-live="polite" className="sr-only">
-          {ordered.map((n) => `${n === user?.username ? "You" : "@" + n} ${scores[n] ?? 0}`).join(", ")}
-        </div>
-        <div aria-hidden="true" className="flex items-start gap-1">
-          {ordered.map((n) => (
-            <PlayerScore
-              key={n}
-              name={n}
-              score={scores[n] ?? 0}
-              isMe={n === user?.username}
-              done={done.includes(n)}
-              left={left.includes(n)}
-            />
-          ))}
-        </div>
-      </>
-    )
-  }
-
   function renderAnswerArea() {
     const cur = seq[index]
     if (!cur) return null
     if (cur.kind === "numeric") {
-      const answered = stage === "feedback" && awarded !== null
       return (
         <div className="flex flex-col gap-4">
           <NumberSlider
@@ -592,52 +637,50 @@ export default function Arena({ onExit, active = true, onWaitingRoomChange }: Pr
             unit={cur.unit}
             value={sliderValue}
             onChange={setSliderValue}
-            disabled={answered || pending}
-            showResult={answered}
+            disabled={!canAnswer}
+            showResult={revealing}
             // Graded: a near miss still reads as a good result (green) above the
             // 50-point tier, not a hard red like an exact-only match would.
-            correct={answered && awarded !== null ? scoreLabel(awarded).good : undefined}
+            correct={revealing && myReveal ? scoreLabel(myReveal.awarded).good : undefined}
             correctValue={cur.answerValue}
           />
           {stage === "question" && (
-            <button className="btn btn-primary w-full py-3" onClick={handleSubmitNumeric} disabled={pending}>
-              {pending ? "Checking..." : "Submit"}
+            <button className="btn btn-primary w-full py-3" onClick={handleSubmitNumeric} disabled={!canAnswer}>
+              {submitted ? "Locked in" : secondsLeft === 0 ? "Time's up" : "Submit"}
             </button>
           )}
         </div>
       )
     }
     if (cur.kind === "map") {
-      const answered = stage === "feedback" && awarded !== null
       return (
         <div className="flex flex-col gap-4">
           <WorldMapPicker
             value={pin}
             onChange={setPin}
-            disabled={pending || answered}
-            showResult={answered}
+            disabled={!canAnswer}
+            showResult={revealing}
             answer={{ lat: cur.answerLat, lng: cur.answerLng }}
             answerLabel={cur.answerLabel}
           />
           {stage === "question" && (
-            <button className="btn btn-primary w-full py-3" onClick={handleSubmitMap} disabled={pending || !pin}>
-              {pending ? "Checking..." : pin ? "Submit pin" : "Tap the map to place a pin"}
+            <button className="btn btn-primary w-full py-3" onClick={handleSubmitMap} disabled={!canAnswer || !pin}>
+              {submitted ? "Locked in" : secondsLeft === 0 ? "Time's up" : pin ? "Submit pin" : "Tap the map to place a pin"}
             </button>
           )}
         </div>
       )
     }
-    const interactive = stage === "question" && !pending
     return (
       <div className="flex flex-col gap-2.5">
         {cur.options.map((opt, i) => (
           <button
             key={i}
-            onClick={interactive ? () => handleSelect(i) : undefined}
-            disabled={!interactive || selected !== null}
+            onClick={canAnswer ? () => handleSelect(i) : undefined}
+            disabled={!canAnswer || selected !== null}
             aria-label={optionState(i) ? `${opt}${OPTION_SUFFIX[optionState(i)!]}` : undefined}
             className="text-left rounded-3xl border px-5 py-4 text-base transition-colors duration-150 disabled:cursor-default"
-            style={{ ...optionStyle(i), opacity: pending && selected !== i ? 0.6 : 1 }}
+            style={{ ...optionStyle(i), opacity: submitted && selected !== i && !revealing ? 0.6 : 1 }}
           >
             {opt}
             {optionState(i) && <span aria-hidden="true" className="ml-2">{OPTION_GLYPH[optionState(i)!]}</span>}
@@ -682,13 +725,13 @@ export default function Arena({ onExit, active = true, onWaitingRoomChange }: Pr
 
         <GlowCard>
           <div className="px-6 py-7 flex flex-col items-center gap-4 text-center">
-            <p className={LABEL_CAPS}>Ranked · 1v1v1v1</p>
+            <p className={LABEL_CAPS}>Ranked &middot; 1v1v1v1</p>
             <p className="font-serif text-[22px] leading-[30px] text-ink">
               Four players, seven questions, one winner.
             </p>
             <p className="text-ink-dim text-sm leading-[21px]">
-              You are matched with three players near your rating. Every answer is scored on the
-              server, and where you finish moves your knowledge rating.
+              You are matched with three players near your rating. Everyone answers each question
+              together against the clock, and where you finish moves your knowledge rating.
             </p>
             <button
               className="btn btn-primary w-full py-3"
@@ -746,7 +789,7 @@ export default function Arena({ onExit, active = true, onWaitingRoomChange }: Pr
         <GlowCard>
           <div className="px-5 py-6 flex flex-col gap-5">
             <div className="flex flex-col items-center gap-1.5 text-center">
-              <p className={LABEL_CAPS}>Ranked · 1v1v1v1</p>
+              <p className={LABEL_CAPS}>Ranked &middot; 1v1v1v1</p>
               <p className="font-serif text-[20px] leading-7 text-ink">
                 {overflowing
                   ? `${waiting} players waiting`
@@ -803,49 +846,60 @@ export default function Arena({ onExit, active = true, onWaitingRoomChange }: Pr
     )
   }
 
-  function renderQuestion() {
+  // The question card, shared by the open (question) and revealed (reveal)
+  // stages: the same prompt, answer area and countdown, coloured once revealed.
+  function renderPlay() {
     const cur = seq[index]
     if (!cur) return null
-    return (
-      <div className="flex flex-col gap-4">
-        {renderStrip()}
-        <GlowCard>
-          <div className="px-6 py-7 flex flex-col gap-4">
-            <p className={LABEL_CAPS}>
-              Question {index + 1} of {count}
-            </p>
-            <p className="font-serif text-[22px] leading-[30px] text-ink">{cur.prompt}</p>
-          </div>
-        </GlowCard>
-        {renderAnswerArea()}
-      </div>
-    )
-  }
-
-  function renderFeedback() {
-    const cur = seq[index]
-    if (!cur || awarded === null) return null
-    // Graded questions (numeric/map) show the points earned and a tier; choice
-    // stays a plain Correct/Incorrect.
     const graded = cur.kind === "numeric" || cur.kind === "map"
-    const good = graded ? scoreLabel(awarded).good : !!lastCorrect
-    const headline = graded ? `${awarded} / 100 · ${scoreLabel(awarded).label}` : lastCorrect ? "Correct" : "Incorrect"
+    const good = graded ? (myReveal ? scoreLabel(myReveal.awarded).good : false) : !!myReveal?.correct
+    const headline =
+      revealing && myReveal
+        ? graded
+          ? `${myReveal.awarded} / 100 · ${scoreLabel(myReveal.awarded).label}`
+          : myReveal.correct
+            ? "Correct"
+            : "Incorrect"
+        : null
     const distanceKm =
-      cur.kind === "map" && pin ? Math.round(haversineKm(pin.lat, pin.lng, cur.answerLat, cur.answerLng)) : null
+      revealing && cur.kind === "map" && pin
+        ? Math.round(haversineKm(pin.lat, pin.lng, cur.answerLat, cur.answerLng))
+        : null
+    // Narrowed here so the union stays typed where distanceKm is rendered.
     const mapLabel = cur.kind === "map" ? cur.answerLabel : undefined
-    const last = index + 1 >= Math.min(count, seq.length)
+    const answeredCount = answered.length
+    // Countdown turns urgent under 6s; hidden once revealing.
+    const urgent = secondsLeft <= 5
     return (
       <div className="flex flex-col gap-4">
-        {renderStrip()}
         <GlowCard>
-          <div className="px-6 py-7 flex flex-col gap-3.5">
-            <span
-              className="text-[11px] tracking-[0.16em] uppercase font-semibold"
-              style={{ color: good ? "var(--color-good)" : "var(--color-bad)" }}
-            >
-              {headline}
-            </span>
-            <p className="font-serif text-[20px] leading-7 text-ink">{cur.prompt}</p>
+          <div className="px-6 py-6 flex flex-col gap-4">
+            <div className="flex items-center justify-between gap-3">
+              <p className={LABEL_CAPS}>
+                Question {index + 1} of {count}
+              </p>
+              {!revealing && (
+                <span
+                  aria-hidden="true"
+                  className="font-mono text-[15px] leading-none rounded-full px-2.5 py-1"
+                  style={{
+                    color: urgent ? "var(--color-bad)" : "var(--color-ink)",
+                    background: urgent ? "color-mix(in srgb, var(--color-bad) 12%, transparent)" : "rgb(255 255 255 / 0.06)",
+                  }}
+                >
+                  0:{String(secondsLeft).padStart(2, "0")}
+                </span>
+              )}
+              {revealing && headline && (
+                <span
+                  className="text-[11px] tracking-[0.14em] uppercase font-semibold"
+                  style={{ color: good ? "var(--color-good)" : "var(--color-bad)" }}
+                >
+                  {headline}
+                </span>
+              )}
+            </div>
+            <p className="font-serif text-[22px] leading-[30px] text-ink">{cur.prompt}</p>
             {distanceKm !== null && (
               <p className="text-ink-dim text-sm">
                 {distanceKm.toLocaleString()} km from {mapLabel ?? "the target"}.
@@ -853,32 +907,51 @@ export default function Arena({ onExit, active = true, onWaitingRoomChange }: Pr
             )}
           </div>
         </GlowCard>
+
         {renderAnswerArea()}
-        {cur.explanation && <p className="text-ink-dim text-sm leading-[21px]">{cur.explanation}</p>}
-        <button className="btn btn-primary w-full py-3" onClick={handleNext}>
-          {last ? "Finish" : "Next"}
-        </button>
+
+        {revealing && cur.explanation && (
+          <p className="text-ink-dim text-sm leading-[21px]">{cur.explanation}</p>
+        )}
+
+        {/* Status line so a player who has answered (or run out of time) knows
+            what they are waiting for. */}
+        {stage === "question" && (submitted || secondsLeft === 0) && (
+          <p className="text-ink-muted text-sm text-center" aria-live="polite">
+            {answeredCount >= players.length
+              ? "Revealing..."
+              : `Waiting for the others... (${answeredCount}/${players.length})`}
+          </p>
+        )}
+        {revealing && (
+          <p className="text-ink-muted text-xs text-center">Next question in a moment...</p>
+        )}
       </div>
     )
   }
 
-  function renderDone() {
-    const outstanding = names.filter((n) => n !== user?.username && !done.includes(n) && !left.includes(n))
+  // The bottom strip of participant badges, pinned below the question.
+  function renderBadgeStrip() {
+    const answeredCount = answered.length
     return (
-      <div className="flex flex-col gap-4">
-        {renderStrip()}
-        <MessageSlab>
-          <p className="text-ink text-base font-semibold">
-            You finished &mdash; {(user && scores[user.username]) ?? 0} points
-          </p>
-          <p className="text-ink-dim text-sm">
-            {outstanding.length > 0
-              ? `Waiting for ${outstanding.map((n) => "@" + n).join(", ")}...`
-              : "Working out the results..."}
-          </p>
-          {/* Results are scored server-side and arrive on their own; there is
-              deliberately no exit here that would forfeit a finished run. */}
-        </MessageSlab>
+      <div className="shrink-0 px-3 pt-2 pb-[max(12px,env(safe-area-inset-bottom))]">
+        {/* Announce answer progress politely; the badges themselves are
+            decorative to a screen reader. */}
+        <div aria-live="polite" className="sr-only">
+          {stage === "reveal" ? "Round revealed." : `${answeredCount} of ${players.length} answered.`}
+        </div>
+        <div aria-hidden="true" className="flex items-end gap-2">
+          {players.map((p) => (
+            <PlayerBadge
+              key={p.username}
+              player={p}
+              score={scores[p.username] ?? 0}
+              isMe={p.username === user?.username}
+              hasAnswered={stage === "reveal" || answered.includes(p.username)}
+              hasLeft={left.includes(p.username)}
+            />
+          ))}
+        </div>
       </div>
     )
   }
@@ -923,7 +996,7 @@ export default function Arena({ onExit, active = true, onWaitingRoomChange }: Pr
                     style={{ color: s.is_me ? "var(--color-lamp)" : "var(--color-ink)" }}
                   >
                     {s.is_me ? "You" : `@${s.username}`}
-                    {s.left && <span className="text-ink-muted text-xs"> · left</span>}
+                    {s.left && <span className="text-ink-muted text-xs"> &middot; left</span>}
                   </span>
                   <span className="font-mono text-sm text-ink shrink-0">{s.score}</span>
                   {s.delta != null && (
@@ -951,13 +1024,30 @@ export default function Arena({ onExit, active = true, onWaitingRoomChange }: Pr
     )
   }
 
+  // A live match (question or reveal) owns the whole viewport: the play area
+  // scrolls above a pinned strip of participant badges.
+  if (user && (stage === "question" || stage === "reveal")) {
+    return (
+      <div className="h-full flex flex-col">
+        <div className="flex-1 overflow-y-auto overscroll-y-contain px-4 pt-20 pb-4">
+          {message && (
+            <div className="mb-4">
+              <MessageSlab>
+                <p className="text-ink-dim text-sm">{message}</p>
+              </MessageSlab>
+            </div>
+          )}
+          {renderPlay()}
+        </div>
+        {renderBadgeStrip()}
+      </div>
+    )
+  }
+
   let body: React.ReactNode
   if (!user) body = renderLoginGate()
   else if (stage === "lobby") body = renderLobby()
   else if (stage === "queueing") body = renderQueueing()
-  else if (stage === "question") body = renderQuestion()
-  else if (stage === "feedback") body = renderFeedback()
-  else if (stage === "done") body = renderDone()
   else body = renderSummary()
 
   return (
