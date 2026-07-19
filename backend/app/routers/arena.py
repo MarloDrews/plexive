@@ -15,7 +15,7 @@ from ..database import SessionLocal
 from ..elo import START_RATING, apply_match
 from ..models import User
 from ..rate_limit import check_rate_limit
-from ..train_bank import grade, sequence_ids
+from ..train_bank import grade, question_seconds, sequence_ids
 from ..ws_security import (
     WS_REVALIDATE_SECONDS,
     connection_attempt_allowed,
@@ -78,12 +78,13 @@ MATCHMAKER_TICK_SECONDS = 2.0
 # deep queue reads as a number rather than an unbounded broadcast.
 QUEUE_ROSTER_MAX = 8
 
-# A match whose players stop answering must not pin the room (and their
-# ratings) forever: past this, whoever is unfinished is finalized on the score
-# they have. Generous -- it is a backstop for abandonment, not a per-question
-# shot clock (there is deliberately none; Arena scores on correctness, not
-# speed).
-MATCH_TIMEOUT_SECONDS = 300.0
+# Arena now plays in LOCKSTEP: every player answers the same question, and the
+# round resolves for everyone at once -- either when all have answered or when
+# the per-question shot clock (train_bank.question_seconds) runs out. After a
+# round resolves the correct answer is revealed to everyone for this long before
+# the match advances to the next question together. (This deliberately reverses
+# the old "no shot clock" design: the game is now paced, not a self-paced race.)
+REVEAL_SECONDS = 4.0
 
 
 @dataclass(frozen=True)
@@ -98,6 +99,8 @@ class QueueIdentity:
     # and falls back to the default look for None or an unknown id.
     avatar_frame_id: Optional[int] = None
     badge_id: Optional[int] = None
+    # Verification level (0 = none); drives the verified badge on the tile.
+    is_verified: int = 0
 
 
 @dataclass
@@ -124,26 +127,53 @@ class Match:
     """One live free-for-all. Every player's _matches entry points at the SAME
     instance, so match state can never go asymmetric (the BattleManager's
     BUG-040 lesson). match_id stamps every frame so a frame from a finished
-    match cannot leak into the next one (BUG-010/BUG-087)."""
+    match cannot leak into the next one (BUG-010/BUG-087).
+
+    Lockstep: the whole room sits on ONE shared question, `round_index`. The
+    server (not the client) owns that index -- it is advanced only by the match
+    driver (run_match), never by an answer -- so a question cannot be replayed
+    or skipped. `round_answers` collects this round's graded points until every
+    active player has answered (or the shot clock fires), then the round
+    resolves for all at once."""
 
     match_id: str
     seed: int
     players: Tuple[int, ...]
     usernames: Dict[int, str]
     ratings: Dict[int, float]
+    # Cosmetics per player (avatar/frame/badge/verified), sent in match_start so
+    # the client can render each player's badge tile without a second lookup.
+    identities: Dict[int, QueueIdentity]
     question_ids: List[str]
     started_at: float
     scores: Dict[int, int] = field(default_factory=dict)
-    # The index each player is expected to answer next: the server, not the
-    # client, decides where a player is in the sequence, so an answer cannot be
-    # replayed or a question skipped.
-    next_index: Dict[int, int] = field(default_factory=dict)
+    # The shared question index the whole room is answering right now.
+    round_index: int = 0
+    # This round's graded points / correctness, keyed by user; both cleared at
+    # the start of every round (open_round).
+    round_answers: Dict[int, int] = field(default_factory=dict)
+    round_correct: Dict[int, bool] = field(default_factory=dict)
+    # Set once every still-active player has answered the current round, so the
+    # driver can close the round before the shot clock expires. A fresh Event is
+    # installed each round; None before the first round opens.
+    round_event: Optional[asyncio.Event] = None
     finished: set = field(default_factory=set)
     left: set = field(default_factory=set)
     finalized: bool = False
 
     def others(self, user_id: int) -> List[int]:
         return [p for p in self.players if p != user_id]
+
+    def active_players(self) -> List[int]:
+        """Players still connected to the match (a leaver keeps their score but
+        is no longer waited on)."""
+        return [p for p in self.players if p not in self.left]
+
+    def round_complete(self) -> bool:
+        """Every active player has answered the current round. Vacuously true
+        when nobody is left active (everyone walked out), which lets the driver
+        stop waiting and finalize."""
+        return all(p in self.round_answers for p in self.active_players())
 
     def is_over(self) -> bool:
         return all(p in self.finished or p in self.left for p in self.players)
@@ -202,6 +232,11 @@ class ArenaManager:
             return []
         match.left.add(user_id)
         self._matches.pop(user_id, None)
+        # A leaver can be the last player an open round was waiting on: wake the
+        # driver so it resolves the round now instead of idling to the shot
+        # clock (or, if everyone has gone, so it can finalize at once).
+        if match.round_event is not None and match.round_complete():
+            match.round_event.set()
         return [
             (other, {"type": "player_left", "match_id": match.match_id,
                      "username": match.usernames.get(user_id, "")})
@@ -250,6 +285,7 @@ class ArenaManager:
                         "avatar_url": e.identity.avatar_url,
                         "avatar_frame_id": e.identity.avatar_frame_id,
                         "badge_id": e.identity.badge_id,
+                        "is_verified": e.identity.is_verified,
                     }
                     for e in self._queue[:QUEUE_ROSTER_MAX]
                 ],
@@ -285,6 +321,24 @@ class ArenaManager:
                 return group
         return None
 
+    async def force_match(self, user_id: int) -> Optional[Match]:
+        """TEMP (testing only, remove before launch): form a match immediately
+        from whoever is queued right now, even below ARENA_PLAYERS (1-3). The
+        requester must be queued. Lets a match be started without waiting for a
+        full lobby of four; ranked matches must otherwise fill normally."""
+        async with self._lock:
+            self._queue = [e for e in self._queue if e.user_id in self._sockets]
+            if not any(e.user_id == user_id for e in self._queue):
+                return None
+            # Requester first, then fill up to ARENA_PLAYERS from the rest of the
+            # queue in waiting order.
+            me = [e for e in self._queue if e.user_id == user_id]
+            others = [e for e in self._queue if e.user_id != user_id]
+            group = (me + others)[:ARENA_PLAYERS]
+            ids = {e.user_id for e in group}
+            self._queue = [e for e in self._queue if e.user_id not in ids]
+            return self._start_match_locked(group)
+
     def _start_match_locked(self, group: List[QueueEntry]) -> Match:
         seed = random.randint(1, 2_147_483_647)
         players = tuple(e.user_id for e in group)
@@ -294,10 +348,10 @@ class ArenaManager:
             players=players,
             usernames={e.user_id: e.username for e in group},
             ratings={e.user_id: e.rating for e in group},
+            identities={e.user_id: e.identity for e in group},
             question_ids=sequence_ids(seed, ARENA_QUESTION_COUNT),
             started_at=time.monotonic(),
             scores={uid: 0 for uid in players},
-            next_index={uid: 0 for uid in players},
         )
         for uid in players:
             self._matches[uid] = match
@@ -308,14 +362,24 @@ class ArenaManager:
     async def record_answer(
         self, user_id: int, client_match_id: Optional[str], index: int,
         chosen_index: Optional[int], chosen_value: Optional[float],
+        chosen_lat: Optional[float] = None, chosen_lng: Optional[float] = None,
     ) -> Tuple[str, Optional[Match], Optional[dict]]:
-        """Grade one answer against the server's own sequence and advance the
-        player. Returns (outcome, match, info):
+        """Grade one answer for the CURRENT round against the server's own
+        sequence. Returns (outcome, match, info):
           ("none")        -> not in a match
           ("stale")       -> frame belongs to a finished match
-          ("bad_index")   -> not the index this player owes an answer for
-          ("done")        -> already finished their run
-          ("ok", match, {"correct", "score", "index", "complete"})
+          ("bad_index")   -> not the round the room is on right now
+          ("done")        -> this player already left the match
+          ("already")     -> already answered this round
+          ("ok", match, {"index"})
+
+        The answer is graded and banked into `scores` immediately, but the
+        VERDICT is not returned to the player here -- correctness is revealed to
+        the whole room together at round end (round_reveal), so no one learns
+        early whether they were right. The score total stays server-authoritative
+        (numeric/map earn partial credit; train_bank). Answering does NOT advance
+        the question: the match driver owns round_index, so a client cannot race
+        ahead or replay a round.
         """
         async with self._lock:
             match = self._matches.get(user_id)
@@ -323,32 +387,86 @@ class ArenaManager:
                 return "none", None, None
             if client_match_id is not None and client_match_id != match.match_id:
                 return "stale", None, None
-            if user_id in match.finished or user_id in match.left:
+            if user_id in match.left:
                 return "done", None, None
-            expected = match.next_index.get(user_id, 0)
-            if index != expected or index >= len(match.question_ids):
+            if index != match.round_index or index >= len(match.question_ids):
                 return "bad_index", None, None
+            if user_id in match.round_answers:
+                return "already", None, None
 
-            result = grade(match.question_ids[index], chosen_index, chosen_value)
+            result = grade(
+                match.question_ids[index], chosen_index, chosen_value, chosen_lat, chosen_lng
+            )
             if result is None:
                 # The bank and the sequence come from the same dict, so this is
-                # unreachable short of a bank edit mid-match; treat as wrong
-                # rather than 500 the socket.
+                # unreachable short of a bank edit mid-match; score zero rather
+                # than 500 the socket.
                 logger.error("arena: unknown question id at index %s", index)
-                result = {"correct": False}
+                result = {"points": 0, "correct": False}
+            awarded = int(result["points"])
             correct = bool(result["correct"])
-            if correct:
-                match.scores[user_id] = match.scores.get(user_id, 0) + 1
-            match.next_index[user_id] = index + 1
-            complete = match.next_index[user_id] >= len(match.question_ids)
-            if complete:
-                match.finished.add(user_id)
-            return "ok", match, {
-                "correct": correct,
-                "score": match.scores[user_id],
-                "index": index,
-                "complete": complete,
-            }
+            match.round_answers[user_id] = awarded
+            match.round_correct[user_id] = correct
+            match.scores[user_id] = match.scores.get(user_id, 0) + awarded
+            # Everyone in? Wake the driver so it resolves the round without
+            # waiting out the rest of the shot clock.
+            if match.round_event is not None and match.round_complete():
+                match.round_event.set()
+            return "ok", match, {"index": index}
+
+    async def open_round(self, match: Match, index: int) -> Optional[dict]:
+        """Begin round `index`: clear the per-round answers and install a fresh
+        completion Event. Returns the round_start payload, or None if the match
+        is finalized or has no active players left (everyone walked out)."""
+        async with self._lock:
+            if match.finalized or not match.active_players():
+                return None
+            match.round_index = index
+            match.round_answers = {}
+            match.round_correct = {}
+            match.round_event = asyncio.Event()
+        return {
+            "type": "round_start",
+            "match_id": match.match_id,
+            "index": index,
+            "seconds": question_seconds(match.question_ids[index]),
+        }
+
+    async def close_round(self, match: Match, index: int) -> Optional[List[dict]]:
+        """Resolve the current round: any active player who never answered is
+        scored 0 for it, then return the reveal rows (one per player: this
+        round's awarded points, running score, and correctness). None if the
+        match was finalized in the meantime."""
+        async with self._lock:
+            if match.finalized:
+                return None
+            for uid in match.active_players():
+                if uid not in match.round_answers:
+                    match.round_answers[uid] = 0
+                    match.round_correct[uid] = False
+            return [
+                {
+                    "username": match.usernames.get(uid, ""),
+                    "awarded": match.round_answers.get(uid, 0),
+                    "score": match.scores.get(uid, 0),
+                    "correct": match.round_correct.get(uid, False),
+                }
+                for uid in match.players
+                if uid not in match.left
+            ]
+
+    async def active_count(self, match: Match) -> int:
+        """How many players are still connected to the match."""
+        async with self._lock:
+            return len(match.active_players())
+
+    async def finish_all(self, match: Match) -> None:
+        """Mark every player who did not leave as finished, so the match reads
+        as over and finalizes down the normal path."""
+        async with self._lock:
+            for uid in match.players:
+                if uid not in match.left:
+                    match.finished.add(uid)
 
     async def claim_finalize(self, match: Match) -> bool:
         """Exactly one caller gets to finalize a match (the last finisher, a
@@ -361,36 +479,6 @@ class ArenaManager:
                 if self._matches.get(uid) is match:
                     self._matches.pop(uid, None)
             return True
-
-    async def timed_out_matches(self) -> List[Match]:
-        """Matches past MATCH_TIMEOUT_SECONDS. Whoever is still unfinished is
-        marked finished on the score they have, which makes the match read as
-        over so it finalizes down the normal path (claim_finalize still picks
-        the single winner if a real finish lands in the same tick)."""
-        async with self._lock:
-            now = time.monotonic()
-            stale = []
-            seen = set()
-            for match in list(self._matches.values()):
-                if match.match_id in seen or match.finalized:
-                    continue
-                seen.add(match.match_id)
-                if now - match.started_at >= MATCH_TIMEOUT_SECONDS:
-                    stale.append(match)
-            for match in stale:
-                for uid in match.players:
-                    if uid not in match.left:
-                        match.finished.add(uid)
-            return stale
-
-    async def match_awaiting_finalize(self, user_id: int) -> Optional[Match]:
-        """The user's match, if it is now over but not yet scored -- a leaver
-        can be the last player everyone else was waiting on."""
-        async with self._lock:
-            for match in self._matches.values():
-                if user_id in match.players and not match.finalized and match.is_over():
-                    return match
-        return None
 
     # --- delivery ---------------------------------------------------------
 
@@ -457,6 +545,7 @@ def _queue_identity(user_id: int) -> QueueIdentity:
             avatar_url=user.avatar_url,
             avatar_frame_id=user.avatar_frame_id,
             badge_id=user.badge_id,
+            is_verified=user.is_verified,
         )
     finally:
         db.close()
@@ -534,33 +623,105 @@ async def _finalize(match: Match) -> None:
         })
 
 
+def _match_start_payload(match: Match) -> dict:
+    """The match_start frame: the seed both clients shuffle from, plus each
+    player's cosmetics so the client can render the badge tiles up front."""
+    return {
+        "type": "match_start",
+        "match_id": match.match_id,
+        "seed": match.seed,
+        "count": ARENA_QUESTION_COUNT,
+        "players": [
+            {
+                "username": match.usernames[uid],
+                "rating": round(match.ratings[uid]),
+                "avatar_url": match.identities[uid].avatar_url,
+                "avatar_frame_id": match.identities[uid].avatar_frame_id,
+                "badge_id": match.identities[uid].badge_id,
+                "is_verified": match.identities[uid].is_verified,
+            }
+            for uid in match.players
+        ],
+    }
+
+
+# Live match-driver tasks. create_task returns a task that is only weakly held
+# by the loop, so a driver would be garbage-collected mid-match without a strong
+# reference; keep one here and drop it when the driver finishes.
+_match_tasks: set = set()
+
+
+def launch_match(match: Match) -> None:
+    """Start the background driver that runs a formed match round by round."""
+    task = asyncio.create_task(run_match(match))
+    _match_tasks.add(task)
+    task.add_done_callback(_match_tasks.discard)
+
+
+async def run_match(match: Match) -> None:
+    """Drive one match in lockstep: announce it, then for each question open a
+    round, wait until everyone answers or the shot clock fires, reveal the
+    result to the whole room, and advance together. The client never advances
+    the question -- this loop does -- so no one can race ahead or replay a round.
+
+    The finally-block always finalizes, so a crash or a mass walkout still hands
+    everyone still connected their result rather than a dead screen (BUG-011);
+    _finalize's claim_finalize keeps that to exactly one scoring."""
+    try:
+        await manager.broadcast(match.players, _match_start_payload(match))
+        for index in range(ARENA_QUESTION_COUNT):
+            start = await manager.open_round(match, index)
+            if start is None:
+                break  # finalized or everyone left
+            await manager.broadcast(match.players, start)
+            event = match.round_event
+            if event is not None:
+                try:
+                    await asyncio.wait_for(event.wait(), timeout=float(start["seconds"]))
+                except asyncio.TimeoutError:
+                    # The shot clock won the race: whoever is silent is scored 0
+                    # for this round in close_round.
+                    pass
+            rows = await manager.close_round(match, index)
+            if rows is None:
+                break
+            await manager.broadcast(match.players, {
+                "type": "round_reveal",
+                "match_id": match.match_id,
+                "index": index,
+                "results": rows,
+            })
+            if await manager.active_count(match) == 0:
+                break  # nobody left to advance for
+            if index < ARENA_QUESTION_COUNT - 1:
+                # Hold the reveal so everyone reads it, then advance together.
+                await asyncio.sleep(REVEAL_SECONDS)
+        await manager.finish_all(match)
+    except asyncio.CancelledError:
+        raise
+    except Exception:
+        logger.exception("arena: match driver crashed for %s", match.match_id)
+    finally:
+        await _finalize(match)
+
+
 async def matchmaker_loop() -> None:
-    """Background matchmaker + match-timeout sweep (started from main.py's
-    lifespan). Runs off the socket handlers so no player's frame pays for
-    pairing, mirroring the rate limiter's sweep loop (ARCH-009)."""
+    """Background matchmaker (started from main.py's lifespan). Runs off the
+    socket handlers so no player's frame pays for pairing, mirroring the rate
+    limiter's sweep loop (ARCH-009). Each formed match gets its own driver task
+    (launch_match); the per-round shot clock bounds every match, so there is no
+    longer a separate abandonment-timeout sweep."""
     while True:
         await asyncio.sleep(MATCHMAKER_TICK_SECONDS)
         try:
             formed = await manager.form_matches()
             for match in formed:
-                payload = {
-                    "type": "match_start",
-                    "match_id": match.match_id,
-                    "seed": match.seed,
-                    "count": ARENA_QUESTION_COUNT,
-                    "players": [
-                        {"username": match.usernames[uid], "rating": round(match.ratings[uid])}
-                        for uid in match.players
-                    ],
-                }
-                await manager.broadcast(match.players, payload)
+                launch_match(match)
             if formed:
                 # Those players just left the queue: whoever is still waiting
                 # needs a roster without them, or their grid keeps tiles for
                 # people who are already mid-match.
                 await _broadcast_queue()
-            for match in await manager.timed_out_matches():
-                await _finalize(match)
         except asyncio.CancelledError:
             raise
         except Exception:
@@ -594,10 +755,28 @@ async def _handle_queue(websocket: WebSocket, user_id: int, username: str) -> No
     await _broadcast_queue()
 
 
+async def _handle_force_start(websocket: WebSocket, user_id: int) -> None:
+    """TEMP (testing only, remove before launch): start a match now with
+    whoever is in the waiting room, even fewer than four players."""
+    match = await manager.force_match(user_id)
+    if match is None:
+        await _error(websocket, "Join the queue first.", code="not_queued")
+        return
+    # The driver announces the match (match_start) and runs the rounds, exactly
+    # as it does for a normally-formed match.
+    launch_match(match)
+    # Those players just left the queue; refresh the roster for anyone still
+    # waiting (as the matchmaker does after forming a match).
+    await _broadcast_queue()
+
+
 async def _handle_answer(websocket: WebSocket, user_id: int, data: dict) -> None:
     index = data.get("index")
     chosen_index = data.get("chosen_index")
     chosen_value = data.get("chosen_value")
+    # A map answer is a dropped pin: latitude/longitude of the guess.
+    chosen_lat = data.get("chosen_lat")
+    chosen_lng = data.get("chosen_lng")
     if not isinstance(index, int) or isinstance(index, bool) or not 0 <= index < ARENA_QUESTION_COUNT:
         await _error(websocket, "answer requires index (int).")
         return
@@ -607,11 +786,17 @@ async def _handle_answer(websocket: WebSocket, user_id: int, data: dict) -> None
     if chosen_value is not None and (isinstance(chosen_value, bool) or not isinstance(chosen_value, (int, float))):
         await _error(websocket, "chosen_value must be a number.")
         return
+    # Bounds guard the pin so junk coordinates never reach grading (bool is an
+    # int subclass, so exclude it explicitly, as chosen_value does).
+    for name, val, lo, hi in (("chosen_lat", chosen_lat, -90.0, 90.0), ("chosen_lng", chosen_lng, -180.0, 180.0)):
+        if val is not None and (isinstance(val, bool) or not isinstance(val, (int, float)) or not lo <= val <= hi):
+            await _error(websocket, f"{name} must be a number within range.")
+            return
 
     match_id = data.get("match_id")
     outcome, match, info = await manager.record_answer(
         user_id, match_id if isinstance(match_id, str) and match_id else None,
-        index, chosen_index, chosen_value,
+        index, chosen_index, chosen_value, chosen_lat, chosen_lng,
     )
     if outcome == "none":
         await _error(websocket, "You are not in a match.", code="not_in_match")
@@ -620,36 +805,37 @@ async def _handle_answer(websocket: WebSocket, user_id: int, data: dict) -> None
         await _error(websocket, "That match is already over.", code="stale_match")
         return
     if outcome == "bad_index":
-        await _error(websocket, "Unexpected question index.", code="bad_index")
+        # The room has already moved on (or not reached) this question -- e.g. a
+        # late answer after the shot clock closed the round. Not an error worth
+        # a red banner; the client is already waiting for the reveal.
+        await _error(websocket, "That round is closed.", code="bad_index")
+        return
+    if outcome == "already":
+        await _error(websocket, "You already answered this round.", code="already_answered")
         return
     if outcome == "done":
-        await _error(websocket, "You already finished this match.", code="already_finished")
+        await _error(websocket, "You already left this match.", code="already_finished")
         return
 
     assert match is not None and info is not None
+    # Confirm the answer is locked in, but WITHOUT a verdict: correctness is
+    # revealed to the whole room together at round end (round_reveal), so no one
+    # learns early whether they were right.
     await websocket.send_json({
-        "type": "answer_result",
+        "type": "answer_ack",
         "match_id": match.match_id,
         "index": info["index"],
-        "correct": info["correct"],
-        "score": info["score"],
     })
-    await manager.broadcast(match.others(user_id), {
-        "type": "opponent_progress",
+    # Tell everyone (including the answerer) that this player is in, so their
+    # badge lifts. No score here -- that would spoil the pending reveal.
+    await manager.broadcast(match.players, {
+        "type": "player_answered",
         "match_id": match.match_id,
+        "index": info["index"],
         "username": match.usernames.get(user_id, ""),
-        "index": info["index"],
-        "score": info["score"],
     })
-    if info["complete"]:
-        await manager.broadcast(match.others(user_id), {
-            "type": "player_finished",
-            "match_id": match.match_id,
-            "username": match.usernames.get(user_id, ""),
-            "score": info["score"],
-        })
-    if match.is_over():
-        await _finalize(match)
+    # The round is resolved and advanced by the match driver (run_match), never
+    # here: an answer only records, it does not finalize.
 
 
 @router.websocket("/ws")
@@ -754,6 +940,14 @@ async def arena_websocket(websocket: WebSocket):
                 if await manager.dequeue(user_id):
                     await _broadcast_queue()
                 await websocket.send_json({"type": "queue_cancelled"})
+            elif msg_type == "force_start":
+                # TEMP (testing only, remove before launch): start a match now
+                # with whoever is in the waiting room, even below four players.
+                try:
+                    await _handle_force_start(websocket, user_id)
+                except Exception:
+                    logger.exception("arena force_start failed (user %s)", user_id)
+                    await _error(websocket, "Could not start the match. Try again.")
             elif msg_type == "answer":
                 try:
                     await _handle_answer(websocket, user_id, data)
@@ -770,8 +964,6 @@ async def arena_websocket(websocket: WebSocket):
         # A player who closed the tab is no longer waiting; drop their tile from
         # the grids of those who still are.
         await _broadcast_queue()
-        # Leaving can be the last thing a match was waiting on: the remaining
-        # players must get their result rather than sit on a dead screen.
-        pending = await manager.match_awaiting_finalize(user_id)
-        if pending is not None:
-            await _finalize(pending)
+        # Leaving marks the player gone in their match and wakes its driver if
+        # that completes the open round (_leave_locked). The driver owns
+        # advancing and finalizing, so there is nothing to finalize here.

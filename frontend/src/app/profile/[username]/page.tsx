@@ -13,10 +13,9 @@ import { useSwipeTabs } from "@/lib/useSwipeTabs"
 import { tabPanelProps } from "@/lib/tablist"
 import BottomNav from "@/components/BottomNav"
 import SegmentedTabs from "@/components/SegmentedTabs"
-import VerifiedBadge from "@/components/VerifiedBadge"
 import PostRow from "@/components/PostRow"
 import Spinner from "@/components/Spinner"
-import Avatar from "@/components/Avatar"
+import ProfileBadgeCard from "@/components/ProfileBadgeCard"
 import FollowListSheet, { type ListUser } from "@/components/FollowListSheet"
 
 const PROFILE_TABS_ID = "profile-tabs"
@@ -28,6 +27,9 @@ interface ProfileData {
   bio: string | null
   avatar_url: string | null
   avatar_frame_id: number | null
+  // Equipped Arena badge; the /profile endpoint may not send it yet, so the
+  // own-profile view falls back to the auth user's badge_id.
+  badge_id?: number | null
   follower_count: number
   following_count: number
   post_count: number
@@ -236,13 +238,43 @@ export default function PublicProfilePage() {
 
         {/* Profile section */}
         <div className="px-4 pt-4 pb-2">
-          {/* Avatar */}
-          <Avatar username={username} avatarUrl={profile.avatar_url} frameId={profile.avatar_frame_id} size={72} verified={profile.is_verified} className="mb-3" />
+          {/* Badge tile (top-left) + stats (right) */}
+          <div className="flex gap-3 items-stretch mb-3">
+            {/* Badge tile, arena waiting-room style. Own profile takes its badge
+                from the auth user (the /profile endpoint may not send one). */}
+            <ProfileBadgeCard
+              username={username}
+              avatarUrl={profile.avatar_url}
+              badgeId={isOwnProfile ? (user?.badge_id ?? null) : (profile.badge_id ?? null)}
+              verified={profile.is_verified}
+            />
 
-          {/* Username + verified */}
-          <div className="flex items-center gap-1.5 mb-0.5">
-            <h1 className="font-serif text-ink text-2xl font-medium">{username}</h1>
-            {profile.is_verified > 0 && <VerifiedBadge size={18} level={profile.is_verified} />}
+            {/* Stats about the person */}
+            <div className="flex-1 min-w-0 flex flex-col justify-center">
+              <h1 className="sr-only">{username}</h1>
+              {/* Post / Followers / Following share one row at the same height */}
+              <div className="grid grid-cols-3 gap-x-3">
+                <div className="text-center">
+                  <p className="text-ink font-bold text-lg font-mono">{profile.post_count}</p>
+                  <p className="text-ink-muted text-xs">Posts</p>
+                </div>
+                <button className="text-center" onClick={() => openList("followers")}>
+                  <p className="text-ink font-bold text-lg font-mono">{profile.follower_count}</p>
+                  <p className="text-ink-muted text-xs">Followers</p>
+                </button>
+                <button className="text-center" onClick={() => openList("following")}>
+                  <p className="text-ink font-bold text-lg font-mono">{profile.following_count}</p>
+                  <p className="text-ink-muted text-xs">Following</p>
+                </button>
+              </div>
+              {/* Knowledge score sits on its own line below the social counts */}
+              <div className="text-center mt-3">
+                <p className="text-lamp font-bold text-lg font-mono">
+                  {elo?.global_rating ?? "—"}
+                </p>
+                <p className="text-ink-muted text-xs">Knowledge</p>
+              </div>
+            </div>
           </div>
 
           {/* Private label */}
@@ -254,28 +286,6 @@ export default function PublicProfilePage() {
           {profile.bio && (
             <p className="text-ink-body text-sm mb-3">{profile.bio}</p>
           )}
-
-          {/* Stats row */}
-          <div className="flex gap-6 mb-4">
-            <div className="text-center">
-              <p className="text-ink font-bold text-base font-mono">{profile.post_count}</p>
-              <p className="text-ink-muted text-xs">Posts</p>
-            </div>
-            <button className="text-center" onClick={() => openList("followers")}>
-              <p className="text-ink font-bold text-base font-mono">{profile.follower_count}</p>
-              <p className="text-ink-muted text-xs">Followers</p>
-            </button>
-            <button className="text-center" onClick={() => openList("following")}>
-              <p className="text-ink font-bold text-base font-mono">{profile.following_count}</p>
-              <p className="text-ink-muted text-xs">Following</p>
-            </button>
-            <div className="text-center">
-              <p className="text-lamp font-bold text-base font-mono">
-                {elo?.global_rating ?? "—"}
-              </p>
-              <p className="text-ink-muted text-xs">Knowledge</p>
-            </div>
-          </div>
 
           {/* Follow / Edit Profile button */}
           {isOwnProfile ? (
