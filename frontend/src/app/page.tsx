@@ -222,6 +222,9 @@ export default function Home() {
   // match is showing (the match pins a strip of participant badges where the
   // dock would sit), so the nav dock is hidden then (Arena reports the change).
   const [arenaOwnsBottom, setArenaOwnsBottom] = useState(false)
+  // A live Arena match also hides the feed header (full-screen battle); the
+  // waiting room does not, so this is separate from arenaOwnsBottom.
+  const [arenaHideHeader, setArenaHideHeader] = useState(false)
   // The swipe pager, sliding indicator and active/activated tab state all
   // live in the shared hook; the indicator is the neutral pill fill whose
   // color never changes — the per-post accent switches hard with the
@@ -300,6 +303,7 @@ export default function Home() {
         tabRefs={tabRefs}
         indicatorRef={indicatorRef}
         tabStripRef={tabStripRef}
+        hidden={arenaHideHeader}
       />
 
       {/* Horizontal strip — one full-width page per tab */}
@@ -350,6 +354,7 @@ export default function Home() {
                     onExit={handleExitToFeed}
                     active={activeIndex === i}
                     onOwnsBottomChange={setArenaOwnsBottom}
+                    onHeaderHiddenChange={setArenaHideHeader}
                   />
                 ) : (
                   // active gates the battle socket (M143): swiping away

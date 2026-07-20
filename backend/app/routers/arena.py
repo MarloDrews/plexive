@@ -685,15 +685,22 @@ async def run_match(match: Match) -> None:
             rows = await manager.close_round(match, index)
             if rows is None:
                 break
+            # How long this reveal stays on screen before the room advances: the
+            # fixed hold on every round but the last, which finalizes straight
+            # into the summary instead. Sent so the client can show an accurate
+            # countdown (mirrors round_start carrying its own `seconds`).
+            is_last = index >= ARENA_QUESTION_COUNT - 1
+            reveal_hold = 0.0 if is_last else REVEAL_SECONDS
             await manager.broadcast(match.players, {
                 "type": "round_reveal",
                 "match_id": match.match_id,
                 "index": index,
+                "seconds": reveal_hold,
                 "results": rows,
             })
             if await manager.active_count(match) == 0:
                 break  # nobody left to advance for
-            if index < ARENA_QUESTION_COUNT - 1:
+            if not is_last:
                 # Hold the reveal so everyone reads it, then advance together.
                 await asyncio.sleep(REVEAL_SECONDS)
         await manager.finish_all(match)

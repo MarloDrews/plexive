@@ -82,8 +82,10 @@ export type ArenaInbound =
   // The round is over (all answered or the shot clock fired): reveal correctness
   // and the updated scores for everyone at once. `awarded` is the graded points
   // this question earned (0..100); numeric/map can be partial, so `score` is a
-  // running points total.
-  | { type: "round_reveal"; match_id: string; index: number; results: ArenaRoundResult[] }
+  // running points total. `seconds` is how long this reveal stays on screen
+  // before the room advances (0 on the final round, which finalizes straight
+  // into the summary) -- the client counts it down as a progress bar.
+  | { type: "round_reveal"; match_id: string; index: number; seconds: number; results: ArenaRoundResult[] }
   | { type: "player_left"; match_id: string; username: string }
   | { type: "match_result"; match_id: string; standings: ArenaStanding[] }
   | { type: "error"; detail?: string; code?: string }
