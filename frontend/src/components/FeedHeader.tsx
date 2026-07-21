@@ -27,6 +27,11 @@ interface FeedHeaderProps {
   tabRefs: MutableRefObject<(HTMLButtonElement | null)[]>
   indicatorRef: RefObject<HTMLDivElement | null>
   tabStripRef: RefObject<HTMLDivElement | null>
+  // Fades the whole header out (Arena hides it during a live match for a
+  // full-screen battle). It stays mounted -- only opacity/pointer-events change
+  // -- so the sliding indicator keeps its JS-set geometry and does not have to
+  // be re-measured when the header comes back.
+  hidden?: boolean
 }
 
 // Stage feed header — a floating frosted capsule detached from the top edge,
@@ -42,9 +47,15 @@ export default function FeedHeader({
   tabRefs,
   indicatorRef,
   tabStripRef,
+  hidden = false,
 }: FeedHeaderProps) {
   return (
-    <div className="absolute top-0 left-0 right-0 z-20">
+    <div
+      aria-hidden={hidden || undefined}
+      className={`absolute top-0 left-0 right-0 z-20 transition-opacity duration-300 ${
+        hidden ? "opacity-0 pointer-events-none" : "opacity-100"
+      }`}
+    >
       <div className="relative pt-3 px-3">
         {/* Floating search circle */}
         <button

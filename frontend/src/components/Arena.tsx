@@ -65,6 +65,10 @@ interface Props {
   // full-screen waiting room AND a live match (whose badge strip sits where the
   // dock would). The page uses it to hide the bottom nav dock.
   onOwnsBottomChange?: (ownsBottom: boolean) => void
+  // Fires true only during a live match (question/reveal), so the page fades the
+  // feed header out for a full-screen battle. Narrower than onOwnsBottomChange,
+  // which also covers the waiting room (the header stays up there).
+  onHeaderHiddenChange?: (hidden: boolean) => void
 }
 
 // Waiting-room slots. The 2x2 grid assumes a four-player match: if
@@ -259,13 +263,33 @@ function PlayerBadge({ player, score, isMe, hasAnswered, hasLeft }: {
   )
 }
 
+// A grey placeholder in the bottom strip: an unfilled seat, so the strip always
+// shows four cards even when a match started with fewer than four players. It
+// mirrors PlayerBadge's inner layout (disc + three text lines) so the empty
+// tiles are the same height as the filled ones and the row stays even.
+function EmptyBadge() {
+  return (
+    <div
+      className="relative flex-1 min-w-0 rounded-2xl border border-dashed overflow-hidden"
+      style={{ borderColor: "var(--color-edge)", background: "rgb(255 255 255 / 0.02)", opacity: 0.5 }}
+    >
+      <div className="relative flex flex-col items-center gap-1 px-1.5 pt-2.5 pb-2">
+        <div className="rounded-full bg-surface-3 border border-edge" style={{ width: 40, height: 40 }} />
+        <span className="text-[11px] font-semibold leading-none text-ink-muted">Empty</span>
+        <span className="font-mono text-[15px] leading-none text-ink-muted">--</span>
+        <span className="text-[9px] h-3 leading-3 text-ink-muted">open</span>
+      </div>
+    </div>
+  )
+}
+
 // Ordinal for a placement (1 -> 1st). Placements here are always 1..4.
 const ORDINALS = ["", "1st", "2nd", "3rd", "4th"] as const
 function ordinal(placement: number): string {
   return ORDINALS[placement] ?? `${placement}th`
 }
 
-export default function Arena({ onExit, active = true, onOwnsBottomChange }: Props) {
+export default function Arena({ onExit, active = true, onOwnsBottomChange, onHeaderHiddenChange }: Props) {
   const { user } = useAuth()
 
   const [stage, setStage] = useState<Stage>("lobby")
@@ -312,6 +336,10 @@ export default function Arena({ onExit, active = true, onOwnsBottomChange }: Pro
   // authoritative -- this is a visual guide that locks input when it hits zero.
   const [roundEndsAt, setRoundEndsAt] = useState<number | null>(null)
   const [secondsLeft, setSecondsLeft] = useState(0)
+  // How long the current reveal stays on screen before the room advances (from
+  // round_reveal). Drives the reveal countdown bar; 0 on the final round (which
+  // goes straight to the summary), where no bar is shown.
+  const [revealSeconds, setRevealSeconds] = useState(0)
 
   // Numeric questions start the slider at a random step, never on the correct
   // answer (an unmoved submit would be a free correct) -- as in Battle.
@@ -353,6 +381,7 @@ export default function Arena({ onExit, active = true, onOwnsBottomChange }: Pro
     setMyReveal(null)
     setRoundEndsAt(null)
     setSecondsLeft(0)
+    setRevealSeconds(0)
     setQueuedAt(null)
     setQueuePlayers([])
     setWaiting(0)
@@ -434,6 +463,7 @@ export default function Arena({ onExit, active = true, onOwnsBottomChange }: Pro
         const mine = e.results.find((r: ArenaRoundResult) => r.username === user?.username)
         if (mine) setMyReveal({ awarded: mine.awarded, correct: mine.correct })
         setRoundEndsAt(null)
+        setRevealSeconds(e.seconds)
         setStage("reveal")
         break
       }
@@ -503,6 +533,15 @@ export default function Arena({ onExit, active = true, onOwnsBottomChange }: Pro
     onOwnsBottomChange?.(ownsBottom)
     return () => onOwnsBottomChange?.(false)
   }, [ownsBottom, onOwnsBottomChange])
+
+  // Hide the feed header only during a live match, so the battle fills the whole
+  // screen. The waiting room keeps it (you may still want to swipe away). The
+  // cleanup restores it on any exit, including unmounting mid-match.
+  const headerHidden = stage === "question" || stage === "reveal"
+  useEffect(() => {
+    onHeaderHiddenChange?.(headerHidden)
+    return () => onHeaderHiddenChange?.(false)
+  }, [headerHidden, onHeaderHiddenChange])
 
   // Queue timer, purely informational (the widening rating window lives
   // server-side). Ticks only while queueing, so nothing runs in the lobby.
@@ -924,15 +963,43 @@ export default function Arena({ onExit, active = true, onOwnsBottomChange }: Pro
           </p>
         )}
         {revealing && (
-          <p className="text-ink-muted text-xs text-center">Next question in a moment...</p>
+          revealSeconds > 0 ? (
+            // Countdown bar: shows how long the solution stays up before the
+            // room advances. The fill empties over revealSeconds via a CSS
+            // animation whose duration is set inline (keyed by index so each
+            // reveal replays it from full). The server holds the reveal for the
+            // same span, so the bar lands as the next question opens.
+            <div className="flex flex-col items-center gap-1.5">
+              <div
+                aria-hidden="true"
+                className="h-1 w-full max-w-[220px] rounded-full overflow-hidden"
+                style={{ background: "rgb(255 255 255 / 0.10)" }}
+              >
+                <div
+                  key={index}
+                  className="arena-reveal-bar h-full"
+                  style={{ background: "var(--color-lamp)", animationDuration: `${revealSeconds}s` }}
+                />
+              </div>
+              <p className="text-ink-muted text-xs text-center">Next question in a moment...</p>
+            </div>
+          ) : (
+            <p className="text-ink-muted text-xs text-center">Final results in a moment...</p>
+          )
         )}
       </div>
     )
   }
 
-  // The bottom strip of participant badges, pinned below the question.
+  // The bottom strip of participant badges, pinned below the question. It always
+  // shows ARENA_SLOTS cards: the real players (including any who left, kept as
+  // dimmed badges so their running score stays visible) padded out to four with
+  // grey EmptyBadge placeholders, so a match that started with fewer than four
+  // still reads as a full lobby.
   function renderBadgeStrip() {
     const answeredCount = answered.length
+    const seated = players.slice(0, ARENA_SLOTS)
+    const emptySeats = Math.max(0, ARENA_SLOTS - seated.length)
     return (
       <div className="shrink-0 px-3 pt-2 pb-[max(12px,env(safe-area-inset-bottom))]">
         {/* Announce answer progress politely; the badges themselves are
@@ -941,7 +1008,7 @@ export default function Arena({ onExit, active = true, onOwnsBottomChange }: Pro
           {stage === "reveal" ? "Round revealed." : `${answeredCount} of ${players.length} answered.`}
         </div>
         <div aria-hidden="true" className="flex items-end gap-2">
-          {players.map((p) => (
+          {seated.map((p) => (
             <PlayerBadge
               key={p.username}
               player={p}
@@ -950,6 +1017,9 @@ export default function Arena({ onExit, active = true, onOwnsBottomChange }: Pro
               hasAnswered={stage === "reveal" || answered.includes(p.username)}
               hasLeft={left.includes(p.username)}
             />
+          ))}
+          {Array.from({ length: emptySeats }, (_, i) => (
+            <EmptyBadge key={`empty-${i}`} />
           ))}
         </div>
       </div>
@@ -1029,7 +1099,9 @@ export default function Arena({ onExit, active = true, onOwnsBottomChange }: Pro
   if (user && (stage === "question" || stage === "reveal")) {
     return (
       <div className="h-full flex flex-col">
-        <div className="flex-1 overflow-y-auto overscroll-y-contain px-4 pt-20 pb-4">
+        {/* pt is small here (no feed header during a match) but still clears the
+            status bar / notch. */}
+        <div className="flex-1 overflow-y-auto overscroll-y-contain px-4 pt-[max(20px,env(safe-area-inset-top))] pb-4">
           {message && (
             <div className="mb-4">
               <MessageSlab>

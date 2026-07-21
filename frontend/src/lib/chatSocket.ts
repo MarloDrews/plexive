@@ -42,6 +42,12 @@ const RETRY_MAX_MS = 30000
 const CLOSE_UNAUTHORIZED = 4401
 const CLOSE_INSECURE = 4403
 
+// Keepalive, same reasoning as arenaSocket.ts: an idle conversation exchanges
+// no frames, and a TLS-terminating proxy in front of the backend closes a
+// socket that has been silent for around 100 seconds. The server answers
+// `pong` (backend/app/routers/chat.py); the dispatch below ignores it.
+const HEARTBEAT_MS = 45000
+
 // Opens one authenticated socket while `loggedIn` is true. Auth is a first
 // frame ({type:"auth", token}) so the JWT never appears in a URL. Keyed on
 // the auth state (M143/BUG-050): logging in connects, logging out closes the
@@ -62,7 +68,15 @@ export function useChatSocket(loggedIn: boolean, onMessage: (m: ChatMessage) => 
     }
     let unmounted = false
     let retryTimer: ReturnType<typeof setTimeout>
+    let heartbeat: ReturnType<typeof setInterval> | undefined
     let attempts = 0
+
+    // Cleared on close, on reconnect and on unmount, so a retry never leaves a
+    // second interval running against a dead socket.
+    function stopHeartbeat() {
+      clearInterval(heartbeat)
+      heartbeat = undefined
+    }
 
     function scheduleRetry() {
       const delay = Math.min(RETRY_BASE_MS * 2 ** attempts, RETRY_MAX_MS)
@@ -78,6 +92,7 @@ export function useChatSocket(loggedIn: boolean, onMessage: (m: ChatMessage) => 
         setStatus("closed")
         return
       }
+      stopHeartbeat()
       // The constructor throws synchronously on a malformed URL (e.g. a missing
       // API base). Treat that like a failed connection and schedule a retry, so
       // the throw does not escape the reconnect timer and permanently kill the
@@ -102,6 +117,9 @@ export function useChatSocket(loggedIn: boolean, onMessage: (m: ChatMessage) => 
             attempts = 0
             authedRef.current = true
             setStatus("open")
+            heartbeat = setInterval(() => {
+              if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: "ping" }))
+            }, HEARTBEAT_MS)
           } else if (data.type === "message") onMessageRef.current(data.message as ChatMessage)
           else if (data.type === "error") setError(data.detail ?? "Something went wrong.")
         } catch {
@@ -110,6 +128,7 @@ export function useChatSocket(loggedIn: boolean, onMessage: (m: ChatMessage) => 
       }
       ws.onclose = (e) => {
         authedRef.current = false
+        stopHeartbeat()
         if (unmounted) return
         setStatus("closed")
         if (e.code === CLOSE_UNAUTHORIZED || e.code === CLOSE_INSECURE) return
@@ -121,6 +140,7 @@ export function useChatSocket(loggedIn: boolean, onMessage: (m: ChatMessage) => 
     return () => {
       unmounted = true
       clearTimeout(retryTimer)
+      stopHeartbeat()
       authedRef.current = false
       wsRef.current?.close()
     }

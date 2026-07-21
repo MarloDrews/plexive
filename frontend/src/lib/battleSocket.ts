@@ -31,6 +31,12 @@ const RETRY_MAX_MS = 30000
 const CLOSE_UNAUTHORIZED = 4401
 const CLOSE_INSECURE = 4403
 
+// Keepalive, same reasoning as arenaSocket.ts: a socket waiting on the other
+// player exchanges no frames, and a TLS-terminating proxy in front of the
+// backend closes one that has been silent for around 100 seconds. The server
+// answers `pong` (backend/app/routers/battle.py).
+const HEARTBEAT_MS = 45000
+
 // Opens one battle socket while `enabled` is true. The caller passes
 // loggedIn AND tab-active (M143/FE-RENDER-040/BUG-042): a Battle tab the user
 // swiped away from disconnects, so a hidden tab can no longer sit
@@ -49,7 +55,15 @@ export function useBattleSocket(enabled: boolean, onEvent: (e: BattleInbound) =>
     }
     let unmounted = false
     let retryTimer: ReturnType<typeof setTimeout>
+    let heartbeat: ReturnType<typeof setInterval> | undefined
     let attempts = 0
+
+    // Cleared on close, on reconnect and on unmount, so a retry never leaves a
+    // second interval running against a dead socket.
+    function stopHeartbeat() {
+      clearInterval(heartbeat)
+      heartbeat = undefined
+    }
 
     function scheduleRetry() {
       const delay = Math.min(RETRY_BASE_MS * 2 ** attempts, RETRY_MAX_MS)
@@ -65,6 +79,7 @@ export function useBattleSocket(enabled: boolean, onEvent: (e: BattleInbound) =>
         setStatus("closed")
         return
       }
+      stopHeartbeat()
       // The constructor throws synchronously on a malformed URL (e.g. a missing
       // API base). Treat that like a failed connection and schedule a retry, so
       // the throw does not escape the reconnect timer and permanently kill the
@@ -89,7 +104,12 @@ export function useBattleSocket(enabled: boolean, onEvent: (e: BattleInbound) =>
             attempts = 0
             authedRef.current = true
             setStatus("open")
+            heartbeat = setInterval(() => {
+              if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: "ping" }))
+            }, HEARTBEAT_MS)
           }
+          // Keepalive replies carry no state; consumers never see them.
+          if (data.type === "pong") return
           onEventRef.current(data)
         } catch {
           // Ignore malformed frames.
@@ -99,6 +119,7 @@ export function useBattleSocket(enabled: boolean, onEvent: (e: BattleInbound) =>
       ws.onerror = () => {}
       ws.onclose = (e) => {
         authedRef.current = false
+        stopHeartbeat()
         if (unmounted) return
         setStatus("closed")
         if (e.code === CLOSE_UNAUTHORIZED || e.code === CLOSE_INSECURE) return
@@ -110,6 +131,7 @@ export function useBattleSocket(enabled: boolean, onEvent: (e: BattleInbound) =>
     return () => {
       unmounted = true
       clearTimeout(retryTimer)
+      stopHeartbeat()
       authedRef.current = false
       wsRef.current?.close()
     }
