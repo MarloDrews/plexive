@@ -98,6 +98,13 @@ const RETRY_MAX_MS = 30000
 const CLOSE_UNAUTHORIZED = 4401
 const CLOSE_INSECURE = 4403
 
+// Keepalive. A player waiting alone in the queue exchanges no frames until the
+// roster changes, and a TLS-terminating proxy in front of the backend closes a
+// socket that has been silent for around 100 seconds. Waiting for a real
+// opponent is exactly that case, so the client pings well inside that window;
+// the server answers `pong` (backend/app/routers/arena.py).
+const HEARTBEAT_MS = 45000
+
 // Opens one arena socket while `enabled` is true (logged in AND tab active,
 // like Battle): a tab the user swiped away from disconnects, which also drops
 // them out of the matchmaking queue rather than matching someone who is not
@@ -116,7 +123,15 @@ export function useArenaSocket(enabled: boolean, onEvent: (e: ArenaInbound) => v
     }
     let unmounted = false
     let retryTimer: ReturnType<typeof setTimeout>
+    let heartbeat: ReturnType<typeof setInterval> | undefined
     let attempts = 0
+
+    // Cleared on close, on reconnect and on unmount, so a retry never leaves a
+    // second interval running against a dead socket.
+    function stopHeartbeat() {
+      clearInterval(heartbeat)
+      heartbeat = undefined
+    }
 
     function scheduleRetry() {
       const delay = Math.min(RETRY_BASE_MS * 2 ** attempts, RETRY_MAX_MS)
@@ -132,6 +147,7 @@ export function useArenaSocket(enabled: boolean, onEvent: (e: ArenaInbound) => v
         setStatus("closed")
         return
       }
+      stopHeartbeat()
       let ws: WebSocket
       try {
         ws = new WebSocket(wsUrl("/api/arena/ws"))
@@ -154,7 +170,12 @@ export function useArenaSocket(enabled: boolean, onEvent: (e: ArenaInbound) => v
             attempts = 0
             authedRef.current = true
             setStatus("open")
+            heartbeat = setInterval(() => {
+              if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: "ping" }))
+            }, HEARTBEAT_MS)
           }
+          // Keepalive replies carry no state; consumers never see them.
+          if (data.type === "pong") return
           onEventRef.current(data)
         } catch {
           // Ignore malformed frames.
@@ -163,6 +184,7 @@ export function useArenaSocket(enabled: boolean, onEvent: (e: ArenaInbound) => v
       ws.onerror = () => {}
       ws.onclose = (e) => {
         authedRef.current = false
+        stopHeartbeat()
         if (unmounted) return
         setStatus("closed")
         if (e.code === CLOSE_UNAUTHORIZED || e.code === CLOSE_INSECURE) return
@@ -174,6 +196,7 @@ export function useArenaSocket(enabled: boolean, onEvent: (e: ArenaInbound) => v
     return () => {
       unmounted = true
       clearTimeout(retryTimer)
+      stopHeartbeat()
       authedRef.current = false
       wsRef.current?.close()
     }
