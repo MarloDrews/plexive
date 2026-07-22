@@ -126,8 +126,9 @@ check("sequence has no repeats", len(set(sequence_ids(99, 7))) == 7)
 check(
     "JS parity vector (seed 12345)",
     sequence_ids(12345, 7) == [
-        "sci-bee-makes", "lang-synonym-rapid", "geo-map-eiffel", "logic-clock-angle",
-        "geo-continents", "math-half-of-50", "geo-sun-rise",
+        "hist-moonwalkers-count", "geo-map-reykjavik", "sci-avogadro-exponent",
+        "hist-westphalia-year", "sci-fermi-paradox", "lang-algebra-origin",
+        "sci-cmb-temperature",
     ],
     str(sequence_ids(12345, 7)),
 )
@@ -137,16 +138,16 @@ check(
 # exact answer is full marks, a maximal miss is zero. grade() mirrors the
 # frontend scoring (frontend/src/lib/train/scoring.ts) so the client renders the
 # same number the server grades.
-check("choice right is full marks", grade("geo-sun-rise", chosen_index=2)["points"] == 100)
-check("choice wrong is zero", grade("geo-sun-rise", chosen_index=0)["points"] == 0)
-check("numeric exact is full marks", grade("sci-water-state", chosen_value=100)["points"] == 100)
-_near_num = grade("sci-water-state", chosen_value=110)  # 10 off on a 0..200 slider
+check("choice right is full marks", grade("sci-krebs-location", chosen_index=1)["points"] == 100)
+check("choice wrong is zero", grade("sci-krebs-location", chosen_index=0)["points"] == 0)
+check("numeric exact is full marks", grade("sci-speed-of-sound", chosen_value=343)["points"] == 100)
+_near_num = grade("sci-speed-of-sound", chosen_value=373)  # 30 off on a 0..1000 slider
 check("numeric near miss is partial", 0 < _near_num["points"] < 100, str(_near_num))
-check("numeric far miss is zero", grade("sci-water-state", chosen_value=99999)["points"] == 0)
-check("map exact is full marks", grade("geo-map-eiffel", chosen_lat=48.8584, chosen_lng=2.2945)["points"] == 100)
-_near_map = grade("geo-map-eiffel", chosen_lat=45.0, chosen_lng=5.0)  # a few hundred km off
+check("numeric far miss is zero", grade("sci-speed-of-sound", chosen_value=99999)["points"] == 0)
+check("map exact is full marks", grade("geo-map-machu-picchu", chosen_lat=-13.1631, chosen_lng=-72.545)["points"] == 100)
+_near_map = grade("geo-map-machu-picchu", chosen_lat=-10.0, chosen_lng=-70.0)  # a few hundred km off
 check("map near miss is partial", 0 < _near_map["points"] < 100, str(_near_map))
-check("map antipode is zero", grade("geo-map-eiffel", chosen_lat=-48.8584, chosen_lng=-177.7055)["points"] == 0)
+check("map antipode is zero", grade("geo-map-machu-picchu", chosen_lat=13.1631, chosen_lng=107.455)["points"] == 0)
 
 users = [
     register("arena.alice@example.com", "a_alice"),
