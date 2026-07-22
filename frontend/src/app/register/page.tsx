@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { useAuth, hasToken } from "@/lib/auth"
+import GoogleSignInButton from "@/components/GoogleSignInButton"
 
 export default function RegisterPage() {
   const { user, loading, register } = useAuth()
@@ -103,6 +104,9 @@ export default function RegisterPage() {
               {submitting ? "Creating account..." : "Create account"}
             </button>
           </form>
+          {/* Google sign-in also creates an account on first use. Reports failures
+              into the same error slot as the form above. Hidden when unconfigured. */}
+          <GoogleSignInButton onError={setError} />
         </div>
 
         <p className="text-ink-muted text-sm text-center mt-6">

@@ -1,9 +1,12 @@
 import logging
+import os
 import re
 import uuid
 from typing import Optional
 
 from fastapi import APIRouter, Depends, File, HTTPException, Request, Response, UploadFile, status
+from google.auth.transport import requests as google_requests
+from google.oauth2 import id_token as google_id_token
 from pydantic import BaseModel, EmailStr, field_validator
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -29,6 +32,17 @@ USERNAME_RULE = "Username must be 3-30 characters: letters, numbers, dots, dashe
 
 def _client_ip(request: Request) -> str:
     return request.client.host if request.client else "unknown"
+
+
+# Google OAuth Web client id. Set GOOGLE_CLIENT_ID in backend/.env to the same
+# client id the frontend uses (NEXT_PUBLIC_GOOGLE_CLIENT_ID). When unset, the
+# /auth/google endpoint returns 503 so the rest of auth still works without it.
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
+
+# One reusable transport for verifying Google ID tokens (fetches and caches
+# Google's public signing keys). Cheap to construct, but shared to avoid a new
+# HTTP session per sign-in.
+_google_transport = google_requests.Request()
 
 
 # A fixed bcrypt hash to compare against when the login email is unknown, so the
@@ -148,6 +162,152 @@ def login(body: LoginRequest, request: Request, db: Session = Depends(get_db)):
 
     token = create_access_token(user.id, user.token_version)
     return TokenResponse(access_token=token, user=UserOut.model_validate(user))
+
+
+class GoogleAuthRequest(BaseModel):
+    # The ID token (a JWT) that Google Identity Services hands the frontend after
+    # the user picks their Google account. Google calls this the "credential".
+    credential: str
+
+
+def _slugify_username(base: str) -> str:
+    # Keep only characters allowed by USERNAME_RE; drop everything else.
+    return re.sub(r"[^A-Za-z0-9._-]", "", base)[:30]
+
+
+def _generate_unique_username(db: Session, email: str, name: Optional[str]) -> str:
+    """Derive a valid, unused username for a new Google account. Google gives us
+    an email and a display name, neither of which is guaranteed to fit our
+    username rules, so we build a base from the email local part (then the name,
+    then a generic stem) and append an incrementing number until it is free."""
+    base = _slugify_username(email.split("@")[0]) or _slugify_username(name or "") or "user"
+    # Guarantee the 3-character minimum from USERNAME_RE.
+    if len(base) < 3:
+        base = (base + "user")[:30]
+    candidate = base
+    suffix = 0
+    # Avoid reserved names (deleted-account lifecycle) and existing usernames.
+    while is_reserved_username(candidate) or db.query(User).filter(User.username == candidate).first():
+        suffix += 1
+        tail = str(suffix)
+        candidate = f"{base[:30 - len(tail)]}{tail}"
+    return candidate
+
+
+@router.post("/google", response_model=TokenResponse)
+def google_auth(body: GoogleAuthRequest, request: Request, db: Session = Depends(get_db)):
+    """Sign in (or register) with Google. The frontend sends the Google ID
+    token; we verify it against Google's public keys, then find-or-create the
+    matching user and issue our own JWT, exactly like /login and /register."""
+    if not GOOGLE_CLIENT_ID:
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Google sign-in is not configured.")
+    check_rate_limit(f"ip:{_client_ip(request)}", "google_auth", 30, 300)
+
+    # verify_oauth2_token checks the signature, expiry, issuer and that the token
+    # was minted for OUR client id. Any failure raises ValueError -> 401.
+    try:
+        idinfo = google_id_token.verify_oauth2_token(body.credential, _google_transport, GOOGLE_CLIENT_ID)
+    except ValueError:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not verify Google sign-in.")
+
+    sub = idinfo.get("sub")
+    email = (idinfo.get("email") or "").lower()
+    # email_verified comes back as a bool or the string "true" depending on flow;
+    # accept both. We only link/create on a Google-verified email.
+    email_verified = idinfo.get("email_verified") in (True, "true")
+    if not sub or not email or not email_verified:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Google account has no verified email.")
+
+    # 1) Returning Google user, matched by the stable Google subject id.
+    user = db.query(User).filter(User.google_sub == sub, User.is_active == True).first()
+
+    # 2) An existing password account with the same (verified) email: link Google
+    #    to it so the user keeps one account and can use either method.
+    if user is None:
+        user = db.query(User).filter(User.email == email, User.is_active == True).first()
+        if user is not None and not user.google_sub:
+            user.google_sub = sub
+            db.commit()
+            db.refresh(user)
+
+    # 3) Brand-new visitor: create an account from the Google profile.
+    if user is None:
+        username = _generate_unique_username(db, email, idinfo.get("name"))
+        user = User(email=email, username=username, password_hash=None, google_sub=sub)
+        db.add(user)
+        try:
+            db.commit()
+        except IntegrityError:
+            # Lost a race to a concurrent Google sign-in for the same account;
+            # re-fetch the row the other request committed (BE-015 pattern).
+            db.rollback()
+            user = (
+                db.query(User).filter(User.google_sub == sub, User.is_active == True).first()
+                or db.query(User).filter(User.email == email, User.is_active == True).first()
+            )
+            if user is None:
+                raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Could not create account.")
+        else:
+            db.refresh(user)
+
+    token = create_access_token(user.id, user.token_version)
+    return TokenResponse(access_token=token, user=UserOut.model_validate(user))
+
+
+@router.post("/google/link", response_model=UserOut)
+def google_link(
+    body: GoogleAuthRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Connect a Google account to the CURRENTLY logged-in account, regardless of
+    whether the Google email matches this account's email. This is how an
+    existing email/password user adds Google sign-in: /auth/google can only
+    auto-link when the emails are identical, so a user whose Google address
+    differs (e.g. a Gmail vs a t-online account) links it here while signed in."""
+    if not GOOGLE_CLIENT_ID:
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Google sign-in is not configured.")
+    check_rate_limit(current_user.id, "google_link", 10, 3600)
+
+    try:
+        idinfo = google_id_token.verify_oauth2_token(body.credential, _google_transport, GOOGLE_CLIENT_ID)
+    except ValueError:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not verify Google sign-in.")
+    sub = idinfo.get("sub")
+    if not sub:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not verify Google sign-in.")
+
+    # Already linked to this exact Google account: nothing to do, report success.
+    if current_user.google_sub == sub:
+        return UserOut.model_validate(current_user)
+    # This account already carries a different Google identity.
+    if current_user.google_sub:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Your account is already connected to a different Google account.",
+        )
+    # The Google identity already belongs to another account (e.g. a separate
+    # account was auto-created by signing in with Google earlier). We do not
+    # silently move or delete that account; the user must resolve it first.
+    other = db.query(User).filter(User.google_sub == sub, User.id != current_user.id).first()
+    if other is not None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="This Google account is already connected to another account.",
+        )
+
+    current_user.google_sub = sub
+    try:
+        db.commit()
+    except IntegrityError:
+        # Lost a race to another link/sign-in claiming the same google_sub.
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="This Google account is already connected to another account.",
+        )
+    db.refresh(current_user)
+    return UserOut.model_validate(current_user)
 
 
 @router.get("/me", response_model=UserOut)

@@ -2,7 +2,8 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react"
 import { clearApiCache } from "./swr"
-import { API_URL, TOKEN_KEY } from "@/lib/storage"
+import { apiFetch } from "@/lib/api"
+import { API_URL, INTERESTS_KEY, TOKEN_KEY, recallInterestsForUser } from "@/lib/storage"
 import { detailToMessage } from "@/lib/errorMessage"
 import { clearLikeStorage } from "@/lib/likedPosts"
 import { clearSavedStorage } from "@/lib/savedPosts"
@@ -13,10 +14,23 @@ import { clearSavedStorage } from "@/lib/savedPosts"
 // clearApiCache, which does the same for the SWR cache.
 function clearAccountData(): void {
   try {
-    localStorage.removeItem("deepscroll_interests")
+    localStorage.removeItem(INTERESTS_KEY)
   } catch {}
   clearLikeStorage()
   clearSavedStorage()
+}
+
+// After an account transition wiped the active interests, restore the ones this
+// specific account picked earlier on this device (if any) so a returning user
+// skips onboarding. A brand-new account (just registered, or a first Google
+// sign-in) has none remembered, so the topic picker still runs for it exactly
+// once -- at account creation.
+function restoreAccountInterests(userId: number): void {
+  const slugs = recallInterestsForUser(userId)
+  if (!slugs) return
+  try {
+    localStorage.setItem(INTERESTS_KEY, JSON.stringify(slugs))
+  } catch {}
 }
 
 export interface AuthUser {
@@ -32,6 +46,9 @@ export interface AuthUser {
   // no UI writes them, so nothing here updates them either.
   avatar_frame_id: number | null
   badge_id: number | null
+  // True when a Google account is connected. Drives the "Connected" vs
+  // "Connect Google" state in profile settings.
+  has_google: boolean
 }
 
 interface AuthContextType {
@@ -39,6 +56,13 @@ interface AuthContextType {
   loading: boolean
   login: (email: string, password: string) => Promise<void>
   register: (email: string, username: string, password: string) => Promise<void>
+  // Sign in (or auto-register) with a Google ID token. The token comes from
+  // Google Identity Services in GoogleSignInButton.
+  googleLogin: (credential: string) => Promise<void>
+  // Connect a Google account to the already-logged-in user (profile settings).
+  // Unlike googleLogin, it does not switch accounts -- it links Google to this
+  // one so both sign-in methods reach the same account.
+  linkGoogle: (credential: string) => Promise<void>
   logout: () => void
   updateUser: (user: AuthUser) => void
   // Persist a re-minted token for the current session (e.g. after a password
@@ -132,8 +156,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // previous account survives.
     clearApiCache()
     clearAccountData()
+    const loggedIn = data.user as AuthUser
+    // Bring back this account's own interests so login does not re-run onboarding.
+    restoreAccountInterests(loggedIn.id)
     localStorage.setItem(TOKEN_KEY, data.access_token as string)
-    setUser(data.user as AuthUser)
+    setUser(loggedIn)
   }, [])
 
   const register = useCallback(async (email: string, username: string, password: string): Promise<void> => {
@@ -148,6 +175,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     clearAccountData()
     localStorage.setItem(TOKEN_KEY, data.access_token as string)
     setUser(data.user as AuthUser)
+  }, [])
+
+  const googleLogin = useCallback(async (credential: string): Promise<void> => {
+    const r = await fetch(`${API_URL}/api/auth/google`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ credential }),
+    })
+    const data = await safeJson(r)
+    if (!r.ok) throw new Error(detailToMessage(data.detail, "Google sign-in failed."))
+    // Same account-transition cleanup as login/register: drop any cached data
+    // from a previous account before adopting this one.
+    clearApiCache()
+    clearAccountData()
+    const signedIn = data.user as AuthUser
+    // Restore this account's interests (no-op for a first Google sign-in, which
+    // is effectively a registration and should still onboard once).
+    restoreAccountInterests(signedIn.id)
+    localStorage.setItem(TOKEN_KEY, data.access_token as string)
+    setUser(signedIn)
+  }, [])
+
+  const linkGoogle = useCallback(async (credential: string): Promise<void> => {
+    // apiFetch attaches the current session's Bearer token, so the backend links
+    // Google to THIS account. No account switch and no cache clear -- it is the
+    // same user, just gaining a second sign-in method.
+    const r = await apiFetch("/api/auth/google/link", {
+      method: "POST",
+      body: JSON.stringify({ credential }),
+    })
+    const data = await safeJson(r)
+    if (!r.ok) throw new Error(detailToMessage(data.detail, "Could not connect Google."))
+    setUser(data as unknown as AuthUser)
   }, [])
 
   const logout = useCallback((): void => {
@@ -168,8 +228,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const value = useMemo(
-    () => ({ user, loading, login, register, logout, updateUser, applyFreshToken }),
-    [user, loading, login, register, logout, updateUser, applyFreshToken]
+    () => ({ user, loading, login, register, googleLogin, linkGoogle, logout, updateUser, applyFreshToken }),
+    [user, loading, login, register, googleLogin, linkGoogle, logout, updateUser, applyFreshToken]
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

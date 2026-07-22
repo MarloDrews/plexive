@@ -15,3 +15,6 @@ Pillow
 lxml
 defusedxml
 supabase
+# Verifies Google Sign-In ID tokens (signature, expiry, audience) against
+# Google's public keys for the /api/auth/google endpoint.
+google-auth

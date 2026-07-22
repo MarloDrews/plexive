@@ -47,6 +47,10 @@ class UserOut(BaseModel):
     # self-scoped only -- the Arena roster carries the other players' badges.
     avatar_frame_id: int | None = None
     badge_id: int | None = None
+    # True when a Google account is connected (from User.has_google). Lets the
+    # profile settings show "Connected" vs the "Connect Google" button. Never
+    # carries the google_sub value itself.
+    has_google: bool = False
 
 
 class PublicUserOut(BaseModel):

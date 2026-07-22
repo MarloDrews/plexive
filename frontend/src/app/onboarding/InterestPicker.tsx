@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { CATEGORIES } from "@/lib/interests"
-import { API_URL } from "@/lib/storage"
+import { API_URL, INTERESTS_KEY, rememberInterestsForUser } from "@/lib/storage"
+import { useAuth } from "@/lib/auth"
 
 interface Interest {
   id: number
@@ -13,6 +14,7 @@ interface Interest {
 
 export default function InterestPicker() {
   const router = useRouter()
+  const { user } = useAuth()
   const [interests, setInterests] = useState<Interest[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
@@ -60,14 +62,18 @@ export default function InterestPicker() {
   }
 
   function handleContinue() {
+    const slugs = [...selected]
     try {
-      localStorage.setItem("deepscroll_interests", JSON.stringify([...selected]))
+      localStorage.setItem(INTERESTS_KEY, JSON.stringify(slugs))
     } catch {
       // A full or unwritable storage would otherwise throw here and leave the
       // button doing nothing; surface it instead of silently dead-ending.
       setSaveError("Could not save your interests. Please free up some storage and try again.")
       return
     }
+    // Also remember them for this account so a future login on this device
+    // restores them instead of re-running onboarding. Skipped when anonymous.
+    if (user) rememberInterestsForUser(user.id, slugs)
     router.push("/")
   }
 

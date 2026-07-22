@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { useAuth, hasToken } from "@/lib/auth"
+import GoogleSignInButton from "@/components/GoogleSignInButton"
 
 export default function LoginPage() {
   const { user, loading, login } = useAuth()
@@ -92,6 +93,9 @@ export default function LoginPage() {
               {submitting ? "Signing in..." : "Sign in"}
             </button>
           </form>
+          {/* Google sign-in as an alternative. Reports failures into the same
+              error slot as the form above. Hidden when unconfigured. */}
+          <GoogleSignInButton onError={setError} />
         </div>
 
         <p className="text-ink-muted text-sm text-center mt-6">

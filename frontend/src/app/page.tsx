@@ -11,6 +11,7 @@ import ToastHost from "@/components/ToastHost"
 import FeedHeader, { FEED_TABS_ID, type FeedTab } from "@/components/FeedHeader"
 import type { Post } from "@/types/post"
 import { useAuth, hasToken } from "@/lib/auth"
+import { INTERESTS_KEY } from "@/lib/storage"
 import { scrollBehavior } from "@/lib/motion"
 import { tabPanelProps } from "@/lib/tablist"
 import { useSwipeTabs } from "@/lib/useSwipeTabs"
@@ -244,7 +245,7 @@ export default function Home() {
 
   // Check localStorage on mount, store interests, and restore active tab from sessionStorage
   useEffect(() => {
-    const saved = localStorage.getItem("deepscroll_interests")
+    const saved = localStorage.getItem(INTERESTS_KEY)
     if (!saved) {
       router.replace("/onboarding")
       return

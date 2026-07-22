@@ -10,6 +10,7 @@ import { detailToMessage } from "@/lib/errorMessage"
 import BottomNav from "@/components/BottomNav"
 import VerifiedBadge from "@/components/VerifiedBadge"
 import Avatar from "@/components/Avatar"
+import GoogleSignInButton from "@/components/GoogleSignInButton"
 import FollowListSheet, { type ListUser } from "@/components/FollowListSheet"
 
 // The knowledge score is one unified rating; the backend no longer sends a
@@ -19,7 +20,7 @@ interface EloData {
 }
 
 export default function ProfilePage() {
-  const { user, loading, logout, updateUser, applyFreshToken } = useAuth()
+  const { user, loading, logout, updateUser, applyFreshToken, linkGoogle } = useAuth()
   const router = useRouter()
 
   // Which settings panel is open: "username" | "password" | "delete" | null
@@ -49,6 +50,9 @@ export default function ProfilePage() {
   // Privacy toggle
   const [privacyLoading, setPrivacyLoading] = useState(false)
   const [privacyError, setPrivacyError] = useState("")
+
+  // Google account connect
+  const [googleError, setGoogleError] = useState("")
 
   // Follow requests
   const [pendingRequests, setPendingRequests] = useState<{ username: string; is_verified: number; avatar_url?: string | null; avatar_frame_id?: number | null; created_at: string }[]>([])
@@ -580,6 +584,42 @@ export default function ProfilePage() {
                 </button>
               </form>
             )}
+          </div>
+
+          {/* Google account: connect Google sign-in to this account. Once linked,
+              the user can sign in with either their password or Google. */}
+          <div className="border-b border-edge px-5 py-4">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-ink text-sm font-medium">Google account</p>
+                <p className="text-ink-muted text-xs mt-0.5">
+                  {user.has_google
+                    ? "Connected. You can sign in with Google."
+                    : "Connect to also sign in with Google."}
+                </p>
+              </div>
+              {user.has_google && (
+                <span className="flex items-center gap-1.5 text-good text-xs font-medium shrink-0">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                    <path d="M20 6L9 17l-5-5" />
+                  </svg>
+                  Connected
+                </span>
+              )}
+            </div>
+            {/* When not yet connected, show Google's button; linkGoogle attaches
+                it to the current session without switching accounts. */}
+            {!user.has_google && (
+              <div className="flex justify-center">
+                <GoogleSignInButton
+                  onCredential={linkGoogle}
+                  onError={setGoogleError}
+                  showDivider={false}
+                  text="continue_with"
+                />
+              </div>
+            )}
+            {googleError && <p role="alert" className="text-bad text-xs mt-2">{googleError}</p>}
           </div>
 
           {/* Sign out */}

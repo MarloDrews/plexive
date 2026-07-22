@@ -141,7 +141,16 @@ class User(Base):
     id            = Column(Integer, primary_key=True)
     email         = Column(String, unique=True, nullable=False, index=True)
     username      = Column(String, unique=True, nullable=False)
-    password_hash = Column(String, nullable=False)
+    # Nullable since M-google: accounts created via Google sign-in have no
+    # password. A NULL hash means "no password set"; verify_password treats it as
+    # never matching, so such accounts can only sign in through Google.
+    password_hash = Column(String, nullable=True)
+    # Google account subject id ("sub" claim) for accounts that use Google
+    # sign-in. Stable per Google account and never reused, so it is the durable
+    # link even if the user later changes their Google email. NULL for
+    # password-only accounts. Added to the live DB by
+    # scripts/add_google_auth_columns.py.
+    google_sub    = Column(String, unique=True, nullable=True, index=True)
     created_at    = Column(DateTime, default=utcnow)
     is_active     = Column(Boolean, default=True, nullable=False)
     # Cosmetic verification badge ONLY (0/1/2). Split from the two capabilities
@@ -188,6 +197,13 @@ class User(Base):
     token_version            = Column(Integer, nullable=False, default=0)
 
     posts = relationship("Post", back_populates="author", foreign_keys="Post.author_id")
+
+    @property
+    def has_google(self) -> bool:
+        # Whether a Google account is connected. Read by UserOut (from_attributes)
+        # so the profile UI can show "Connected" instead of the connect button;
+        # never exposes the google_sub value itself.
+        return self.google_sub is not None
 
 
 class Follow(Base):
