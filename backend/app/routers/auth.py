@@ -1,5 +1,6 @@
 import logging
 import os
+import random
 import re
 import uuid
 from typing import Optional
@@ -28,6 +29,15 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 # accounts with other formats keep working (no retroactive enforcement).
 USERNAME_RE = re.compile(r"^[A-Za-z0-9._-]{3,30}$")
 USERNAME_RULE = "Username must be 3-30 characters: letters, numbers, dots, dashes or underscores."
+
+# Cosmetic badge (models.User.badge_id) given to every newly created account,
+# randomly one of these ids. Each maps to artwork in frontend lib/accessories.ts;
+# purely decorative and never a capability gate.
+_SIGNUP_BADGE_IDS = [4, 5, 7, 8]
+
+
+def _random_signup_badge() -> int:
+    return random.choice(_SIGNUP_BADGE_IDS)
 
 
 def _client_ip(request: Request) -> str:
@@ -122,6 +132,7 @@ def register(body: RegisterRequest, request: Request, db: Session = Depends(get_
         email=email,
         username=body.username,
         password_hash=hash_password(body.password),
+        badge_id=_random_signup_badge(),
     )
     db.add(user)
     try:
@@ -233,7 +244,7 @@ def google_auth(body: GoogleAuthRequest, request: Request, db: Session = Depends
     # 3) Brand-new visitor: create an account from the Google profile.
     if user is None:
         username = _generate_unique_username(db, email, idinfo.get("name"))
-        user = User(email=email, username=username, password_hash=None, google_sub=sub)
+        user = User(email=email, username=username, password_hash=None, google_sub=sub, badge_id=_random_signup_badge())
         db.add(user)
         try:
             db.commit()

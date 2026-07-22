@@ -498,7 +498,7 @@ GET  /api/posts/{id}                                   → PostOut  404 if not f
 GET  /api/search  ?q=...  ?format=books  ?limit=50     → [{...PostOut}]  limit clamp 1-50, title matches ranked first; empty list if q is blank
 POST /api/events  body: [{post_id, event_type, duration_ms?}]  → {stored: N}
 GET  /health                                           → {status: "ok"}
-POST /api/auth/register  body: {email, username, password}  → {access_token, token_type, user: {id, email, username, created_at}}  400 on duplicate email/username
+POST /api/auth/register  body: {email, username, password}  → {access_token, token_type, user: {id, email, username, created_at}}  400 on duplicate email/username; every new account gets a random cosmetic badge_id from {4,5,7,8} (_random_signup_badge, also applied to auto-created Google accounts)
 POST /api/auth/login     body: {email, password}            → {access_token, token_type, user: {id, email, username, created_at}}  401 on bad credentials (same msg for unknown email or wrong password)
 POST /api/auth/google    body: {credential}  (Google ID token)  → same TokenResponse; verifies token against Google (audience = GOOGLE_CLIENT_ID), then matches google_sub / links same verified email / auto-creates a new user (username derived from email); 401 on unverifiable token, 503 when GOOGLE_CLIENT_ID unset; 30/5min per IP
 POST /api/auth/google/link  Authorization: Bearer <token>  body: {credential}  → UserOut; connects a Google account to the CURRENT logged-in account regardless of email match (how a password user adds Google when the addresses differ); 409 if this account already has a different Google or the Google identity belongs to another account; 401 unverifiable, 503 unconfigured; 10/hr per user
