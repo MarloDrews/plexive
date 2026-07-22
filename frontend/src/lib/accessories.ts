@@ -27,7 +27,9 @@ const BADGES: Record<number, string> = {
   3: "/accessories/badges/3-circuit.png",
   4: "/accessories/badges/4-contributor.png",
   5: "/accessories/badges/5-wavelength.png",
-  6: "/accessories/badges/6-robin.png"
+  6: "/accessories/badges/6-robin.png",
+  7: "/accessories/badges/7-pipes.png",
+  8: "/accessories/badges/8-blockstrike.png"
 }
 
 // How far a frame extends past the picture it rings, as a fraction of the
