@@ -16,5 +16,9 @@ lxml
 defusedxml
 supabase
 # Verifies Google Sign-In ID tokens (signature, expiry, audience) against
-# Google's public keys for the /api/auth/google endpoint.
+# Google's public keys for the /api/auth/google endpoint. `requests` is a
+# separate, required dependency: google.auth.transport.requests (used to fetch
+# Google's signing keys) imports it explicitly and google-auth does NOT pull it
+# in on its own.
 google-auth
+requests
