@@ -520,7 +520,7 @@ DELETE /api/users/{username}/follow/reject  Authorization: Bearer <token>       
 GET  /api/users/{username}/followers  ?before_id&limit                                  → [{follow_id, username, is_verified, is_private, avatar_url}]  newest first, keyset on follow_id (limit default 50, clamp 1-100)  empty if private+not-following
 GET  /api/users/{username}/following  ?before_id&limit                                  → [{follow_id, username, is_verified, is_private, avatar_url}]  same privacy rule + pagination
 GET  /api/users/{username}/follow-requests  ?before_id&limit  Authorization: Bearer     → [{follow_id, username, is_verified, avatar_url, created_at}]  same pagination  403 if not own account
-GET  /api/users/{username}/profile                                                      → {username, is_verified, is_private, bio, follower_count, following_count, post_count, follow_status}
+GET  /api/users/{username}/profile                                                      → {username, is_verified, is_private, bio, avatar_url, avatar_frame_id, badge_id, follower_count, following_count, post_count, follow_status}
 GET  /api/feed/following  ?before_id&limit  Authorization: Bearer <token>               → [PostOut]  newest first, keyset on id (limit default 50, clamp 1-100)  empty if following nobody
 GET  /api/feed/user/{username}  ?before_id&limit                                        → [PostOut]  published posts by user, same pagination  404 if user not found
 POST /api/auth/me/avatar  Authorization: Bearer <token>  multipart file field "file"    → UserOut with new avatar_url  10/hr  same validate_image pipeline as post images
