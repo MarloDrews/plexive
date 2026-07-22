@@ -27,8 +27,9 @@ interface ProfileData {
   bio: string | null
   avatar_url: string | null
   avatar_frame_id: number | null
-  // Equipped Arena badge; the /profile endpoint may not send it yet, so the
-  // own-profile view falls back to the auth user's badge_id.
+  // Equipped Arena badge; the /profile endpoint sends it for any user, so
+  // foreign profiles show their badge too. The own-profile view still reads
+  // the auth user's badge_id so an equip shows without a refetch.
   badge_id?: number | null
   follower_count: number
   following_count: number

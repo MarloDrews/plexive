@@ -46,6 +46,7 @@ class ProfileOut(BaseModel):
     bio: Optional[str]
     avatar_url: Optional[str]
     avatar_frame_id: Optional[int] = None
+    badge_id: Optional[int] = None
     follower_count: int
     following_count: int
     post_count: int
@@ -307,6 +308,7 @@ def get_profile(
         bio=target.bio,
         avatar_url=target.avatar_url,
         avatar_frame_id=target.avatar_frame_id,
+        badge_id=target.badge_id,
         follower_count=follower_count,
         following_count=following_count,
         post_count=post_count,
