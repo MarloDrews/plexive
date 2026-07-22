@@ -40,20 +40,32 @@ const imgSrc = [
   .filter(Boolean)
   .join(" ");
 
+// Google Identity Services ("Sign in with Google") loads its script, renders its
+// button/prompt in an iframe, and calls its own endpoints -- all under
+// https://accounts.google.com/gsi/. Each needs its own CSP directive per Google's
+// documented requirements, or the button silently fails to render.
+const GSI_SCRIPT = "https://accounts.google.com/gsi/client";
+const GSI_FRAME = "https://accounts.google.com/gsi/";
+const GSI_CONNECT = "https://accounts.google.com/gsi/";
+const GSI_STYLE = "https://accounts.google.com/gsi/style";
+
 const csp = [
   "default-src 'self'",
   // 'unsafe-inline': Next injects inline bootstrap scripts without a nonce.
   // 'wasm-unsafe-eval' + the CDNs: the TTS runtime instantiates WASM from them.
-  "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net",
+  // GSI_SCRIPT: the Google Identity Services client library.
+  `script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net ${GSI_SCRIPT}`,
   // 'unsafe-inline': styled-jsx and inline style attributes. KaTeX CSS is
-  // bundled and served from 'self'.
-  "style-src 'self' 'unsafe-inline'",
+  // bundled and served from 'self'. GSI_STYLE: Google's button stylesheet.
+  `style-src 'self' 'unsafe-inline' ${GSI_STYLE}`,
   `img-src ${imgSrc}`,
   "font-src 'self' data:",
   // TTS audio and the onnxruntime worker are blob: URLs.
   "media-src 'self' blob:",
   "worker-src 'self' blob:",
-  `connect-src ${connectSrc}`,
+  // GSI_FRAME: the Google Sign-In button and one-tap prompt render in an iframe.
+  `frame-src ${GSI_FRAME}`,
+  `connect-src ${connectSrc} ${GSI_CONNECT}`,
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",
