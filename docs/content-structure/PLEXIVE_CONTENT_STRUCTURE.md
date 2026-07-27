@@ -1,6 +1,6 @@
-# Deepscroll — Long-Form Content Structure
+# Plexive — Long-Form Content Structure
 
-Schema specification for Deepscroll's long-form post format. Used for:
+Schema specification for Plexive's long-form post format. Used for:
 1. Database schema design (`sections` JSON column on `posts` table)
 2. Frontend renderer implementation (one component per section type)
 

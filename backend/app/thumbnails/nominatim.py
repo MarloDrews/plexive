@@ -38,7 +38,7 @@ BASE_URL = os.getenv("NOMINATIM_URL", "https://nominatim.openstreetmap.org").rst
 POLYGON_THRESHOLD = os.getenv("NOMINATIM_POLYGON_THRESHOLD", "").strip()
 USER_AGENT = os.getenv(
     "THUMBNAIL_USER_AGENT",
-    "Deepscroll-Thumbnails/1.0 (+https://github.com/silasmk/Plexive)",
+    "Plexive-Thumbnails/1.0 (+https://github.com/silasmk/Plexive)",
 )
 CACHE_DIR = Path(os.getenv("THUMBNAIL_CACHE_DIR", str(Path(__file__).resolve().parents[2] / "data" / "geocache")))
 REQUEST_TIMEOUT = 30

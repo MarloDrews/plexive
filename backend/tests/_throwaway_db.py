@@ -19,7 +19,7 @@ import tempfile
 BACKEND_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BACKEND_DIR)
 
-tmp_dir = tempfile.mkdtemp(prefix="deepscroll_test_")
+tmp_dir = tempfile.mkdtemp(prefix="plexive_test_")
 
 os.environ["DATABASE_URL"] = "sqlite:///" + os.path.join(tmp_dir, "test.db").replace("\\", "/")
 # Empty values keep upload_config's supabase_client at None so nothing can

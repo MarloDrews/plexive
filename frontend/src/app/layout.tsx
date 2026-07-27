@@ -62,7 +62,7 @@ const coverGeometric = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Deepscroll",
+  title: "Plexive",
   description: "Replace doomscrolling with valuable content.",
 };
 

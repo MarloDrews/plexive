@@ -57,7 +57,7 @@ def download_image(url: str, dest_dir: str) -> str:
         return f"/seed-images/{filename}"
 
     print(f"  downloading: {url}")
-    req = urllib.request.Request(url, headers={"User-Agent": "DeepscrollSeedBot/1.0"})
+    req = urllib.request.Request(url, headers={"User-Agent": "PlexiveSeedBot/1.0"})
     try:
         with urllib.request.urlopen(req, timeout=30) as resp, open(dest_path, "wb") as f:
             f.write(resp.read())

@@ -13,7 +13,7 @@
 //    The backend must listen on 0.0.0.0, not 127.0.0.1.
 //
 // 3. Real device outside the WLAN: point EXPO_PUBLIC_API_URL at the deployed
-//    backend over HTTPS, e.g. https://api.deepscroll.example. Plain http is
+//    backend over HTTPS, e.g. https://api.plexive.example. Plain http is
 //    blocked by Android/iOS cleartext policies for non-local addresses, and
 //    the chat websocket upgrade to wss requires TLS anyway.
 //

@@ -101,7 +101,7 @@ export default function InterestPicker() {
       {/* Top bar — fixed height, does not scroll */}
       <div className="shrink-0 px-6 pt-10 pb-4">
         <p className="label-caps text-lamp">
-          Deepscroll
+          Plexive
         </p>
         <h1 className="font-serif text-3xl font-medium text-ink leading-tight mt-4">
           What are you into?

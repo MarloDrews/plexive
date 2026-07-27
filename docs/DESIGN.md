@@ -1,6 +1,6 @@
-# Deepscroll Design Identity: "Stage"
+# Plexive Design Identity: "Stage"
 
-The visual identity of Deepscroll. Decided June 2026 after a three-way design
+The visual identity of Plexive. Decided June 2026 after a three-way design
 exploration (Folio / Console / Stage on branch `redesign/explore-3`); Stage
 won and was consolidated across the entire app on
 `redesign/consolidate-stage`. It builds on the neutral "Circuit" token palette

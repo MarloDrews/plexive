@@ -1,5 +1,5 @@
 // books_skeleton.jsonc
-// Deepscroll: Books format skeleton.
+// Plexive: Books format skeleton.
 // Thesis: a book is covered for the reader's use, the central argument and what
 // reading it changes, told by someone who has read it and gives an honest
 // verdict, not a back-cover blurb. There is no constitutive body visual: the
@@ -74,7 +74,7 @@
 // tone. Full prose rules: STYLE_GUIDE_LONGFORM.md. Reads-like-a-human rules
 // (sentence-length variance, comma and clause density, no over-closure, no
 // reflexive triplets, parallel-field variety): HUMAN_TEXTURE_STANDARD.md.
-// Schema and rationale: DEEPSCROLL_CONTENT_STRUCTURE.md. Diagrams:
+// Schema and rationale: PLEXIVE_CONTENT_STRUCTURE.md. Diagrams:
 // SVG_STANDARD.md. Sourced images (covers, author portraits): IMAGE_STANDARD.md.
 
 {

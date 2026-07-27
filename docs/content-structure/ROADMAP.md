@@ -75,10 +75,10 @@ the new render path, so no data migration is required.
   `backend/seed.py`, with no remaining flagged gaps.
 - Skeleton spec pointers (post-slim): the header line in the people,
   questions, stories, and academy skeletons still sends the reader to
-  DEEPSCROLL_CONTENT_STRUCTURE.md for the full per-format spec, but the slim moved
+  PLEXIVE_CONTENT_STRUCTURE.md for the full per-format spec, but the slim moved
   that spec into the skeleton itself; the doc now holds only the schema, the
   shared shapes, and the rationale. Reword each pointer to the facts skeleton's
-  form ("Schema and rationale: DEEPSCROLL_CONTENT_STRUCTURE.md") when that format
+  form ("Schema and rationale: PLEXIVE_CONTENT_STRUCTURE.md") when that format
   gets its pass. The facts, concepts, and books skeletons are already correct.
 - Detail-header dek: LAYOUT_STANDARD section 3 now carries an optional
   detail-header dek (added for concepts, which repeats the card dek because its

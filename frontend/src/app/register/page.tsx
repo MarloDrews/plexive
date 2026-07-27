@@ -58,9 +58,9 @@ export default function RegisterPage() {
         </button>
 
         <div className="px-2 mb-5">
-          <p className="label-caps text-lamp">Deepscroll</p>
+          <p className="label-caps text-lamp">Plexive</p>
           <h1 className="font-serif text-ink text-3xl font-medium leading-tight mt-3">Create account</h1>
-          <p className="text-ink-dim text-sm mt-1.5">Join Deepscroll</p>
+          <p className="text-ink-dim text-sm mt-1.5">Join Plexive</p>
         </div>
 
         <div className="card px-6 py-7">

@@ -146,7 +146,7 @@ const PostResultsList = memo(function PostResultsList({ results }: { results: Po
               <Link href={`/profile/${post.author_username}`} className="relative z-10 hover:text-ink-dim transition-colors">
                 @{post.author_username}
               </Link>
-            ) : "Deepscroll"}
+            ) : "Plexive"}
             {post.is_user_content && post.author_is_verified != null && post.author_is_verified > 0 && <VerifiedBadge size={14} level={post.author_is_verified} />}
           </p>
           <Snippet post={post} />

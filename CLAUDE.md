@@ -1,4 +1,4 @@
-# Deepscroll
+# Plexive
 
 Open source social media app that replaces doomscrolling with valuable content.
 
@@ -12,7 +12,7 @@ Open source social media app that replaces doomscrolling with valuable content.
 
 Posts use a `sections` JSON array and a `feed_card` JSON object. The old per-format fields (`hook`, `key_points`, `details`, `body`, etc.) are removed.
 
-- Full schema spec: `docs/content-structure/DEEPSCROLL_CONTENT_STRUCTURE.md`
+- Full schema spec: `docs/content-structure/PLEXIVE_CONTENT_STRUCTURE.md`
 - Books skeleton: `docs/content-structure/skeletons/books_skeleton.jsonc`
 - Books example: `docs/content-structure/examples/books_example.json`
 - Style guide: `docs/content-structure/STYLE_GUIDE_LONGFORM.md`

@@ -57,7 +57,7 @@ export default function LoginPage() {
         </button>
 
         <div className="px-2 mb-5">
-          <p className="label-caps text-lamp">Deepscroll</p>
+          <p className="label-caps text-lamp">Plexive</p>
           <h1 className="font-serif text-ink text-3xl font-medium leading-tight mt-3">Sign in</h1>
           <p className="text-ink-dim text-sm mt-1.5">Welcome back</p>
         </div>

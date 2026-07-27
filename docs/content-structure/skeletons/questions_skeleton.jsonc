@@ -1,5 +1,5 @@
 // questions_skeleton.jsonc
-// Deepscroll: Questions format skeleton.
+// Plexive: Questions format skeleton.
 // Thesis: the post does not answer the question; it lays out the real competing
 // positions fairly and hands the reader the materials to decide where they stand.
 // Accent: the questions format color (var(--accent) at runtime; values live in
@@ -124,7 +124,7 @@
 //   STYLE_GUIDE_LONGFORM.md.
 // Zero em-dashes in user-facing text. Default voice is third-person assertive;
 // "you" is reserved for your_turn. Full prose rules: STYLE_GUIDE_LONGFORM.md.
-// Schema and rationale: DEEPSCROLL_CONTENT_STRUCTURE.md. Diagrams: SVG_STANDARD.md.
+// Schema and rationale: PLEXIVE_CONTENT_STRUCTURE.md. Diagrams: SVG_STANDARD.md.
 // Sourced images (photos, portraits, card images): IMAGE_STANDARD.md.
 
 {

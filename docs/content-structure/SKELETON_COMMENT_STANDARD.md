@@ -1,14 +1,14 @@
-# Deepscroll: Skeleton Comment Standard
+# Plexive: Skeleton Comment Standard
 
 How to write the `//` comments inside every `*_skeleton.jsonc` file so that a generation model can fill the skeleton correctly from the comments alone.
 
-This document governs the **comments**. It does not govern prose (that is `STYLE_GUIDE_LONGFORM.md`) and it does not govern the schema or its rationale (that is `DEEPSCROLL_CONTENT_STRUCTURE.md`). When all three are in sync, a model handed only the `.jsonc` should be able to produce a correct, on-brand post without reading the other two.
+This document governs the **comments**. It does not govern prose (that is `STYLE_GUIDE_LONGFORM.md`) and it does not govern the schema or its rationale (that is `PLEXIVE_CONTENT_STRUCTURE.md`). When all three are in sync, a model handed only the `.jsonc` should be able to produce a correct, on-brand post without reading the other two.
 
 ---
 
 ## 1. Who reads these comments
 
-The reader is a **generation model filling the skeleton**, not a developer maintaining it. Every comment is therefore an **instruction**, written in the imperative, telling the model what to produce. It is never documentation of design history, never a note to a future maintainer, never a justification of why the section exists. Those belong in `DEEPSCROLL_CONTENT_STRUCTURE.md`.
+The reader is a **generation model filling the skeleton**, not a developer maintaining it. Every comment is therefore an **instruction**, written in the imperative, telling the model what to produce. It is never documentation of design history, never a note to a future maintainer, never a justification of why the section exists. Those belong in `PLEXIVE_CONTENT_STRUCTURE.md`.
 
 Test for any comment: *would this change what the model writes in the field?* If no, cut it.
 
@@ -21,7 +21,7 @@ Three documents, three jobs. A comment must stay in its lane.
 | Concern | Lives in | Comment may reference it, never restate it |
 |---|---|---|
 | Prose quality (vocabulary, rhythm, voice, punctuation, quiz style) | `STYLE_GUIDE_LONGFORM.md` | yes |
-| Schema, field types, design rationale, energy-curve reasoning | `DEEPSCROLL_CONTENT_STRUCTURE.md` | yes |
+| Schema, field types, design rationale, energy-curve reasoning | `PLEXIVE_CONTENT_STRUCTURE.md` | yes |
 | Per-section structural contract: job, include/skip, boundaries, counts | the `.jsonc` comments (this standard) | this is the source |
 
 **Do not duplicate the prose blacklists in section comments.** The vocabulary blacklist, the contrast-frame ban, the hedging ban: these are universal and live in one place. Restating them per field bloats the skeleton and guarantees drift the day the blacklist changes. The only prose rule inlined anywhere is the em-dash ban, stated once in the file header (see Section 6), because the model mirrors comment punctuation into its output.
@@ -109,7 +109,7 @@ Rules true for **all** sections live once at the top of the file, never repeated
 - **Post shape:** the always-present spine of REQUIRED sections, the rule that OPTIONAL sections are included only by their own Include test and never by default, and a realistic fullness band in sections and minutes. This is the directive that keeps a bulk run from either maxing out every optional (bloat) or producing thin posts. The per-section Include/Skip tests alone are not enough to make whole-post fullness consistent across many generations; without the spine and the band, fullness drifts run to run.
 - **Visual plan:** how many visuals a post carries, that they are distributed and never crowded, which section always carries one, and the test for adding more. It also names the kinds of anchor a format allows (a data graphic, an illustrative licensed image that is anchored to the subject, a portrait) and states that the feed card always carries a small square anchor (a licensed image or an emblem SVG). Visual *placement* is a structural property and lives here, in the header. How a drawn visual *looks* lives in `SVG_STANDARD.md`; how a sourced image is licensed, attributed, and shown lives in `IMAGE_STANDARD.md`; caption and label *wording* lives in `STYLE_GUIDE_LONGFORM.md`. The header states only the placement plan and points to those for the rest.
 - **The single inlined prose rule:** zero em-dashes in user-facing text (full prose rules in `STYLE_GUIDE_LONGFORM.md`).
-- **Pointers:** see `DEEPSCROLL_CONTENT_STRUCTURE.md` for the spec, `STYLE_GUIDE_LONGFORM.md` for prose, `SVG_STANDARD.md` for diagrams.
+- **Pointers:** see `PLEXIVE_CONTENT_STRUCTURE.md` for the spec, `STYLE_GUIDE_LONGFORM.md` for prose, `SVG_STANDARD.md` for diagrams.
 
 Anything a section comment would otherwise repeat in every block belongs in this header instead.
 

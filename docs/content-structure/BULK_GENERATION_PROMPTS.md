@@ -411,7 +411,7 @@ checker and change nothing. A later step applies your fixes.
 <references>
 {{GOLD}} as the quality bar for facts, sources, and structure, plus
 @docs/content-structure/STYLE_GUIDE_LONGFORM.md, @docs/content-structure/SVG_STANDARD.md,
-@docs/content-structure/IMAGE_STANDARD.md, @docs/content-structure/DEEPSCROLL_CONTENT_STRUCTURE.md,
+@docs/content-structure/IMAGE_STANDARD.md, @docs/content-structure/PLEXIVE_CONTENT_STRUCTURE.md,
 and {{SKELETON}}.
 </references>
 

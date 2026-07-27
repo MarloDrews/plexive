@@ -1,6 +1,6 @@
 // Verification badges.
 // level 1 = purple circle, level 2 = green circle, level 3+ = dark red circle, all with checkmark.
-// variant="official" is for official Deepscroll seed content (not user accounts).
+// variant="official" is for official Plexive seed content (not user accounts).
 
 const LEVEL_COLOR: Record<number, string> = {
   1: "var(--color-fmt-concepts)",
