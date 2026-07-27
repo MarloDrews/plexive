@@ -19,15 +19,24 @@ function loadGlyphs(): Promise<Record<string, string>> {
   return glyphsPromise
 }
 
-// Large category glyph anchored to the TOP RIGHT of the field-line zone on every
-// typographic card (PostCard) and the detail header. It occupies no layout space
-// (absolute), so the label and headline do not move; `reach` is a negative-bottom
-// inset that bleeds the glyph down toward the headline top. Width follows the
-// glyph's own viewBox aspect (landscape ~56x32), capped (max-w) to clear the
-// label. The glyph is the post's primary category, its first tag (tags[0]), from
+// Category glyph for the post's primary category (its first tag, tags[0]), from
 // the app-owned FIELD_GLYPHS set; trusted content, so the official SVG path
-// (isUserContent=false). See LAYOUT_STANDARD (s2/s3) and SVG_STANDARD (s6).
-export default function FieldGlyph({ slug, reach = "bottom-0" }: { slug: string | undefined; reach?: string }) {
+// (isUserContent=false). Two variants:
+//   overlay (default) — large glyph anchored to the TOP RIGHT of the field-line
+//     zone on the detail header. Occupies no layout space (absolute), so the
+//     label and headline do not move; `reach` is a negative-bottom inset that
+//     bleeds it toward the headline top. See LAYOUT_STANDARD (s2/s3), SVG (s6).
+//   inline — centered, contained glyph sized to fill a small square/circle (the
+//     PostCard feed marker), so it flows in normal layout rather than overlaying.
+export default function FieldGlyph({
+  slug,
+  reach = "bottom-0",
+  variant = "overlay",
+}: {
+  slug: string | undefined
+  reach?: string
+  variant?: "overlay" | "inline"
+}) {
   const [record, setRecord] = useState(glyphs)
   useEffect(() => {
     if (record || !slug) return
@@ -46,7 +55,11 @@ export default function FieldGlyph({ slug, reach = "bottom-0" }: { slug: string 
     <SvgBlock
       svg={svg}
       isUserContent={false}
-      className={`pointer-events-none absolute top-0 right-0 ${reach} flex items-center justify-end max-w-[45%] [&_svg]:h-full [&_svg]:w-auto [&_img]:h-full [&_img]:w-auto`}
+      className={
+        variant === "inline"
+          ? "pointer-events-none w-full flex items-center justify-center [&_svg]:w-full [&_svg]:h-auto [&_img]:w-full [&_img]:h-auto"
+          : `pointer-events-none absolute top-0 right-0 ${reach} flex items-center justify-end max-w-[45%] [&_svg]:h-full [&_svg]:w-auto [&_img]:h-full [&_img]:w-auto`
+      }
     />
   )
 }

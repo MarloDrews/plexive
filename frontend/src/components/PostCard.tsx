@@ -14,10 +14,7 @@ import { updatePostInFeedCaches } from "@/lib/swr"
 import { fcNum, fcStr, type Post } from "@/types/post"
 import { formatStyle } from "@/lib/formats"
 import { unescapeDollar } from "@/lib/prose"
-import { sizedImageUrl } from "@/lib/imageUrl"
-import AppImage from "@/components/AppImage"
 import Avatar from "@/components/Avatar"
-import BookCover from "@/components/BookCover"
 import DotScale from "@/components/DotScale"
 import FieldGlyph from "@/components/FieldGlyph"
 import VerifiedBadge from "@/components/VerifiedBadge"
@@ -89,33 +86,70 @@ export function SlabAccent() {
   )
 }
 
+// Uniform image slot at the top of every card, above the title: a full-bleed
+// landscape band at a fixed 16:9 aspect (YouTube-thumbnail shape). For now every post shows
+// this neutral placeholder; the real per-post image gets wired into the same
+// slot later. Full-bleed via negative margins that cancel the slab's px-6/py-7
+// padding, so the band spans edge to edge; the slab's rounded overflow-hidden
+// clips the top corners. aria-hidden because it carries no meaning yet.
+function CardHero() {
+  return (
+    <div
+      aria-hidden="true"
+      className="relative -mx-6 -mt-7 mb-1 w-[calc(100%+3rem)] max-w-none aspect-video bg-white/[0.04] flex items-center justify-center overflow-hidden"
+    >
+      {/* Simple picture glyph so the empty slot reads as an image placeholder.
+          It sits behind the test image and shows through when the image is
+          missing or fails to load. */}
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.25} className="w-14 h-14 text-white/15">
+        <rect x="3" y="3" width="18" height="18" rx="2" />
+        <circle cx="8.5" cy="8.5" r="1.6" fill="currentColor" stroke="none" />
+        <path d="M21 15l-5-5L5 21" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+      {/* TEMPORARY test thumbnail: drop a file at public/test-thumbnail.jpg to
+          preview a real image in the slot. On a missing/broken file the img
+          hides itself and the placeholder glyph above stays visible. Replace
+          this with the real per-post image field when wiring images for real. */}
+      <img
+        src="/test-thumbnail.jpg"
+        alt=""
+        className="absolute inset-0 w-full h-full object-cover"
+        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none" }}
+      />
+    </div>
+  )
+}
+
 // Slab footer: creator byline on the left, neutral reading metadata on the
 // right. The meta line is deliberately uniform across all seven formats —
 // reading time + difficulty only. Format-specific fields (year, era,
 // lifespan, genre, venue, ...) stay in the post JSON and render on the
 // detail page, never on the card.
-function CardFooter({ post, fc }: { post: Post; fc: Post["feed_card"] }) {
+function CardFooter({ post, fc, actions }: { post: Post; fc: Post["feed_card"]; actions?: React.ReactNode }) {
   const difficulty = fcNum(fc, "post_difficulty")
   // Reading time is computed on the server from the post's text (post.reading_minutes).
   // Guard the type: a missing value would otherwise render "null min" / "undefined min".
   const metaText = typeof post.reading_minutes === "number" ? `${post.reading_minutes} min` : ""
   return (
-    <div className="flex items-center gap-2 pt-1 min-w-0">
-      {post.author_username && (
-        <span className="flex items-center gap-1.5 min-w-0">
-          <Avatar username={post.author_username} avatarUrl={post.author_avatar_url} frameId={post.author_avatar_frame_id} size={24} />
-          <span className="text-xs text-ink-dim truncate">@{post.author_username}</span>
-          {(post.author_is_verified ?? 0) > 0 && (
-            <VerifiedBadge size={12} level={post.author_is_verified ?? 1} />
+    <div className="flex flex-col gap-3 pt-1">
+      <div className="flex items-center gap-2 min-w-0">
+        {post.author_username && (
+          <span className="flex items-center gap-1.5 min-w-0">
+            <Avatar username={post.author_username} avatarUrl={post.author_avatar_url} frameId={post.author_avatar_frame_id} size={24} />
+            <span className="text-xs text-ink-dim truncate">@{post.author_username}</span>
+            {(post.author_is_verified ?? 0) > 0 && (
+              <VerifiedBadge size={12} level={post.author_is_verified ?? 1} />
+            )}
+          </span>
+        )}
+        <span className="ml-auto flex items-center gap-2 shrink-0">
+          {difficulty > 0 && <DotScale value={difficulty as 1 | 2 | 3} />}
+          {metaText && (
+            <span className="text-[11px] font-mono text-ink-muted leading-none">{metaText}</span>
           )}
         </span>
-      )}
-      <span className="ml-auto flex items-center gap-2 shrink-0">
-        {difficulty > 0 && <DotScale value={difficulty as 1 | 2 | 3} />}
-        {metaText && (
-          <span className="text-[11px] font-mono text-ink-muted leading-none">{metaText}</span>
-        )}
-      </span>
+      </div>
+      {actions}
     </div>
   )
 }
@@ -287,6 +321,63 @@ function PostCard({ post, activeTabId }: { post: Post; activeTabId: string }) {
     }
   }
 
+  // Social action row — bare glyphs laid out horizontally, rendered inside the
+  // slab by CardFooter (below the byline) so it lives on the card surface next
+  // to the accent bar rather than floating over the screen edge. Each item is
+  // icon + inline count (invisible at zero); share is pushed to the far right.
+  // Every handler stops propagation so a tap never triggers the card's navigate
+  // / double-tap-like path.
+  const actionBar = (
+    <div className="flex items-center gap-6 pt-1 text-ink-dim">
+      {/* Like */}
+      <button
+        onClick={(e) => { e.stopPropagation(); handleToggleLike() }}
+        aria-label={`${liked ? "Unlike" : "Like"}, ${likesCount} ${likesCount === 1 ? "like" : "likes"}`}
+        className={`flex items-center gap-1.5 cursor-pointer transition-all duration-150 active:scale-90 ${liked ? "text-like" : "text-ink-dim"}`}
+      >
+        <HeartIcon
+          filled
+          className={`w-6 h-6 ${animatingLike ? "heart-pop" : ""}`}
+          onAnimationEnd={() => setAnimatingLike(false)}
+        />
+        <span className={`text-xs font-mono leading-none ${likesCount === 0 && !liked ? "invisible" : ""}`}>{likesCount}</span>
+      </button>
+
+      {/* Comment */}
+      <button
+        onClick={(e) => { e.stopPropagation(); setShowComments(true) }}
+        aria-label={`Comments, ${commentsCount} ${commentsCount === 1 ? "comment" : "comments"}`}
+        className="flex items-center gap-1.5 cursor-pointer transition-all duration-150 active:scale-90 text-ink-dim"
+      >
+        <CommentIcon filled className="w-6 h-6" />
+        <span className={`text-xs font-mono leading-none ${commentsCount === 0 ? "invisible" : ""}`}>{commentsCount}</span>
+      </button>
+
+      {/* Save */}
+      <button
+        onClick={handleSaveClick}
+        aria-label={`${saved ? "Unsave" : "Save"}, ${saveCount} ${saveCount === 1 ? "save" : "saves"}`}
+        className={`flex items-center gap-1.5 cursor-pointer transition-all duration-150 active:scale-90 ${saved ? "text-save" : "text-ink-dim"}`}
+      >
+        <BookmarkIcon
+          filled
+          className={`w-6 h-6 ${animatingSave ? "heart-pop" : ""}`}
+          onAnimationEnd={() => setAnimatingSave(false)}
+        />
+        <span className={`text-xs font-mono leading-none ${saveCount === 0 && !saved ? "invisible" : ""}`}>{saveCount}</span>
+      </button>
+
+      {/* Share — anchored to the far right of the row */}
+      <button
+        onClick={handleShare}
+        aria-label="Share"
+        className="ml-auto cursor-pointer transition-all duration-150 active:scale-90 text-ink-dim"
+      >
+        <SendIcon className="w-6 h-6" />
+      </button>
+    </div>
+  )
+
   return (
     <div
       ref={cardRef}
@@ -343,17 +434,23 @@ function PostCard({ post, activeTabId }: { post: Post; activeTabId: string }) {
             visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
-          {/* Format marker floating above the slab — dot and label both carry
-              the per-format accent so the format is legible at a glance. The
-              read-aloud button sits at the row's right end — the post
-              block's top-right corner: it belongs to the post, not to the
-              social action rail. (Inside the slab surface it would collide
-              with the books cover / people portrait layouts.) It opens the
+          {/* Format marker floating above the slab. The category glyph now sits
+              in the accent circle here (moved off the card surface), and the
+              label reads "format - CATEGORY" (e.g. "facts - MATERIALS SCIENCE")
+              so the category is no longer repeated inside the card. Both circle
+              and label carry the per-format accent. The read-aloud button sits
+              at the row's right end — the post block's top-right corner: it
+              belongs to the post, not to the social action rail. It opens the
               detail page with reading already started. */}
           <div className="flex items-center gap-2 mb-3 px-2">
-            <span className="w-2.5 h-2.5 rounded-full shrink-0 bg-(--accent)" />
-            <span className="text-xs font-mono lowercase tracking-widest text-(--accent)">
+            <span className="w-12 shrink-0 flex items-center justify-center text-(--accent)">
+              <FieldGlyph slug={post.tags?.[0]} variant="inline" />
+            </span>
+            <span className="text-xs font-mono tracking-widest text-(--accent)">
               {style.badge.toLowerCase()}
+              {post.primary_category_name && (
+                <span className="lowercase"> - {post.primary_category_name}</span>
+              )}
             </span>
             <button
               onClick={(e) => {
@@ -371,21 +468,13 @@ function PostCard({ post, activeTabId }: { post: Post; activeTabId: string }) {
           {post.format === "books" && fc ? (
             <div className="card relative overflow-hidden px-6 py-7 flex flex-col gap-4">
               <SlabAccent />
-              {/* Title row + cover */}
-              <div className="flex gap-4 items-start">
-                <div className="flex-1 min-w-0">
-                  <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
-                    {fcStr(fc, "title")}
-                  </h2>
-                  <p className="text-ink-dim text-sm font-medium mt-1">{fcStr(fc, "author")}</p>
-                </div>
-                {/* Two-tier cover (real or generated), resolved the same way as
-                    the detail header. Thumbnail size, so no credit line here. */}
-                <BookCover
-                  feedCard={fc}
-                  isUserContent={post.is_user_content}
-                  className="shrink-0 rounded-xl overflow-hidden w-16 h-24 bg-white/[0.06]"
-                />
+              <CardHero />
+              {/* Title + author below the image slot. */}
+              <div className="min-w-0">
+                <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
+                  {fcStr(fc, "title")}
+                </h2>
+                <p className="text-ink-dim text-sm font-medium mt-1">{fcStr(fc, "author")}</p>
               </div>
 
               {/* Dek: the one-line italic gloss (LAYOUT_STANDARD s2), between the
@@ -401,38 +490,25 @@ function PostCard({ post, activeTabId }: { post: Post; activeTabId: string }) {
                 <Teasers items={fc.teasers as string[]} />
               )}
 
-              <CardFooter post={post} fc={fc} />
+              <CardFooter post={post} fc={fc} actions={actionBar} />
             </div>
           ) : post.format === "people" && fc ? (
             <div className="card relative overflow-hidden px-6 py-7 flex flex-col gap-4">
               <SlabAccent />
-              <div className="flex gap-4 items-start">
-                {(fc.portrait as { image_url?: string } | undefined)?.image_url && (
-                  <div className="shrink-0 w-20 h-20 rounded-full overflow-hidden bg-white/[0.06]">
-                    <AppImage
-                      src={sizedImageUrl((fc.portrait as { image_url: string }).image_url, 160)}
-                      alt=""
-                      width={80}
-                      height={80}
-                      sizes="80px"
-                      className="w-full h-full object-cover object-top"
-                      onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none" }}
-                    />
-                  </div>
+              <CardHero />
+              {/* Role kicker, name and lifespan below the image slot. */}
+              <div className="min-w-0">
+                {fcStr(fc, "role") && (
+                  <p className="label-caps text-(--accent) mb-0.5">
+                    {fcStr(fc, "role")}
+                  </p>
                 )}
-                <div className="flex-1 min-w-0">
-                  {fcStr(fc, "role") && (
-                    <p className="label-caps text-(--accent) mb-0.5">
-                      {fcStr(fc, "role")}
-                    </p>
-                  )}
-                  <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
-                    {fcStr(fc, "name")}
-                  </h2>
-                  {fcStr(fc, "lifespan") && (
-                    <p className="text-ink-muted text-xs font-mono mt-0.5">{fcStr(fc, "lifespan")}</p>
-                  )}
-                </div>
+                <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
+                  {fcStr(fc, "name")}
+                </h2>
+                {fcStr(fc, "lifespan") && (
+                  <p className="text-ink-muted text-xs font-mono mt-0.5">{fcStr(fc, "lifespan")}</p>
+                )}
               </div>
 
               {/* Dek: People's card gloss is one_line (the feed_card has no
@@ -445,48 +521,32 @@ function PostCard({ post, activeTabId }: { post: Post; activeTabId: string }) {
                 <Teasers items={fc.teasers as string[]} />
               )}
 
-              <CardFooter post={post} fc={fc} />
+              <CardFooter post={post} fc={fc} actions={actionBar} />
             </div>
           ) : post.format === "facts" && fc ? (
             <div className="card relative overflow-hidden px-6 py-7 flex flex-col gap-4">
               <SlabAccent />
-              {/* Typographic card: a field line (category label at the top left, the
-                  large category glyph filling the top right as an overlay) then the
-                  full-width serif headline. */}
-              <div className="flex flex-col gap-1">
-                <div className="relative min-h-7 flex items-center">
-                  {post.primary_category_name && (
-                    <p className="label-caps text-(--accent)">{post.primary_category_name}</p>
-                  )}
-                  <FieldGlyph slug={post.tags?.[0]} reach="-bottom-1" />
-                </div>
-                <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
-                  {fcStr(fc, "headline")}
-                </h2>
-              </div>
+              <CardHero />
+              {/* Typographic card: the full-width serif headline. The category
+                  label and glyph now live in the feed marker above the slab. */}
+              <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
+                {fcStr(fc, "headline")}
+              </h2>
 
               {Array.isArray(fc.teasers) && (fc.teasers as string[]).length > 0 && (
                 <Teasers items={fc.teasers as string[]} />
               )}
 
-              <CardFooter post={post} fc={fc} />
+              <CardFooter post={post} fc={fc} actions={actionBar} />
             </div>
           ) : post.format === "concepts" && fc ? (
             <div className="card relative overflow-hidden px-6 py-7 flex flex-col gap-4">
               <SlabAccent />
-              {/* Field line: category label top left, large category glyph filling
-                  the top right as an overlay, same as the facts card (LAYOUT_STANDARD s2.1). */}
-              <div className="flex flex-col gap-1">
-                <div className="relative min-h-7 flex items-center">
-                  {post.primary_category_name && (
-                    <p className="label-caps text-(--accent)">{post.primary_category_name}</p>
-                  )}
-                  <FieldGlyph slug={post.tags?.[0]} reach="-bottom-1" />
-                </div>
-                <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
-                  {fcStr(fc, "concept_name")}
-                </h2>
-              </div>
+              <CardHero />
+              {/* Headline only; category label and glyph live in the feed marker. */}
+              <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
+                {fcStr(fc, "concept_name")}
+              </h2>
               {fcStr(fc, "one_line") && (
                 <p className="font-serif italic text-base text-ink-body leading-relaxed">{unescapeDollar(fcStr(fc, "one_line"))}</p>
               )}
@@ -495,24 +555,16 @@ function PostCard({ post, activeTabId }: { post: Post; activeTabId: string }) {
                 <Teasers items={fc.teasers as string[]} />
               )}
 
-              <CardFooter post={post} fc={fc} />
+              <CardFooter post={post} fc={fc} actions={actionBar} />
             </div>
           ) : post.format === "questions" && fc ? (
             <div className="card relative overflow-hidden px-6 py-7 flex flex-col gap-4">
               <SlabAccent />
-              {/* Field line: category label top left, large category glyph filling
-                  the top right as an overlay, same as facts/concepts (LAYOUT_STANDARD s2.1). */}
-              <div className="flex flex-col gap-1">
-                <div className="relative min-h-7 flex items-center">
-                  {post.primary_category_name && (
-                    <p className="label-caps text-(--accent)">{post.primary_category_name}</p>
-                  )}
-                  <FieldGlyph slug={post.tags?.[0]} reach="-bottom-1" />
-                </div>
-                <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
-                  {fcStr(fc, "the_question")}
-                </h2>
-              </div>
+              <CardHero />
+              {/* Headline only; category label and glyph live in the feed marker. */}
+              <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
+                {fcStr(fc, "the_question")}
+              </h2>
               {/* Dek: the one-line italic gloss (LAYOUT_STANDARD s2), the same
                   treatment concepts/people/books use. */}
               {fcStr(fc, "one_line") && (
@@ -523,57 +575,19 @@ function PostCard({ post, activeTabId }: { post: Post; activeTabId: string }) {
                 <Teasers items={fc.teasers as string[]} />
               )}
 
-              <CardFooter post={post} fc={fc} />
+              <CardFooter post={post} fc={fc} actions={actionBar} />
             </div>
           ) : post.format === "stories" && fc ? (
             <div className="card relative overflow-hidden px-6 py-7 flex flex-col gap-4">
               <SlabAccent />
-              {/* Stories is the third card look (LAYOUT_STANDARD s1): a real lead
-                  image as a slim full-width top band when one fits, not a side
-                  cover, because story headlines are long. Full-bleed via negative
-                  margins that cancel the slab px-6/py-7 padding (block so no inline
-                  baseline gap); max-w-none is required because Tailwind Preflight
-                  sets img { max-width: 100% }, which otherwise clamps the
-                  calc(100%+3rem) width back to the content box and re-insets the
-                  right edge by 3rem. The slab's rounded overflow-hidden clips the
-                  top corners while the bottom runs straight into the content. A dead
-                  URL hides the band. pointer-events-none + draggable=false keep the bare
-                  image from swallowing the tap or opening the platform image viewer,
-                  so a tap anywhere falls through to the card's navigate handler.
-                  object-position keeps the central scene (faces and table) in frame
-                  on a slim crop of a near-square image. */}
-              {fcStr(fc, "lead_image_url") && (
-                <AppImage
-                  src={sizedImageUrl(fcStr(fc, "lead_image_url"), 860)}
-                  alt=""
-                  width={860}
-                  height={256}
-                  sizes="(max-width: 430px) 100vw, 430px"
-                  draggable={false}
-                  className="block -mx-6 -mt-7 w-[calc(100%+3rem)] max-w-none h-32 object-cover object-[center_38%] pointer-events-none select-none"
-                  onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none" }}
-                />
-              )}
-              {/* Context line: the era (accent) with the reader-facing story
-                  category beside it. There is no dek on a stories card; the
-                  headline carries the narrative opening alone. The field glyph
-                  (keyed on tags[0]) fills the top right as a large overlay ONLY when
-                  there is no lead band, the same field-line shape as the typographic
-                  cards (LAYOUT_STANDARD s1/s2). */}
+              <CardHero />
+              {/* Context line: the era (accent) alone. The category and glyph now
+                  live in the feed marker above the slab; there is no dek on a
+                  stories card, so the headline carries the narrative opening. */}
               <div className="flex flex-col gap-1">
-                <div className={`relative flex items-center ${!fcStr(fc, "lead_image_url") ? "min-h-7" : ""}`}>
-                  <div className="flex items-center gap-2 flex-wrap min-w-0">
-                    {fcStr(fc, "era_label") && (
-                      <span className="label-caps text-(--accent)">{fcStr(fc, "era_label")}</span>
-                    )}
-                    {post.primary_category_name && (
-                      <span className="label-caps text-ink-muted">{post.primary_category_name}</span>
-                    )}
-                  </div>
-                  {!fcStr(fc, "lead_image_url") && (
-                    <FieldGlyph slug={post.tags?.[0]} reach="-bottom-1" />
-                  )}
-                </div>
+                {fcStr(fc, "era_label") && (
+                  <span className="label-caps text-(--accent)">{fcStr(fc, "era_label")}</span>
+                )}
                 <h2 className="font-serif text-2xl font-medium tracking-tight text-ink leading-snug">
                   {fcStr(fc, "headline")}
                 </h2>
@@ -583,25 +597,16 @@ function PostCard({ post, activeTabId }: { post: Post; activeTabId: string }) {
                 <Teasers items={fc.teasers as string[]} />
               )}
 
-              <CardFooter post={post} fc={fc} />
+              <CardFooter post={post} fc={fc} actions={actionBar} />
             </div>
           ) : post.format === "academy" && fc ? (
             <div className="card relative overflow-hidden px-6 py-7 flex flex-col gap-4">
               <SlabAccent />
-              {/* Typographic card like facts/concepts: a field line (category label
-                  top left, large category glyph filling the top right as an overlay),
-                  then the serif paper title. */}
-              <div className="flex flex-col gap-1">
-                <div className="relative min-h-7 flex items-center">
-                  {post.primary_category_name && (
-                    <p className="label-caps text-(--accent)">{post.primary_category_name}</p>
-                  )}
-                  <FieldGlyph slug={post.tags?.[0]} reach="-bottom-1" />
-                </div>
-                <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
-                  {fcStr(fc, "title") || post.title}
-                </h2>
-              </div>
+              <CardHero />
+              {/* Serif paper title only; category label and glyph live in the feed marker. */}
+              <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
+                {fcStr(fc, "title") || post.title}
+              </h2>
               {/* Context line: short citation (authors_compact already carries
                   the year, e.g. "Friston, 2010") and the venue. published_year
                   stays in the data for sorting but is not printed here, to avoid
@@ -620,105 +625,22 @@ function PostCard({ post, activeTabId }: { post: Post; activeTabId: string }) {
               {Array.isArray(fc.teasers) && (fc.teasers as string[]).length > 0 && (
                 <Teasers items={fc.teasers as string[]} />
               )}
-              <CardFooter post={post} fc={fc} />
+              <CardFooter post={post} fc={fc} actions={actionBar} />
             </div>
           ) : (
             /* Fallback for unknown formats */
             <div className="card relative overflow-hidden px-6 py-7 flex flex-col gap-4">
               <SlabAccent />
+              <CardHero />
               <h2 className="font-serif text-3xl font-medium tracking-tight text-ink leading-snug">
                 {post.title}
               </h2>
               {fcStr(fc, "essence") && (
                 <p className="font-serif italic text-base text-ink-body leading-relaxed">{unescapeDollar(fcStr(fc, "essence"))}</p>
               )}
-              <CardFooter post={post} fc={fc} />
+              <CardFooter post={post} fc={fc} actions={actionBar} />
             </div>
           )}
-        </div>
-      </div>
-
-      {/* Interest tags — floating pills bottom-left. The box is one chip tall
-          and bottom-anchored level with the send button, ending before the
-          action column (right-20). The first row fills that width left to
-          right; flex-wrap + content-start let overflow chips spill onto a
-          second row below the box, into the nav band where the dock covers
-          them until scrolled. */}
-      {post.interests.length > 0 && (
-        <div className="absolute left-4 right-20 bottom-rail flex flex-wrap content-start gap-2 h-7 z-10">
-          {post.interests.map((name) => (
-            <span
-              key={name}
-              className="rounded-full bg-white/[0.05] backdrop-blur-md text-ink-dim text-xs px-3 py-1.5"
-            >
-              {name}
-            </span>
-          ))}
-        </div>
-      )}
-
-      {/* Action rail — bare glyphs floating at the right edge, no borders or
-          containers. Every item is button + a fixed-height count slot (h-3,
-          empty/invisible when there is no number) so button centers sit at
-          one uniform interval whether or not an action has a count; the last
-          item (share) carries no trailing slot since the slot only sets the
-          rhythm between items. Press feedback is a springy scale-down. The
-          rail bottom-aligns with the first interest-tag row just above the
-          nav dock (dock top = safe-area + 68px). */}
-      <div className="absolute right-2 bottom-rail z-10 flex flex-col items-center">
-        {/* Like */}
-        <div className="flex flex-col items-center">
-          <button
-            onClick={(e) => { e.stopPropagation(); handleToggleLike() }}
-            aria-label={`${liked ? "Unlike" : "Like"}, ${likesCount} ${likesCount === 1 ? "like" : "likes"}`}
-            className={`w-11 h-11 flex items-center justify-center cursor-pointer transition-all duration-150 active:scale-90 ${liked ? "text-like" : "text-ink-dim"}`}
-          >
-            <HeartIcon
-              filled={liked}
-              className={`w-7 h-7 ${animatingLike ? "heart-pop" : ""}`}
-              onAnimationEnd={() => setAnimatingLike(false)}
-            />
-          </button>
-          <span aria-hidden="true" className={`h-3 text-[11px] font-mono leading-none transition-colors duration-150 ${liked ? "text-like" : "text-ink-dim"} ${likesCount === 0 && !liked ? "invisible" : ""}`}>{likesCount}</span>
-        </div>
-
-        {/* Comment */}
-        <div className="flex flex-col items-center">
-          <button
-            onClick={(e) => { e.stopPropagation(); setShowComments(true) }}
-            aria-label={`Comments, ${commentsCount} ${commentsCount === 1 ? "comment" : "comments"}`}
-            className="w-11 h-11 flex items-center justify-center cursor-pointer transition-all duration-150 active:scale-90 text-ink-dim"
-          >
-            <CommentIcon className="w-7 h-7" />
-          </button>
-          <span aria-hidden="true" className={`h-3 text-[11px] font-mono text-ink-dim leading-none ${commentsCount === 0 ? "invisible" : ""}`}>{commentsCount}</span>
-        </div>
-
-        {/* Save */}
-        <div className="flex flex-col items-center">
-          <button
-            onClick={handleSaveClick}
-            aria-label={`${saved ? "Unsave" : "Save"}, ${saveCount} ${saveCount === 1 ? "save" : "saves"}`}
-            className={`w-11 h-11 flex items-center justify-center cursor-pointer transition-all duration-150 active:scale-90 ${saved ? "text-save" : "text-ink-dim"}`}
-          >
-            <BookmarkIcon
-              filled={saved}
-              className={`w-7 h-7 ${animatingSave ? "heart-pop" : ""}`}
-              onAnimationEnd={() => setAnimatingSave(false)}
-            />
-          </button>
-          <span aria-hidden="true" className={`h-3 text-[11px] font-mono leading-none transition-colors duration-150 ${saved ? "text-save" : "text-ink-dim"} ${saveCount === 0 && !saved ? "invisible" : ""}`}>{saveCount}</span>
-        </div>
-
-        {/* Share */}
-        <div className="flex flex-col items-center">
-          <button
-            onClick={handleShare}
-            aria-label="Share"
-            className="w-11 h-11 flex items-center justify-center cursor-pointer transition-all duration-150 active:scale-90 text-ink-dim"
-          >
-            <SendIcon className="w-7 h-7" />
-          </button>
         </div>
       </div>
 
