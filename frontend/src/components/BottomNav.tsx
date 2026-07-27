@@ -47,7 +47,7 @@ const NAV_ICONS: Record<NavItem["id"], React.ReactNode> = {
   ),
 }
 
-// Stage bottom nav — a frosted pill dock floating inset from every edge.
+// Stage bottom nav — a solid bar anchored flush to the bottom edge, full width.
 // Active state is a filled neutral circle (functional, never glow).
 export default function BottomNav({ activeTab }: { activeTab: ActiveTab }) {
   const router = useRouter()
@@ -87,10 +87,10 @@ export default function BottomNav({ activeTab }: { activeTab: ActiveTab }) {
   return (
     <nav
       aria-label="Primary"
-      className="absolute left-4 right-4 z-30"
-      style={{ bottom: "calc(env(safe-area-inset-bottom) + 12px)" }}
+      className="absolute left-0 right-0 bottom-0 z-30 bg-surface-1 border-t border-edge"
+      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
-      <div className="h-14 rounded-full backdrop-blur-xl bg-white/[0.06] flex items-center justify-around px-2">
+      <div className="h-14 flex items-center justify-around px-2">
         {items.map((item) => (
           <button
             key={item.id}

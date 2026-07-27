@@ -151,7 +151,7 @@ function TabPage({
   }, [posts, tab.id])
 
   return (
-    // pb-24 clears the floating dock (12px inset + 56px tall).
+    // pb-24 clears the bottom nav bar (56px tall + safe-area inset).
     <div
       ref={scrollRef}
       {...tabPanelProps(FEED_TABS_ID, index, isActive)}
