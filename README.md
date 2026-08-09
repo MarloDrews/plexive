@@ -57,7 +57,7 @@ python -m venv .venv
 # Windows:        .venv\Scripts\activate
 # macOS / Linux:  source .venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env   # then fill in the values below
+cp .env .env   # then fill in the values below
 uvicorn app.main:app --reload
 ```
 
@@ -78,7 +78,7 @@ To load sample content into the database, set `SEED_ADMIN_PASSWORD` in `backend/
 ```bash
 cd frontend
 npm install
-cp .env.example .env.local   # sets NEXT_PUBLIC_API_URL=http://localhost:8000
+cp .env .env.local   # sets NEXT_PUBLIC_API_URL=http://localhost:8000
 npm run dev
 ```
 
