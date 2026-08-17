@@ -61,6 +61,18 @@ class Post(Base):
     # Cannot be derived from author_id because seed posts also have an author.
     is_user_content = Column(Boolean, nullable=False, default=False)
 
+    # Public Supabase Storage URL of this post's own 16:9 thumbnail. NULL until
+    # one was generated or uploaded -- the card then falls back to the shared
+    # placeholder image. Added to the live DB by scripts/add_thumbnail_columns.py.
+    thumbnail_url = Column(String, nullable=True)
+
+    # How this post's thumbnail is produced, e.g.
+    # {"generator": "geography", "place": "Mediterranean Sea", "caption": "...",
+    #  "palette": "blue"}. Authored in the post JSON under "thumbnail" and kept
+    # on the row so scripts/generate_thumbnails.py can re-render from the DB
+    # alone, and so future per-format generators plug in by generator name only.
+    thumbnail_spec = Column(JSON, nullable=True)
+
     interests = relationship("Interest", secondary=post_interests)
     author    = relationship("User", back_populates="posts", foreign_keys=[author_id])
 

@@ -32,7 +32,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from PIL import Image  # noqa: E402
 
-from app.thumbnails import basemap, nominatim, service  # noqa: E402
+from app.thumbnails import basemap, nominatim, places, service  # noqa: E402
 from app.thumbnails.geometry import all_rings, polygons_from_geometry  # noqa: E402
 from app.thumbnails.projection import bounds_of, fit  # noqa: E402
 from app.thumbnails.render import (  # noqa: E402
@@ -552,11 +552,15 @@ def test_osm_is_preferred() -> None:
 
 
 def test_natural_earth_fallback() -> None:
-    """OSM has no polygon for a sea, so the marine layer answers instead."""
-    with _Stub(named={"Mediterranean Sea": _named_result("Mediterranean Sea")}) as stub:
-        _, meta = service._resolve_region("Mediterranean Sea", None, True, "auto")
+    """OSM has no polygon for a sea, so the marine layer answers instead.
+
+    Uses a sea with no preset entry on purpose: a preset would pin the dataset
+    and skip the OSM attempt this test is about.
+    """
+    with _Stub(named={"Coral Sea": _named_result("Coral Sea")}) as stub:
+        _, meta = service._resolve_region("Coral Sea", None, True, "auto")
     check("fell back to natural earth", meta["source"] == "natural_earth", meta["source"])
-    check("osm was tried first", stub.osm_calls == ["Mediterranean Sea"], str(stub.osm_calls))
+    check("osm was tried first", stub.osm_calls == ["Coral Sea"], str(stub.osm_calls))
     check("marine layer marks it as water", meta["marine"] is True)
 
 
@@ -581,16 +585,168 @@ def test_source_natural_earth_skips_osm() -> None:
     check("a land region is not marine", meta["marine"] is False)
 
 
+def test_place_preset_unions_its_parts() -> None:
+    """A preset fills the sub-basins the data set keeps separate.
+
+    The Baltic is stored without its two gulfs, so a bare lookup stops at the
+    Swedish coast.
+    """
+    preset = places.find_preset("Baltic Sea")
+    check("baltic has a preset", preset is not None)
+    for gulf in ("Gulf of Bothnia", "Gulf of Finland"):
+        check(f"{gulf} is part of it", gulf in preset.parts)
+
+    named = {name: _named_result(name, lon=i, lat=58) for i, name in enumerate(preset.parts)}
+    with _Stub(osm={"Baltic Sea": _osm_result("Baltic Sea")}, named=named) as stub:
+        polygons, meta = service._resolve_region("Baltic Sea", None, True, "auto")
+    check("every part is highlighted", len(polygons) == len(preset.parts), str(len(polygons)))
+    check("reported under its own name", meta["name"] == "Baltic Sea", meta["name"])
+    check("no single osm id for a composite", meta["osm_id"] is None)
+    check("still marine", meta["marine"] is True)
+    # The pinned dataset is the consistency guarantee: without it the render
+    # would depend on what OSM's search ranks first that day.
+    check("preset pins the dataset, osm never queried", stub.osm_calls == [], str(stub.osm_calls))
+
+
+def test_place_preset_alias_and_override() -> None:
+    check("alias resolves", places.find_preset("the mediterranean").name == "Mediterranean Sea")
+    check("case and spacing ignored", places.find_preset("  MEDITERRANEAN   SEA ") is not None)
+    check("an ordinary place has no preset", places.find_preset("Iceland") is None)
+    check("empty name has no preset", places.find_preset("") is None)
+
+    # A preset inside an explicit "+" union expands as well, and still reports
+    # as one name -- otherwise "Baltic Sea + Black Sea" would quietly use the
+    # incomplete basin again.
+    parts = places.find_preset("Baltic Sea").parts
+    named = {name: _named_result(name, lon=i, lat=58) for i, name in enumerate(parts)}
+    named["Black Sea"] = _named_result("Black Sea", lon=33, lat=43)
+    with _Stub(named=named):
+        polygons, meta = service._resolve_region(
+            "Baltic Sea + Black Sea", None, True, "natural_earth"
+        )
+    check("preset expands inside a union", len(polygons) == len(parts) + 1, str(len(polygons)))
+    check("union of a preset and a place is named as both",
+          meta["name"] == "Baltic Sea + Black Sea", meta["name"])
+
+    # An explicit source= still wins over the preset's pinned dataset.
+    with _Stub(osm={name: _osm_result(name, feature_type="sea") for name in parts}) as stub:
+        _, meta = service._resolve_region("Baltic Sea", None, True, "osm")
+    check("explicit source overrides the preset", stub.osm_calls == list(parts), str(stub.osm_calls))
+    check("source reported as osm", meta["source"] == "osm", meta["source"])
+
+
+def _inside_ring(ring, lon: float, lat: float) -> bool:
+    """Ray casting: is (lon, lat) inside the closed ring?"""
+    inside = False
+    count = len(ring)
+    for i in range(count):
+        x1, y1 = ring[i]
+        x2, y2 = ring[(i + 1) % count]
+        if (y1 > lat) != (y2 > lat):
+            if x1 + (lat - y1) * (x2 - x1) / (y2 - y1) > lon:
+                inside = not inside
+    return inside
+
+
+def test_mediterranean_outline_gates() -> None:
+    """The outline is only correct as long as its three gates hold.
+
+    It is filled by subtracting the landmass from it, so EVERY sea inside the
+    ring turns blue -- including a neighbouring one, the moment a gate slides
+    off the strait that separates them.
+    """
+    preset = places.find_preset("Mediterranean Sea")
+    check("mediterranean is drawn from an outline", bool(preset.outline))
+    check("an outline has no named parts", preset.parts == ())
+
+    ring = preset.outline
+    for label, lon, lat in (
+        ("Alboran Sea", -3.5, 36.0),
+        ("Balearic Sea", 2.0, 40.0),
+        ("Ligurian Sea", 8.9, 43.8),
+        ("Tyrrhenian Sea", 12.5, 39.5),
+        ("Adriatic Sea", 15.5, 43.0),
+        ("Ionian Sea", 18.5, 37.5),
+        ("Gulf of Sidra", 18.1, 31.4),
+        ("Aegean Sea", 25.0, 39.0),
+        ("Sea of Crete", 25.1, 36.3),
+        ("Sea of Marmara", 28.1, 40.7),
+        ("Levantine basin", 32.0, 33.5),
+    ):
+        check(f"{label} is inside the outline", _inside_ring(ring, lon, lat))
+
+    for label, lon, lat in (
+        ("Atlantic west of Gibraltar", -8.0, 36.0),
+        ("Bay of Biscay", -4.0, 45.0),
+        ("Black Sea", 34.0, 43.5),
+        ("Black Sea west end", 29.0, 42.5),
+        ("Red Sea", 35.7, 25.6),
+        ("Gulf of Suez", 32.9, 29.0),
+        ("Caspian Sea", 50.0, 42.0),
+        ("Persian Gulf", 50.0, 27.0),
+    ):
+        check(f"{label} is outside the outline", not _inside_ring(ring, lon, lat))
+
+
+def test_outlined_preset_needs_no_lookup() -> None:
+    """An outlined sea renders offline: no OSM call, no named-feature lookup."""
+    with _Stub() as stub:
+        polygons, meta = service._resolve_region("Mediterranean Sea", None, True, "auto")
+    check("one ring returned", len(polygons) == 1, str(len(polygons)))
+    check("no data source was queried", stub.osm_calls == [], str(stub.osm_calls))
+    check("reported as an outline", meta["source"] == "outline", meta["source"])
+    check("named under the preset", meta["name"] == "Mediterranean Sea", meta["name"])
+    check("asks to be clipped to water", meta["clip_to_water"] is True)
+    # Under-land drawing would hide the fill behind the coastline shaping it.
+    check("not drawn under the land", meta["marine"] is False)
+
+    with _Stub():
+        try:
+            service._resolve_region("Mediterranean Sea + Black Sea", None, True, "auto")
+            check("an outline cannot be unioned", False, "no error raised")
+        except nominatim.GeoLookupError as exc:
+            check("an outline cannot be unioned", "outline" in str(exc), str(exc))
+
+
+def test_clip_to_water_fills_only_water() -> None:
+    """The renderer subtracts the landmass from an outline instead of filling it."""
+    # A big square of "sea" with a smaller island of land in the middle of it.
+    sea = polygons_from_geometry({"type": "Polygon", "coordinates": square(0, 0, 10)})
+    island = polygons_from_geometry({"type": "Polygon", "coordinates": square(0, 0, 4)})
+    style = style_for_palette("red")
+
+    result = render_card(
+        viewport=fit(bounds_of(all_rings(sea)), 240, 240, padding=0.1),
+        land_polygons=island,
+        border_polygons=[],
+        highlight_polygons=sea,
+        caption="",
+        width=240,
+        height=240,
+        clip_to_water=True,
+        style=style,
+    )
+    image = Image.open(io.BytesIO(result.png)).convert("RGB")
+
+    def is_highlight(xy):
+        # "Reddish" rather than an exact match: the vignette darkens the frame
+        # edges, so the fill is never bit-identical to style.highlight.
+        r, _, b = image.getpixel(xy)
+        return r - b > 40
+
+    check("open water is filled", is_highlight((40, 120)), str(image.getpixel((40, 120))))
+    check("the island is not filled", not is_highlight((120, 120)),
+          str(image.getpixel((120, 120))))
+
+
 def test_union_of_places() -> None:
     with _Stub(
         osm={"Aegean Sea": _osm_result("Aegean Sea", feature_type="sea", lon=25, lat=38)},
-        named={"Mediterranean Sea": _named_result("Mediterranean Sea", lon=15, lat=36)},
+        named={"Coral Sea": _named_result("Coral Sea", lon=15, lat=36)},
     ):
-        polygons, meta = service._resolve_region(
-            "Mediterranean Sea + Aegean Sea", None, True, "auto"
-        )
+        polygons, meta = service._resolve_region("Coral Sea + Aegean Sea", None, True, "auto")
     check("both shapes highlighted", len(polygons) == 2, str(len(polygons)))
-    check("names joined", meta["name"] == "Mediterranean Sea + Aegean Sea", meta["name"])
+    check("names joined", meta["name"] == "Coral Sea + Aegean Sea", meta["name"])
     check("mixed sources reported", meta["source"] == "mixed", meta["source"])
     check("all-water union stays marine", meta["marine"] is True)
     check("no single osm id for a union", meta["osm_id"] is None)
@@ -672,6 +828,101 @@ def test_request_schema() -> None:
             check(f"rejects {label}", False, "no error raised")
         except Exception:
             check(f"rejects {label}", True)
+
+
+def test_generator_registry() -> None:
+    """render_from_spec dispatches by name and rejects malformed specs."""
+    from app.thumbnails import generators
+
+    seen = {}
+
+    def fake_geography(spec):
+        seen.update(spec)
+        return b"PNG"
+
+    original = generators.GENERATORS["geography"]
+    generators.GENERATORS["geography"] = fake_geography
+    try:
+        spec = {"generator": "geography", "place": "Iceland", "caption": "HI"}
+        check("dispatches to the named generator", generators.render_from_spec(spec) == b"PNG")
+        check("passes the whole spec through", seen.get("place") == "Iceland")
+    finally:
+        generators.GENERATORS["geography"] = original
+
+    for payload, label in (
+        ({}, "missing generator"),
+        ({"generator": "geograpy", "place": "x"}, "misspelled generator"),
+        ("nope", "spec that is not an object"),
+    ):
+        try:
+            generators.render_from_spec(payload)
+            check(f"rejects {label}", False, "no error raised")
+        except ValueError:
+            check(f"rejects {label}", True)
+
+    try:
+        generators.render_from_spec({"generator": "geography", "plaec": "Iceland"})
+        check("rejects a misspelled spec key", False, "no error raised")
+    except ValueError as exc:
+        check("rejects a misspelled spec key", "plaec" in str(exc), str(exc))
+
+
+def test_thumbnail_storage() -> None:
+    """Path carries a content hash, and a missing Supabase client is a clear error."""
+    from app import thumbnail_storage
+
+    png = b"\x89PNG-one"
+    other = b"\x89PNG-two"
+    path = thumbnail_storage.thumbnail_path(png, "sahara-is-growing")
+    check("path is namespaced and named after the post",
+          path.startswith("thumbnails/sahara-is-growing-") and path.endswith(".png"), path)
+    check("same bytes -> same path", thumbnail_storage.thumbnail_path(png, "a")
+          == thumbnail_storage.thumbnail_path(png, "a"))
+    check("different bytes -> different path (no stale CDN copy)",
+          thumbnail_storage.thumbnail_path(other, "a") != thumbnail_storage.thumbnail_path(png, "a"))
+
+    class FakeBucket:
+        def __init__(self):
+            self.uploaded = None
+
+        def upload(self, path, file, file_options):
+            self.uploaded = (path, file, file_options)
+
+        def get_public_url(self, path):
+            return f"https://example.supabase.co/storage/v1/object/public/uploads/{path}"
+
+    class FakeStorage:
+        def __init__(self, bucket):
+            self.bucket = bucket
+
+        def from_(self, name):
+            return self.bucket
+
+    class FakeClient:
+        def __init__(self, bucket):
+            self.storage = FakeStorage(bucket)
+
+    bucket = FakeBucket()
+    original = thumbnail_storage.supabase_client
+    thumbnail_storage.supabase_client = FakeClient(bucket)
+    try:
+        url = thumbnail_storage.upload_thumbnail_png(png, "post-7")
+    finally:
+        thumbnail_storage.supabase_client = original
+    check("uploads to the hashed path",
+          bucket.uploaded[0] == thumbnail_storage.thumbnail_path(png, "post-7"))
+    check("uploads as a PNG", bucket.uploaded[2]["content-type"] == "image/png")
+    check("upserts so an unchanged re-run is a no-op", bucket.uploaded[2]["upsert"] == "true")
+    check("returns the public URL", url.endswith(bucket.uploaded[0]), url)
+
+    thumbnail_storage.supabase_client = None
+    try:
+        thumbnail_storage.upload_thumbnail_png(png, "post-7")
+        check("unconfigured storage raises", False, "no error raised")
+    except RuntimeError:
+        check("unconfigured storage raises", True)
+    finally:
+        thumbnail_storage.supabase_client = original
 
 
 def main() -> int:

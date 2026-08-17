@@ -7,6 +7,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from . import basemap
 from .geometry import Polygon, all_rings, polygons_from_geometry
 from .nominatim import GeoLookupError, lookup_osm_id, lookup_place
+from .places import PlacePreset, find_preset
 from .projection import bounds_of, fit
 from .render import (
     DEFAULT_PALETTE,
@@ -127,6 +128,9 @@ def render_geography_thumbnail(
     if uppercase:
         text = text.upper()
 
+    # An outlined sea is filled by subtracting the land from the ring, so the
+    # two land-based modes do not apply to it at all.
+    water_clipped = bool(geo.get("clip_to_water"))
     under_land = geo["marine"] if highlight_under_land is None else highlight_under_land
 
     result: RenderResult = render_card(
@@ -139,6 +143,7 @@ def render_geography_thumbnail(
         height=height,
         highlight_under_land=under_land,
         clip_to_land=clip_to_land,
+        clip_to_water=water_clipped,
         style=style,
         seed=seed,
     )
@@ -172,15 +177,30 @@ def _resolve_region(
     An osm_id resolves to exactly one object. A place resolves each "+"-joined
     part separately and unions the results, so a sea made of named sub-basins
     ("Mediterranean Sea + Adriatic Sea + Aegean Sea") comes out as one red area.
+
+    A part that names a composite place (places.PRESETS) expands to its own
+    fixed parts and pinned dataset, so "Mediterranean Sea" alone already fills
+    the whole basin instead of the one polygon the data happens to carry under
+    that name.
     """
     if source not in SOURCES:
         raise GeoLookupError(f"source must be one of {', '.join(SOURCES)}.")
     if osm_id:
         return _resolve_osm_id(osm_id, use_cache)
 
-    parts = [part.strip() for part in (place or "").split(UNION_SEPARATOR) if part.strip()]
-    if not parts:
+    requested = [part.strip() for part in (place or "").split(UNION_SEPARATOR) if part.strip()]
+    if not requested:
         raise GeoLookupError("Empty place query.")
+
+    outlined = find_preset(requested[0]) if len(requested) == 1 else None
+    if outlined is not None and outlined.outline:
+        return _resolve_outline(outlined)
+
+    parts, preset_labels, preset_source = _expand_presets(requested)
+    # The preset's dataset only applies when the caller did not pick one, so an
+    # explicit source= still overrides it.
+    if source == "auto" and preset_source:
+        source = preset_source
 
     polygons: List[Polygon] = []
     names: List[str] = []
@@ -199,7 +219,11 @@ def _resolve_region(
             first_osm_type, first_osm_id = meta["osm_type"], meta["osm_id"]
 
     return polygons, {
-        "name": " + ".join(names),
+        # A preset reports its own name ("Mediterranean Sea"), not the six
+        # polygons it was assembled from -- that is the name the caption and
+        # the caller should see. Without a preset the resolved names are used,
+        # so a plain lookup still reports what the data set actually matched.
+        "name": " + ".join(preset_labels or names),
         "osm_type": first_osm_type if len(parts) == 1 else None,
         "osm_id": first_osm_id if len(parts) == 1 else None,
         "source": sources.pop() if len(sources) == 1 else "mixed",
@@ -207,6 +231,58 @@ def _resolve_region(
         # country in the union and the red would vanish under the landmass.
         "marine": all(marine_flags),
     }
+
+
+def _resolve_outline(preset: PlacePreset) -> Tuple[List[Polygon], Dict[str, Any]]:
+    """A preset that carries its own outline needs no lookup at all.
+
+    The ring is the whole answer: the renderer subtracts the landmass from it
+    (clip_to_water), which is what turns a coarse outline into the exact sea.
+    """
+    ring = [[list(point) for point in preset.outline]]
+    return [ring], {
+        "name": preset.name,
+        "osm_type": None,
+        "osm_id": None,
+        "source": "outline",
+        # An outline is only ever drawn as water, so under-land drawing would
+        # hide it behind the very landmass that shapes it.
+        "marine": False,
+        "clip_to_water": True,
+    }
+
+
+def _expand_presets(
+    requested: List[str],
+) -> Tuple[List[str], List[str], Optional[str]]:
+    """Replace any composite place with its parts.
+
+    Returns the parts to look up, the names to report (one per REQUESTED part,
+    so a preset stays one name -- EMPTY when no preset matched, which is how
+    the caller knows to report the resolved names instead), and the dataset a
+    preset pinned, if any.
+    """
+    parts: List[str] = []
+    labels: List[str] = []
+    preset_source: Optional[str] = None
+    for part in requested:
+        preset = find_preset(part)
+        if preset is None:
+            parts.append(part)
+            labels.append(part)
+            continue
+        if preset.outline:
+            # An outline is filled by subtracting land from it, which cannot be
+            # mixed into a union of ordinary polygons. Say so instead of
+            # dropping the biggest half of the query silently.
+            raise GeoLookupError(
+                f"'{preset.name}' is drawn from its own outline and cannot be "
+                f"combined with '{UNION_SEPARATOR}'."
+            )
+        parts.extend(preset.parts)
+        labels.append(preset.name)
+        preset_source = preset.source
+    return parts, (labels if preset_source else []), preset_source
 
 
 def _resolve_osm_id(osm_id: str, use_cache: bool) -> Tuple[List[Polygon], Dict[str, Any]]:

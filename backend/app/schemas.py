@@ -370,6 +370,10 @@ class PostCreate(BaseModel):
     feed_card: dict
     sections: list[AnySection]
     interests: list[str]
+    # Optional card thumbnail, uploaded through POST /api/upload/image first.
+    # Same rule as any image_url in user content: it must live in our storage,
+    # never on an arbitrary external host.
+    thumbnail_url: str | None = None
 
     @field_validator("title")
     @classmethod
@@ -384,6 +388,16 @@ class PostCreate(BaseModel):
     def validate_interests(cls, v: list[str]) -> list[str]:
         if not 1 <= len(v) <= 10:
             raise ValueError("interests must have 1-10 items")
+        return v
+
+    @field_validator("thumbnail_url")
+    @classmethod
+    def validate_thumbnail_url(cls, v: str | None) -> str | None:
+        # Same storage rule as _check_image_urls below: a client may only point
+        # at a file it uploaded through us, so a post can never embed (or leak
+        # a view to) an arbitrary external host.
+        if v and not v.startswith(_upload_storage_prefix()):
+            raise ValueError("thumbnail_url must reference our upload endpoint")
         return v
 
     @model_validator(mode="after")
@@ -426,10 +440,15 @@ class PostCreate(BaseModel):
         return self
 
 
+def _upload_storage_prefix() -> str:
+    """Public URL prefix of our own upload bucket. Read per call, not at import:
+    tests and scripts set SUPABASE_URL after this module is first imported."""
+    return f"{os.environ.get('SUPABASE_URL', '')}/storage/v1/object/public/uploads/"
+
+
 def _check_image_urls(data: dict) -> None:
     """Recursively verify any image_url in user-submitted content uses the Supabase storage URL."""
-    supabase_url = os.environ.get("SUPABASE_URL", "")
-    storage_prefix = f"{supabase_url}/storage/v1/object/public/uploads/"
+    storage_prefix = _upload_storage_prefix()
     for key, value in data.items():
         if key == "image_url" and isinstance(value, str) and value:
             if not value.startswith(storage_prefix):
@@ -483,6 +502,10 @@ class PostOut(BaseModel):
     # (models.Post.reading_minutes), so it survives PostListOut.drop_sections
     # and list endpoints never walk the sections JSON.
     reading_minutes: int = 1
+    # Public URL of this post's own card thumbnail (models.Post.thumbnail_url).
+    # None until one was generated or uploaded; the card then shows the shared
+    # placeholder. Survives drop_sections, so list endpoints carry it too.
+    thumbnail_url: str | None = None
     interests: List[str] = []
     # Display name of the primary category (tags[0]), attached by attach_counts
     # from the post's own interests so the card eyebrow and the interest chips

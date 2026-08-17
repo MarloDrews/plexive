@@ -248,6 +248,35 @@ def _polygon_mask(
     return mask
 
 
+def _draw_highlight_water_clipped(
+    image: Image.Image,
+    viewport: Viewport,
+    highlight_polygons: Sequence[Polygon],
+    land_polygons: Sequence[Polygon],
+    style: Style,
+) -> bool:
+    """Fill the highlight, but only where it is NOT land -- the sea version.
+
+    The mirror of _draw_highlight_clipped, and the way to render a sea that no
+    data set holds as one polygon. The caller passes a coarse outline of the
+    basin (it may cut across the surrounding countries freely) and the coastline
+    does the precise work: subtracting the landmass leaves exactly the water
+    inside the outline, every bay and island included.
+
+    Returns False when nothing survives, so the caller can fall back.
+    """
+    size = image.size
+    water_only = ImageChops.subtract(
+        _polygon_mask(size, viewport, highlight_polygons),
+        _polygon_mask(size, viewport, land_polygons),
+    )
+    if water_only.getbbox() is None:
+        return False
+
+    image.paste(Image.new("RGB", size, style.highlight), mask=water_only)
+    return True
+
+
 def _draw_highlight_clipped(
     image: Image.Image,
     viewport: Viewport,
@@ -289,6 +318,7 @@ def render_card(
     height: int = 720,
     highlight_under_land: bool = False,
     clip_to_land: bool = True,
+    clip_to_water: bool = False,
     style: Style = None,
     seed: Optional[int] = None,
 ) -> RenderResult:
@@ -302,6 +332,12 @@ def render_card(
     clip_to_land masks a land highlight to the landmass, which is what strips
     the territorial waters out of an OSM country boundary. Ignored when the
     highlight is drawn under the land, where the draw order already does it.
+
+    clip_to_water is the opposite and wins over both: the highlight is a coarse
+    outline of a sea and only the water inside it is filled. It exists because
+    a sea is often not one polygon anywhere -- the Mediterranean is seven in
+    Natural Earth and none in OSM -- so an outline plus the coastline is the
+    only way to fill the whole basin, bays and islands included.
 
     seed pins the caption's random tilt and sideways nudge, so the same call
     renders the same card twice. Left as None every render differs slightly.
@@ -334,7 +370,9 @@ def render_card(
             hole_fill=style.ocean if highlight_under_land else style.land,
         )
 
-    if highlight_under_land:
+    # An outline clipped to water is drawn after the land, never under it: the
+    # land is what carves the coastline out of it.
+    if highlight_under_land and not clip_to_water:
         draw_highlight()
 
     _draw_polygons(draw, big_viewport, land_polygons, fill=style.land, hole_fill=style.ocean)
@@ -354,7 +392,12 @@ def render_card(
         outline_width=style.coast_width * scale,
     )
 
-    if not highlight_under_land:
+    if clip_to_water and land_polygons:
+        if not _draw_highlight_water_clipped(
+            big, big_viewport, highlight_polygons, land_polygons, style
+        ):
+            draw_highlight()
+    elif not highlight_under_land:
         clipped = False
         if clip_to_land and land_polygons:
             clipped = _draw_highlight_clipped(
