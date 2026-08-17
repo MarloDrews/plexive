@@ -116,7 +116,7 @@ Plexive is licensed under the GNU Affero General Public License v3.0. See [LICEN
 ## Documentation
 
 - [ARCHITECTURE.md](ARCHITECTURE.md) map of every module and component.
-- [Content structure](docs/content-structure/DEEPSCROLL_CONTENT_STRUCTURE.md) the post and section schema.
+- [Content structure](docs/content-structure/PLEXIVE_CONTENT_STRUCTURE.md) the post and section schema.
 - [docs/content-structure/STYLE_GUIDE_LONGFORM.md](docs/content-structure/STYLE_GUIDE_LONGFORM.md) writing style for long-form content.
 - [docs/content-structure/LAYOUT_STANDARD.md](docs/content-structure/LAYOUT_STANDARD.md) how posts are laid out and rendered.
 - [docs/content-structure/IMAGE_STANDARD.md](docs/content-structure/IMAGE_STANDARD.md) and [SVG_STANDARD.md](docs/content-structure/SVG_STANDARD.md) image and SVG rules.

@@ -1,4 +1,4 @@
-# Deepscroll – Server-Referenz (Raspberry Pi)
+# Plexive – Server-Referenz (Raspberry Pi)
 
 Stand: 21. Juli 2026. Diese Datei dokumentiert das laufende Deployment auf dem
 Raspberry Pi zum schnellen Nachschlagen und Debuggen. Keine echten Secrets hier –

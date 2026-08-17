@@ -134,7 +134,7 @@ export default function OnboardingScreen() {
     <View style={{ flex: 1, backgroundColor: colors["surface-0"], paddingTop: insets.top }}>
       {/* Top bar — fixed, does not scroll */}
       <View style={{ paddingHorizontal: 24, paddingTop: 24, paddingBottom: 16 }}>
-        <LabelCaps text="Deepscroll" color={colors.lamp} />
+        <LabelCaps text="Plexive" color={colors.lamp} />
         <Text
           style={{
             fontFamily: fonts.serifMedium,

@@ -14,6 +14,7 @@ import { updatePostInFeedCaches } from "@/lib/swr"
 import { fcNum, fcStr, type Post } from "@/types/post"
 import { formatStyle } from "@/lib/formats"
 import { unescapeDollar } from "@/lib/prose"
+import { safeImageSrc } from "@/lib/safeUrl"
 import Avatar from "@/components/Avatar"
 import DotScale from "@/components/DotScale"
 import FieldGlyph from "@/components/FieldGlyph"
@@ -86,33 +87,37 @@ export function SlabAccent() {
   )
 }
 
+// Shared fallback for posts that have no thumbnail of their own yet. A single
+// static file in public/ rather than a per-post image, so one asset covers
+// every unfilled post. Missing on purpose until the real artwork exists — the
+// img then hides itself and the glyph below stays visible.
+const THUMBNAIL_PLACEHOLDER = "/thumbnail-placeholder.jpg"
+
 // Uniform image slot at the top of every card, above the title: a full-bleed
-// landscape band at a fixed 16:9 aspect (YouTube-thumbnail shape). For now every post shows
-// this neutral placeholder; the real per-post image gets wired into the same
-// slot later. Full-bleed via negative margins that cancel the slab's px-6/py-7
-// padding, so the band spans edge to edge; the slab's rounded overflow-hidden
-// clips the top corners. aria-hidden because it carries no meaning yet.
-function CardHero() {
+// landscape band at a fixed 16:9 aspect (YouTube-thumbnail shape), showing the
+// post's own thumbnail (post.thumbnail_url, generated or uploaded server-side).
+// Full-bleed via negative margins that cancel the slab's px-6/py-7 padding, so
+// the band spans edge to edge; the slab's rounded overflow-hidden clips the top
+// corners. Decorative: the title right below it carries the meaning, so the img
+// takes an empty alt rather than repeating it to a screen reader.
+function CardHero({ src }: { src?: string | null }) {
+  // The scheme allowlist (M123/SEC-024) also guards this slot: a thumbnail_url
+  // that is not http(s) or same-origin collapses to the placeholder.
+  const url = (src && safeImageSrc(src)) || THUMBNAIL_PLACEHOLDER
   return (
-    <div
-      aria-hidden="true"
-      className="relative -mx-6 -mt-7 mb-1 w-[calc(100%+3rem)] max-w-none aspect-video bg-white/[0.04] flex items-center justify-center overflow-hidden"
-    >
-      {/* Simple picture glyph so the empty slot reads as an image placeholder.
-          It sits behind the test image and shows through when the image is
-          missing or fails to load. */}
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.25} className="w-14 h-14 text-white/15">
+    <div className="relative -mx-6 -mt-7 mb-1 w-[calc(100%+3rem)] max-w-none aspect-video bg-white/[0.04] flex items-center justify-center overflow-hidden">
+      {/* Simple picture glyph so an empty slot reads as an image placeholder.
+          It sits behind the image and shows through when the image is missing
+          or fails to load. */}
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.25} className="w-14 h-14 text-white/15">
         <rect x="3" y="3" width="18" height="18" rx="2" />
         <circle cx="8.5" cy="8.5" r="1.6" fill="currentColor" stroke="none" />
         <path d="M21 15l-5-5L5 21" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
-      {/* TEMPORARY test thumbnail: drop a file at public/test-thumbnail.jpg to
-          preview a real image in the slot. On a missing/broken file the img
-          hides itself and the placeholder glyph above stays visible. Replace
-          this with the real per-post image field when wiring images for real. */}
       <img
-        src="/test-thumbnail.jpg"
+        src={url}
         alt=""
+        loading="lazy"
         className="absolute inset-0 w-full h-full object-cover"
         onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none" }}
       />
@@ -468,7 +473,7 @@ function PostCard({ post, activeTabId }: { post: Post; activeTabId: string }) {
           {post.format === "books" && fc ? (
             <div className="card relative overflow-hidden px-6 py-7 flex flex-col gap-4">
               <SlabAccent />
-              <CardHero />
+              <CardHero src={post.thumbnail_url} />
               {/* Title + author below the image slot. */}
               <div className="min-w-0">
                 <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
@@ -495,7 +500,7 @@ function PostCard({ post, activeTabId }: { post: Post; activeTabId: string }) {
           ) : post.format === "people" && fc ? (
             <div className="card relative overflow-hidden px-6 py-7 flex flex-col gap-4">
               <SlabAccent />
-              <CardHero />
+              <CardHero src={post.thumbnail_url} />
               {/* Role kicker, name and lifespan below the image slot. */}
               <div className="min-w-0">
                 {fcStr(fc, "role") && (
@@ -526,7 +531,7 @@ function PostCard({ post, activeTabId }: { post: Post; activeTabId: string }) {
           ) : post.format === "facts" && fc ? (
             <div className="card relative overflow-hidden px-6 py-7 flex flex-col gap-4">
               <SlabAccent />
-              <CardHero />
+              <CardHero src={post.thumbnail_url} />
               {/* Typographic card: the full-width serif headline. The category
                   label and glyph now live in the feed marker above the slab. */}
               <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
@@ -542,7 +547,7 @@ function PostCard({ post, activeTabId }: { post: Post; activeTabId: string }) {
           ) : post.format === "concepts" && fc ? (
             <div className="card relative overflow-hidden px-6 py-7 flex flex-col gap-4">
               <SlabAccent />
-              <CardHero />
+              <CardHero src={post.thumbnail_url} />
               {/* Headline only; category label and glyph live in the feed marker. */}
               <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
                 {fcStr(fc, "concept_name")}
@@ -560,7 +565,7 @@ function PostCard({ post, activeTabId }: { post: Post; activeTabId: string }) {
           ) : post.format === "questions" && fc ? (
             <div className="card relative overflow-hidden px-6 py-7 flex flex-col gap-4">
               <SlabAccent />
-              <CardHero />
+              <CardHero src={post.thumbnail_url} />
               {/* Headline only; category label and glyph live in the feed marker. */}
               <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
                 {fcStr(fc, "the_question")}
@@ -580,7 +585,7 @@ function PostCard({ post, activeTabId }: { post: Post; activeTabId: string }) {
           ) : post.format === "stories" && fc ? (
             <div className="card relative overflow-hidden px-6 py-7 flex flex-col gap-4">
               <SlabAccent />
-              <CardHero />
+              <CardHero src={post.thumbnail_url} />
               {/* Context line: the era (accent) alone. The category and glyph now
                   live in the feed marker above the slab; there is no dek on a
                   stories card, so the headline carries the narrative opening. */}
@@ -602,7 +607,7 @@ function PostCard({ post, activeTabId }: { post: Post; activeTabId: string }) {
           ) : post.format === "academy" && fc ? (
             <div className="card relative overflow-hidden px-6 py-7 flex flex-col gap-4">
               <SlabAccent />
-              <CardHero />
+              <CardHero src={post.thumbnail_url} />
               {/* Serif paper title only; category label and glyph live in the feed marker. */}
               <h2 className="font-serif text-[1.75rem] font-medium tracking-tight text-ink leading-snug">
                 {fcStr(fc, "title") || post.title}
@@ -631,7 +636,7 @@ function PostCard({ post, activeTabId }: { post: Post; activeTabId: string }) {
             /* Fallback for unknown formats */
             <div className="card relative overflow-hidden px-6 py-7 flex flex-col gap-4">
               <SlabAccent />
-              <CardHero />
+              <CardHero src={post.thumbnail_url} />
               <h2 className="font-serif text-3xl font-medium tracking-tight text-ink leading-snug">
                 {post.title}
               </h2>

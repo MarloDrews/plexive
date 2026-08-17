@@ -370,6 +370,10 @@ class PostCreate(BaseModel):
     feed_card: dict
     sections: list[AnySection]
     interests: list[str]
+    # Optional card thumbnail, uploaded through POST /api/upload/image first.
+    # Same rule as any image_url in user content: it must live in our storage,
+    # never on an arbitrary external host.
+    thumbnail_url: str | None = None
 
     @field_validator("title")
     @classmethod
@@ -384,6 +388,16 @@ class PostCreate(BaseModel):
     def validate_interests(cls, v: list[str]) -> list[str]:
         if not 1 <= len(v) <= 10:
             raise ValueError("interests must have 1-10 items")
+        return v
+
+    @field_validator("thumbnail_url")
+    @classmethod
+    def validate_thumbnail_url(cls, v: str | None) -> str | None:
+        # Same storage rule as _check_image_urls below: a client may only point
+        # at a file it uploaded through us, so a post can never embed (or leak
+        # a view to) an arbitrary external host.
+        if v and not v.startswith(_upload_storage_prefix()):
+            raise ValueError("thumbnail_url must reference our upload endpoint")
         return v
 
     @model_validator(mode="after")
@@ -426,10 +440,15 @@ class PostCreate(BaseModel):
         return self
 
 
+def _upload_storage_prefix() -> str:
+    """Public URL prefix of our own upload bucket. Read per call, not at import:
+    tests and scripts set SUPABASE_URL after this module is first imported."""
+    return f"{os.environ.get('SUPABASE_URL', '')}/storage/v1/object/public/uploads/"
+
+
 def _check_image_urls(data: dict) -> None:
     """Recursively verify any image_url in user-submitted content uses the Supabase storage URL."""
-    supabase_url = os.environ.get("SUPABASE_URL", "")
-    storage_prefix = f"{supabase_url}/storage/v1/object/public/uploads/"
+    storage_prefix = _upload_storage_prefix()
     for key, value in data.items():
         if key == "image_url" and isinstance(value, str) and value:
             if not value.startswith(storage_prefix):
@@ -483,6 +502,10 @@ class PostOut(BaseModel):
     # (models.Post.reading_minutes), so it survives PostListOut.drop_sections
     # and list endpoints never walk the sections JSON.
     reading_minutes: int = 1
+    # Public URL of this post's own card thumbnail (models.Post.thumbnail_url).
+    # None until one was generated or uploaded; the card then shows the shared
+    # placeholder. Survives drop_sections, so list endpoints carry it too.
+    thumbnail_url: str | None = None
     interests: List[str] = []
     # Display name of the primary category (tags[0]), attached by attach_counts
     # from the post's own interests so the card eyebrow and the interest chips
@@ -596,3 +619,67 @@ class UploadResponse(BaseModel):
 
 class SvgUploadResponse(BaseModel):
     svg_content: str
+
+
+# ---------------------------------------------------------------------------
+# Thumbnail generation
+# ---------------------------------------------------------------------------
+
+class GeographyThumbnailRequest(BaseModel):
+    # Either a free-text place ("Mediterranean Sea", "Iceland", "Bavaria") or a
+    # pinned OSM object id when search picks the wrong feature. The id wins if
+    # both are given. Several places joined with "+" highlight as one shape
+    # ("Mediterranean Sea + Adriatic Sea + Aegean Sea").
+    place: str | None = Field(default=None, max_length=200)
+    osm_id: str | None = Field(default=None, max_length=20)
+    # The words under the map. Newlines force line breaks; otherwise the text
+    # is auto-sized to one line.
+    caption: str = Field(default="", max_length=200)
+    uppercase: bool = True
+    # Surrounding context as a fraction of the region's own size. 0.35 matches
+    # the reference cards; 0.1 is a tight crop, 2.0 pulls back to the continent.
+    padding: float = Field(default=0.35, ge=0.0, le=10.0)
+    # Draw the red shape beneath the landmass so coastlines and islands stay
+    # visible. None auto-enables it for seas and oceans.
+    highlight_under_land: bool | None = None
+    # Mask a land highlight to the landmass. On by default because an OSM
+    # country boundary includes territorial waters, which unclipped renders as
+    # a blob out at sea plus discs around remote islands.
+    clip_to_land: bool = True
+    # Which dataset the highlighted shape comes from. "auto" tries OSM then
+    # falls back to Natural Earth; "natural_earth" is the one to use for
+    # deserts, mountain ranges and rainforests, which OSM's address-oriented
+    # geocoder resolves to unrelated villages.
+    source: Literal["auto", "osm", "natural_earth"] = "auto"
+    # Colour profile for the marked region and its banner. Everything else on
+    # the card stays grey in every profile.
+    palette: Literal["red", "blue", "green", "yellow"] = "red"
+    # Pins the caption's random tilt and sideways nudge, so the same request
+    # renders the same card twice. Omit to let every render differ slightly.
+    seed: int | None = Field(default=None, ge=0, le=2**31 - 1)
+    # Capped well above 1280x720 but far below anything that would let one
+    # request burn minutes of CPU (the renderer supersamples 2x internally).
+    width: int = Field(default=1280, ge=320, le=3840)
+    height: int = Field(default=720, ge=180, le=2160)
+
+    @model_validator(mode="after")
+    def require_a_target(self):
+        if not (self.place or "").strip() and not (self.osm_id or "").strip():
+            raise ValueError("Provide either 'place' or 'osm_id'.")
+        return self
+
+
+class ThumbnailInfo(BaseModel):
+    data_url: str
+    width: int
+    height: int
+    # What OSM matched, echoed back so a wrong pick is obvious and the osm_id
+    # can be pinned on the next call.
+    place_name: str
+    osm_type: str | None = None
+    osm_id: int | None = None
+    caption_lines: List[str] = []
+    # "osm" | "natural_earth" | "mixed"
+    source: str = "osm"
+    # "red" | "blue" | "green" | "yellow"
+    palette: str = "red"

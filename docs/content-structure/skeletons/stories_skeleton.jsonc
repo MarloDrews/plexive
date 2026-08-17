@@ -1,5 +1,5 @@
 // stories_skeleton.jsonc
-// Deepscroll: Stories format skeleton.
+// Plexive: Stories format skeleton.
 // Thesis: a true, documented story told so well the reader lives through it and
 // understands what it meant. The integrity rule is narrative fidelity: dramatize
 // the true, invent nothing. A real event with a setting, a cast, a turn, and an
@@ -90,7 +90,7 @@
 //   feed_card, cold_open, at_a_glance, setting, and chapters set atmosphere and
 //   stakes without revealing the turn or the outcome. The target pre-turn feeling
 //   is "I need to know what happened", never "I already know, now the details".
-// Schema and rationale: DEEPSCROLL_CONTENT_STRUCTURE.md. Diagrams: SVG_STANDARD.md.
+// Schema and rationale: PLEXIVE_CONTENT_STRUCTURE.md. Diagrams: SVG_STANDARD.md.
 // Sourced images (lead images, archival photos, portraits): IMAGE_STANDARD.md.
 
 {
@@ -106,7 +106,7 @@
                       // relevant first; include only genuine ones, do not pad.
   "connections": [    // REQUIRED, may be empty. Every real link to another post that
                       // is NOT a person. Stories has a person-list (cast), so per
-                      // DEEPSCROLL_CONTENT_STRUCTURE section 3 its person edges live in
+                      // PLEXIVE_CONTENT_STRUCTURE section 3 its person edges live in
                       // cast and connections carries only non-person links. A person is
                       // never linked here (not even a central non-cast figure such as
                       // the subject the story is about); a cast member is never
@@ -448,7 +448,7 @@
       // Owns: the key players as person cards and their person edges. Not here: a
       //   person listed here is never also listed in connections.
       // Guideline: 1-4 entries. Lead players only; do not list every name mentioned.
-      // Uses the shared person-list base shape (DEEPSCROLL_CONTENT_STRUCTURE.md
+      // Uses the shared person-list base shape (PLEXIVE_CONTENT_STRUCTURE.md
       // section 3); do not invent new field names. No affiliation field (that is
       // academic, for Academy).
       "content": [

@@ -74,7 +74,7 @@ export default function RegisterScreen() {
           <Text
             style={{ fontFamily: fonts.sans, fontSize: 14, color: colors["ink-muted"], marginBottom: 24 }}
           >
-            Join Deepscroll
+            Join Plexive
           </Text>
 
           <View style={{ gap: 16 }}>

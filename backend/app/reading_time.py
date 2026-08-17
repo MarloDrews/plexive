@@ -7,7 +7,7 @@ value is computed on WRITE (posts.py create, seed.py upsert) and stored on
 posts.reading_minutes, so list endpoints never re-walk the sections JSON per
 request; this module stays the single computation source. The feed card, the
 detail header, and the at_a_glance row all read the same stored number.
-See docs/content-structure/DEEPSCROLL_CONTENT_STRUCTURE.md.
+See docs/content-structure/PLEXIVE_CONTENT_STRUCTURE.md.
 """
 
 WORDS_PER_MINUTE = 230

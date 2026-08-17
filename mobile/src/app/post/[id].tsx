@@ -195,7 +195,7 @@ export default function PostDetailScreen() {
                   ) : !post.is_user_content ? (
                     <>
                       <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: colors["ink-muted"] }}>
-                        Deepscroll
+                        Plexive
                       </Text>
                       <VerifiedBadge size={12} variant="official" />
                     </>

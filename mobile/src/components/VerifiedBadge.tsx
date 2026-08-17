@@ -3,7 +3,7 @@ import { colors } from "../theme/tokens"
 
 // Port of frontend/src/components/VerifiedBadge.tsx.
 // level 1 = purple circle, level 2 = green circle, level 3+ = dark red circle,
-// all with checkmark. variant="official" is for Deepscroll seed content.
+// all with checkmark. variant="official" is for Plexive seed content.
 
 const LEVEL_COLOR: Record<number, string> = {
   1: colors["fmt-concepts"],

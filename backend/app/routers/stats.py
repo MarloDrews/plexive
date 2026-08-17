@@ -223,7 +223,7 @@ def _compute_global_stats(db: Session) -> dict:
             "post_id": r.id,
             "title": r.title,
             "format": r.format,
-            "author": r.username or "Deepscroll",
+            "author": r.username or "Plexive",
             "like_count": r.cnt,
         }
         for r in db.query(

@@ -73,7 +73,7 @@ export default function LoginScreen() {
           <Text
             style={{ fontFamily: fonts.sans, fontSize: 14, color: colors["ink-muted"], marginBottom: 24 }}
           >
-            Welcome back to Deepscroll
+            Welcome back to Plexive
           </Text>
 
           <View style={{ gap: 16 }}>

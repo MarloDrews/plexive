@@ -1,6 +1,6 @@
 ## Legacy Seed Content
 
-The file `seed_content.json` (gitignored, not committed) was the legacy seed data for Deepscroll before the section-based schema migration on 2026-06-08.
+The file `seed_content.json` (gitignored, not committed) was the legacy seed data for Plexive before the section-based schema migration on 2026-06-08.
 
 That file used the old per-format `details` JSON structure, with fields like `hook`, `key_points`, `takeaway`, `source_url`, `image_url`, and a format-specific `details` object (e.g. `{ "author": "...", "isbn": "..." }` for books). Eighteen posts across all six original formats (books, facts, people, concepts, questions, stories) were included.
 

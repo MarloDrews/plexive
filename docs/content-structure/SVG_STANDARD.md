@@ -1,6 +1,6 @@
-# Deepscroll: SVG Design Standard
+# Plexive: SVG Design Standard
 
-The binding template for every inline SVG graphic in Deepscroll. Goal: hundreds
+The binding template for every inline SVG graphic in Plexive. Goal: hundreds
 of graphics that feel like one set across the whole feed, carry topic-specific
 meaning, and sit natively on the app's "Stage" design.
 
