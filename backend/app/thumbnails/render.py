@@ -7,6 +7,7 @@ size instead, since FreeType antialiases text itself and downscaling it only
 makes it softer.
 """
 
+import hashlib
 import io
 import math
 import random
@@ -17,7 +18,7 @@ from PIL import Image, ImageChops, ImageDraw, ImageFilter
 
 from .fonts import load_font
 from .geometry import Polygon
-from .projection import Viewport
+from .projection import AnyViewport
 
 SUPERSAMPLE = 2
 
@@ -78,13 +79,110 @@ PALETTES: Dict[str, Palette] = {
         banner=(250, 190, 10),
         text=(38, 26, 0),
     ),
+    "orange": Palette(
+        highlight=(224, 82, 6),
+        banner=(224, 82, 6),
+        text=(255, 255, 255),
+    ),
+    "purple": Palette(
+        highlight=(118, 51, 173),
+        banner=(118, 51, 173),
+        text=(255, 255, 255),
+    ),
+    "teal": Palette(
+        highlight=(0, 132, 138),
+        banner=(0, 132, 138),
+        text=(255, 255, 255),
+    ),
+    "magenta": Palette(
+        highlight=(198, 26, 110),
+        banner=(198, 26, 110),
+        text=(255, 255, 255),
+    ),
 }
 
 DEFAULT_PALETTE = "red"
 
+# Asking for this colour picks one from AUTO_PALETTE_CYCLE instead. It is what
+# a card gets when nothing about the subject suggests a colour, which is most
+# of them -- a fixed default made every second card red.
+AUTO_PALETTE = "auto"
+
+# What "auto" chooses between, in a fixed order. Yellow is left out: it is the
+# one profile that needs dark caption text, so it stays a deliberate choice for
+# a subject that really is sand or heat.
+AUTO_PALETTE_CYCLE = ("red", "blue", "green", "orange", "purple", "teal", "magenta")
+
+
+def auto_palette_for(subject: str) -> str:
+    """The palette "auto" resolves to for `subject`.
+
+    Picked by hashing rather than at random, so a card keeps its colour across
+    re-renders -- the stored filename carries a content hash, and a colour that
+    changed on every run would orphan a new image in storage each time.
+    """
+    digest = hashlib.sha256((subject or "").strip().lower().encode("utf-8")).digest()
+    return AUTO_PALETTE_CYCLE[digest[0] % len(AUTO_PALETTE_CYCLE)]
+
+
+def resolve_palette(name: Optional[str], subject: str) -> str:
+    """Turn a requested palette (possibly "auto" or nothing) into a real one."""
+    key = (name or AUTO_PALETTE).strip().lower()
+    return auto_palette_for(subject) if key == AUTO_PALETTE else key
+
 
 class PaletteError(ValueError):
     """An unknown colour profile was asked for."""
+
+
+# Typographic characters the caption font has no glyph for, and the plain
+# equivalents to draw instead. Arial Bold has no U+2011 (the non-breaking
+# hyphen a writing tool leaves behind in "Flat-Earth"), so it drew the .notdef
+# box -- and because that box is a normal-width glyph, nothing that measured
+# the text could tell anything was missing. Only looking at the card could.
+TEXT_REPLACEMENTS = {
+    "‐": "-",  # hyphen
+    "‑": "-",  # non-breaking hyphen
+    "‒": "-",  # figure dash
+    "–": "-",  # en dash
+    "—": "-",  # em dash
+    "−": "-",  # minus sign
+    " ": " ",  # no-break space
+    " ": " ",  # thin space
+    " ": " ",  # narrow no-break space
+    "‘": "'",
+    "’": "'",
+    "“": '"',
+    "”": '"',
+    "…": "...",
+}
+
+_TEXT_TABLE = str.maketrans(TEXT_REPLACEMENTS)
+
+
+def plain_text(text: str) -> str:
+    """Swap typographic punctuation for the ASCII the caption font can draw."""
+    return (text or "").translate(_TEXT_TABLE)
+
+
+# The view the Style's line widths are written for: a continent across the
+# frame. A tighter card multiplies them, because a coastline drawn a pixel
+# wide is a hairline once one state fills the whole image.
+LINE_REFERENCE_SPAN = 90.0
+# Well below 1 so the widths grow slower than the zoom -- a 30x closer view
+# gets thicker lines, not 30x thicker ones.
+LINE_SCALE_EXPONENT = 0.4
+# Never thinner than the reference (a world card is already right), and never
+# thicker than this, or a small country ends up drawn in marker pen.
+LINE_SCALE_MAX = 2.4
+
+
+def line_width_scale(span_degrees: float) -> float:
+    """How much to thicken the map's strokes for a view this close in."""
+    if span_degrees <= 0:
+        return 1.0
+    scale = (LINE_REFERENCE_SPAN / span_degrees) ** LINE_SCALE_EXPONENT
+    return max(1.0, min(LINE_SCALE_MAX, scale))
 
 
 @dataclass
@@ -105,6 +203,8 @@ class Style:
     text: Color = (255, 255, 255)
     shadow: Color = (0, 0, 0)
 
+    # Both widths are for a continent-sized card and are multiplied by
+    # line_width_scale() as the view closes in -- see LINE_REFERENCE_SPAN.
     border_width: float = 1.0
     coast_width: float = 1.4
 
@@ -207,7 +307,7 @@ def _simplify(
 
 def _draw_polygons(
     draw: ImageDraw.ImageDraw,
-    viewport: Viewport,
+    viewport: AnyViewport,
     polygons: Sequence[Polygon],
     fill: Color = None,
     hole_fill: Color = None,
@@ -239,7 +339,7 @@ def _draw_polygons(
 
 
 def _polygon_mask(
-    size: Tuple[int, int], viewport: Viewport, polygons: Sequence[Polygon]
+    size: Tuple[int, int], viewport: AnyViewport, polygons: Sequence[Polygon]
 ) -> Image.Image:
     """A white-on-black mask of the filled area of `polygons` (holes excluded)."""
     mask = Image.new("L", size, 0)
@@ -250,7 +350,7 @@ def _polygon_mask(
 
 def _draw_highlight_water_clipped(
     image: Image.Image,
-    viewport: Viewport,
+    viewport: AnyViewport,
     highlight_polygons: Sequence[Polygon],
     land_polygons: Sequence[Polygon],
     style: Style,
@@ -279,7 +379,7 @@ def _draw_highlight_water_clipped(
 
 def _draw_highlight_clipped(
     image: Image.Image,
-    viewport: Viewport,
+    viewport: AnyViewport,
     highlight_polygons: Sequence[Polygon],
     land_polygons: Sequence[Polygon],
     style: Style,
@@ -309,7 +409,7 @@ def _draw_highlight_clipped(
 
 
 def render_card(
-    viewport: Viewport,
+    viewport: AnyViewport,
     land_polygons: Sequence[Polygon],
     border_polygons: Sequence[Polygon],
     highlight_polygons: Sequence[Polygon],
@@ -350,15 +450,10 @@ def render_card(
 
     # The viewport was built for the final size; drawing happens on the
     # supersampled canvas, so make a matching one scaled up.
-    big_viewport = Viewport(
-        center_lon=viewport.center_lon,
-        min_x=viewport.min_x,
-        max_x=viewport.max_x,
-        min_y=viewport.min_y,
-        max_y=viewport.max_y,
-        width=width * scale,
-        height=height * scale,
-    )
+    big_viewport = viewport.scaled(scale)
+    # Strokes follow the zoom: a one-pixel coastline reads on a world map and
+    # disappears once a single state fills the frame.
+    stroke = scale * line_width_scale(viewport.visible_span_degrees)
 
     def draw_highlight() -> None:
         _draw_polygons(
@@ -381,7 +476,7 @@ def render_card(
         big_viewport,
         border_polygons,
         outline=style.border,
-        outline_width=style.border_width * scale,
+        outline_width=style.border_width * stroke,
     )
     # Coastlines last of the greys, so they sit on top of the internal borders.
     _draw_polygons(
@@ -389,7 +484,7 @@ def render_card(
         big_viewport,
         land_polygons,
         outline=style.coast,
-        outline_width=style.coast_width * scale,
+        outline_width=style.coast_width * stroke,
     )
 
     if clip_to_water and land_polygons:
@@ -468,7 +563,8 @@ def _draw_caption(
 
     Returns the lines drawn plus the tilt and sideways nudge used.
     """
-    lines = [line.strip() for line in (caption or "").splitlines() if line.strip()]
+    lines = [plain_text(line).strip() for line in (caption or "").splitlines()]
+    lines = [line for line in lines if line]
     if not lines:
         return [], 0.0, 0.0
 

@@ -652,8 +652,11 @@ class GeographyThumbnailRequest(BaseModel):
     # geocoder resolves to unrelated villages.
     source: Literal["auto", "osm", "natural_earth"] = "auto"
     # Colour profile for the marked region and its banner. Everything else on
-    # the card stays grey in every profile.
-    palette: Literal["red", "blue", "green", "yellow"] = "red"
+    # the card stays grey in every profile. "auto" derives one from the subject
+    # so neutral subjects do not all come out red.
+    palette: Literal[
+        "auto", "red", "blue", "green", "yellow", "orange", "purple", "teal", "magenta"
+    ] = "auto"
     # Pins the caption's random tilt and sideways nudge, so the same request
     # renders the same card twice. Omit to let every render differ slightly.
     seed: int | None = Field(default=None, ge=0, le=2**31 - 1)
@@ -681,5 +684,5 @@ class ThumbnailInfo(BaseModel):
     caption_lines: List[str] = []
     # "osm" | "natural_earth" | "mixed"
     source: str = "osm"
-    # "red" | "blue" | "green" | "yellow"
+    # The resolved colour: never "auto", always a real palette name.
     palette: str = "red"

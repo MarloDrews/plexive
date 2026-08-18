@@ -16,8 +16,7 @@ model in suggest.py about it at the same time.
 from typing import Any, Dict
 
 from .catalog import GeneratorInfo, Param, validate_spec
-from .render import PALETTES
-from .service import SOURCES, render_geography_thumbnail
+from .service import PALETTE_NAMES, SOURCES, render_geography_thumbnail
 
 
 def _geography(spec: Dict[str, Any]) -> bytes:
@@ -79,11 +78,12 @@ GEOGRAPHY = GeneratorInfo(
         Param(
             name="palette",
             type="string",
-            default="red",
-            choices=tuple(sorted(PALETTES)),
+            default="auto",
+            choices=PALETTE_NAMES,
             description=(
                 "Colour of the filled region and its banner; everything else on the card "
-                "stays grey."
+                "stays grey. Leave it out unless the subject really has a colour -- see "
+                "the rules."
             ),
         ),
         Param(
@@ -160,10 +160,17 @@ GEOGRAPHY = GeneratorInfo(
         ),
     ),
     rules=(
-        'Deserts, mountain ranges and rainforests MUST set `source: "natural_earth"`. '
-        'OpenStreetMap\'s geocoder is built for addresses and resolves "Sahara" to a '
-        'village in India and "Andes" to a town in New York -- both are real fillable '
-        "areas, so nothing downstream can tell the card is wrong.",
+        'EVERY physical region MUST set `source: "natural_earth"` -- deserts, mountain '
+        "ranges, rainforests, tundra, steppes, plains, plateaus and polar regions alike. "
+        "OpenStreetMap's geocoder is built for addresses and resolves a bare physical "
+        'name to whatever business or building carries it: "Sahara" returns a village in '
+        'India, "Andes" a town in New York, "Arctic" an appliance shop in Romania. Each '
+        "is a real fillable area, so nothing downstream can tell the card is wrong -- it "
+        "just renders a red rectangle over a blank grey map.",
+        'A polar subject is fine: "Antarctica", "Arctic Ocean" and "Southern Ocean" '
+        "are drawn on a map centred on the pole, so they come out the shape an atlas "
+        "shows. Still name the LAND when the claim is about land -- Arctic permafrost "
+        'is in "Siberia", "Alaska" and "Greenland", not in the Arctic Ocean.',
         'Write "Mediterranean Sea", "Baltic Sea", "Atlantic Ocean" and "Pacific Ocean" '
         "as those plain names. Each is stored split across several polygons and is "
         "already reassembled into the complete sea; naming a sub-basin gives a partial "
@@ -184,8 +191,12 @@ GEOGRAPHY = GeneratorInfo(
         "route -- not a decline.",
         "The caption is not the headline. It is the two-to-five words a reader needs "
         'while looking at the map: "Almost dried up", "Growing every year".',
-        "Pick the palette from the subject, not at random: blue for water, green for "
-        "forest and vegetation, yellow for desert and heat, red for anything else.",
+        "Set `palette` ONLY when the subject really has a colour: blue for water, "
+        "green for forest and vegetation, yellow or orange for desert and heat. "
+        "Otherwise leave it out -- omitting it spreads the cards across the whole "
+        "palette (red, blue, green, orange, purple, teal, magenta), while picking "
+        "red as a fallback made every second card red. Never set it to match the "
+        "mood of the topic; a card is not red because the news is bad.",
         "Cities, buildings and single addresses make poor cards -- the map is a world "
         "map, and a point that small renders as a dot. Use a region or nothing.",
     ),
@@ -209,15 +220,16 @@ GEOGRAPHY = GeneratorInfo(
             "place": "Antarctica",
             "caption": "Once a rainforest",
             "palette": "green",
+            "source": "natural_earth",
             "padding": 0.3,
         },
         # An abstract topic scoped to one country. Here to break the reflex that
-        # a post about money cannot be a map.
+        # a post about money cannot be a map -- and with no palette, because
+        # money is not a colour.
         {
             "generator": "geography",
             "place": "United Kingdom",
             "caption": "Banks make the money",
-            "palette": "red",
         },
         # Two places in one post: the card shows the one being changed.
         {

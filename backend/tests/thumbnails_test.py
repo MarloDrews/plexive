@@ -14,7 +14,8 @@ Covers the parts that are easy to get silently wrong:
 - The banner halo really darkens the gap between banner and marked region,
   which is the only thing separating two areas of the same colour.
 - The vignette darkens the corners without touching the centre or tinting.
-- All four colour profiles, including yellow's flipped (dark) caption text.
+- Every colour profile, including yellow's flipped (dark) caption text, and the
+  "auto" palette that spreads neutral subjects across the rest.
 - The "+" union and the OSM -> Natural Earth fallback, with both data sources
   stubbed so the suite never touches the network.
 - Request schema validation.
@@ -26,6 +27,7 @@ Run with: venv\\Scripts\\python.exe tests\\thumbnails_test.py
 
 import io
 import json
+import math
 import os
 import sys
 from dataclasses import replace
@@ -450,11 +452,130 @@ def test_every_palette_colours_the_region_and_banner() -> None:
         check(f"{name}: caption still reported", result.caption_lines == ["ALMOST DRIED UP"])
 
 
-def test_yellow_flips_the_caption_to_dark_text() -> None:
-    """White on yellow is unreadable, so that profile inverts the text."""
-    check("yellow text is dark", sum(PALETTES["yellow"].text) < 200)
-    for name in ("red", "blue", "green"):
-        check(f"{name} text is light", sum(PALETTES[name].text) > 600)
+def _relative_luminance(colour) -> float:
+    """WCAG relative luminance of an sRGB colour."""
+    channels = []
+    for value in colour:
+        value /= 255.0
+        channels.append(value / 12.92 if value <= 0.03928 else ((value + 0.055) / 1.055) ** 2.4)
+    return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2]
+
+
+def test_every_palette_has_a_readable_caption() -> None:
+    """The caption sits on the banner in every profile, so every profile has to
+    carry enough contrast for it. Yellow is the reason this is checked rather
+    than assumed: white on yellow is unreadable, so that one profile flips to
+    near-black letters, and any palette added later has to make the same call."""
+    for name, palette in PALETTES.items():
+        text = _relative_luminance(palette.text)
+        banner = _relative_luminance(palette.banner)
+        high, low = max(text, banner), min(text, banner)
+        contrast = (high + 0.05) / (low + 0.05)
+        # 3:1 is the WCAG floor for large text, which the caption always is.
+        check(f"{name}: caption contrasts with its banner",
+              contrast >= 3.0, f"contrast {contrast:.2f}")
+    check("yellow is the one that flips to dark text",
+          sum(PALETTES["yellow"].text) < 200)
+
+
+def test_line_width_follows_the_zoom() -> None:
+    """Coastlines and borders thicken as the card closes in.
+
+    The widths in Style are pixels, so they were written for a continent-sized
+    view: on the Oregon card, one state filling the frame, the state lines and
+    the coast came out as barely visible hairlines.
+    """
+    from app.thumbnails.projection import fit_polar, fit_subject
+    from app.thumbnails.render import LINE_SCALE_MAX, line_width_scale
+
+    world = line_width_scale(360.0)
+    continent = line_width_scale(90.0)
+    state = line_width_scale(12.0)
+    check("a world card keeps the reference widths", world == 1.0, str(world))
+    check("a continent card keeps them too", continent == 1.0, str(continent))
+    check("a state-sized card draws thicker lines", 1.5 < state < LINE_SCALE_MAX, str(state))
+    check("the widths are capped", line_width_scale(0.5) == LINE_SCALE_MAX)
+    check("a zero span does not divide by zero", line_width_scale(0.0) == 1.0)
+
+    # Both projections have to report a span the renderer can compare.
+    oregon = fit_subject([[[-124.6, 42.0], [-116.5, 42.0], [-116.5, 46.3], [-124.6, 46.3]]],
+                         1280, 720, padding=0.35)
+    check("a Mercator viewport reports its span in degrees",
+          10 < oregon.visible_span_degrees < 30, str(oregon.visible_span_degrees))
+    check("the Oregon card really is in the thickened range",
+          line_width_scale(oregon.visible_span_degrees) > 1.5)
+
+    antarctica = fit_polar([_pole_ring(-70.0)], "south", 1280, 720, padding=0.3)
+    check("a polar viewport reports a comparable angle",
+          30 < antarctica.visible_span_degrees < 180, str(antarctica.visible_span_degrees))
+
+
+def test_caption_punctuation_the_font_cannot_draw() -> None:
+    """A caption is normalised to what the font actually has glyphs for.
+
+    Arial Bold has no U+2011, the non-breaking hyphen a writing tool leaves in
+    "Flat-Earth", so the card came out reading "FLAT[]EARTH MYTH". The .notdef
+    box is a normal-width glyph, so every measurement of the text agreed it was
+    fine -- only the rendered card showed it.
+    """
+    from app.thumbnails.render import plain_text
+
+    check("the non-breaking hyphen becomes a plain one",
+          plain_text("FLAT‑EARTH MYTH") == "FLAT-EARTH MYTH")
+    check("dashes, quotes and ellipsis are normalised too",
+          plain_text("–—‘’“”…") == "--''\"\"...")
+    check("ordinary text is untouched", plain_text("ALMOST DRIED UP") == "ALMOST DRIED UP")
+
+    result, _, _ = _render(False, "FLAT‑EARTH MYTH")
+    check("the drawn caption is the normalised one",
+          result.caption_lines == ["FLAT-EARTH MYTH"], str(result.caption_lines))
+
+
+def test_auto_palette_spreads_the_colours() -> None:
+    """"auto" is what a card gets when nothing about the subject suggests a
+    colour -- which is most of them. A fixed default made 6 of the 10 posts
+    that had a spec come out red."""
+    from collections import Counter
+
+    from app.thumbnails.render import auto_palette_for, resolve_palette
+
+    subjects = [
+        "United Kingdom|Banks make the money",
+        "United States|Lead paint legal",
+        "California|Look at each department",
+        "Europe|Nobody thought it was flat",
+        "Oregon|One fungus, 9 square km",
+        "Siberia|Huge carbon store",
+        "Africa|No Neanderthal DNA",
+        "Japan|Trains to the second",
+        "Iceland|Runs on its own heat",
+        "Chile|Driest place on Earth",
+    ]
+    chosen = [resolve_palette("auto", subject) for subject in subjects]
+    check("auto only ever returns a real palette",
+          all(name in PALETTES for name in chosen), str(chosen))
+    check("auto never returns yellow, the dark-text one",
+          "yellow" not in chosen, str(chosen))
+    # Hashing spreads, it does not deal a round: ten subjects over seven
+    # colours land on four or five of them, which is the point -- what must not
+    # come back is one colour taking half the feed, as red did.
+    counts = Counter(chosen)
+    check("ten neutral subjects use several colours",
+          len(counts) >= 4, f"{len(counts)}: {counts}")
+    check("no colour takes over the feed",
+          max(counts.values()) <= 3, str(counts))
+    # The stored filename carries a content hash, so a colour that moved
+    # between runs would orphan a fresh image in storage every time.
+    check("the same subject always gets the same colour",
+          chosen == [resolve_palette("auto", subject) for subject in subjects])
+    check("case and spacing do not change the colour",
+          auto_palette_for("  Iceland|Runs On Its Own Heat  ".upper())
+          == auto_palette_for("iceland|runs on its own heat"))
+
+    check("an explicit palette is left alone", resolve_palette("blue", "x") == "blue")
+    check("no palette at all means auto",
+          resolve_palette(None, "United Kingdom|Banks make the money")
+          == resolve_palette("auto", "United Kingdom|Banks make the money"))
 
 
 def test_palette_leaves_the_map_grey() -> None:
@@ -467,7 +588,7 @@ def test_palette_leaves_the_map_grey() -> None:
 
 
 def test_unknown_palette_rejected() -> None:
-    for bad in ("purple", "  ", "rot"):
+    for bad in ("chartreuse", "  ", "rot"):
         try:
             style_for_palette(bad)
             check(f"palette {bad!r} rejected", False, "no error raised")
@@ -808,8 +929,8 @@ def test_request_schema() -> None:
     ok = GeographyThumbnailRequest(place="Iceland", caption="HI")
     check("defaults applied", ok.width == 1280 and ok.height == 720 and ok.source == "auto")
     check("under-land defaults to auto", ok.highlight_under_land is None)
-    check("palette defaults to red", ok.palette == "red" and ok.seed is None)
-    for name in ("red", "blue", "green", "yellow"):
+    check("palette defaults to auto", ok.palette == "auto" and ok.seed is None)
+    for name in ("auto", "red", "blue", "green", "yellow", "orange", "purple", "teal", "magenta"):
         check(
             f"palette {name} accepted",
             GeographyThumbnailRequest(place="x", palette=name).palette == name,
@@ -822,7 +943,7 @@ def test_request_schema() -> None:
         ({"place": "x", "width": 10}, "tiny width"),
         ({"place": "x", "width": 99999}, "huge width"),
         ({"place": "x", "source": "wikipedia"}, "unknown source"),
-        ({"place": "x", "palette": "purple"}, "unknown palette"),
+        ({"place": "x", "palette": "chartreuse"}, "unknown palette"),
         ({"place": "x", "seed": -1}, "negative seed"),
     ):
         try:
@@ -871,6 +992,169 @@ def test_generator_registry() -> None:
         check("rejects a misspelled spec key", "plaec" in str(exc), str(exc))
 
 
+def test_wide_viewport_does_not_tear_rings() -> None:
+    """A ring half a turn from the viewport centre stays in one piece.
+
+    project() unwraps each point on its own, which tears any ring straddling
+    the meridian at center_lon +/- 180: half the points land at one edge of the
+    canvas and half at the other, drawing the shape as a band straight across
+    the map. The tear line sits off-screen on a regional card, so this only
+    showed up once a world-scale card (United States, whose Alaska/Hawaii
+    spread forces a ~345-degree viewport) came out streaked with grey stripes.
+    """
+    from app.thumbnails.projection import Viewport, _mercator_y
+
+    # The exact viewport "United States" produces: centred on the Pacific and
+    # a hair over 360 degrees wide (Alaska + Hawaii make the subject so tall
+    # that fit() grows the horizontal axis past a full turn), which is what
+    # pulls the +40E cut meridian on screen -- straight through Russia, the
+    # Middle East and East Africa.
+    center = -139.97
+    viewport = Viewport(
+        center_lon=center,
+        min_x=-320.08,
+        max_x=40.14,
+        min_y=_mercator_y(-49.18),
+        max_y=_mercator_y(81.05),
+        width=1280,
+        height=720,
+    )
+    check("the cut meridian really is inside this viewport",
+          viewport.min_x < center + 180 < viewport.max_x,
+          f"cut at {center + 180} vs {viewport.min_x}..{viewport.max_x}")
+
+    # A small country sitting right on the cut.
+    ring = [[39.0, 10.0], [41.0, 10.0], [41.0, 12.0], [39.0, 12.0], [39.0, 10.0]]
+    xs = [x for x, _ in viewport.project_ring(ring)]
+    span = max(xs) - min(xs)
+    check("a ring on the cut meridian is not smeared across the canvas",
+          span < viewport.width / 4, f"x-span {span:.0f}px of {viewport.width}")
+
+    # And a ring that genuinely crosses the antimeridian still stays whole.
+    dateline = [[178.0, 10.0], [-178.0, 10.0], [-178.0, 12.0], [178.0, 12.0], [178.0, 10.0]]
+    xs = [x for x, _ in viewport.project_ring(dateline)]
+    check("an antimeridian-crossing ring is not smeared either",
+          max(xs) - min(xs) < viewport.width / 4, f"x-span {max(xs) - min(xs):.0f}px")
+
+    # Points keep their real spacing: unwrapping must not collapse the ring.
+    check("the ring keeps a real width", max(xs) - min(xs) > 1.0)
+
+
+def test_globe_spanning_bounds_are_not_rotated() -> None:
+    """A shape going right round the world is bounded as -180..180.
+
+    bounds_of unwraps against its first point, which is right for a shape
+    crossing the antimeridian and meaningless for one that never stops
+    crossing it: Antarctica came out as -240..119, a full turn parked over the
+    Atlantic, which then centred the card on the wrong side of the planet.
+    """
+    ring = [[lon, -70.0] for lon in range(-180, 181, 10)] + [[-180.0, -85.0]]
+    min_lon, _, max_lon, _ = bounds_of([ring])
+    check("a globe-spanning ring is bounded -180..180",
+          (min_lon, max_lon) == (-180.0, 180.0), f"{min_lon}..{max_lon}")
+
+
+def _pole_ring(lat: float, step: int = 10) -> list:
+    """A ring circling a pole at one latitude."""
+    return [[float(lon), lat] for lon in range(-180, 181, step)]
+
+
+def test_polar_subjects_are_detected() -> None:
+    """Only a subject that circles a pole gets the polar projection."""
+    from app.thumbnails.projection import polar_hemisphere
+
+    check("a ring round the south pole is south",
+          polar_hemisphere([_pole_ring(-70.0)]) == "south")
+    check("a ring round the north pole is north",
+          polar_hemisphere([_pole_ring(75.0)]) == "north")
+    # Coverage is measured along the edges, not at the vertices: Natural
+    # Earth's Arctic Ocean circles the pole in 764 points that land in only 22
+    # of the 36 longitude buckets, and a vertex-only count called it Mercator.
+    check("a coarse ring round the pole is still polar",
+          polar_hemisphere([_pole_ring(75.0, step=60)]) == "north")
+    # Everything that merely reaches far north, or merely spans a lot of
+    # longitude, has to stay on Mercator.
+    russia = [[19.0, 45.0], [190.0, 45.0], [190.0, 82.0], [19.0, 82.0], [19.0, 45.0]]
+    check("a wide northern country is not polar", polar_hemisphere([russia]) is None)
+    check("a globe-spanning tropical band is not polar",
+          polar_hemisphere([_pole_ring(10.0)]) is None)
+    check("a small region is not polar",
+          polar_hemisphere([[[10.0, 40.0], [12.0, 40.0], [12.0, 42.0], [10.0, 40.0]]]) is None)
+
+
+def test_fit_subject_picks_the_projection() -> None:
+    from app.thumbnails.projection import PolarViewport, Viewport, fit_subject
+
+    polar = fit_subject([_pole_ring(-70.0)], 1280, 720)
+    check("a polar subject gets a polar viewport", isinstance(polar, PolarViewport))
+    iceland = [[-24.0, 63.0], [-13.0, 63.0], [-13.0, 66.0], [-24.0, 66.0], [-24.0, 63.0]]
+    check("an ordinary subject stays on Mercator",
+          isinstance(fit_subject([iceland], 1280, 720), Viewport))
+
+
+def test_polar_projection_keeps_a_pole_subject_whole() -> None:
+    """The failure Mercator cannot avoid: Antarctica as a band across the card.
+
+    Mercator stops at 85 degrees and stretches what is left sideways, so the
+    continent came out as a smear the full width of the frame with a straight
+    line where the clamp cut it. On the polar view it is a compact shape and
+    the pole is an ordinary point in the middle of it.
+    """
+    from app.thumbnails.projection import fit_subject
+
+    coast = _pole_ring(-70.0, step=5)
+    viewport = fit_subject([coast], 1280, 720, padding=0.3)
+    points = viewport.project_ring(coast)
+    xs = [x for x, _ in points]
+    ys = [y for _, y in points]
+    check("the coastline does not span the whole canvas",
+          max(xs) - min(xs) < viewport.width * 0.95,
+          f"x-span {max(xs) - min(xs):.0f}px of {viewport.width}")
+    check("the coastline is as tall as it is wide (a ring, not a band)",
+          abs((max(xs) - min(xs)) - (max(ys) - min(ys))) < 2.0,
+          f"{max(xs) - min(xs):.1f} x {max(ys) - min(ys):.1f}")
+
+    # Every point of a constant-latitude ring is the same distance from the
+    # pole. That is the property Mercator loses and the whole reason for this
+    # projection.
+    pole_x, pole_y = viewport.project(0.0, -90.0)
+    radii = [math.hypot(x - pole_x, y - pole_y) for x, y in points]
+    check("a constant latitude is a circle round the pole",
+          max(radii) - min(radii) < 1.0, f"radii {min(radii):.1f}..{max(radii):.1f}")
+    check("the pole is on the canvas",
+          0 < pole_x < viewport.width and 0 < pole_y < viewport.height,
+          f"pole at {pole_x:.0f},{pole_y:.0f}")
+    # The caption banner is centred at 0.755 of the height; the subject has to
+    # clear it, because a polar subject is a blob whose bottom carries as much
+    # of its shape as its top.
+    check("the subject stays above the caption banner",
+          max(ys) < viewport.height * 0.66, f"lowest point at {max(ys):.0f}px")
+
+    inner = viewport.project_ring(_pole_ring(-80.0, step=5))
+    inner_radii = [math.hypot(x - pole_x, y - pole_y) for x, y in inner]
+    check("a higher latitude sits closer to the pole", max(inner_radii) < min(radii))
+
+
+def test_viewports_scale_together() -> None:
+    """Supersampling doubles the canvas, so it has to double the coordinates."""
+    from app.thumbnails.projection import fit_subject
+
+    iceland = [[-24.0, 63.0], [-13.0, 63.0], [-13.0, 66.0], [-24.0, 66.0], [-24.0, 63.0]]
+    for label, rings, lon, lat in (
+        ("mercator", [iceland], -18.0, 64.0),
+        ("polar", [_pole_ring(-70.0)], 30.0, -75.0),
+    ):
+        viewport = fit_subject(rings, 640, 360)
+        big = viewport.scaled(3)
+        x, y = viewport.project(lon, lat)
+        big_x, big_y = big.project(lon, lat)
+        check(f"{label} scaled(3) is the same view three times bigger",
+              abs(big_x - 3 * x) < 0.01 and abs(big_y - 3 * y) < 0.01,
+              f"{x:.2f},{y:.2f} -> {big_x:.2f},{big_y:.2f}")
+        check(f"{label} scaled(3) reports the bigger canvas",
+              (big.width, big.height) == (1920, 1080))
+
+
 def test_catalog() -> None:
     """The descriptors are complete and their examples really are valid."""
     from app.thumbnails.catalog import TYPES, catalog_json, catalog_markdown, validate_spec
@@ -912,7 +1196,7 @@ def test_validate_spec() -> None:
 
     for payload, needle, label in (
         ({"place": "x", "plaec": "y"}, "plaec", "unknown key"),
-        ({"place": "x", "palette": "purple"}, "palette", "unknown palette"),
+        ({"place": "x", "palette": "chartreuse"}, "palette", "unknown palette"),
         ({"place": "x", "source": "wikipedia"}, "source", "unknown source"),
         ({"place": "x", "padding": -1}, "padding", "padding below the minimum"),
         ({"place": "x", "width": 99999}, "width", "width above the maximum"),
@@ -925,7 +1209,7 @@ def test_validate_spec() -> None:
         errors = validate_spec(info, dict(payload, generator="geography"))
         check(f"reports {label}", any(needle in error for error in errors), str(errors))
 
-    many = validate_spec(info, {"generator": "geography", "palette": "purple", "padding": -1})
+    many = validate_spec(info, {"generator": "geography", "palette": "chartreuse", "padding": -1})
     check("reports every problem at once, not just the first", len(many) >= 3, str(many))
 
 
@@ -1002,16 +1286,16 @@ def test_suggest_thumbnail_spec() -> None:
 
         replies[:] = [
             {"generator": "geography", "spec": {"generator": "geography", "place": "x",
-                                                "palette": "purple"}, "reason": "x"},
+                                                "palette": "chartreuse"}, "reason": "x"},
             {"generator": "geography", "spec": {"generator": "geography", "place": "x",
                                                 "palette": "blue"}, "reason": "fixed"},
         ]
         result = suggest_thumbnail_spec(post, "facts")
         check("retries once with the errors", result.fits and result.spec["palette"] == "blue")
-        check("the retry shows the model what was wrong", "purple" in asked[-1])
+        check("the retry shows the model what was wrong", "chartreuse" in asked[-1])
 
         bad = {"generator": "geography",
-               "spec": {"generator": "geography", "place": "x", "palette": "purple"},
+               "spec": {"generator": "geography", "place": "x", "palette": "chartreuse"},
                "reason": "x"}
         replies[:] = [bad, bad]
         try:

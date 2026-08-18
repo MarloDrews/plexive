@@ -30,9 +30,9 @@
   ],
   "thumbnail": {
     "generator": "geography",
-    "place": "Arctic",
+    "place": "Siberia",
     "caption": "Huge carbon store",
-    "palette": "red"
+    "source": "natural_earth"
   },
   "feed_card": {
     "headline": "Arctic permafrost holds about 1,500 billion tonnes of carbon, nearly twice the amount in the atmosphere today.",

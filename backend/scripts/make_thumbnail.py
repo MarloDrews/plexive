@@ -64,7 +64,7 @@ def main() -> int:
     parser.add_argument(
         "--palette",
         choices=PALETTE_NAMES,
-        default="red",
+        default="auto",
         help="Colour profile for the marked region and its banner.",
     )
     parser.add_argument(

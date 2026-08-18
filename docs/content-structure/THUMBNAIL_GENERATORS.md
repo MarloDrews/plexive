@@ -22,7 +22,7 @@ Exactly one of `place` or `osm_id` is required.
 | `place` | string | - | - | The region to fill, as a plain name a map would use: "Iceland", "Black Sea", "Sahara". Join several with " + " to fill them as one shape. |
 | `osm_id` | string | - | - | An OpenStreetMap object id such as "R9407", used instead of `place` when a name resolves to the wrong feature. |
 | `caption` | string | `""` | - | The words under the map, rendered in capitals. Two to five words that say what happened there. Defaults to the place name when empty. |
-| `palette` | string | `red` | `blue`, `green`, `red`, `yellow` | Colour of the filled region and its banner; everything else on the card stays grey. |
+| `palette` | string | `auto` | `auto`, `blue`, `green`, `magenta`, `orange`, `purple`, `red`, `teal`, `yellow` | Colour of the filled region and its banner; everything else on the card stays grey. Leave it out unless the subject really has a colour -- see the rules. |
 | `source` | string | `auto` | `auto`, `osm`, `natural_earth` | Which map data set the filled shape comes from. `auto` tries OpenStreetMap and falls back to Natural Earth; `natural_earth` is mandatory for physical regions -- see the rules. |
 | `padding` | number | `0.35` | `0`–`10` | How much surrounding context to show, as a fraction of the region's own size. 0.1 is a tight crop, 0.35 the normal card, 2.0 pulls back to the whole continent. |
 | `uppercase` | boolean | `true` | - | Capitalise the caption. Leave on unless the caption is a proper name in mixed case. |
@@ -34,14 +34,15 @@ Exactly one of `place` or `osm_id` is required.
 
 **Rules**
 
-- Deserts, mountain ranges and rainforests MUST set `source: "natural_earth"`. OpenStreetMap's geocoder is built for addresses and resolves "Sahara" to a village in India and "Andes" to a town in New York -- both are real fillable areas, so nothing downstream can tell the card is wrong.
+- EVERY physical region MUST set `source: "natural_earth"` -- deserts, mountain ranges, rainforests, tundra, steppes, plains, plateaus and polar regions alike. OpenStreetMap's geocoder is built for addresses and resolves a bare physical name to whatever business or building carries it: "Sahara" returns a village in India, "Andes" a town in New York, "Arctic" an appliance shop in Romania. Each is a real fillable area, so nothing downstream can tell the card is wrong -- it just renders a red rectangle over a blank grey map.
+- A polar subject is fine: "Antarctica", "Arctic Ocean" and "Southern Ocean" are drawn on a map centred on the pole, so they come out the shape an atlas shows. Still name the LAND when the claim is about land -- Arctic permafrost is in "Siberia", "Alaska" and "Greenland", not in the Arctic Ocean.
 - Write "Mediterranean Sea", "Baltic Sea", "Atlantic Ocean" and "Pacific Ocean" as those plain names. Each is stored split across several polygons and is already reassembled into the complete sea; naming a sub-basin gives a partial one.
 - Two places that belong together are joined with " + ", e.g. "Black Sea + Sea of Azov". They are filled as a single shape, so only combine places the post treats as one thing.
 - Never invent an `osm_id`. Use `place` unless you know the exact id of the object you mean.
 - An abstract topic is not a reason to decline. Ask where the claim holds, not what field it belongs to: "In the UK, banks create 97% of all money" is a post about money, but it is true OF THE UNITED KINGDOM, so it gets a UK card. A statistic about one country, a practice in one region, a law in one state -- all of these are geography cards.
 - When a post spans two places, pick the one it is ABOUT, or join them with " + " when it is genuinely about both. Saharan dust fertilising the Amazon is an "Amazon" card (the place being changed), or "Sahara + Amazon" to show the route -- not a decline.
 - The caption is not the headline. It is the two-to-five words a reader needs while looking at the map: "Almost dried up", "Growing every year".
-- Pick the palette from the subject, not at random: blue for water, green for forest and vegetation, yellow for desert and heat, red for anything else.
+- Set `palette` ONLY when the subject really has a colour: blue for water, green for forest and vegetation, yellow or orange for desert and heat. Otherwise leave it out -- omitting it spreads the cards across the whole palette (red, blue, green, orange, purple, teal, magenta), while picking red as a fallback made every second card red. Never set it to match the mood of the topic; a card is not red because the news is bad.
 - Cities, buildings and single addresses make poor cards -- the map is a world map, and a point that small renders as a dot. Use a region or nothing.
 
 **Examples**
@@ -49,7 +50,7 @@ Exactly one of `place` or `osm_id` is required.
 ```json
 {"generator": "geography", "place": "Mediterranean Sea", "caption": "Almost dried up", "palette": "blue", "padding": 0.2}
 {"generator": "geography", "place": "Sahara", "caption": "Growing every year", "palette": "yellow", "source": "natural_earth"}
-{"generator": "geography", "place": "Antarctica", "caption": "Once a rainforest", "palette": "green", "padding": 0.3}
-{"generator": "geography", "place": "United Kingdom", "caption": "Banks make the money", "palette": "red"}
+{"generator": "geography", "place": "Antarctica", "caption": "Once a rainforest", "palette": "green", "source": "natural_earth", "padding": 0.3}
+{"generator": "geography", "place": "United Kingdom", "caption": "Banks make the money"}
 {"generator": "geography", "place": "Amazon", "caption": "Fed by Saharan dust", "palette": "green", "source": "natural_earth"}
 ```

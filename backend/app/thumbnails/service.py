@@ -8,13 +8,15 @@ from . import basemap
 from .geometry import Polygon, all_rings, polygons_from_geometry
 from .nominatim import GeoLookupError, lookup_osm_id, lookup_place
 from .places import PlacePreset, find_preset
-from .projection import bounds_of, fit
+from .projection import fit_subject
 from .render import (
+    AUTO_PALETTE,
     DEFAULT_PALETTE,
     PALETTES,
     RenderResult,
     Style,
     render_card,
+    resolve_palette,
     style_for_palette,
 )
 
@@ -47,7 +49,9 @@ WATER_FEATURE_TYPES = frozenset(
 SOURCES = ("auto", "osm", "natural_earth")
 
 # Colour profiles for the marked region + banner. Everything else stays grey.
-PALETTE_NAMES = tuple(sorted(PALETTES))
+# "auto" is not a colour: it derives one from the subject (render.resolve_palette)
+# so neutral subjects spread across the palette instead of all coming out red.
+PALETTE_NAMES = (AUTO_PALETTE,) + tuple(sorted(PALETTES))
 
 
 @dataclass
@@ -79,7 +83,7 @@ def render_geography_thumbnail(
     highlight_under_land: Optional[bool] = None,
     clip_to_land: bool = True,
     source: str = "auto",
-    palette: str = DEFAULT_PALETTE,
+    palette: str = AUTO_PALETTE,
     seed: Optional[int] = None,
     style: Optional[Style] = None,
     use_cache: bool = True,
@@ -105,8 +109,10 @@ def render_geography_thumbnail(
     `source` picks the dataset -- see SOURCES. Use "natural_earth" for deserts,
     mountain ranges and rainforests, which OSM's geocoder gets wrong.
 
-    `palette` picks the colour profile -- see PALETTE_NAMES. An explicit
-    `style` overrides it entirely.
+    `palette` picks the colour profile -- see PALETTE_NAMES. The default,
+    "auto", derives one from the subject, so cards spread across the palette
+    instead of every neutral one coming out red. An explicit `style` overrides
+    it entirely.
 
     `seed` pins the caption's random tilt and sideways nudge; None varies them
     per render.
@@ -114,11 +120,18 @@ def render_geography_thumbnail(
     if not place and not osm_id:
         raise GeoLookupError("Provide a place name or an OSM id.")
 
+    # Resolved from what the AUTHOR wrote, not from the name the lookup comes
+    # back with, so editing a caption cannot silently recolour the card and two
+    # spellings of the same query still land on the same colour.
+    palette = resolve_palette(palette, f"{place or osm_id}|{caption}")
     style = style or style_for_palette(palette)
 
     highlight, geo = _resolve_region(place, osm_id, use_cache, source)
 
-    viewport = fit(bounds_of(all_rings(highlight)), width, height, padding=padding)
+    # fit_subject picks the projection: Mercator normally, a polar view for a
+    # subject that wraps the globe at a pole (Antarctica), which Mercator can
+    # only draw as a band smeared across the frame.
+    viewport = fit_subject(all_rings(highlight), width, height, padding=padding)
     view_bounds = viewport.lon_lat_bounds()
 
     land = basemap.visible_polygons("countries", view_bounds)
@@ -165,7 +178,8 @@ def render_geography_thumbnail(
         osm_id=geo["osm_id"],
         caption_lines=result.caption_lines,
         source=geo["source"],
-        palette=(palette or DEFAULT_PALETTE).strip().lower(),
+        # Already resolved above, so this reports the colour actually used.
+        palette=palette,
     )
 
 
