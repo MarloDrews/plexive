@@ -145,9 +145,11 @@ Every post shows one 16:9 image at the top of its feed card. The image is **neve
 }
 ```
 
-`generator` selects a renderer from `backend/app/thumbnails/generators.py`; every other key is passed to it. `geography` is the only one so far (keys: `place` or `osm_id`, `caption`, `palette` = red|blue|green|yellow, `source` = auto|osm|natural_earth, `padding`, `seed`, `uppercase`, `highlight_under_land`, `clip_to_land`, `width`, `height`). An unknown key is an error, not silently ignored — otherwise a typo would quietly render the wrong card.
+`generator` selects a renderer from `backend/app/thumbnails/generators.py`; every other key is passed to it. **The generators, their parameters and their rules are listed in [THUMBNAIL_GENERATORS.md](THUMBNAIL_GENERATORS.md)** — that file is generated from the code (`backend/scripts/thumbnail_catalog.py --write-doc`), so it is the one to trust. `geography` is the only generator so far. An unknown key, an unknown value or an out-of-range number is an error, not silently ignored — otherwise a typo would quietly render the wrong card.
 
 Some water bodies are not one shape in the map data — the Mediterranean is stored as seven separate basins and still misses the Ligurian Sea, the Sea of Crete and the Gulf of Sidra entirely. Those are fixed once in `backend/app/thumbnails/places.py`, so writing `"place": "Mediterranean Sea"` always renders the same complete sea. Several places can also be combined by hand with `+`, e.g. `"place": "Black Sea + Sea of Azov"`.
+
+The object does not have to be written by hand. `backend/scripts/suggest_thumbnails.py` shows a model (RWTH KI:connect) the generated catalog plus a short digest of a post, and writes back the spec it chooses — or nothing, which is the right answer for most posts and leaves the placeholder in place.
 
 `seed.py` stores this object in `posts.thumbnail_spec` and never renders anything. `backend/scripts/generate_thumbnails.py` then renders the pending posts, uploads each PNG to Supabase Storage and writes `posts.thumbnail_url`. Re-seeding a post only drops its image if the spec actually changed.
 

@@ -25,8 +25,10 @@ Run with: venv\\Scripts\\python.exe tests\\thumbnails_test.py
 """
 
 import io
+import json
 import os
 import sys
+from dataclasses import replace
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -840,8 +842,10 @@ def test_generator_registry() -> None:
         seen.update(spec)
         return b"PNG"
 
+    # A registry entry is a GeneratorInfo descriptor, not a bare callable, so
+    # the stub replaces only its render function.
     original = generators.GENERATORS["geography"]
-    generators.GENERATORS["geography"] = fake_geography
+    generators.GENERATORS["geography"] = replace(original, render=fake_geography)
     try:
         spec = {"generator": "geography", "place": "Iceland", "caption": "HI"}
         check("dispatches to the named generator", generators.render_from_spec(spec) == b"PNG")
@@ -865,6 +869,205 @@ def test_generator_registry() -> None:
         check("rejects a misspelled spec key", False, "no error raised")
     except ValueError as exc:
         check("rejects a misspelled spec key", "plaec" in str(exc), str(exc))
+
+
+def test_catalog() -> None:
+    """The descriptors are complete and their examples really are valid."""
+    from app.thumbnails.catalog import TYPES, catalog_json, catalog_markdown, validate_spec
+    from app.thumbnails.generators import GENERATORS
+
+    for name, info in GENERATORS.items():
+        check(f"{name} is keyed by its own name", info.name == name)
+        check(f"{name} says when to use it", bool(info.when_to_use and info.when_not_to_use))
+        check(f"{name} renders something", callable(info.render))
+        for param in info.params:
+            check(f"{name}.{param.name} is described", bool(param.description))
+            check(f"{name}.{param.name} has a known type", param.type in TYPES)
+        check(f"{name} has examples", bool(info.examples))
+        for example in info.examples:
+            # The examples double as the prompt's worked cases, so an example
+            # the validator would reject is a bug that teaches the model wrong.
+            check(f"{name} example {example.get('place')} validates",
+                  validate_spec(info, example) == [], str(validate_spec(info, example)))
+
+    payload = catalog_json(GENERATORS)
+    check("catalog is JSON-serializable", isinstance(json.dumps(payload), str))
+    check("catalog omits the render callable", all("render" not in entry for entry in payload))
+
+    doc = catalog_markdown(GENERATORS)
+    check("doc names every generator", all(f"`{name}`" in doc for name in GENERATORS))
+    check("doc carries the natural_earth trap", "natural_earth" in doc and "Sahara" in doc)
+
+
+def test_validate_spec() -> None:
+    """Every kind of bad value is reported, and all of them at once."""
+    from app.thumbnails.catalog import validate_spec
+    from app.thumbnails.generators import GENERATORS
+
+    info = GENERATORS["geography"]
+    good = {"generator": "geography", "place": "Iceland", "caption": "HI", "palette": "blue"}
+    check("a good spec has no errors", validate_spec(info, good) == [])
+    check("osm_id satisfies the requirement too",
+          validate_spec(info, {"generator": "geography", "osm_id": "R9407"}) == [])
+
+    for payload, needle, label in (
+        ({"place": "x", "plaec": "y"}, "plaec", "unknown key"),
+        ({"place": "x", "palette": "purple"}, "palette", "unknown palette"),
+        ({"place": "x", "source": "wikipedia"}, "source", "unknown source"),
+        ({"place": "x", "padding": -1}, "padding", "padding below the minimum"),
+        ({"place": "x", "width": 99999}, "width", "width above the maximum"),
+        ({"place": "x", "seed": True}, "seed", "a bool where an integer belongs"),
+        ({"place": "x", "caption": 7}, "caption", "a number where a string belongs"),
+        ({"place": "x", "uppercase": "yes"}, "uppercase", "a string where a bool belongs"),
+        ({}, "place", "neither place nor osm_id"),
+        ({"place": "   "}, "place", "a blank place"),
+    ):
+        errors = validate_spec(info, dict(payload, generator="geography"))
+        check(f"reports {label}", any(needle in error for error in errors), str(errors))
+
+    many = validate_spec(info, {"generator": "geography", "palette": "purple", "padding": -1})
+    check("reports every problem at once, not just the first", len(many) >= 3, str(many))
+
+
+def test_digest_post() -> None:
+    """A post JSON dict and a Post row both digest, small and without markup."""
+    from app.thumbnails.suggest import DIGEST_BUDGET, digest_post
+
+    post = {
+        "tags": ["geology", "oceans"],
+        "feed_card": {"headline": "The Mediterranean dried up.", "teasers": ["The salt"]},
+        "sections": [
+            {"type": "headline", "content": "The Mediterranean dried up."},
+            {"type": "see_it", "visual_svg": "<svg>" + "x" * 5000 + "</svg>"},
+            {"type": "tangible", "content": ["It took 600,000 years."]},
+        ],
+    }
+    text = digest_post(post, "facts")
+    check("digest names the format", "format: facts" in text)
+    check("digest carries the tags", "geology" in text)
+    check("digest carries the headline", "Mediterranean" in text)
+    check("digest carries later prose", "600,000" in text)
+    check("digest leaves out the SVG", "<svg" not in text and "xxxx" not in text)
+    check("digest stays within budget", len(text) <= DIGEST_BUDGET + 200, str(len(text)))
+
+    class FakePost:
+        format = "facts"
+        tags = ["geology"]
+        feed_card = {"headline": "A row, not a dict."}
+        sections = []
+
+    row = digest_post(FakePost())
+    check("a Post row digests the same way", "format: facts" in row and "A row" in row)
+
+
+def test_suggest_thumbnail_spec() -> None:
+    """The reply is validated, retried once, and 'no generator' is a valid answer."""
+    from app.thumbnails import suggest
+    from app.thumbnails.suggest import SuggestionError, suggest_thumbnail_spec
+
+    post = {"tags": ["oceans"], "feed_card": {"headline": "The Mediterranean dried up."}}
+    replies = []
+    asked = []
+    briefed = []
+
+    def fake_chat_json(system, user, model=None, temperature=0.0):
+        asked.append(user)
+        briefed.append(system)
+        return replies.pop(0)
+
+    original = suggest.kiconnect.chat_json
+    suggest.kiconnect.chat_json = fake_chat_json
+    try:
+        replies[:] = [{"generator": "geography",
+                       "spec": {"generator": "geography", "place": "Mediterranean Sea",
+                                "palette": "blue"},
+                       "reason": "It is about that sea."}]
+        result = suggest_thumbnail_spec(post, "facts")
+        check("accepts a valid spec", result.fits and result.spec["place"] == "Mediterranean Sea")
+        check("the catalog and its rules reach the model",
+              "geography" in briefed[0] and "natural_earth" in briefed[0])
+        check("declining is offered to the model", "null" in briefed[0])
+        check("the post itself reaches the model", "Mediterranean" in asked[0])
+
+        replies[:] = [{"generator": None, "spec": None, "reason": "No place in it."}]
+        result = suggest_thumbnail_spec(post, "facts")
+        check("declining is a valid answer, not an error",
+              not result.fits and result.spec is None and "No place" in result.reason)
+
+        # The generator name is repeated inside the spec; a model that forgets
+        # gets it filled in rather than bounced.
+        replies[:] = [{"generator": "geography", "spec": {"place": "Iceland"}, "reason": "x"}]
+        result = suggest_thumbnail_spec(post, "facts")
+        check("fills in a missing spec.generator", result.spec["generator"] == "geography")
+
+        replies[:] = [
+            {"generator": "geography", "spec": {"generator": "geography", "place": "x",
+                                                "palette": "purple"}, "reason": "x"},
+            {"generator": "geography", "spec": {"generator": "geography", "place": "x",
+                                                "palette": "blue"}, "reason": "fixed"},
+        ]
+        result = suggest_thumbnail_spec(post, "facts")
+        check("retries once with the errors", result.fits and result.spec["palette"] == "blue")
+        check("the retry shows the model what was wrong", "purple" in asked[-1])
+
+        bad = {"generator": "geography",
+               "spec": {"generator": "geography", "place": "x", "palette": "purple"},
+               "reason": "x"}
+        replies[:] = [bad, bad]
+        try:
+            suggest_thumbnail_spec(post, "facts")
+            check("gives up after the second bad spec", False, "no error raised")
+        except SuggestionError as exc:
+            check("gives up after the second bad spec", "palette" in str(exc), str(exc))
+
+        replies[:] = [{"generator": "sattelite", "spec": {}, "reason": "x"},
+                      {"generator": None, "spec": None, "reason": "nothing fits"}]
+        result = suggest_thumbnail_spec(post, "facts")
+        check("an invented generator is corrected, not rendered", not result.fits)
+
+        replies[:] = ["not an object", "still not an object"]
+        try:
+            suggest_thumbnail_spec(post, "facts")
+            check("rejects a non-object reply", False, "no error raised")
+        except SuggestionError:
+            check("rejects a non-object reply", True)
+    finally:
+        suggest.kiconnect.chat_json = original
+
+
+def test_kiconnect_json_extraction() -> None:
+    """Fenced and chatty replies still parse; a missing key is a clear error."""
+    from app import kiconnect
+
+    check("bare JSON parses", kiconnect._extract_json('{"a": 1}') == '{"a": 1}')
+    check("a fenced block parses",
+          json.loads(kiconnect._extract_json('```json\n{"a": 1}\n```')) == {"a": 1})
+    check("a fence with no language tag parses",
+          json.loads(kiconnect._extract_json('```\n{"a": 1}\n```')) == {"a": 1})
+    check("prose around the object is dropped",
+          json.loads(kiconnect._extract_json('Sure! {"a": 1} Hope that helps.')) == {"a": 1})
+
+    original = kiconnect.API_KEY
+    kiconnect.API_KEY = ""
+    try:
+        kiconnect.chat("s", "u", model="X")
+        check("a missing key is a clear error", False, "no error raised")
+    except kiconnect.KiConnectError as exc:
+        check("a missing key is a clear error", "KICONNECT_API_KEY" in str(exc))
+    finally:
+        kiconnect.API_KEY = original
+
+    original_model = kiconnect.MODEL
+    kiconnect.API_KEY = "test-key"
+    kiconnect.MODEL = ""
+    try:
+        kiconnect.chat("s", "u")
+        check("a missing model is a clear error", False, "no error raised")
+    except kiconnect.KiConnectError as exc:
+        check("a missing model is a clear error", "KICONNECT_MODEL" in str(exc))
+    finally:
+        kiconnect.API_KEY = original
+        kiconnect.MODEL = original_model
 
 
 def test_thumbnail_storage() -> None:

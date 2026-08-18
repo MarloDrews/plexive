@@ -29,6 +29,12 @@
       "featured": false
     }
   ],
+  "thumbnail": {
+    "generator": "geography",
+    "place": "Europe",
+    "caption": "Flat‑Earth myth",
+    "palette": "red"
+  },
   "feed_card": {
     "headline": "The belief that medieval Europe thought the world was flat is a myth, invented in 1828, centuries after its scholars taught that the Earth is a sphere.",
     "teasers": [
