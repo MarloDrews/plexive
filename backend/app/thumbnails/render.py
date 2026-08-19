@@ -16,7 +16,8 @@ from typing import Dict, List, Optional, Sequence, Tuple
 
 from PIL import Image, ImageChops, ImageDraw, ImageFilter
 
-from .fonts import load_font
+from .fonts import DEFAULT_FAMILY as DEFAULT_FONT_FAMILY
+from .fonts import load_font, resolve_family
 from .geometry import Polygon
 from .projection import AnyViewport
 
@@ -79,26 +80,6 @@ PALETTES: Dict[str, Palette] = {
         banner=(250, 190, 10),
         text=(38, 26, 0),
     ),
-    "orange": Palette(
-        highlight=(224, 82, 6),
-        banner=(224, 82, 6),
-        text=(255, 255, 255),
-    ),
-    "purple": Palette(
-        highlight=(118, 51, 173),
-        banner=(118, 51, 173),
-        text=(255, 255, 255),
-    ),
-    "teal": Palette(
-        highlight=(0, 132, 138),
-        banner=(0, 132, 138),
-        text=(255, 255, 255),
-    ),
-    "magenta": Palette(
-        highlight=(198, 26, 110),
-        banner=(198, 26, 110),
-        text=(255, 255, 255),
-    ),
 }
 
 DEFAULT_PALETTE = "red"
@@ -108,10 +89,10 @@ DEFAULT_PALETTE = "red"
 # of them -- a fixed default made every second card red.
 AUTO_PALETTE = "auto"
 
-# What "auto" chooses between, in a fixed order. Yellow is left out: it is the
-# one profile that needs dark caption text, so it stays a deliberate choice for
-# a subject that really is sand or heat.
-AUTO_PALETTE_CYCLE = ("red", "blue", "green", "orange", "purple", "teal", "magenta")
+# What "auto" chooses between, in a fixed order: the whole set. Four colours is
+# the entire range the card has, and every one of them is a legible banner, so
+# there is nothing to hold back from a neutral subject.
+AUTO_PALETTE_CYCLE = ("red", "yellow", "green", "blue")
 
 
 def auto_palette_for(subject: str) -> str:
@@ -133,6 +114,82 @@ def resolve_palette(name: Optional[str], subject: str) -> str:
 
 class PaletteError(ValueError):
     """An unknown colour profile was asked for."""
+
+
+@dataclass(frozen=True)
+class Theme:
+    """The grey half of the card: everything that is not the marked region.
+
+    A theme never touches the colour -- the same red reads on both -- it only
+    decides whether the map behind it is a dark slate or a pale paper. The two
+    look like different cards, which is the point: a feed of nothing but dark
+    maps is monotonous.
+    """
+
+    ocean: Color
+    land: Color
+    border: Color
+    coast: Color
+    # Corner darkening. A light card needs far less of it: the same ramp that
+    # frames a dark map just looks like dirt on a pale one.
+    vignette_strength: float
+    # The banner's halo and the vignette are drawn in this colour.
+    shadow: Color = (0, 0, 0)
+    shadow_opacity: float = 0.5
+
+
+THEMES: Dict[str, Theme] = {
+    # Muted rather than black: the marked region carries the card, and a
+    # high-contrast basemap competes with it. Land stays lighter than ocean in
+    # both themes, so a coastline reads the same way on either.
+    "dark": Theme(
+        ocean=(46, 49, 53),
+        land=(96, 100, 105),
+        border=(74, 77, 82),
+        coast=(28, 30, 33),
+        vignette_strength=0.42,
+    ),
+    "light": Theme(
+        ocean=(198, 202, 207),
+        land=(240, 241, 243),
+        border=(214, 217, 221),
+        coast=(150, 154, 159),
+        vignette_strength=0.12,
+        # A black halo on a pale map is heavy-handed; enough to lift the banner
+        # off the paper is enough.
+        shadow_opacity=0.34,
+    ),
+}
+
+DEFAULT_THEME = "dark"
+
+# Like AUTO_PALETTE: derived from the subject, so the feed alternates instead
+# of every card being dark. Themes are hashed on a DIFFERENT string from the
+# palette (see auto_theme_for), or the two would move together and only ever
+# produce four of the eight combinations.
+AUTO_THEME = "auto"
+AUTO_THEME_CYCLE = ("dark", "light")
+
+
+def auto_theme_for(subject: str) -> str:
+    """The theme "auto" resolves to for `subject`.
+
+    Hashed, not random, for the same reason as auto_palette_for: the stored
+    filename carries a content hash, so a card that changed theme per render
+    would orphan a fresh image in storage every time.
+    """
+    digest = hashlib.sha256(("theme|" + (subject or "").strip().lower()).encode("utf-8")).digest()
+    return AUTO_THEME_CYCLE[digest[0] % len(AUTO_THEME_CYCLE)]
+
+
+def resolve_theme(name: Optional[str], subject: str) -> str:
+    """Turn a requested theme (possibly "auto" or nothing) into a real one."""
+    key = (name or AUTO_THEME).strip().lower()
+    return auto_theme_for(subject) if key == AUTO_THEME else key
+
+
+class ThemeError(ValueError):
+    """An unknown theme was asked for."""
 
 
 # Typographic characters the caption font has no glyph for, and the plain
@@ -189,19 +246,23 @@ def line_width_scale(span_degrees: float) -> float:
 class Style:
     """Every colour and proportion of the card, in one place."""
 
-    # The greys are deliberately muted: the marked region carries the card, and
-    # a bright basemap competes with it. Kept as one family so the map still
-    # reads as a map rather than as a silhouette.
-    ocean: Color = (110, 113, 117)
-    land: Color = (168, 170, 173)
-    # Internal (state/province) borders: barely darker than the land, so they
+    # The greys come from a Theme (see THEMES); the defaults here are the dark
+    # one, so a bare Style() is still a complete card. They are deliberately
+    # muted: the marked region carries the card, and a high-contrast basemap
+    # competes with it.
+    ocean: Color = (46, 49, 53)
+    land: Color = (96, 100, 105)
+    # Internal (state/province) borders: barely lighter than the ocean, so they
     # read as texture rather than as content.
-    border: Color = (146, 148, 151)
-    coast: Color = (94, 97, 101)
+    border: Color = (74, 77, 82)
+    coast: Color = (28, 30, 33)
     highlight: Color = (226, 6, 19)
     banner: Color = (226, 6, 19)
     text: Color = (255, 255, 255)
     shadow: Color = (0, 0, 0)
+
+    # Which of the two caption typefaces to set the banner in -- see fonts.py.
+    font_family: str = DEFAULT_FONT_FAMILY
 
     # Both widths are for a continent-sized card and are multiplied by
     # line_width_scale() as the view closes in -- see LINE_REFERENCE_SPAN.
@@ -218,7 +279,7 @@ class Style:
 
     # Vignette over the map only -- the caption is drawn on top of it, so the
     # banner never dims however close to the edge it lands.
-    vignette_strength: float = 0.38  # darkening at the corners, 0 disables
+    vignette_strength: float = 0.42  # darkening at the corners, 0 disables
     vignette_inner: float = 0.20  # fraction of the radius left untouched
 
     # Banner shadow. grow widens the silhouette before blurring, which turns
@@ -231,8 +292,12 @@ class Style:
     shadow_offset_y: float = 0.14  # times the font size
     shadow_opacity: float = 0.5
 
-    # Hand-placed look: a small random tilt and sideways nudge per render.
-    caption_max_angle: float = 2.2  # degrees, either way
+    # Hand-placed look: a random tilt and sideways nudge per render. The tilt
+    # is deliberately visible -- a sticker slapped on the map, not a layout
+    # that drifted. _draw_caption sizes the banner against the WORST tilt this
+    # allows, so a bigger angle costs a slightly smaller caption, never a
+    # banner that runs off the frame.
+    caption_max_angle: float = 6.0  # degrees, either way
     caption_jitter_x: float = 0.03  # fraction of the width, either way
 
 
@@ -248,6 +313,39 @@ def style_for_palette(name: Optional[str] = None, base: Optional[Style] = None) 
         banner=palette.banner,
         text=palette.text,
     )
+
+
+def style_for_theme(name: Optional[str] = None, base: Optional[Style] = None) -> Style:
+    """A Style with the theme `name` applied (the colour profile untouched)."""
+    key = (name or DEFAULT_THEME).strip().lower()
+    theme = THEMES.get(key)
+    if theme is None:
+        raise ThemeError(f"theme must be one of {', '.join(sorted(THEMES))}.")
+    return replace(
+        base or Style(),
+        ocean=theme.ocean,
+        land=theme.land,
+        border=theme.border,
+        coast=theme.coast,
+        vignette_strength=theme.vignette_strength,
+        shadow=theme.shadow,
+        shadow_opacity=theme.shadow_opacity,
+    )
+
+
+def build_style(
+    palette: Optional[str] = None,
+    theme: Optional[str] = None,
+    font: Optional[str] = None,
+    base: Optional[Style] = None,
+) -> Style:
+    """The one call that turns three names into a finished Style.
+
+    Theme first, then palette: the theme sets every grey and the shadow, the
+    palette sets the three coloured fields, and neither can undo the other.
+    """
+    style = style_for_palette(palette, base=style_for_theme(theme, base=base))
+    return replace(style, font_family=resolve_family(font).name)
 
 
 @dataclass
@@ -577,17 +675,47 @@ def _draw_caption(
     # runs off the frame the moment it is nudged. Padding counts too: the
     # banner, not the text, is what has to stay inside the frame.
     max_banner_width = width * style.caption_max_width - 2 * jitter_x
+    # Vertical room is whichever side of the banner centre is tighter (0.755
+    # puts it low), doubled because the banner is centred on that line. Left
+    # slightly short of the frame edge so the halo has somewhere to fade.
+    max_banner_height = (
+        2 * min(style.caption_center_y, 1 - style.caption_center_y) * height * 0.9
+    )
     max_line_height = height * style.caption_max_line_height
 
-    # Shrink until the widest line fits the width budget. Starting from the
+    # A tilted rectangle needs more room than an upright one in BOTH
+    # directions, and the tilt is only drawn after the size is settled -- so
+    # the fit is checked against the worst tilt the style allows rather than
+    # against the one this render happens to roll.
+    tilt = math.radians(abs(style.caption_max_angle))
+    tilt_cos, tilt_sin = math.cos(tilt), math.sin(tilt)
+
+    text = "\n".join(lines)
+
+    def banner_size(size: int):
+        """The banner box for a given font size, text and padding included."""
+        chosen = load_font(size, style.font_family)
+        box = probe.multiline_textbbox(
+            (0, 0), text, font=chosen, spacing=size * style.caption_line_spacing,
+            align="center",
+        )
+        return (
+            chosen,
+            box,
+            box[2] - box[0] + 2 * size * style.caption_padding_x,
+            box[3] - box[1] + 2 * size * style.caption_padding_y,
+        )
+
+    # Shrink until the tilted banner fits both budgets. Starting from the
     # height budget means short captions come out at the maximum size, like the
     # reference card.
     font_size = int(max_line_height)
-    font = load_font(font_size)
+    font, bbox, box_width, box_height = banner_size(font_size)
     while font_size > 12:
-        font = load_font(font_size)
-        widest = max(probe.textlength(line, font=font) for line in lines)
-        if widest + 2 * font_size * style.caption_padding_x <= max_banner_width:
+        font, bbox, box_width, box_height = banner_size(font_size)
+        fits_width = box_width * tilt_cos + box_height * tilt_sin <= max_banner_width
+        fits_height = box_width * tilt_sin + box_height * tilt_cos <= max_banner_height
+        if fits_width and fits_height:
             break
         font_size -= 2
 
@@ -595,10 +723,8 @@ def _draw_caption(
     pad_x = font_size * style.caption_padding_x
     pad_y = font_size * style.caption_padding_y
 
-    text = "\n".join(lines)
-    bbox = probe.multiline_textbbox((0, 0), text, font=font, spacing=spacing, align="center")
-    banner_width = int(round(bbox[2] - bbox[0] + 2 * pad_x))
-    banner_height = int(round(bbox[3] - bbox[1] + 2 * pad_y))
+    banner_width = int(round(box_width))
+    banner_height = int(round(box_height))
 
     # Build the banner on its own transparent layer. Box and text then rotate
     # as one piece (rotating them separately would misalign them), and the

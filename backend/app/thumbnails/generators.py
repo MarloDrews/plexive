@@ -16,7 +16,13 @@ model in suggest.py about it at the same time.
 from typing import Any, Dict
 
 from .catalog import GeneratorInfo, Param, validate_spec
-from .service import PALETTE_NAMES, SOURCES, render_geography_thumbnail
+from .service import (
+    FONT_NAMES,
+    PALETTE_NAMES,
+    SOURCES,
+    THEME_NAMES,
+    render_geography_thumbnail,
+)
 
 
 def _geography(spec: Dict[str, Any]) -> bytes:
@@ -27,8 +33,8 @@ def _geography(spec: Dict[str, Any]) -> bytes:
 GEOGRAPHY = GeneratorInfo(
     name="geography",
     summary=(
-        "A greyscale world map with exactly one region filled in colour and a short "
-        "caption in a banner underneath."
+        "A greyscale world map -- dark or light -- with exactly one region filled "
+        "in colour and a short caption in a tilted banner underneath."
     ),
     when_to_use=(
         "a specific place on Earth anchors what the post says -- a sea, ocean, country, "
@@ -82,8 +88,31 @@ GEOGRAPHY = GeneratorInfo(
             choices=PALETTE_NAMES,
             description=(
                 "Colour of the filled region and its banner; everything else on the card "
-                "stays grey. Leave it out unless the subject really has a colour -- see "
-                "the rules."
+                "stays grey. Four colours only. Leave it out unless the subject really "
+                "has a colour -- see the rules."
+            ),
+        ),
+        Param(
+            name="theme",
+            type="string",
+            default="auto",
+            choices=THEME_NAMES,
+            description=(
+                "Whether the map behind the coloured region is a dark slate "
+                "(`dark`) or a pale paper (`light`). Leave it out: `auto` derives it "
+                "from the subject, which keeps the feed from being all one or the "
+                "other."
+            ),
+        ),
+        Param(
+            name="font",
+            type="string",
+            default="sans",
+            choices=FONT_NAMES,
+            description=(
+                "The caption typeface: `sans` is the plain heavy news banner, `serif` "
+                "a lighter, dressier one. Use `serif` for history, literature, art and "
+                "anything old; `sans` for everything else."
             ),
         ),
         Param(
@@ -191,12 +220,19 @@ GEOGRAPHY = GeneratorInfo(
         "route -- not a decline.",
         "The caption is not the headline. It is the two-to-five words a reader needs "
         'while looking at the map: "Almost dried up", "Growing every year".',
-        "Set `palette` ONLY when the subject really has a colour: blue for water, "
-        "green for forest and vegetation, yellow or orange for desert and heat. "
-        "Otherwise leave it out -- omitting it spreads the cards across the whole "
-        "palette (red, blue, green, orange, purple, teal, magenta), while picking "
-        "red as a fallback made every second card red. Never set it to match the "
-        "mood of the topic; a card is not red because the news is bad.",
+        "The card has exactly four colours: red, yellow, green and blue. Set "
+        "`palette` ONLY when the subject really is one of them: blue for water, "
+        "green for forest and vegetation, yellow for desert and heat. Otherwise "
+        "leave it out -- omitting it spreads the cards across all four, while "
+        "picking red as a fallback made every second card red. Never set it to "
+        "match the mood of the topic; a card is not red because the news is bad.",
+        "Leave `theme` out unless the post itself has a light or dark register. "
+        "`auto` alternates dark and light across the feed on its own, which is the "
+        "variety it exists for; pinning every card to one theme throws that away.",
+        "`font` is the one deliberate style choice on the card. `serif` suits a "
+        "subject with age or weight to it -- history, archaeology, literature, art, "
+        "empire, an old treaty. `sans` is the default and suits news, science, "
+        "economics, climate and anything current.",
         "Cities, buildings and single addresses make poor cards -- the map is a world "
         "map, and a point that small renders as a dot. Use a region or nothing.",
     ),
@@ -222,6 +258,15 @@ GEOGRAPHY = GeneratorInfo(
             "palette": "green",
             "source": "natural_earth",
             "padding": 0.3,
+        },
+        # A subject with age to it, so the dressier typeface and a pinned
+        # light map -- the one case for setting either by hand.
+        {
+            "generator": "geography",
+            "place": "Greece",
+            "caption": "Democracy started here",
+            "font": "serif",
+            "theme": "light",
         },
         # An abstract topic scoped to one country. Here to break the reflex that
         # a post about money cannot be a map -- and with no palette, because

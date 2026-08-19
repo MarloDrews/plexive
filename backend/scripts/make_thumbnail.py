@@ -6,7 +6,8 @@ does not need a running server or an admin token.
     python backend/scripts/make_thumbnail.py "Mediterranean Sea" \
         --caption "ALMOST DRIED UP" --palette blue -o med.png
 
-    # Several at once (one per line: place | caption | palette, palette optional)
+    # Several at once (one per line: place | caption | palette, palette optional).
+    # --theme and --font apply to every row of a batch.
     python backend/scripts/make_thumbnail.py --batch places.txt --out-dir out/
 
 The first run downloads the Natural Earth basemap (~4 MB) into backend/data/.
@@ -22,7 +23,12 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from app.thumbnails.nominatim import GeoLookupError  # noqa: E402
-from app.thumbnails.service import PALETTE_NAMES, render_geography_thumbnail  # noqa: E402
+from app.thumbnails.service import (  # noqa: E402
+    FONT_NAMES,
+    PALETTE_NAMES,
+    THEME_NAMES,
+    render_geography_thumbnail,
+)
 
 
 def slugify(value: str) -> str:
@@ -50,11 +56,16 @@ def generate(place: str, caption: str, palette: str, args, output: Path) -> None
         clip_to_land=not args.no_clip,
         source=args.source,
         palette=palette,
+        theme=args.theme,
+        font=args.font,
         seed=args.seed,
     )
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_bytes(thumbnail.png)
-    print(f"{output}  <- {thumbnail.place_name}  [{thumbnail.source}/{thumbnail.palette}]")
+    print(
+        f"{output}  <- {thumbnail.place_name}  "
+        f"[{thumbnail.source}/{thumbnail.palette}/{thumbnail.theme}/{thumbnail.font}]"
+    )
 
 
 def main() -> int:
@@ -66,6 +77,18 @@ def main() -> int:
         choices=PALETTE_NAMES,
         default="auto",
         help="Colour profile for the marked region and its banner.",
+    )
+    parser.add_argument(
+        "--theme",
+        choices=THEME_NAMES,
+        default="auto",
+        help="Dark or light basemap. auto derives it from the subject.",
+    )
+    parser.add_argument(
+        "--font",
+        choices=FONT_NAMES,
+        default="sans",
+        help="Caption typeface: the plain heavy sans, or the dressier serif.",
     )
     parser.add_argument(
         "--seed",

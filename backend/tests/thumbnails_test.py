@@ -16,6 +16,10 @@ Covers the parts that are easy to get silently wrong:
 - The vignette darkens the corners without touching the centre or tinting.
 - Every colour profile, including yellow's flipped (dark) caption text, and the
   "auto" palette that spreads neutral subjects across the rest.
+- Both themes: a theme moves every grey and nothing else, and "auto" spreads
+  dark and light across the feed without tracking the colour.
+- Both caption typefaces, and a caption that only fits because the fitting
+  loop reserves room for the WORST tilt the style allows.
 - The "+" union and the OSM -> Natural Earth fallback, with both data sources
   stubbed so the suite never touches the network.
 - Request schema validation.
@@ -41,10 +45,14 @@ from app.thumbnails.geometry import all_rings, polygons_from_geometry  # noqa: E
 from app.thumbnails.projection import bounds_of, fit  # noqa: E402
 from app.thumbnails.render import (  # noqa: E402
     PALETTES,
+    THEMES,
     PaletteError,
     Style,
+    ThemeError,
+    build_style,
     render_card,
     style_for_palette,
+    style_for_theme,
 )
 
 PASS = 0
@@ -182,13 +190,15 @@ def _render(
     palette: str = "red",
     seed: int = 0,
     padding: float = 1.0,
+    theme: str = "dark",
+    font: str = "sans",
 ):
     """A tiny synthetic scene: one land square with a highlight square on it.
 
     The seed is pinned so the caption's random tilt and offset cannot make a
     test flaky; the tests that care about the jitter vary it themselves.
     """
-    style = style_for_palette(palette)
+    style = build_style(palette, theme, font)
     land = land if land is not None else [square(0, 0, 20)]
     highlight = highlight if highlight is not None else [square(0, 0, 10)]
     viewport = fit(bounds_of(all_rings(highlight)), 1280, 720, padding=padding)
@@ -554,16 +564,19 @@ def test_auto_palette_spreads_the_colours() -> None:
     chosen = [resolve_palette("auto", subject) for subject in subjects]
     check("auto only ever returns a real palette",
           all(name in PALETTES for name in chosen), str(chosen))
-    check("auto never returns yellow, the dark-text one",
-          "yellow" not in chosen, str(chosen))
-    # Hashing spreads, it does not deal a round: ten subjects over seven
-    # colours land on four or five of them, which is the point -- what must not
-    # come back is one colour taking half the feed, as red did.
+    # Yellow is in the cycle now. The card has four colours in total, and
+    # yellow's dark caption text makes it as legible as the other three, so
+    # there is nothing left to hold back from a neutral subject.
+    check("auto can return any of the four",
+          set(chosen) <= set(PALETTES), str(chosen))
+    # Hashing spreads, it does not deal a round: ten subjects over four
+    # colours land on three or four of them, which is the point -- what must
+    # not come back is one colour taking half the feed, as red did.
     counts = Counter(chosen)
     check("ten neutral subjects use several colours",
-          len(counts) >= 4, f"{len(counts)}: {counts}")
+          len(counts) >= 3, f"{len(counts)}: {counts}")
     check("no colour takes over the feed",
-          max(counts.values()) <= 3, str(counts))
+          max(counts.values()) <= 4, str(counts))
     # The stored filename carries a content hash, so a colour that moved
     # between runs would orphan a fresh image in storage every time.
     check("the same subject always gets the same colour",
@@ -585,6 +598,90 @@ def test_palette_leaves_the_map_grey() -> None:
         check(f"{name}: ocean unchanged", _close(image.getpixel((640, 60)), style.ocean))
         # Inside the land square (y 120..600) but outside the highlight (240..480).
         check(f"{name}: land unchanged", _close(image.getpixel((640, 180)), style.land))
+
+
+def test_theme_moves_every_grey_and_nothing_else() -> None:
+    """A theme owns the basemap; the palette owns the colour. Swapping the
+    theme must repaint ocean, land and coast without touching the marked
+    region or its banner."""
+    for name in THEMES:
+        _, image, style = _render(False, "TEST", palette="red", theme=name)
+        check(f"{name}: ocean is the theme's",
+              _close(image.getpixel((640, 60)), style.ocean),
+              f"{image.getpixel((640, 60))} vs {style.ocean}")
+        check(f"{name}: land is the theme's",
+              _close(image.getpixel((640, 180)), style.land),
+              f"{image.getpixel((640, 180))} vs {style.land}")
+        check(f"{name}: the marked region keeps its colour",
+              _close(image.getpixel((640, 360)), PALETTES["red"].highlight),
+              str(image.getpixel((640, 360))))
+    dark = style_for_theme("dark")
+    light = style_for_theme("light")
+    check("light really is lighter than dark",
+          sum(light.ocean) > sum(dark.ocean) and sum(light.land) > sum(dark.land))
+    check("land reads against ocean in both",
+          abs(sum(light.land) - sum(light.ocean)) > 60
+          and abs(sum(dark.land) - sum(dark.ocean)) > 60)
+
+
+def test_auto_theme_spreads_and_is_stable() -> None:
+    """Same contract as the auto palette: hashed so a card keeps its theme
+    across re-renders, and spread so the feed is not all one theme. It hashes
+    a different string from the palette on purpose -- moving together would
+    cut the eight colour/theme combinations down to four."""
+    from app.thumbnails.render import auto_palette_for, auto_theme_for, resolve_theme
+
+    subjects = [
+        "United Kingdom|Banks make the money",
+        "United States|Lead paint legal",
+        "California|Look at each department",
+        "Europe|Nobody thought it was flat",
+        "Oregon|One fungus, 9 square km",
+        "Siberia|Huge carbon store",
+        "Africa|No Neanderthal DNA",
+        "Japan|Trains to the second",
+        "Iceland|Runs on its own heat",
+        "Chile|Driest place on Earth",
+    ]
+    chosen = [resolve_theme("auto", subject) for subject in subjects]
+    check("auto only ever returns a real theme", set(chosen) <= set(THEMES), str(chosen))
+    check("both themes appear", len(set(chosen)) == 2, str(chosen))
+    check("the same subject always gets the same theme",
+          chosen == [resolve_theme("auto", subject) for subject in subjects])
+    check("case and spacing do not change the theme",
+          auto_theme_for("  Iceland|Runs On Its Own Heat  ".upper())
+          == auto_theme_for("iceland|runs on its own heat"))
+    check("an explicit theme is left alone", resolve_theme("light", "x") == "light")
+    # Not the same hash: if theme tracked colour, red would always be dark.
+    check("theme does not track the palette",
+          len({(auto_palette_for(s), auto_theme_for(s)) for s in subjects}) > 4,
+          str([(auto_palette_for(s), auto_theme_for(s)) for s in subjects]))
+
+
+def test_unknown_theme_rejected() -> None:
+    for bad in ("dusk", "  ", "dunkel"):
+        try:
+            style_for_theme(bad)
+            check(f"theme {bad!r} rejected", False, "no error raised")
+        except ThemeError:
+            check(f"theme {bad!r} rejected", True)
+    check("None falls back to the default", style_for_theme(None).ocean == THEMES["dark"].ocean)
+
+
+def test_both_fonts_draw_a_different_caption() -> None:
+    """The two typefaces are a real choice, not a label: the same caption has
+    to come out visibly different, and both have to stay inside the banner."""
+    from app.thumbnails.fonts import FontError, load_font
+
+    sans, _, _ = _render(False, "ALMOST DRIED UP", font="sans")
+    serif, _, _ = _render(False, "ALMOST DRIED UP", font="serif")
+    check("the two fonts render differently", sans.png != serif.png)
+    check("both report the same lines", sans.caption_lines == serif.caption_lines)
+    try:
+        load_font(40, "comic")
+        check("an unknown font is rejected", False, "no error raised")
+    except FontError:
+        check("an unknown font is rejected", True)
 
 
 def test_unknown_palette_rejected() -> None:
@@ -930,10 +1027,21 @@ def test_request_schema() -> None:
     check("defaults applied", ok.width == 1280 and ok.height == 720 and ok.source == "auto")
     check("under-land defaults to auto", ok.highlight_under_land is None)
     check("palette defaults to auto", ok.palette == "auto" and ok.seed is None)
-    for name in ("auto", "red", "blue", "green", "yellow", "orange", "purple", "teal", "magenta"):
+    check("theme defaults to auto, font to sans", ok.theme == "auto" and ok.font == "sans")
+    for name in ("auto", "red", "blue", "green", "yellow"):
         check(
             f"palette {name} accepted",
             GeographyThumbnailRequest(place="x", palette=name).palette == name,
+        )
+    for name in ("auto", "dark", "light"):
+        check(
+            f"theme {name} accepted",
+            GeographyThumbnailRequest(place="x", theme=name).theme == name,
+        )
+    for name in ("sans", "serif"):
+        check(
+            f"font {name} accepted",
+            GeographyThumbnailRequest(place="x", font=name).font == name,
         )
 
     for payload, label in (
@@ -944,6 +1052,9 @@ def test_request_schema() -> None:
         ({"place": "x", "width": 99999}, "huge width"),
         ({"place": "x", "source": "wikipedia"}, "unknown source"),
         ({"place": "x", "palette": "chartreuse"}, "unknown palette"),
+        ({"place": "x", "palette": "magenta"}, "a palette that was dropped"),
+        ({"place": "x", "theme": "dusk"}, "unknown theme"),
+        ({"place": "x", "font": "comic"}, "unknown font"),
         ({"place": "x", "seed": -1}, "negative seed"),
     ):
         try:

@@ -9,7 +9,7 @@ them simply has no `thumbnail` object and falls back to the placeholder image.
 
 ## `geography`
 
-A greyscale world map with exactly one region filled in colour and a short caption in a banner underneath.
+A greyscale world map -- dark or light -- with exactly one region filled in colour and a short caption in a tilted banner underneath.
 
 **Use it when** a specific place on Earth anchors what the post says -- a sea, ocean, country, region, island, desert, mountain range, rainforest or river basin. Ask WHERE THE CLAIM IS TRUE, not what subject the post belongs to. A post whose topic is economics, history, biology or policy is still a geography card when its claim is scoped to one place: banks creating 97% of the money supply is a fact about the United Kingdom, and the map answers 'where?'. This is the common case -- reach for it whenever the post names a place it is really talking about.
 
@@ -22,7 +22,9 @@ Exactly one of `place` or `osm_id` is required.
 | `place` | string | - | - | The region to fill, as a plain name a map would use: "Iceland", "Black Sea", "Sahara". Join several with " + " to fill them as one shape. |
 | `osm_id` | string | - | - | An OpenStreetMap object id such as "R9407", used instead of `place` when a name resolves to the wrong feature. |
 | `caption` | string | `""` | - | The words under the map, rendered in capitals. Two to five words that say what happened there. Defaults to the place name when empty. |
-| `palette` | string | `auto` | `auto`, `blue`, `green`, `magenta`, `orange`, `purple`, `red`, `teal`, `yellow` | Colour of the filled region and its banner; everything else on the card stays grey. Leave it out unless the subject really has a colour -- see the rules. |
+| `palette` | string | `auto` | `auto`, `blue`, `green`, `red`, `yellow` | Colour of the filled region and its banner; everything else on the card stays grey. Four colours only. Leave it out unless the subject really has a colour -- see the rules. |
+| `theme` | string | `auto` | `auto`, `dark`, `light` | Whether the map behind the coloured region is a dark slate (`dark`) or a pale paper (`light`). Leave it out: `auto` derives it from the subject, which keeps the feed from being all one or the other. |
+| `font` | string | `sans` | `sans`, `serif` | The caption typeface: `sans` is the plain heavy news banner, `serif` a lighter, dressier one. Use `serif` for history, literature, art and anything old; `sans` for everything else. |
 | `source` | string | `auto` | `auto`, `osm`, `natural_earth` | Which map data set the filled shape comes from. `auto` tries OpenStreetMap and falls back to Natural Earth; `natural_earth` is mandatory for physical regions -- see the rules. |
 | `padding` | number | `0.35` | `0`–`10` | How much surrounding context to show, as a fraction of the region's own size. 0.1 is a tight crop, 0.35 the normal card, 2.0 pulls back to the whole continent. |
 | `uppercase` | boolean | `true` | - | Capitalise the caption. Leave on unless the caption is a proper name in mixed case. |
@@ -42,7 +44,9 @@ Exactly one of `place` or `osm_id` is required.
 - An abstract topic is not a reason to decline. Ask where the claim holds, not what field it belongs to: "In the UK, banks create 97% of all money" is a post about money, but it is true OF THE UNITED KINGDOM, so it gets a UK card. A statistic about one country, a practice in one region, a law in one state -- all of these are geography cards.
 - When a post spans two places, pick the one it is ABOUT, or join them with " + " when it is genuinely about both. Saharan dust fertilising the Amazon is an "Amazon" card (the place being changed), or "Sahara + Amazon" to show the route -- not a decline.
 - The caption is not the headline. It is the two-to-five words a reader needs while looking at the map: "Almost dried up", "Growing every year".
-- Set `palette` ONLY when the subject really has a colour: blue for water, green for forest and vegetation, yellow or orange for desert and heat. Otherwise leave it out -- omitting it spreads the cards across the whole palette (red, blue, green, orange, purple, teal, magenta), while picking red as a fallback made every second card red. Never set it to match the mood of the topic; a card is not red because the news is bad.
+- The card has exactly four colours: red, yellow, green and blue. Set `palette` ONLY when the subject really is one of them: blue for water, green for forest and vegetation, yellow for desert and heat. Otherwise leave it out -- omitting it spreads the cards across all four, while picking red as a fallback made every second card red. Never set it to match the mood of the topic; a card is not red because the news is bad.
+- Leave `theme` out unless the post itself has a light or dark register. `auto` alternates dark and light across the feed on its own, which is the variety it exists for; pinning every card to one theme throws that away.
+- `font` is the one deliberate style choice on the card. `serif` suits a subject with age or weight to it -- history, archaeology, literature, art, empire, an old treaty. `sans` is the default and suits news, science, economics, climate and anything current.
 - Cities, buildings and single addresses make poor cards -- the map is a world map, and a point that small renders as a dot. Use a region or nothing.
 
 **Examples**
@@ -51,6 +55,7 @@ Exactly one of `place` or `osm_id` is required.
 {"generator": "geography", "place": "Mediterranean Sea", "caption": "Almost dried up", "palette": "blue", "padding": 0.2}
 {"generator": "geography", "place": "Sahara", "caption": "Growing every year", "palette": "yellow", "source": "natural_earth"}
 {"generator": "geography", "place": "Antarctica", "caption": "Once a rainforest", "palette": "green", "source": "natural_earth", "padding": 0.3}
+{"generator": "geography", "place": "Greece", "caption": "Democracy started here", "font": "serif", "theme": "light"}
 {"generator": "geography", "place": "United Kingdom", "caption": "Banks make the money"}
 {"generator": "geography", "place": "Amazon", "caption": "Fed by Saharan dust", "palette": "green", "source": "natural_earth"}
 ```

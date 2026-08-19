@@ -654,9 +654,13 @@ class GeographyThumbnailRequest(BaseModel):
     # Colour profile for the marked region and its banner. Everything else on
     # the card stays grey in every profile. "auto" derives one from the subject
     # so neutral subjects do not all come out red.
-    palette: Literal[
-        "auto", "red", "blue", "green", "yellow", "orange", "purple", "teal", "magenta"
-    ] = "auto"
+    palette: Literal["auto", "red", "blue", "green", "yellow"] = "auto"
+    # Dark or light basemap. Only the greys change; the marked region keeps
+    # its colour either way. "auto" derives it from the subject, like the
+    # palette, so the feed alternates instead of being all one or the other.
+    theme: Literal["auto", "dark", "light"] = "auto"
+    # The caption typeface: the plain heavy sans, or the dressier serif.
+    font: Literal["sans", "serif"] = "sans"
     # Pins the caption's random tilt and sideways nudge, so the same request
     # renders the same card twice. Omit to let every render differ slightly.
     seed: int | None = Field(default=None, ge=0, le=2**31 - 1)
@@ -686,3 +690,6 @@ class ThumbnailInfo(BaseModel):
     source: str = "osm"
     # The resolved colour: never "auto", always a real palette name.
     palette: str = "red"
+    # Likewise the resolved theme and the typeface actually used.
+    theme: str = "dark"
+    font: str = "sans"

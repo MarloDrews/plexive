@@ -40,6 +40,8 @@ def _render(payload: GeographyThumbnailRequest):
             clip_to_land=payload.clip_to_land,
             source=payload.source,
             palette=payload.palette,
+            theme=payload.theme,
+            font=payload.font,
             seed=payload.seed,
         )
     except GeoLookupError as exc:
@@ -103,6 +105,8 @@ def geography_thumbnail_preview(
         caption_lines=thumbnail.caption_lines,
         source=thumbnail.source,
         palette=thumbnail.palette,
+        theme=thumbnail.theme,
+        font=thumbnail.font,
     )
 
 

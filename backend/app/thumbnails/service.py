@@ -5,19 +5,25 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple
 
 from . import basemap
+from .fonts import DEFAULT_FAMILY as DEFAULT_FONT
+from .fonts import FONT_FAMILY_NAMES
 from .geometry import Polygon, all_rings, polygons_from_geometry
 from .nominatim import GeoLookupError, lookup_osm_id, lookup_place
 from .places import PlacePreset, find_preset
 from .projection import fit_subject
 from .render import (
     AUTO_PALETTE,
+    AUTO_THEME,
     DEFAULT_PALETTE,
+    DEFAULT_THEME,
     PALETTES,
+    THEMES,
     RenderResult,
     Style,
+    build_style,
     render_card,
     resolve_palette,
-    style_for_palette,
+    resolve_theme,
 )
 
 logger = logging.getLogger("app.thumbnails")
@@ -53,6 +59,15 @@ SOURCES = ("auto", "osm", "natural_earth")
 # so neutral subjects spread across the palette instead of all coming out red.
 PALETTE_NAMES = (AUTO_PALETTE,) + tuple(sorted(PALETTES))
 
+# Dark or light basemap. "auto" derives one from the subject the same way
+# the palette does, so the feed alternates instead of being all one or the
+# other -- and it hashes a different string, so theme and colour do not move
+# in lockstep.
+THEME_NAMES = (AUTO_THEME,) + tuple(sorted(THEMES))
+
+# The two caption typefaces: the plain heavy sans, or the dressier serif.
+FONT_NAMES = FONT_FAMILY_NAMES
+
 
 @dataclass
 class Thumbnail:
@@ -70,6 +85,9 @@ class Thumbnail:
     source: str = "osm"
     # Which colour profile was used, echoed back for the same reason as source.
     palette: str = DEFAULT_PALETTE
+    # Likewise the resolved theme and typeface: never "auto", always real.
+    theme: str = DEFAULT_THEME
+    font: str = DEFAULT_FONT
 
 
 def render_geography_thumbnail(
@@ -84,6 +102,8 @@ def render_geography_thumbnail(
     clip_to_land: bool = True,
     source: str = "auto",
     palette: str = AUTO_PALETTE,
+    theme: str = AUTO_THEME,
+    font: str = DEFAULT_FONT,
     seed: Optional[int] = None,
     style: Optional[Style] = None,
     use_cache: bool = True,
@@ -114,6 +134,12 @@ def render_geography_thumbnail(
     instead of every neutral one coming out red. An explicit `style` overrides
     it entirely.
 
+    `theme` picks the dark or light basemap -- see THEME_NAMES. "auto" derives
+    it from the subject in the same way, so the feed alternates.
+
+    `font` picks the caption typeface -- see FONT_NAMES: "sans" for the plain
+    heavy banner, "serif" for the dressier one.
+
     `seed` pins the caption's random tilt and sideways nudge; None varies them
     per render.
     """
@@ -123,8 +149,10 @@ def render_geography_thumbnail(
     # Resolved from what the AUTHOR wrote, not from the name the lookup comes
     # back with, so editing a caption cannot silently recolour the card and two
     # spellings of the same query still land on the same colour.
-    palette = resolve_palette(palette, f"{place or osm_id}|{caption}")
-    style = style or style_for_palette(palette)
+    subject = f"{place or osm_id}|{caption}"
+    palette = resolve_palette(palette, subject)
+    theme = resolve_theme(theme, subject)
+    style = style or build_style(palette, theme, font)
 
     highlight, geo = _resolve_region(place, osm_id, use_cache, source)
 
@@ -161,10 +189,13 @@ def render_geography_thumbnail(
         seed=seed,
     )
     logger.info(
-        "thumbnail rendered: place=%r source=%s palette=%s under_land=%s land=%d borders=%d",
+        "thumbnail rendered: place=%r source=%s palette=%s theme=%s font=%s "
+        "under_land=%s land=%d borders=%d",
         geo["name"],
         geo["source"],
         palette,
+        theme,
+        style.font_family,
         under_land,
         len(land),
         len(borders),
@@ -178,8 +209,10 @@ def render_geography_thumbnail(
         osm_id=geo["osm_id"],
         caption_lines=result.caption_lines,
         source=geo["source"],
-        # Already resolved above, so this reports the colour actually used.
+        # Already resolved above, so these report what was actually used.
         palette=palette,
+        theme=theme,
+        font=style.font_family,
     )
 
 
