@@ -59,9 +59,11 @@ when the post truly offers a generator nothing to work with.
 
 Judge a post by what it is TRUE OF, not by which subject it belongs to. A post \
 about economics, history, medicine or policy whose claim is scoped to one \
-country or region is a geography post: the map says where. Only when nothing a \
-generator can show anchors the post -- it holds everywhere, or nowhere -- do you \
-decline.
+country or region is a geography post: the map says where. A post whose claim \
+holds inside any human mind -- a bias, an illusion, something about memory, \
+attention or the brain -- is a mental post, and it needs no place at all, \
+which is exactly why the map cannot take it. Only when nothing a generator \
+can show anchors the post -- it holds everywhere, or nowhere -- do you decline.
 
 The generators available to you:
 

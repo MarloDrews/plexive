@@ -24,9 +24,8 @@
   "thumbnail": {
     "generator": "geography",
     "place": "Mediterranean Sea",
-    "caption": "Almost dried up",
-    "palette": "blue",
-    "padding": 0.2
+    "caption": "Dry then refilled",
+    "palette": "blue"
   },
   "feed_card": {
     "headline": "The Mediterranean Sea dried up almost completely, then the Atlantic refilled it in under two years.",

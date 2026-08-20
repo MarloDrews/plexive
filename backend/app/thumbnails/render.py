@@ -5,6 +5,10 @@ Pillow's polygon and line drawing has no antialiasing -- coastlines would come
 out visibly jagged at 1280x720. The caption is drawn afterwards at the final
 size instead, since FreeType antialiases text itself and downscaling it only
 makes it softer.
+
+Style, apply_vignette, draw_caption and fade are shared card furniture rather
+than map internals: every generator draws the same banner over the same
+vignette, only the background underneath differs (see mental.py).
 """
 
 import hashlib
@@ -294,7 +298,7 @@ class Style:
 
     # Hand-placed look: a random tilt and sideways nudge per render. The tilt
     # is deliberately visible -- a sticker slapped on the map, not a layout
-    # that drifted. _draw_caption sizes the banner against the WORST tilt this
+    # that drifted. draw_caption sizes the banner against the WORST tilt this
     # allows, so a bigger angle costs a slightly smaller caption, never a
     # banner that runs off the frame.
     caption_max_angle: float = 6.0  # degrees, either way
@@ -602,8 +606,8 @@ def render_card(
     canvas = big.resize((width, height), Image.LANCZOS)
     # Before the caption, so the banner sits on top of the vignette at full
     # brightness however close to the frame edge it lands.
-    _apply_vignette(canvas, style)
-    lines, angle, offset_x = _draw_caption(canvas, caption, style, random.Random(seed))
+    apply_vignette(canvas, style)
+    lines, angle, offset_x = draw_caption(canvas, caption, style, random.Random(seed))
 
     buffer = io.BytesIO()
     canvas.save(buffer, format="PNG", optimize=True)
@@ -623,7 +627,7 @@ def render_card(
 VIGNETTE_GRID = 96
 
 
-def _apply_vignette(canvas: Image.Image, style: Style) -> None:
+def apply_vignette(canvas: Image.Image, style: Style) -> None:
     """Darken the frame edges slightly, in place.
 
     Squared falloff normalized to the CORNER distance, so the ramp is still
@@ -654,7 +658,7 @@ def _apply_vignette(canvas: Image.Image, style: Style) -> None:
     )
 
 
-def _draw_caption(
+def draw_caption(
     canvas: Image.Image, caption: str, style: Style, rng: random.Random
 ) -> Tuple[List[str], float, float]:
     """Draw the banner and its text: auto-sized, haloed, slightly tilted.
@@ -768,8 +772,8 @@ def _draw_caption(
     # Two passes, because one cannot do both jobs: a blur wide enough to fade
     # out smoothly is far too weak right at the banner edge, and one tight
     # enough to bite there ends in a hard rim.
-    contact = _fade(silhouette, blur * style.shadow_contact, style.shadow_opacity * 0.9)
-    ambient = _fade(silhouette, blur, style.shadow_opacity * 0.6)
+    contact = fade(silhouette, blur * style.shadow_contact, style.shadow_opacity * 0.9)
+    ambient = fade(silhouette, blur, style.shadow_opacity * 0.6)
 
     left = int(round(width / 2 + offset_x - layer.width / 2))
     top = int(round(height * style.caption_center_y - layer.height / 2))
@@ -781,7 +785,7 @@ def _draw_caption(
     return lines, angle, offset_x
 
 
-def _fade(alpha: Image.Image, blur: float, opacity: float) -> Image.Image:
+def fade(alpha: Image.Image, blur: float, opacity: float) -> Image.Image:
     """One blurred, faded copy of a silhouette, ready to use as a shadow mask."""
     return alpha.filter(ImageFilter.GaussianBlur(blur)).point(
         lambda value: int(value * opacity)

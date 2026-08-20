@@ -6,16 +6,21 @@ the post JSON under "thumbnail"), not the image itself:
     {"generator": "geography", "place": "Mediterranean Sea",
      "caption": "Almost dried up", "palette": "blue"}
 
-This module turns such a spec into bytes. Only "geography" exists today; a
-generator for another post format is one function, one GeneratorInfo and one
-GENERATORS entry -- the seeding, upload and backfill pipeline around it never
-changes, and the descriptor is what teaches the doc, the validator and the
-model in suggest.py about it at the same time.
+This module turns such a spec into bytes. A generator is one function, one
+GeneratorInfo and one GENERATORS entry -- the seeding, upload and backfill
+pipeline around it never changes, and the descriptor is what teaches the doc,
+the validator and the model in suggest.py about it at the same time.
+
+The two so far divide the feed between them: "geography" draws posts whose
+claim is true OF A PLACE, "mental" draws posts whose claim is true INSIDE A
+MIND. A post that is neither still gets no thumbnail.
 """
 
 from typing import Any, Dict
 
+from . import figures
 from .catalog import GeneratorInfo, Param, validate_spec
+from .mental import AUTO_ANGLE, render_mental_thumbnail
 from .service import (
     FONT_NAMES,
     PALETTE_NAMES,
@@ -28,6 +33,34 @@ from .service import (
 def _geography(spec: Dict[str, Any]) -> bytes:
     kwargs = {k: v for k, v in spec.items() if k != "generator"}
     return render_geography_thumbnail(**kwargs).png
+
+
+def _mental(spec: Dict[str, Any]) -> bytes:
+    kwargs = {k: v for k, v in spec.items() if k != "generator"}
+    return render_mental_thumbnail(**kwargs).png
+
+
+def _angle_description() -> str:
+    """The `angle` parameter's help text, with the angles the asset directory
+    actually holds spelled out.
+
+    Built at import rather than written by hand: dropping a camera angle into
+    assets/mental/ has to reach the doc and the model prompt, and a folder name
+    on its own ("three-quarter") tells the model nothing about what it sees --
+    that comes from assets/mental/angles.json.
+    """
+    described = figures.angle_descriptions()
+    known = [
+        f"`{name}` ({described[name]})" if name in described else f"`{name}`"
+        for name in figures.angle_names()
+    ]
+    listing = "; ".join(known) if known else "none installed"
+    return (
+        "Which camera angle of the figure to use: " + listing + ". Leave it out "
+        "unless one angle genuinely suits the post better than another -- `auto` "
+        "picks one from the subject, which keeps the feed from showing the same "
+        "pose every time."
+    )
 
 
 GEOGRAPHY = GeneratorInfo(
@@ -288,8 +321,192 @@ GEOGRAPHY = GeneratorInfo(
 )
 
 
+MENTAL = GeneratorInfo(
+    name="mental",
+    summary=(
+        "A prepared 3D figure -- a head, a brain, or a brain seen through a "
+        "translucent head -- lit on a plain dark or light field in one colour, "
+        "with the same tilted caption banner underneath as the map card."
+    ),
+    when_to_use=(
+        "the post is about something happening INSIDE one mind. Ask WHOSE MIND IS "
+        "DOING THIS: a cognitive bias, an illusion, an effect of memory or "
+        "attention, a habit, motivation, emotion, sleep, learning, how a decision "
+        "gets made, mental health, or the brain itself as an organ. This is the "
+        "card for the posts a map has to decline -- a bias is true of everyone "
+        "everywhere, so a country filled in red would say something false, while a "
+        "head claims no location at all."
+    ),
+    when_not_to_use=(
+        "the claim is about the world outside a single mind. A claim scoped to a "
+        "place is a geography card. A claim about a group, a market, a society, a "
+        "technology, a material or a piece of physics is not about anyone's mind, "
+        "and a brain over it would announce 'this is psychology' about a post that "
+        "is not. Decline in particular when the mind is merely the AUDIENCE: a fact "
+        "is not a mental post because reading it feels surprising."
+    ),
+    render=_mental,
+    params=(
+        Param(
+            name="motif",
+            type="string",
+            required=True,
+            choices=figures.MOTIF_NAMES,
+            description=(
+                "Which figure to draw. `head` is the person, `brain` is the organ, "
+                "`brain_in_head` is the organ seen through a translucent skull -- "
+                "see the rules, this is the one real decision on the card."
+            ),
+        ),
+        Param(
+            name="caption",
+            type="string",
+            required=True,
+            description=(
+                "The words in the banner, rendered in capitals. Two to five words "
+                "that say what the mind is doing."
+            ),
+        ),
+        Param(
+            name="angle",
+            type="string",
+            default=AUTO_ANGLE,
+            choices=(AUTO_ANGLE,) + figures.angle_names(),
+            description=_angle_description(),
+        ),
+        Param(
+            name="palette",
+            type="string",
+            default="auto",
+            choices=PALETTE_NAMES,
+            description=(
+                "Colour of the figure and its banner; the field behind it stays "
+                "grey. Four colours only. Leave it out -- see the rules."
+            ),
+        ),
+        Param(
+            name="theme",
+            type="string",
+            default="auto",
+            choices=THEME_NAMES,
+            description=(
+                "Whether the field behind the figure is a dark slate (`dark`) or a "
+                "pale paper (`light`). Leave it out: `auto` derives it from the "
+                "subject, which keeps the feed from being all one or the other."
+            ),
+        ),
+        Param(
+            name="uppercase",
+            type="boolean",
+            default=True,
+            description=(
+                "Capitalise the caption. Leave on unless the caption is a proper "
+                "name in mixed case."
+            ),
+        ),
+        Param(
+            name="seed",
+            type="integer",
+            minimum=0,
+            maximum=2**31 - 1,
+            description=(
+                "Pins the caption's slight random tilt, so the same spec renders "
+                "the same card twice. Omit to let each render differ."
+            ),
+        ),
+        Param(
+            name="width",
+            type="integer",
+            default=1280,
+            minimum=320,
+            maximum=3840,
+            description="Image width in pixels. Leave at the default.",
+        ),
+        Param(
+            name="height",
+            type="integer",
+            default=720,
+            minimum=180,
+            maximum=2160,
+            description="Image height in pixels. Leave at the default; cards are 16:9.",
+        ),
+    ),
+    rules=(
+        "`motif` follows what the post is ABOUT, not which words it happens to "
+        "use. `head` when the subject is the PERSON -- what someone does, how they "
+        "behave, a habit, an identity, a choice they make. `brain` when the subject "
+        "is the ORGAN itself -- neurons, sleep, brain chemistry, energy use, "
+        "anatomy, what the tissue does. `brain_in_head` when the subject is the GAP "
+        "between the two: a mechanism running inside someone who cannot see it "
+        "working. Biases, illusions, blind spots and false memories are all that "
+        "third case, and it is the strongest of the three -- reach for it whenever "
+        "the point of the post is 'this is happening in you right now and you did "
+        "not notice'.",
+        "A post about the brain as a body part is still a mental card. Sleep, "
+        "energy consumption, neuron counts and the effect of a drug on mood all get "
+        "`brain`; they do not need a mind doing something clever to belong here.",
+        "The caption is not the headline. It is the two-to-five words a reader "
+        'needs while looking at the figure: "You cannot feel it", "Memory rewrites '
+        'itself". Write what the mind is DOING, not what the post concludes.',
+        "Leave `palette` out. Nothing about a bias or a memory is red, yellow, "
+        "green or blue, and picking a colour to match the mood of the topic is what "
+        "made every second card red on the map generator. `auto` spreads the cards "
+        "across all four on its own.",
+        "Leave `theme` out for the same reason: `auto` alternates dark and light "
+        "across the feed, and pinning it throws that variety away. Set it only when "
+        "the post itself has a register -- a card about sleep or the unconscious "
+        "may earn `dark`.",
+        "Leave `angle` out unless the post genuinely reads better from one camera. "
+        "It is the weakest of the choices here and the easiest to over-think.",
+        "There is one figure on the card and no room for a second subject. A post "
+        "about two people, a conversation, a crowd or a comparison between minds "
+        "has nothing this generator can draw -- decline rather than picking `head` "
+        "and hoping.",
+    ),
+    examples=(
+        # The canonical case: a mechanism running inside someone unaware of it.
+        {
+            "generator": "mental",
+            "motif": "brain_in_head",
+            "caption": "You edit it every time",
+        },
+        {
+            "generator": "mental",
+            "motif": "brain_in_head",
+            "caption": "It fills in the gap",
+        },
+        # The organ as a body part -- no cleverness required.
+        {
+            "generator": "mental",
+            "motif": "brain",
+            "caption": "A fifth of your energy",
+        },
+        {
+            "generator": "mental",
+            "motif": "brain",
+            "caption": "It cleans itself at night",
+        },
+        # The person, not the organ: this is about behaviour.
+        {
+            "generator": "mental",
+            "motif": "head",
+            "caption": "Habits beat willpower",
+        },
+        # A subject with a register of its own, so the theme is pinned by hand --
+        # the one case for setting it.
+        {
+            "generator": "mental",
+            "motif": "brain_in_head",
+            "caption": "Your blind spot is real",
+            "theme": "dark",
+        },
+    ),
+)
+
+
 GENERATORS: Dict[str, GeneratorInfo] = {
     GEOGRAPHY.name: GEOGRAPHY,
+    MENTAL.name: MENTAL,
 }
 
 

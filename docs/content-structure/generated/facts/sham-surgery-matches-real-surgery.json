@@ -20,6 +20,11 @@
       "featured": false
     }
   ],
+  "thumbnail": {
+    "generator": "mental",
+    "motif": "brain_in_head",
+    "caption": "Your brain fills the gap"
+  },
   "feed_card": {
     "headline": "Fake knee surgery, just skin incisions, relieved arthritis as well as the real operation for two years.",
     "teasers": [

@@ -20,6 +20,11 @@
       "featured": false
     }
   ],
+  "thumbnail": {
+    "generator": "mental",
+    "motif": "brain_in_head",
+    "caption": "Memory fades fast"
+  },
   "feed_card": {
     "headline": "A day after you learn something new, without review, roughly two-thirds of it has slipped away.",
     "teasers": [

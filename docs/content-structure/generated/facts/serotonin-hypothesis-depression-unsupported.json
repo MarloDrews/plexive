@@ -13,6 +13,11 @@
       "featured": false
     }
   ],
+  "thumbnail": {
+    "generator": "mental",
+    "motif": "brain",
+    "caption": "Serotonin not causing depression"
+  },
   "feed_card": {
     "headline": "A 2022 review of all the serotonin evidence found no consistent link to depression.",
     "teasers": [

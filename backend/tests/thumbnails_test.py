@@ -1,4 +1,4 @@
-"""Tests for the geography thumbnail generator (backend/app/thumbnails/).
+"""Tests for the thumbnail generators (backend/app/thumbnails/).
 
 Covers the parts that are easy to get silently wrong:
 
@@ -23,8 +23,18 @@ Covers the parts that are easy to get silently wrong:
 - The "+" union and the OSM -> Natural Earth fallback, with both data sources
   stubbed so the suite never touches the network.
 - Request schema validation.
+- The mental card: that brain_in_head is framed on the HEAD's bounding box, so
+  the brain stays where the 3D camera put it; that tinting normalises a pale
+  render before colouring it, and against the figure rather than the
+  transparent surround; that a layer exported without alpha is keyed from the
+  frame edge inwards, so an enclosed highlight is not punched through; and that
+  the contact shadow spreads PAST the silhouette instead of being clipped to it
+  (the figure touches its own bounding box on all four sides, so blurring in
+  place drew a rectangle around the head). Its artwork is built per test in a temp directory -- a test that
+  failed because someone re-exported a head would be a test nobody trusts.
 
-Nothing here downloads a basemap or calls Nominatim.
+Nothing here downloads a basemap, calls Nominatim, or reads the real 3D
+renders.
 
 Run with: venv\\Scripts\\python.exe tests\\thumbnails_test.py
 """
@@ -1521,6 +1531,413 @@ def test_thumbnail_storage() -> None:
         check("unconfigured storage raises", True)
     finally:
         thumbnail_storage.supabase_client = original
+
+
+# ---------------------------------------------------------------------------
+# The mental card (app/thumbnails/figures.py, app/thumbnails/mental.py)
+#
+# Every test below builds its own synthetic artwork in a temp directory rather
+# than loading the real renders: the point is the compositing rules, and a test
+# that fails because someone re-exported a head is a test nobody trusts.
+# ---------------------------------------------------------------------------
+
+
+def _figure_assets(directory, glass_alpha: int = 110):
+    """A minimal angle: a tall "head", a smaller "brain" inside it, and a
+    translucent copy of the head. Shapes are rectangles, so every expected
+    bounding box below is exact rather than approximate."""
+    from PIL import Image, ImageDraw
+
+    size = (200, 120)
+    head_box = (40, 10, 160, 119)
+    brain_box = (70, 25, 130, 70)
+
+    def canvas(box, fill):
+        image = Image.new("RGBA", size, (0, 0, 0, 0))
+        ImageDraw.Draw(image).rectangle(box, fill=fill)
+        return image
+
+    directory.mkdir(parents=True, exist_ok=True)
+    # Mid grey, so a normalising tint has room to move it in both directions.
+    canvas(head_box, (150, 150, 150, 255)).save(directory / "head.png")
+    canvas(head_box, (230, 230, 230, glass_alpha)).save(directory / "head_glass.png")
+    canvas(brain_box, (200, 120, 130, 255)).save(directory / "brain.png")
+    return head_box, brain_box
+
+
+def _with_assets(body, glass_alpha: int = 110):
+    """Run `body(head_box, brain_box)` against a temp asset directory."""
+    import tempfile
+    from pathlib import Path
+
+    from app.thumbnails import figures
+
+    original = figures.ASSET_ROOT
+    with tempfile.TemporaryDirectory() as temp:
+        root = Path(temp)
+        boxes = _figure_assets(root / "side", glass_alpha)
+        (root / "angles.json").write_text('{"side": "a made-up view"}', encoding="utf-8")
+        figures.ASSET_ROOT = root
+        figures.reset_cache()
+        try:
+            return body(*boxes)
+        finally:
+            figures.ASSET_ROOT = original
+            figures.reset_cache()
+
+
+def test_figure_assets_are_discovered() -> None:
+    """An angle offers exactly the motifs it has every layer for."""
+    from app.thumbnails import figures
+
+    def body(head_box, brain_box):
+        check("finds the angle", figures.angle_names() == ("side",))
+        check("reads angles.json", figures.angle_descriptions()["side"] == "a made-up view")
+        check(
+            "offers every motif when all three layers are there",
+            set(figures.motifs_for("side")) == {"head", "brain", "brain_in_head"},
+        )
+
+        # Take the shell away: the overlay motif has to disappear with it,
+        # rather than raising from inside the renderer later on.
+        (figures.ASSET_ROOT / "side" / "head_glass.png").unlink()
+        figures.reset_cache()
+        check(
+            "drops the motif whose layer is missing",
+            set(figures.motifs_for("side")) == {"head", "brain"},
+        )
+        check("brain_in_head has no angle left", figures.angles_for("brain_in_head") == ())
+
+    _with_assets(body)
+
+
+def test_motif_framing_uses_the_shared_bounding_box() -> None:
+    """brain_in_head is framed on the HEAD, not on the brain.
+
+    This is the whole alignment contract. Cropping each layer to its own
+    content would centre the brain in the card and slide the skull off it; the
+    union box keeps the brain exactly where the 3D camera put it.
+    """
+    from app.thumbnails import figures
+
+    def body(head_box, brain_box):
+        head_size = (head_box[2] - head_box[0] + 1, head_box[3] - head_box[1] + 1)
+        brain_size = (brain_box[2] - brain_box[0] + 1, brain_box[3] - brain_box[1] + 1)
+        box = (400, 400)
+
+        head = figures.compose("head", "side", box, {})
+        overlay = figures.compose("brain_in_head", "side", box, {})
+        brain = figures.compose("brain", "side", box, {})
+
+        check(
+            "the overlay is framed exactly like the head alone",
+            head.size == overlay.size,
+            f"{head.size} vs {overlay.size}",
+        )
+        check(
+            "the head keeps its aspect ratio",
+            abs(head.width / head.height - head_size[0] / head_size[1]) < 0.02,
+        )
+        check(
+            "the brain alone is framed on itself, not on the head",
+            abs(brain.width / brain.height - brain_size[0] / brain_size[1]) < 0.02,
+        )
+
+        # The brain must sit strictly inside the shell in the composed image --
+        # a per-layer crop would push it to the edges.
+        scale = overlay.width / head_size[0]
+        expected_left = round((brain_box[0] - head_box[0]) * scale)
+        opaque = overlay.getchannel("A").point(lambda value: 255 if value > 200 else 0)
+        bounds = opaque.getbbox()
+        check(
+            "the brain lands where the camera put it",
+            bounds is not None and abs(bounds[0] - expected_left) <= 2,
+            f"{bounds} expected left ~{expected_left}",
+        )
+
+    _with_assets(body)
+
+
+def test_figure_fits_the_box_without_distorting() -> None:
+    """compose() scales to the tighter axis, so nothing is stretched."""
+    from app.thumbnails import figures
+
+    def body(head_box, brain_box):
+        for box in ((400, 400), (1000, 120), (90, 900)):
+            figure = figures.compose("head", "side", box, {})
+            check(
+                f"stays inside {box}",
+                figure.width <= box[0] and figure.height <= box[1],
+                str(figure.size),
+            )
+            check(
+                f"fills one axis of {box}",
+                figure.width == box[0] or figure.height == box[1],
+                str(figure.size),
+            )
+
+    _with_assets(body)
+
+
+def test_tint_normalises_before_colouring() -> None:
+    """A pale render must still reach the dark end of the ramp.
+
+    Without normalising, the result depends on how bright the 3D render
+    happened to be lit -- the real brain sat high enough in the range that a
+    red card came out pink.
+    """
+    from PIL import Image, ImageDraw
+
+    from app.thumbnails.figures import tint
+
+    # A washed-out gradient: nothing in it is darker than 180.
+    pale = Image.new("RGBA", (100, 20), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(pale)
+    for x in range(100):
+        value = 180 + x // 4
+        draw.line([(x, 0), (x, 19)], fill=(value, value, value, 255))
+
+    shade, light = (100, 0, 0), (255, 160, 160)
+    plain = tint(pale, shade, light, normalize=False)
+    stretched = tint(pale, shade, light, normalize=True)
+
+    darkest_plain = min(pixel[0] for pixel in plain.convert("RGB").getdata())
+    darkest_stretched = min(pixel[0] for pixel in stretched.convert("RGB").getdata())
+    check(
+        "un-normalised stays bunched at the light end",
+        darkest_plain > 200,
+        str(darkest_plain),
+    )
+    check(
+        "normalised reaches the dark end of the ramp",
+        darkest_stretched <= shade[0] + 12,
+        str(darkest_stretched),
+    )
+
+    # The surround must not drag the black point down: it is transparent, and
+    # its RGB is whatever the exporter left there.
+    with_surround = Image.new("RGBA", (140, 20), (0, 0, 0, 0))
+    with_surround.paste(pale, (20, 0))
+    masked = tint(with_surround, shade, light, normalize=True)
+    figure_only = [
+        pixel[0]
+        for pixel, alpha in zip(masked.convert("RGB").getdata(), masked.getchannel("A").getdata())
+        if alpha
+    ]
+    check(
+        "normalising measures the figure, not the transparent surround",
+        abs(min(figure_only) - darkest_stretched) <= 2,
+        f"{min(figure_only)} vs {darkest_stretched}",
+    )
+
+
+def test_tint_keeps_the_alpha_channel() -> None:
+    """Recolouring must not turn a translucent shell opaque."""
+    from PIL import Image
+
+    from app.thumbnails.figures import tint
+
+    image = Image.new("RGBA", (10, 10), (200, 200, 200, 90))
+    result = tint(image, (0, 0, 40), (200, 200, 255))
+    check("alpha survives the tint", result.getchannel("A").getextrema() == (90, 90))
+
+
+def test_white_backdrop_is_keyed_from_the_edge_only() -> None:
+    """A layer exported without alpha is rescued; an enclosed bright area is not
+    punched out with the backdrop, and the shell is refused outright."""
+    import tempfile
+    from pathlib import Path
+
+    from PIL import Image, ImageDraw
+
+    from app.thumbnails import figures
+
+    original = figures.ASSET_ROOT
+    with tempfile.TemporaryDirectory() as temp:
+        root = Path(temp) / "side"
+        root.mkdir(parents=True)
+
+        # A grey blob on white, with a white "highlight" inside it. Saved as
+        # RGB, so it arrives with no alpha at all.
+        opaque = Image.new("RGB", (100, 100), (255, 255, 255))
+        draw = ImageDraw.Draw(opaque)
+        draw.rectangle((20, 20, 79, 79), fill=(140, 140, 140))
+        draw.rectangle((40, 40, 59, 59), fill=(255, 255, 255))
+        opaque.save(root / "head.png")
+        opaque.save(root / "brain.png")
+        opaque.save(root / "head_glass.png")
+
+        figures.ASSET_ROOT = Path(temp)
+        figures.reset_cache()
+        try:
+            head = figures.load_layer("side", "head")
+            alpha = head.getchannel("A")
+            check("the backdrop is keyed out", alpha.getpixel((5, 5)) == 0)
+            check("the figure is kept", alpha.getpixel((25, 25)) == 255)
+            check(
+                "an enclosed highlight is not punched through",
+                alpha.getpixel((50, 50)) == 255,
+            )
+            try:
+                figures.load_layer("side", "head_glass")
+                check("an opaque shell is refused", False, "no error raised")
+            except figures.FigureError as exc:
+                check("an opaque shell is refused", "alpha channel" in str(exc), str(exc))
+        finally:
+            figures.ASSET_ROOT = original
+            figures.reset_cache()
+
+
+def test_mental_card_is_grey_except_the_figure() -> None:
+    """The single-colour rule: the field behind the figure carries no palette."""
+    import io
+
+    from PIL import Image
+
+    from app.thumbnails.mental import render_mental_thumbnail
+
+    def body(head_box, brain_box):
+        result = render_mental_thumbnail(
+            motif="head", caption="ONE COLOUR", angle="side",
+            palette="red", theme="dark", seed=1,
+        )
+        card = Image.open(io.BytesIO(result.png)).convert("RGB")
+
+        corner = card.getpixel((6, 6))
+        check(
+            "the corner of the field is grey",
+            max(corner) - min(corner) <= 6,
+            str(corner),
+        )
+        red, green, blue = card.getpixel((card.width // 2, round(card.height * 0.25)))
+        check("the figure carries the palette", red > green + 25 and red > blue + 25,
+              str((red, green, blue)))
+
+    _with_assets(body)
+
+
+def test_figure_shadow_reaches_past_the_silhouette() -> None:
+    """The contact shadow must spread outside the figure, not stop at its edge.
+
+    A composed figure touches all four sides of its own bounding box by
+    definition -- that is what the union crop produces -- so blurring its
+    silhouette in place clipped the shadow off square and drew a faint
+    rectangle around the head. Measured on the helper rather than on a finished
+    card: the card's own gradient is smooth enough to hide a step of two grey
+    levels, which is all the bug was worth in absolute terms and still plainly
+    visible as a straight line.
+    """
+    from PIL import Image
+
+    from app.thumbnails.mental import _draw_figure_shadow
+    from app.thumbnails.render import build_style
+
+    style = build_style("red", "light")
+    canvas = Image.new("RGB", (400, 400), (255, 255, 255))
+    figure = Image.new("RGBA", (120, 120), (0, 0, 0, 255))
+
+    _draw_figure_shadow(canvas, figure, (140, 140), style)
+
+    # Just outside the silhouette on the left, level with its middle. The bar
+    # is "any shadow at all": clipped to the bounding box this pixel is pure
+    # white, and the light theme only puts the shadow at 0.19 opacity to begin
+    # with, so a threshold tuned to how DARK it is would be tuned to nothing.
+    outside = canvas.getpixel((137, 200))
+    check(
+        "the shadow spreads sideways past the figure",
+        max(outside) < 250,
+        str(outside),
+    )
+    # Upwards it is weaker still, because the whole shadow is dropped 3% of the
+    # figure height downwards first.
+    above = canvas.getpixel((200, 138))
+    check("the shadow spreads above the figure", max(above) < 255, str(above))
+    # And it has to fade rather than end: sample outwards and require the
+    # darkening to shrink monotonically, with no step back to pure white.
+    ramp = [255 - max(canvas.getpixel((140 - offset, 200))) for offset in range(1, 12)]
+    check("the shadow is darkest against the figure", ramp[0] == max(ramp), str(ramp))
+    check("the shadow fades outwards", ramp[-1] < ramp[0], str(ramp))
+    check(
+        "the shadow has no hard end",
+        all(ramp[i] >= ramp[i + 1] for i in range(len(ramp) - 1)),
+        str(ramp),
+    )
+
+
+def test_glow_ramp_reaches_zero_at_its_edge() -> None:
+    """The glow must leave the field untouched outside its own box."""
+    from PIL import Image
+
+    from app.thumbnails.mental import GLOW_SPREAD, _draw_glow
+    from app.thumbnails.render import build_style
+
+    style = build_style("red", "dark")
+    field = style.ocean
+    canvas = Image.new("RGB", (600, 600), field)
+    figure = Image.new("RGBA", (200, 200), (0, 0, 0, 255))
+    _draw_glow(canvas, figure, (200, 200), style)
+
+    span = round(200 * GLOW_SPREAD)
+    left = 200 + 100 - span // 2
+    check("the field outside the glow box is untouched",
+          canvas.getpixel((left - 2, 300)) == field, str(canvas.getpixel((left - 2, 300))))
+    check("the glow starts from nothing at its edge",
+          canvas.getpixel((left + 1, 300)) == field, str(canvas.getpixel((left + 1, 300))))
+    check("the glow is actually drawn in the middle",
+          canvas.getpixel((300, 300)) != field)
+
+
+def test_mental_auto_choices_are_stable_and_spread() -> None:
+    """auto palette, theme and angle must be derived, not random: the stored
+    filename carries a content hash, so a card that moved per render would
+    orphan a fresh image in storage every time."""
+    from app.thumbnails import figures
+    from app.thumbnails.mental import _resolve_angle
+
+    def body(head_box, brain_box):
+        # A second angle, so "auto" has something to choose between.
+        _figure_assets(figures.ASSET_ROOT / "front")
+        figures.reset_cache()
+
+        first = _resolve_angle("auto", "head", "head|Habits beat willpower")
+        again = _resolve_angle("auto", "head", "head|Habits beat willpower")
+        check("the same subject always picks the same angle", first == again)
+
+        picked = {
+            _resolve_angle("auto", "head", f"head|caption number {n}") for n in range(40)
+        }
+        check("auto spreads across the angles", picked == {"side", "front"}, str(picked))
+
+        check("an explicit angle is honoured", _resolve_angle("front", "head", "x") == "front")
+
+        try:
+            _resolve_angle("nope", "head", "x")
+            check("an unknown angle is rejected", False, "no error raised")
+        except figures.FigureError as exc:
+            check("an unknown angle is rejected", "angles that can" in str(exc), str(exc))
+
+    _with_assets(body)
+
+
+def test_mental_reports_a_motif_it_cannot_draw() -> None:
+    """A missing layer must name the problem, not fail deep in Pillow."""
+    from app.thumbnails import figures
+    from app.thumbnails.mental import render_mental_thumbnail
+
+    def body(head_box, brain_box):
+        (figures.ASSET_ROOT / "side" / "brain.png").unlink()
+        figures.reset_cache()
+        try:
+            render_mental_thumbnail(motif="brain_in_head", caption="X", angle="auto")
+            check("a motif with no artwork is refused", False, "no error raised")
+        except figures.FigureError as exc:
+            check(
+                "a motif with no artwork is refused",
+                "brain_in_head" in str(exc) and "head" in str(exc),
+                str(exc),
+            )
+
+    _with_assets(body)
 
 
 def main() -> int:

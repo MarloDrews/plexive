@@ -13,6 +13,11 @@
       "featured": true
     }
   ],
+  "thumbnail": {
+    "generator": "mental",
+    "motif": "brain_in_head",
+    "caption": "Consciousness turned off"
+  },
   "feed_card": {
     "headline": "General anesthesia has switched consciousness off and on for 180 years, and no one can fully say how it works.",
     "teasers": [
