@@ -248,10 +248,13 @@ def tint(
     """Recolour a shaded render into one colour, keeping its modelling.
 
     The render's own hue is thrown away and its LUMINANCE is remapped onto a
-    ramp from `shade` to `light`, so the 3D shading survives while the figure
-    becomes the single coloured thing the card allows. Recolouring beats
-    exporting a copy per palette: four colours times three layers times every
-    camera angle is a lot of files to keep in step.
+    ramp from `shade` to `light`, so the 3D shading survives while the layer
+    takes the card's colour. Recolouring beats exporting a copy per palette:
+    four colours times three layers times every camera angle is a lot of files
+    to keep in step.
+
+    Not every layer goes through here -- the brain is composited untouched, so
+    it keeps the pink it was rendered in (see mental._tints).
 
     `normalize` stretches that luminance to the full range first, measured over
     the FIGURE ONLY (the transparent surround would otherwise decide the black
@@ -289,9 +292,7 @@ def compose(
         raise FigureError(f"unknown motif {motif!r} (known: {', '.join(MOTIF_NAMES)})")
 
     images = [load_layer(angle, layer) for layer in layers]
-    bounds = _union_bbox(images)
-    if bounds is None:
-        raise FigureError(f"{motif} at angle {angle!r} is a fully transparent image")
+    bounds = _bounds(motif, angle)
 
     stacked = Image.new("RGBA", (bounds[2] - bounds[0], bounds[3] - bounds[1]), (0, 0, 0, 0))
     for name, image in zip(layers, images):
@@ -300,6 +301,28 @@ def compose(
         stacked.alpha_composite(tint(cropped, *ramp) if ramp else cropped)
 
     return _fit(stacked, box)
+
+
+def _bounds(motif: str, angle: str) -> Tuple[int, int, int, int]:
+    """The shared bounding box of everything `motif` draws at `angle`."""
+    layers = MOTIF_LAYERS.get(motif)
+    if layers is None:
+        raise FigureError(f"unknown motif {motif!r} (known: {', '.join(MOTIF_NAMES)})")
+    box = _union_bbox([load_layer(angle, layer) for layer in layers])
+    if box is None:
+        raise FigureError(f"{motif} at angle {angle!r} is a fully transparent image")
+    return box
+
+
+def bleeds_off_bottom(motif: str, angle: str) -> bool:
+    """Whether the figure runs out of the bottom of its own render.
+
+    True for the head, whose neck is cut off by the frame rather than ending:
+    that cut is only invisible while it sits ON the frame edge, so a card has
+    to place such a figure flush with its bottom instead of floating it. False
+    for the brain, which is a complete object with space all round it.
+    """
+    return _bounds(motif, angle)[3] >= load_layer(angle, MOTIF_LAYERS[motif][0]).height
 
 
 def _union_bbox(images: List[Image.Image]) -> Optional[Tuple[int, int, int, int]]:

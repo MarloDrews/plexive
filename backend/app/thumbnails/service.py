@@ -12,6 +12,7 @@ from .nominatim import GeoLookupError, lookup_osm_id, lookup_place
 from .places import PlacePreset, find_preset
 from .projection import fit_subject
 from .render import (
+    AUTO_FONT,
     AUTO_PALETTE,
     AUTO_THEME,
     DEFAULT_PALETTE,
@@ -22,6 +23,7 @@ from .render import (
     Style,
     build_style,
     render_card,
+    resolve_font,
     resolve_palette,
     resolve_theme,
 )
@@ -66,7 +68,10 @@ PALETTE_NAMES = (AUTO_PALETTE,) + tuple(sorted(PALETTES))
 THEME_NAMES = (AUTO_THEME,) + tuple(sorted(THEMES))
 
 # The two caption typefaces: the plain heavy sans, or the dressier serif.
-FONT_NAMES = FONT_FAMILY_NAMES
+# "auto" is not a typeface: like the palette and the theme it derives one
+# from the subject, which is the only thing that actually gets the serif
+# used -- see render.auto_font_for.
+FONT_NAMES = (AUTO_FONT,) + FONT_FAMILY_NAMES
 
 
 @dataclass
@@ -103,7 +108,7 @@ def render_geography_thumbnail(
     source: str = "auto",
     palette: str = AUTO_PALETTE,
     theme: str = AUTO_THEME,
-    font: str = DEFAULT_FONT,
+    font: str = AUTO_FONT,
     seed: Optional[int] = None,
     style: Optional[Style] = None,
     use_cache: bool = True,
@@ -138,7 +143,8 @@ def render_geography_thumbnail(
     it from the subject in the same way, so the feed alternates.
 
     `font` picks the caption typeface -- see FONT_NAMES: "sans" for the plain
-    heavy banner, "serif" for the dressier one.
+    heavy banner, "serif" for the dressier one, "auto" (the default) to derive
+    one from the subject so both actually get used.
 
     `seed` pins the caption's random tilt and sideways nudge; None varies them
     per render.
@@ -152,6 +158,7 @@ def render_geography_thumbnail(
     subject = f"{place or osm_id}|{caption}"
     palette = resolve_palette(palette, subject)
     theme = resolve_theme(theme, subject)
+    font = resolve_font(font, subject)
     style = style or build_style(palette, theme, font)
 
     highlight, geo = _resolve_region(place, osm_id, use_cache, source)

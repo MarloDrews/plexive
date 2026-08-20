@@ -21,7 +21,7 @@ from typing import Dict, List, Optional, Sequence, Tuple
 from PIL import Image, ImageChops, ImageDraw, ImageFilter
 
 from .fonts import DEFAULT_FAMILY as DEFAULT_FONT_FAMILY
-from .fonts import load_font, resolve_family
+from .fonts import FONT_FAMILY_NAMES, load_font, resolve_family
 from .geometry import Polygon
 from .projection import AnyViewport
 
@@ -194,6 +194,33 @@ def resolve_theme(name: Optional[str], subject: str) -> str:
 
 class ThemeError(ValueError):
     """An unknown theme was asked for."""
+
+
+# The typeface is derived the same way, and for a reason found the hard
+# way: asked to CHOOSE between the two, a model took the plain sans on 21
+# posts out of 22. The rule it was given ("serif for subjects with age to
+# them, sans for anything current") sounds discriminating and is not --
+# almost any post can be argued to be current, so the dressier face never
+# got used and every card in the feed looked the same.
+AUTO_FONT = "auto"
+AUTO_FONT_CYCLE = FONT_FAMILY_NAMES
+
+
+def auto_font_for(subject: str) -> str:
+    """The typeface "auto" resolves to for `subject`.
+
+    Hashed on its own prefix, like the theme: three choices keyed off one
+    string would move in lockstep and only ever produce a fraction of the
+    combinations they can make between them.
+    """
+    digest = hashlib.sha256(("font|" + (subject or "").strip().lower()).encode("utf-8")).digest()
+    return AUTO_FONT_CYCLE[digest[0] % len(AUTO_FONT_CYCLE)]
+
+
+def resolve_font(name: Optional[str], subject: str) -> str:
+    """Turn a requested typeface (possibly "auto" or nothing) into a real one."""
+    key = (name or AUTO_FONT).strip().lower()
+    return auto_font_for(subject) if key == AUTO_FONT else key
 
 
 # Typographic characters the caption font has no glyph for, and the plain

@@ -24,7 +24,7 @@ Exactly one of `place` or `osm_id` is required.
 | `caption` | string | `""` | - | The words under the map, rendered in capitals. Two to five words that say what happened there. Defaults to the place name when empty. |
 | `palette` | string | `auto` | `auto`, `blue`, `green`, `red`, `yellow` | Colour of the filled region and its banner; everything else on the card stays grey. Four colours only. Leave it out unless the subject really has a colour -- see the rules. |
 | `theme` | string | `auto` | `auto`, `dark`, `light` | Whether the map behind the coloured region is a dark slate (`dark`) or a pale paper (`light`). Leave it out: `auto` derives it from the subject, which keeps the feed from being all one or the other. |
-| `font` | string | `sans` | `sans`, `serif` | The caption typeface: `sans` is the plain heavy news banner, `serif` a lighter, dressier one. Use `serif` for history, literature, art and anything old; `sans` for everything else. |
+| `font` | string | `auto` | `auto`, `sans`, `serif` | The caption typeface: `sans` is the plain heavy news banner, `serif` a lighter, dressier one. Leave it out -- `auto` derives one from the subject, which is what keeps the feed from being set entirely in the plain face. |
 | `source` | string | `auto` | `auto`, `osm`, `natural_earth` | Which map data set the filled shape comes from. `auto` tries OpenStreetMap and falls back to Natural Earth; `natural_earth` is mandatory for physical regions -- see the rules. |
 | `padding` | number | `0.35` | `0`–`10` | How much surrounding context to show, as a fraction of the region's own size. 0.1 is a tight crop, 0.35 the normal card, 2.0 pulls back to the whole continent. |
 | `uppercase` | boolean | `true` | - | Capitalise the caption. Leave on unless the caption is a proper name in mixed case. |
@@ -46,7 +46,7 @@ Exactly one of `place` or `osm_id` is required.
 - The caption is not the headline. It is the two-to-five words a reader needs while looking at the map: "Almost dried up", "Growing every year".
 - The card has exactly four colours: red, yellow, green and blue. Set `palette` ONLY when the subject really is one of them: blue for water, green for forest and vegetation, yellow for desert and heat. Otherwise leave it out -- omitting it spreads the cards across all four, while picking red as a fallback made every second card red. Never set it to match the mood of the topic; a card is not red because the news is bad.
 - Leave `theme` out unless the post itself has a light or dark register. `auto` alternates dark and light across the feed on its own, which is the variety it exists for; pinning every card to one theme throws that away.
-- `font` is the one deliberate style choice on the card. `serif` suits a subject with age or weight to it -- history, archaeology, literature, art, empire, an old treaty. `sans` is the default and suits news, science, economics, climate and anything current.
+- Leave `font` out. It used to be yours to choose, with `serif` for a subject that had age to it and `sans` for anything current -- and because almost any post can be argued to be current, the dressier face was picked once in twenty-two posts and every card in the feed looked the same. `auto` now derives it, which is the only thing that actually gets both typefaces used.
 - Cities, buildings and single addresses make poor cards -- the map is a world map, and a point that small renders as a dot. Use a region or nothing.
 
 **Examples**
@@ -62,7 +62,7 @@ Exactly one of `place` or `osm_id` is required.
 
 ## `mental`
 
-A prepared 3D figure -- a head, a brain, or a brain seen through a translucent head -- lit on a plain dark or light field in one colour, with the same tilted caption banner underneath as the map card.
+A prepared 3D figure -- a head, a brain, or a brain seen through a translucent head -- lit on a plain dark or light field, with the same tilted caption banner underneath as the map card. The head takes the card's colour; the brain keeps its own pink.
 
 **Use it when** the post is about something happening INSIDE one mind. Ask WHOSE MIND IS DOING THIS: a cognitive bias, an illusion, an effect of memory or attention, a habit, motivation, emotion, sleep, learning, how a decision gets made, mental health, or the brain itself as an organ. This is the card for the posts a map has to decline -- a bias is true of everyone everywhere, so a country filled in red would say something false, while a head claims no location at all.
 
@@ -70,10 +70,10 @@ A prepared 3D figure -- a head, a brain, or a brain seen through a translucent h
 
 | Key | Type | Default | Values | Meaning |
 |---|---|---|---|---|
-| `motif` | string | required | `head`, `brain`, `brain_in_head` | Which figure to draw. `head` is the person, `brain` is the organ, `brain_in_head` is the organ seen through a translucent skull -- see the rules, this is the one real decision on the card. |
+| `motif` | string | required | `head`, `brain`, `brain_in_head` | Which figure to draw. `head` is the person and the default, `brain` is the organ, `brain_in_head` is the organ seen through a translucent skull. This is the one real decision on the card, and the rules below are not optional reading. |
 | `caption` | string | required | - | The words in the banner, rendered in capitals. Two to five words that say what the mind is doing. |
 | `angle` | string | `auto` | `auto`, `angled-side`, `front` | Which camera angle of the figure to use: `angled-side` (a three-quarter view from the side: the face points left, and enough of the far side of the skull shows to read as a solid head); `front` (the head facing the camera straight on, symmetrical). Leave it out unless one angle genuinely suits the post better than another -- `auto` picks one from the subject, which keeps the feed from showing the same pose every time. |
-| `palette` | string | `auto` | `auto`, `blue`, `green`, `red`, `yellow` | Colour of the figure and its banner; the field behind it stays grey. Four colours only. Leave it out -- see the rules. |
+| `palette` | string | `auto` | `auto`, `blue`, `green`, `red`, `yellow` | Colour of the banner, and of the head on a `head` card. The brain keeps its rendered pink whatever this says, and the field behind the figure stays grey either way. Four colours only. Leave it out -- see the rules. |
 | `theme` | string | `auto` | `auto`, `dark`, `light` | Whether the field behind the figure is a dark slate (`dark`) or a pale paper (`light`). Leave it out: `auto` derives it from the subject, which keeps the feed from being all one or the other. |
 | `uppercase` | boolean | `true` | - | Capitalise the caption. Leave on unless the caption is a proper name in mixed case. |
 | `seed` | integer | - | `0`–`2147483647` | Pins the caption's slight random tilt, so the same spec renders the same card twice. Omit to let each render differ. |
@@ -82,9 +82,12 @@ A prepared 3D figure -- a head, a brain, or a brain seen through a translucent h
 
 **Rules**
 
-- `motif` follows what the post is ABOUT, not which words it happens to use. `head` when the subject is the PERSON -- what someone does, how they behave, a habit, an identity, a choice they make. `brain` when the subject is the ORGAN itself -- neurons, sleep, brain chemistry, energy use, anatomy, what the tissue does. `brain_in_head` when the subject is the GAP between the two: a mechanism running inside someone who cannot see it working. Biases, illusions, blind spots and false memories are all that third case, and it is the strongest of the three -- reach for it whenever the point of the post is 'this is happening in you right now and you did not notice'.
-- A post about the brain as a body part is still a mental card. Sleep, energy consumption, neuron counts and the effect of a drug on mood all get `brain`; they do not need a mind doing something clever to belong here.
+- `head` IS THE DEFAULT, and most mental posts should get it. The plain figure of a person suits anything about what someone does or experiences -- a bias, a habit, an emotion, an identity, a decision, an expectation, a way of paying attention. The thing doing all of that is a person, not a lump of tissue, and putting an organ on it adds a note of neuroscience the post never claimed.
+- Reach for a brain motif only when the ORGAN is genuinely the subject -- when drawing a person instead would lose something. `brain` is for a post literally about the tissue: neurons, sleep, energy consumption, brain chemistry, anatomy, what a drug does to it. `brain_in_head` is for a post that turns on something being HIDDEN inside someone, a mechanism they cannot watch running in themselves -- an illusion, a blind spot, a memory rewriting itself unnoticed.
+- `brain_in_head` is the most striking of the three and therefore the easiest to over-use. Before choosing it, check that the post really trades on 'you cannot see this happening in you'. If it does not, use `head`.
+- Beware one particular bad reason. If your justification for a brain motif is that the post is about the mind, that justification fits EVERY post this generator draws -- the mind is the whole generator, so it cannot also be the reason for the motif. Applied honestly it produced a feed in which every card was the same picture.
 - The caption is not the headline. It is the two-to-five words a reader needs while looking at the figure: "You cannot feel it", "Memory rewrites itself". Write what the mind is DOING, not what the post concludes.
+- The brain is always pink, on `brain` and `brain_in_head` alike. That pink is most of what makes it read as a brain rather than an abstract shape, so it is not something `palette` can or should change -- on a brain card the colour you pick shows up in the banner only.
 - Leave `palette` out. Nothing about a bias or a memory is red, yellow, green or blue, and picking a colour to match the mood of the topic is what made every second card red on the map generator. `auto` spreads the cards across all four on its own.
 - Leave `theme` out for the same reason: `auto` alternates dark and light across the feed, and pinning it throws that variety away. Set it only when the post itself has a register -- a card about sleep or the unconscious may earn `dark`.
 - Leave `angle` out unless the post genuinely reads better from one camera. It is the weakest of the choices here and the easiest to over-think.
@@ -93,10 +96,12 @@ A prepared 3D figure -- a head, a brain, or a brain seen through a translucent h
 **Examples**
 
 ```json
-{"generator": "mental", "motif": "brain_in_head", "caption": "You edit it every time"}
-{"generator": "mental", "motif": "brain_in_head", "caption": "It fills in the gap"}
+{"generator": "mental", "motif": "head", "caption": "Habits beat willpower"}
+{"generator": "mental", "motif": "head", "caption": "Losing hurts twice as much"}
+{"generator": "mental", "motif": "head", "caption": "You only recall the ending"}
+{"generator": "mental", "motif": "head", "caption": "Believing it makes it work"}
 {"generator": "mental", "motif": "brain", "caption": "A fifth of your energy"}
 {"generator": "mental", "motif": "brain", "caption": "It cleans itself at night"}
-{"generator": "mental", "motif": "head", "caption": "Habits beat willpower"}
+{"generator": "mental", "motif": "brain_in_head", "caption": "You edit it every time"}
 {"generator": "mental", "motif": "brain_in_head", "caption": "Your blind spot is real", "theme": "dark"}
 ```

@@ -24,7 +24,8 @@
   "thumbnail": {
     "generator": "geography",
     "place": "Africa",
-    "caption": "NO NEANDERTHAL DNA"
+    "caption": "No Neanderthal DNA",
+    "source": "natural_earth"
   },
   "feed_card": {
     "headline": "Every person whose ancestry lies outside Africa carries 1% to 4% Neanderthal DNA.",

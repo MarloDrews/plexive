@@ -1586,6 +1586,174 @@ def _with_assets(body, glass_alpha: int = 110):
             figures.reset_cache()
 
 
+def test_auto_font_spreads_and_is_stable() -> None:
+    """The typeface is derived, not chosen.
+
+    A model asked to pick between the two took the plain sans on 21 posts out
+    of 22 -- the rule it had ("serif for old subjects, sans for current ones")
+    reads as discriminating but excuses almost anything. Deriving it is the
+    only thing that gets the dressier face used at all.
+    """
+    from app.thumbnails.render import AUTO_FONT_CYCLE, auto_font_for, resolve_font
+
+    picked = [auto_font_for(f"post number {n}") for n in range(200)]
+    check("auto only ever returns a real typeface", set(picked) <= set(AUTO_FONT_CYCLE))
+    check("both typefaces get used", set(picked) == set(AUTO_FONT_CYCLE), str(set(picked)))
+    share = min(picked.count(name) for name in AUTO_FONT_CYCLE) / len(picked)
+    check("neither typeface is a rarity", share > 0.35, f"rarest share {share:.2f}")
+
+    check(
+        "the same subject always gets the same typeface",
+        auto_font_for("a memory rewrites itself") == auto_font_for("a memory rewrites itself"),
+    )
+    check("an explicit typeface is honoured", resolve_font("serif", "anything") == "serif")
+
+    # Three derived choices off one string would move together and only ever
+    # produce a fraction of the combinations they can make between them.
+    from app.thumbnails.render import auto_palette_for, auto_theme_for
+
+    pairs = {
+        (auto_palette_for(s), auto_theme_for(s), auto_font_for(s))
+        for s in (f"subject {n}" for n in range(200))
+    }
+    check("colour, theme and typeface vary independently", len(pairs) >= 12, str(len(pairs)))
+
+
+def test_caption_sits_above_as_well_as_below() -> None:
+    """The banner has two positions, and the figure moves to suit."""
+    import io
+
+    from PIL import Image
+
+    from app.thumbnails.mental import (
+        CAPTION_LAYOUTS,
+        CAPTION_POSITIONS,
+        _resolve_caption_position,
+        render_mental_thumbnail,
+    )
+
+    def body(head_box, brain_box):
+        rendered = {}
+        for position in CAPTION_POSITIONS:
+            result = render_mental_thumbnail(
+                motif="brain", caption="WHERE AM I", angle="side",
+                palette="red", theme="dark", caption_position=position, seed=1,
+            )
+            check(f"{position} is reported back", result.caption_position == position)
+            rendered[position] = Image.open(io.BytesIO(result.png)).convert("RGB")
+
+        # The banner is the only saturated red on the card, so finding the rows
+        # that contain it locates it without guessing at geometry.
+        def banner_rows(card):
+            rows = []
+            for y in range(card.height):
+                red, green, blue = card.getpixel((card.width // 2, y))
+                if red > 150 and green < 90 and blue < 90:
+                    rows.append(y)
+            return rows
+
+        for position in CAPTION_POSITIONS:
+            rows = banner_rows(rendered[position])
+            check(f"the banner is drawn with the caption {position}", bool(rows))
+            middle = sum(rows) / len(rows) / rendered[position].height
+            expected = CAPTION_LAYOUTS[position][0]
+            check(
+                f"the banner sits {position} where the layout says",
+                abs(middle - expected) < 0.12,
+                f"{middle:.2f} vs {expected}",
+            )
+
+        below = sum(banner_rows(rendered["below"]))
+        above = sum(banner_rows(rendered["above"]))
+        check("the two positions really differ", below > above)
+
+        # Derived, stable, and both used.
+        picked = [_resolve_caption_position("auto", f"post {n}") for n in range(200)]
+        check("auto uses both positions", set(picked) == set(CAPTION_POSITIONS))
+        check(
+            "the same subject always gets the same position",
+            _resolve_caption_position("auto", "x") == _resolve_caption_position("auto", "x"),
+        )
+        try:
+            _resolve_caption_position("sideways", "x")
+            check("an unknown position is rejected", False, "no error raised")
+        except ValueError:
+            check("an unknown position is rejected", True)
+
+    _with_assets(body)
+
+
+def test_a_figure_cut_by_its_frame_is_placed_flush() -> None:
+    """A head runs off the bottom of the card; a brain floats.
+
+    The head's neck is cut by the render's frame rather than finished, and that
+    cut only passes unnoticed while it sits ON an edge. It went unnoticed for a
+    while because the banner below happened to cover it -- moving the banner up
+    is what exposed a head hanging in mid-air with a sliced neck.
+    """
+    import io
+
+    from PIL import Image
+
+    from app.thumbnails import figures
+    from app.thumbnails.mental import render_mental_thumbnail
+
+    def body(head_box, brain_box):
+        check("the head is cut by its frame", figures.bleeds_off_bottom("head", "side"))
+        check("the brain is a complete object", not figures.bleeds_off_bottom("brain", "side"))
+        check(
+            "the overlay follows the head, since the head is what it is framed on",
+            figures.bleeds_off_bottom("brain_in_head", "side"),
+        )
+
+        def lowest_figure_row(motif):
+            result = render_mental_thumbnail(
+                motif=motif, caption="X", angle="side", palette="red", theme="dark",
+                caption_position="above", seed=1,
+            )
+            card = Image.open(io.BytesIO(result.png)).convert("RGB")
+            field = card.getpixel((4, card.height // 2))
+            for y in range(card.height - 1, -1, -1):
+                pixel = card.getpixel((card.width // 2, y))
+                if max(abs(a - b) for a, b in zip(pixel, field)) > 12:
+                    return y
+            return -1
+
+        check(
+            "the head reaches the bottom edge of the card",
+            lowest_figure_row("head") >= 719,
+            str(lowest_figure_row("head")),
+        )
+        check(
+            "the brain keeps clear of the bottom edge",
+            lowest_figure_row("brain") < 700,
+            str(lowest_figure_row("brain")),
+        )
+
+        # With the banner BELOW, the same head must stop behind the banner
+        # instead of running to the card edge. Placing it flush in both cases
+        # put the banner across the face -- the cut has to be hidden by
+        # whichever of the two is actually down there.
+        from app.thumbnails.mental import CAPTION_LAYOUTS, _figure_top
+
+        caption_y = CAPTION_LAYOUTS["below"][0]
+        figure_height = 490
+        top = _figure_top("head", "side", figure_height, 720, "below", caption_y, 0.42)
+        bottom = (top + figure_height) / 720
+        check(
+            "with the banner below, the head ends inside it",
+            caption_y < bottom < caption_y + 0.08,
+            f"bottom at {bottom:.3f}, banner centred at {caption_y}",
+        )
+        flush = _figure_top("head", "side", figure_height, 720, "above", 0.225, 0.58)
+        check(
+            "with the banner above, the head still runs to the card edge",
+            flush + figure_height == 720,
+        )
+
+    _with_assets(body)
+
+
 def test_figure_assets_are_discovered() -> None:
     """An angle offers exactly the motifs it has every layer for."""
     from app.thumbnails import figures
@@ -1675,6 +1843,52 @@ def test_figure_fits_the_box_without_distorting() -> None:
                 figure.width == box[0] or figure.height == box[1],
                 str(figure.size),
             )
+
+    _with_assets(body)
+
+
+def test_the_brain_keeps_its_own_colour() -> None:
+    """The brain is composited untouched, whatever palette the card uses.
+
+    Deliberate, not an oversight: the pink is most of what makes the shape read
+    as a brain rather than an abstract blob, and a green one says nothing. It
+    is also the one place the card breaks its own single-colour rule, which is
+    exactly the kind of decision someone later tidies away -- hence a test.
+    """
+    from app.thumbnails import figures
+    from app.thumbnails.mental import _tints
+    from app.thumbnails.render import build_style
+
+    def body(head_box, brain_box):
+        for palette in ("red", "blue", "green", "yellow"):
+            style = build_style(palette, "dark")
+
+            for motif in ("brain", "brain_in_head"):
+                check(
+                    f"{motif} does not tint the brain in {palette}",
+                    figures.BRAIN not in _tints(motif, style),
+                )
+
+            # And it survives compositing: the synthetic brain is reddish, so
+            # under a blue or green card its red channel must still lead.
+            figure = figures.compose(
+                "brain", "side", (400, 400), _tints("brain", style)
+            )
+            red, green, blue, alpha = figure.getpixel(
+                (figure.width // 2, figure.height // 2)
+            )
+            check(
+                f"the composed brain stays reddish under {palette}",
+                alpha == 255 and red > green and red > blue,
+                str((red, green, blue)),
+            )
+
+        # The head is the counterpart: it DOES take the palette.
+        blue_head = figures.compose(
+            "head", "side", (400, 400), _tints("head", build_style("blue", "dark"))
+        )
+        red, green, blue, _ = blue_head.getpixel((blue_head.width // 2, 10))
+        check("the head still takes the palette", blue > red, str((red, green, blue)))
 
     _with_assets(body)
 
@@ -1797,9 +2011,11 @@ def test_mental_card_is_grey_except_the_figure() -> None:
     from app.thumbnails.mental import render_mental_thumbnail
 
     def body(head_box, brain_box):
+        # Pinned, not auto: the banner position decides where the figure sits,
+        # so a derived one would move the sample point from run to run.
         result = render_mental_thumbnail(
             motif="head", caption="ONE COLOUR", angle="side",
-            palette="red", theme="dark", seed=1,
+            palette="red", theme="dark", caption_position="below", seed=1,
         )
         card = Image.open(io.BytesIO(result.png)).convert("RGB")
 
@@ -1809,7 +2025,9 @@ def test_mental_card_is_grey_except_the_figure() -> None:
             max(corner) - min(corner) <= 6,
             str(corner),
         )
-        red, green, blue = card.getpixel((card.width // 2, round(card.height * 0.25)))
+        # The head bleeds off the bottom of its render, so it is placed flush
+        # with the bottom of the card rather than centred -- sample low.
+        red, green, blue = card.getpixel((card.width // 2, round(card.height * 0.6)))
         check("the figure carries the palette", red > green + 25 and red > blue + 25,
               str((red, green, blue)))
 

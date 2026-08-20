@@ -30,6 +30,16 @@ import sys
 # the very end -- exactly when progress stops being useful.
 print = functools.partial(print, flush=True)  # noqa: A001
 
+# A Windows console is cp1252, and a model writes captions with typographic
+# punctuation in them -- a non-breaking hyphen in "Flat-Earth" is enough. Left
+# alone, printing one raises UnicodeEncodeError and takes the whole run down
+# partway through, after real work has been done. The renderer already swaps
+# these characters for ASCII when it draws them (render.TEXT_REPLACEMENTS);
+# this is the same problem one layer out, at the terminal.
+for _stream in (sys.stdout, sys.stderr):
+    if hasattr(_stream, "reconfigure"):
+        _stream.reconfigure(encoding="utf-8", errors="replace")
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from dotenv import load_dotenv  # noqa: E402

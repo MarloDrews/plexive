@@ -140,12 +140,13 @@ GEOGRAPHY = GeneratorInfo(
         Param(
             name="font",
             type="string",
-            default="sans",
+            default="auto",
             choices=FONT_NAMES,
             description=(
-                "The caption typeface: `sans` is the plain heavy news banner, `serif` "
-                "a lighter, dressier one. Use `serif` for history, literature, art and "
-                "anything old; `sans` for everything else."
+                "The caption typeface: `sans` is the plain heavy news banner, "
+                "`serif` a lighter, dressier one. Leave it out -- `auto` derives one "
+                "from the subject, which is what keeps the feed from being set "
+                "entirely in the plain face."
             ),
         ),
         Param(
@@ -262,10 +263,12 @@ GEOGRAPHY = GeneratorInfo(
         "Leave `theme` out unless the post itself has a light or dark register. "
         "`auto` alternates dark and light across the feed on its own, which is the "
         "variety it exists for; pinning every card to one theme throws that away.",
-        "`font` is the one deliberate style choice on the card. `serif` suits a "
-        "subject with age or weight to it -- history, archaeology, literature, art, "
-        "empire, an old treaty. `sans` is the default and suits news, science, "
-        "economics, climate and anything current.",
+        "Leave `font` out. It used to be yours to choose, with `serif` for a "
+        "subject that had age to it and `sans` for anything current -- and because "
+        "almost any post can be argued to be current, the dressier face was picked "
+        "once in twenty-two posts and every card in the feed looked the same. "
+        "`auto` now derives it, which is the only thing that actually gets both "
+        "typefaces used.",
         "Cities, buildings and single addresses make poor cards -- the map is a world "
         "map, and a point that small renders as a dot. Use a region or nothing.",
     ),
@@ -325,8 +328,9 @@ MENTAL = GeneratorInfo(
     name="mental",
     summary=(
         "A prepared 3D figure -- a head, a brain, or a brain seen through a "
-        "translucent head -- lit on a plain dark or light field in one colour, "
-        "with the same tilted caption banner underneath as the map card."
+        "translucent head -- lit on a plain dark or light field, with the same "
+        "tilted caption banner underneath as the map card. The head takes the "
+        "card's colour; the brain keeps its own pink."
     ),
     when_to_use=(
         "the post is about something happening INSIDE one mind. Ask WHOSE MIND IS "
@@ -353,9 +357,10 @@ MENTAL = GeneratorInfo(
             required=True,
             choices=figures.MOTIF_NAMES,
             description=(
-                "Which figure to draw. `head` is the person, `brain` is the organ, "
-                "`brain_in_head` is the organ seen through a translucent skull -- "
-                "see the rules, this is the one real decision on the card."
+                "Which figure to draw. `head` is the person and the default, "
+                "`brain` is the organ, `brain_in_head` is the organ seen through a "
+                "translucent skull. This is the one real decision on the card, and "
+                "the rules below are not optional reading."
             ),
         ),
         Param(
@@ -380,8 +385,10 @@ MENTAL = GeneratorInfo(
             default="auto",
             choices=PALETTE_NAMES,
             description=(
-                "Colour of the figure and its banner; the field behind it stays "
-                "grey. Four colours only. Leave it out -- see the rules."
+                "Colour of the banner, and of the head on a `head` card. The brain "
+                "keeps its rendered pink whatever this says, and the field behind "
+                "the figure stays grey either way. Four colours only. Leave it "
+                "out -- see the rules."
             ),
         ),
         Param(
@@ -432,22 +439,34 @@ MENTAL = GeneratorInfo(
         ),
     ),
     rules=(
-        "`motif` follows what the post is ABOUT, not which words it happens to "
-        "use. `head` when the subject is the PERSON -- what someone does, how they "
-        "behave, a habit, an identity, a choice they make. `brain` when the subject "
-        "is the ORGAN itself -- neurons, sleep, brain chemistry, energy use, "
-        "anatomy, what the tissue does. `brain_in_head` when the subject is the GAP "
-        "between the two: a mechanism running inside someone who cannot see it "
-        "working. Biases, illusions, blind spots and false memories are all that "
-        "third case, and it is the strongest of the three -- reach for it whenever "
-        "the point of the post is 'this is happening in you right now and you did "
-        "not notice'.",
-        "A post about the brain as a body part is still a mental card. Sleep, "
-        "energy consumption, neuron counts and the effect of a drug on mood all get "
-        "`brain`; they do not need a mind doing something clever to belong here.",
+        "`head` IS THE DEFAULT, and most mental posts should get it. The plain "
+        "figure of a person suits anything about what someone does or experiences "
+        "-- a bias, a habit, an emotion, an identity, a decision, an expectation, "
+        "a way of paying attention. The thing doing all of that is a person, not a "
+        "lump of tissue, and putting an organ on it adds a note of neuroscience the "
+        "post never claimed.",
+        "Reach for a brain motif only when the ORGAN is genuinely the subject -- "
+        "when drawing a person instead would lose something. `brain` is for a post "
+        "literally about the tissue: neurons, sleep, energy consumption, brain "
+        "chemistry, anatomy, what a drug does to it. `brain_in_head` is for a post "
+        "that turns on something being HIDDEN inside someone, a mechanism they "
+        "cannot watch running in themselves -- an illusion, a blind spot, a memory "
+        "rewriting itself unnoticed.",
+        "`brain_in_head` is the most striking of the three and therefore the "
+        "easiest to over-use. Before choosing it, check that the post really trades "
+        "on 'you cannot see this happening in you'. If it does not, use `head`.",
+        "Beware one particular bad reason. If your justification for a brain motif "
+        "is that the post is about the mind, that justification fits EVERY post "
+        "this generator draws -- the mind is the whole generator, so it cannot also "
+        "be the reason for the motif. Applied honestly it produced a feed in which "
+        "every card was the same picture.",
         "The caption is not the headline. It is the two-to-five words a reader "
         'needs while looking at the figure: "You cannot feel it", "Memory rewrites '
         'itself". Write what the mind is DOING, not what the post concludes.',
+        "The brain is always pink, on `brain` and `brain_in_head` alike. That "
+        "pink is most of what makes it read as a brain rather than an abstract "
+        "shape, so it is not something `palette` can or should change -- on a "
+        "brain card the colour you pick shows up in the banner only.",
         "Leave `palette` out. Nothing about a bias or a memory is red, yellow, "
         "green or blue, and picking a colour to match the mood of the topic is what "
         "made every second card red on the map generator. `auto` spreads the cards "
@@ -464,18 +483,31 @@ MENTAL = GeneratorInfo(
         "and hoping.",
     ),
     examples=(
-        # The canonical case: a mechanism running inside someone unaware of it.
+        # The default, and deliberately first and most numerous: these are all
+        # posts a careless reading would hand a brain, and none of them needs
+        # one. Behaviour, expectation, judgement, feeling -- a person does all
+        # of it.
         {
             "generator": "mental",
-            "motif": "brain_in_head",
-            "caption": "You edit it every time",
+            "motif": "head",
+            "caption": "Habits beat willpower",
         },
         {
             "generator": "mental",
-            "motif": "brain_in_head",
-            "caption": "It fills in the gap",
+            "motif": "head",
+            "caption": "Losing hurts twice as much",
         },
-        # The organ as a body part -- no cleverness required.
+        {
+            "generator": "mental",
+            "motif": "head",
+            "caption": "You only recall the ending",
+        },
+        {
+            "generator": "mental",
+            "motif": "head",
+            "caption": "Believing it makes it work",
+        },
+        # The organ as a body part.
         {
             "generator": "mental",
             "motif": "brain",
@@ -486,14 +518,13 @@ MENTAL = GeneratorInfo(
             "motif": "brain",
             "caption": "It cleans itself at night",
         },
-        # The person, not the organ: this is about behaviour.
+        # Hidden inside someone: the post is ABOUT not being able to see it.
         {
             "generator": "mental",
-            "motif": "head",
-            "caption": "Habits beat willpower",
+            "motif": "brain_in_head",
+            "caption": "You edit it every time",
         },
-        # A subject with a register of its own, so the theme is pinned by hand --
-        # the one case for setting it.
+        # Same case, with the theme pinned by hand -- the one reason to set it.
         {
             "generator": "mental",
             "motif": "brain_in_head",

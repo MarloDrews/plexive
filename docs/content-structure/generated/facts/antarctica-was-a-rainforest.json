@@ -16,9 +16,9 @@
   "thumbnail": {
     "generator": "geography",
     "place": "Antarctica",
-    "source": "natural_earth",
+    "caption": "Rainforest grew here",
     "palette": "green",
-    "caption": "Temperate rainforest"
+    "source": "natural_earth"
   },
   "feed_card": {
     "headline": "Ninety million years ago, a temperate rainforest grew within 900 kilometers of the South Pole. Its roots and pollen still lie in the seabed there, under today's Antarctic ice.",

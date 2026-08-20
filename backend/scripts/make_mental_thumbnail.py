@@ -25,7 +25,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from app.thumbnails import figures  # noqa: E402
 from app.thumbnails.figures import FigureError  # noqa: E402
 from app.thumbnails.fonts import FontError  # noqa: E402
-from app.thumbnails.mental import AUTO_ANGLE, render_mental_thumbnail  # noqa: E402
+from app.thumbnails.mental import (  # noqa: E402
+    AUTO_ANGLE,
+    AUTO_CAPTION_POSITION,
+    CAPTION_POSITIONS,
+    render_mental_thumbnail,
+)
 from app.thumbnails.render import PALETTES, THEMES  # noqa: E402
 from app.thumbnails.service import FONT_NAMES, PALETTE_NAMES, THEME_NAMES  # noqa: E402
 
@@ -61,13 +66,15 @@ def render(motif: str, caption: str, args, output: Path) -> None:
         palette=args.palette,
         theme=args.theme,
         font=args.font,
+        caption_position=args.caption_position,
         seed=args.seed,
     )
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_bytes(thumbnail.png)
     print(
         f"{output}  motif={thumbnail.motif} angle={thumbnail.angle} "
-        f"palette={thumbnail.palette} theme={thumbnail.theme}"
+        f"caption={thumbnail.caption_position} palette={thumbnail.palette} "
+        f"theme={thumbnail.theme} font={thumbnail.font}"
     )
 
 
@@ -105,7 +112,13 @@ def main() -> int:
     parser.add_argument("--angle", default=AUTO_ANGLE, help="Camera angle, or auto.")
     parser.add_argument("--palette", default="auto", choices=PALETTE_NAMES)
     parser.add_argument("--theme", default="auto", choices=THEME_NAMES)
-    parser.add_argument("--font", default="sans", choices=FONT_NAMES)
+    parser.add_argument("--font", default="auto", choices=FONT_NAMES)
+    parser.add_argument(
+        "--caption-position",
+        default=AUTO_CAPTION_POSITION,
+        choices=(AUTO_CAPTION_POSITION,) + CAPTION_POSITIONS,
+        help="Put the banner below the figure or above it.",
+    )
     parser.add_argument("--seed", type=int, help="Pin the caption's random tilt.")
     parser.add_argument("--width", type=int, default=1280)
     parser.add_argument("--height", type=int, default=720)
