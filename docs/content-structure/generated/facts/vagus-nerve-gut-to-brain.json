@@ -20,6 +20,11 @@
       "featured": false
     }
   ],
+  "thumbnail": {
+    "generator": "concept",
+    "share": 80,
+    "caption": "VAGUS FIBERS TO BRAIN"
+  },
   "feed_card": {
     "headline": "About 80% of the vagus nerve's fibers carry signals up to the brain, not down to the gut.",
     "teasers": [

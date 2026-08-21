@@ -62,7 +62,9 @@ about economics, history, medicine or policy whose claim is scoped to one \
 country or region is a geography post: the map says where. A post whose claim \
 holds inside any human mind -- a bias, an illusion, something about memory, \
 attention or the brain -- is a mental post, and it needs no place at all, \
-which is exactly why the map cannot take it. Only when nothing a generator \
+which is exactly why the map cannot take it. A post whose claim IS a share of \
+a whole you can name, or a rule short enough to write down, is a concept post: \
+the dot grid or the formula is the fact itself. Only when nothing a generator \
 can show anchors the post -- it holds everywhere, or nowhere -- do you decline.
 
 The generators available to you:

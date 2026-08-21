@@ -15,20 +15,22 @@ banner.
 import hashlib
 import io
 import logging
-import math
 import random
 from dataclasses import dataclass, replace
 from typing import Dict, List, Optional, Tuple
 
-from PIL import Image, ImageOps
+from PIL import Image
 
 from . import figures
 from .figures import HEAD, HEAD_GLASS, FigureError
 from .fonts import DEFAULT_FAMILY as DEFAULT_FONT
 from .render import (
+    AUTO_CAPTION_POSITION,
     AUTO_FONT,
     AUTO_PALETTE,
     AUTO_THEME,
+    CAPTION_LAYOUTS,
+    CAPTION_POSITIONS,
     DEFAULT_PALETTE,
     DEFAULT_THEME,
     Color,
@@ -36,11 +38,25 @@ from .render import (
     apply_vignette,
     build_style,
     draw_caption,
-    fade,
+    draw_glow,
+    draw_layer_shadow,
+    resolve_caption_position,
     resolve_font,
     resolve_palette,
     resolve_theme,
 )
+
+# Re-exported: CAPTION_LAYOUTS, CAPTION_POSITIONS and AUTO_CAPTION_POSITION
+# moved to render.py when the concept card started sharing them, and the CLI
+# and tests import them from here.
+__all__ = [
+    "AUTO_ANGLE",
+    "AUTO_CAPTION_POSITION",
+    "CAPTION_LAYOUTS",
+    "CAPTION_POSITIONS",
+    "MentalThumbnail",
+    "render_mental_thumbnail",
+]
 
 logger = logging.getLogger("app.thumbnails.mental")
 
@@ -56,28 +72,11 @@ FIGURE_MAX_WIDTH = 0.58
 FIGURE_MAX_HEIGHT = 0.68
 FIGURE_CENTER_X = 0.5
 
-# The banner goes under the figure or over it, derived from the subject the way
-# the colour is. With one fixed position every card in the feed had the same
-# silhouette however the figure, colour and typeface changed.
-#
-# Each layout is (caption centre, figure centre) as fractions of the height.
-# The FIGURE moves out of the banner's way rather than the banner shrinking,
-# and the two still overlap slightly either way -- that overlap is what makes
-# the banner read as stuck ON the card instead of laid out beside the figure.
-#
-# The figure centre applies only to a figure that is a complete object with
-# space round it -- the brain. A figure whose render is CUT by its own frame
-# (the head, whose neck stops because the frame does) is placed by its bottom
-# edge instead, because such a cut only passes unnoticed when something covers
-# it: see _figure_top.
-CAPTION_LAYOUTS: Dict[str, Tuple[float, float]] = {
-    "below": (0.755, 0.42),
-    "above": (0.225, 0.58),
-}
-CAPTION_POSITIONS = tuple(CAPTION_LAYOUTS)
-
-# Asking for this position derives one, as "auto" does for palette and theme.
-AUTO_CAPTION_POSITION = "auto"
+# The layout's figure centre (see render.CAPTION_LAYOUTS) applies only to a
+# figure that is a complete object with space round it -- the brain. A figure
+# whose render is CUT by its own frame (the head, whose neck stops because the
+# frame does) is placed by its bottom edge instead, because such a cut only
+# passes unnoticed when something covers it: see _figure_top.
 
 # How dark and how light the palette colour is pushed to make the figure's
 # shading ramp. figures.tint normalises the render's luminance onto this range
@@ -93,22 +92,11 @@ FIGURE_LIGHT_MIX = 0.34  # towards white
 SHELL_SHADE_MIX = 0.45  # towards black, from the theme's land grey
 SHELL_LIGHT_MIX = 0.85  # towards white
 
-# A soft pool of light behind the figure, so it is not a cutout floating on a
-# flat field. Sized against the figure, not the frame.
-GLOW_GRID = 64
-GLOW_STRENGTH = 0.55
-GLOW_SPREAD = 1.35  # times the figure's own size
-
 # Where the bottom edge of a cut-off figure goes, as a fraction of the card
 # height, when the banner is BELOW it: a little past the banner's centre line,
 # so the cut ends up inside the banner rather than above it. Placing such a
 # figure flush with the card instead put the banner across its face.
 FIGURE_BOTTOM_BEHIND_BANNER = 0.03
-
-# The figure's contact shadow, in fractions of the figure height.
-FIGURE_SHADOW_BLUR = 0.045
-FIGURE_SHADOW_OFFSET = 0.03
-FIGURE_SHADOW_OPACITY = 0.55
 
 
 @dataclass
@@ -122,6 +110,7 @@ class MentalThumbnail:
     # caller should be able to see what without re-deriving the hash.
     motif: str
     angle: str
+    mirrored: bool = False
     caption_position: str = CAPTION_POSITIONS[0]
     palette: str = DEFAULT_PALETTE
     theme: str = DEFAULT_THEME
@@ -139,6 +128,7 @@ def render_mental_thumbnail(
     theme: str = AUTO_THEME,
     font: str = AUTO_FONT,
     caption_position: str = AUTO_CAPTION_POSITION,
+    mirror: Optional[bool] = None,
     seed: Optional[int] = None,
     style: Optional[Style] = None,
 ) -> MentalThumbnail:
@@ -156,6 +146,11 @@ def render_mental_thumbnail(
     "auto" derives one from the subject. The figure moves to suit, so the two
     are one layout choice rather than two independent ones.
 
+    `mirror` turns the figure left-to-right; None rolls for it, which is what
+    makes about half the side-on cards in a feed look the other way. It is the
+    one choice on the card that is not derived from the subject -- see
+    _resolve_mirror -- so `seed` is what pins it.
+
     `palette`, `theme`, `font`, `uppercase` and `seed` mean exactly what they
     mean on the geography card -- the two share render.py.
     """
@@ -169,7 +164,12 @@ def render_mental_thumbnail(
     style = style or build_style(palette, theme, font)
     angle = _resolve_angle(angle, motif, subject)
 
-    caption_position = _resolve_caption_position(caption_position, subject)
+    # One generator for the whole card, so seed= pins everything random on it:
+    # the flip below and the caption's tilt further down.
+    rng = random.Random(seed)
+    mirrored = _resolve_mirror(mirror, angle, rng)
+
+    caption_position = resolve_caption_position(caption_position, subject)
     caption_center_y, figure_center_y = CAPTION_LAYOUTS[caption_position]
     style = replace(style, caption_center_y=caption_center_y)
 
@@ -180,6 +180,7 @@ def render_mental_thumbnail(
         angle,
         (round(width * FIGURE_MAX_WIDTH), round(height * FIGURE_MAX_HEIGHT)),
         _tints(motif, style),
+        mirrored,
     )
     left = round(width * FIGURE_CENTER_X - figure.width / 2)
     top = _figure_top(
@@ -187,8 +188,8 @@ def render_mental_thumbnail(
         figure_center_y,
     )
 
-    _draw_glow(canvas, figure, (left, top), style)
-    _draw_figure_shadow(canvas, figure, (left, top), style)
+    draw_glow(canvas, figure, (left, top), style)
+    draw_layer_shadow(canvas, figure, (left, top), style)
     canvas.paste(figure, (left, top), figure)
 
     # Before the caption, so the banner sits on the vignette at full brightness
@@ -196,15 +197,16 @@ def render_mental_thumbnail(
     apply_vignette(canvas, style)
 
     text = caption.upper() if uppercase else caption
-    lines, _, _ = draw_caption(canvas, text, style, random.Random(seed))
+    lines, _, _ = draw_caption(canvas, text, style, rng)
 
     buffer = io.BytesIO()
     canvas.save(buffer, format="PNG", optimize=True)
     logger.info(
-        "mental thumbnail rendered: motif=%s angle=%s caption=%s palette=%s "
-        "theme=%s font=%s",
+        "mental thumbnail rendered: motif=%s angle=%s mirrored=%s caption=%s "
+        "palette=%s theme=%s font=%s",
         motif,
         angle,
+        mirrored,
         caption_position,
         palette,
         theme,
@@ -217,6 +219,7 @@ def render_mental_thumbnail(
         caption_lines=lines,
         motif=motif,
         angle=angle,
+        mirrored=mirrored,
         caption_position=caption_position,
         palette=palette,
         theme=theme,
@@ -249,6 +252,40 @@ def _resolve_angle(angle: str, motif: str, subject: str) -> str:
     return usable[digest[0] % len(usable)]
 
 
+def _resolve_mirror(mirror: Optional[bool], angle: str, rng: random.Random) -> bool:
+    """Whether to turn the figure left-to-right. None means roll for it.
+
+    There is one render per camera angle, so without this every side-on card in
+    the feed has the head facing the same way, and a column of them reads as
+    the same picture repeated however the colour, typeface and banner move. A
+    flip is the cheapest variation available: no second render to keep in step,
+    and nothing on the figure is handed or lettered, so a mirrored head is
+    simply a head looking the other way.
+
+    This is the one choice on the card that is genuinely random instead of
+    derived from the subject. Deriving it measured a clean 50/50 across four
+    thousand subjects and still left all seven side-on cards in a real 14-post
+    feed facing the same way -- a fair coin does land seven heads once in
+    sixty-four runs, and a hash has no memory of the run it belongs to. Rolling
+    does not make that impossible either, but it does mean a bad run is not
+    baked in: rendering again deals a new hand, where a hash would return the
+    same one forever.
+
+    The cost is that a re-render no longer reproduces the same file. Nothing is
+    lost in normal use -- generate_thumbnails.py only renders a post whose
+    thumbnail_url is empty -- but a --force run now writes a new object per card
+    rather than overwriting the old one, leaving the previous images behind in
+    storage. Pass `seed` where that matters.
+    """
+    if mirror is not None:
+        return mirror
+    # A head-on camera is its own mirror image; see figures.faces_sideways.
+    # Flipping one is invisible and still costs a second file in storage.
+    if not figures.faces_sideways(angle):
+        return False
+    return rng.random() < 0.5
+
+
 def _figure_top(
     motif: str,
     angle: str,
@@ -277,24 +314,6 @@ def _figure_top(
     if caption_position == "below":
         return round(height * (caption_center_y + FIGURE_BOTTOM_BEHIND_BANNER) - figure_height)
     return height - figure_height
-
-
-def _resolve_caption_position(position: str, subject: str) -> str:
-    """Turn a requested banner position (possibly "auto") into a real one."""
-    key = (position or AUTO_CAPTION_POSITION).strip().lower()
-    if key != AUTO_CAPTION_POSITION:
-        if key not in CAPTION_LAYOUTS:
-            raise ValueError(
-                f"caption_position must be one of {', '.join(CAPTION_POSITIONS)} "
-                f"or {AUTO_CAPTION_POSITION}, got {key!r}"
-            )
-        return key
-
-    # Its own hash prefix, like the theme and the typeface: four derived
-    # choices keyed off one string would move in lockstep and produce a
-    # fraction of the combinations they can make between them.
-    digest = hashlib.sha256(("caption|" + subject.strip().lower()).encode("utf-8")).digest()
-    return CAPTION_POSITIONS[digest[0] % len(CAPTION_POSITIONS)]
 
 
 def _tints(motif: str, style: Style) -> Dict[str, Tuple]:
@@ -332,62 +351,4 @@ def _mix(colour: Color, towards: Color, amount: float) -> Color:
     return tuple(
         int(round(channel + (target - channel) * amount))
         for channel, target in zip(colour, towards)
-    )
-
-
-def _draw_glow(
-    canvas: Image.Image, figure: Image.Image, position: Tuple[int, int], style: Style
-) -> None:
-    """A soft pool of the theme's land grey behind the figure, in place.
-
-    Built at GLOW_GRID and stretched, the way the vignette is: it is a smooth
-    radial ramp, so a coarse grid interpolates to something identical to a
-    full-size one at a fraction of the cost.
-    """
-    values = []
-    for row in range(GLOW_GRID):
-        offset_y = (row + 0.5) / GLOW_GRID * 2 - 1
-        for column in range(GLOW_GRID):
-            offset_x = (column + 0.5) / GLOW_GRID * 2 - 1
-            ramp = max(0.0, 1.0 - min(1.0, math.hypot(offset_x, offset_y)))
-            values.append(int(255 * GLOW_STRENGTH * ramp * ramp))
-
-    mask = Image.new("L", (GLOW_GRID, GLOW_GRID))
-    mask.putdata(values)
-    # A one-cell border of zero, so the ramp is guaranteed to reach nothing at
-    # the box edge. The squared falloff above already rounds to zero in the
-    # outermost cell at the current strength, but a linear ramp or a stronger
-    # glow would not, and scaling a residual value up to 500 pixels draws a
-    # rectangle around the figure.
-    mask = ImageOps.expand(mask, border=1, fill=0)
-
-    box = (round(figure.width * GLOW_SPREAD), round(figure.height * GLOW_SPREAD))
-    left = position[0] + figure.width // 2 - box[0] // 2
-    top = position[1] + figure.height // 2 - box[1] // 2
-    canvas.paste(
-        Image.new("RGB", box, style.land), (left, top), mask.resize(box, Image.BICUBIC)
-    )
-
-
-def _draw_figure_shadow(
-    canvas: Image.Image, figure: Image.Image, position: Tuple[int, int], style: Style
-) -> None:
-    """A blurred copy of the figure's own silhouette, dropped below it.
-
-    Taken from the finished silhouette rather than guessed at, exactly as the
-    banner's halo is -- it is what stops the figure looking pasted on.
-    """
-    blur = figure.height * FIGURE_SHADOW_BLUR
-    # The figure touches all four edges of its own bounding box by definition,
-    # so blurring its silhouette in place clips the shadow off square. Pad
-    # first, blur into the padding, and shift the paste back by the same
-    # amount.
-    margin = round(3 * blur) + 2
-    silhouette = ImageOps.expand(figure.getchannel("A"), border=margin, fill=0)
-    mask = fade(silhouette, blur, style.shadow_opacity * FIGURE_SHADOW_OPACITY)
-    drop = round(figure.height * FIGURE_SHADOW_OFFSET)
-    canvas.paste(
-        Image.new("RGB", silhouette.size, style.shadow),
-        (position[0] - margin, position[1] - margin + drop),
-        mask,
     )

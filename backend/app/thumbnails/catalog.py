@@ -140,6 +140,17 @@ def validate_spec(info: GeneratorInfo, spec: Mapping[str, Any]) -> List[str]:
         present = [name for name in group if _is_set(spec.get(name))]
         if not present:
             errors.append(f"one of {', '.join(repr(n) for n in group)} is required")
+        elif len(present) > 1:
+            # EXACTLY one, not at least one. Two keys that answer the same
+            # question leave the renderer to pick, and whichever it picks the
+            # other one was silently ignored -- a spec that says both `share`
+            # and `formula` does not know what it wants, and a spec that pins
+            # an `osm_id` while also naming a `place` is very likely a mistake
+            # about which of the two is in charge.
+            errors.append(
+                f"give only one of {', '.join(repr(n) for n in group)}, got "
+                f"{', '.join(repr(n) for n in present)}"
+            )
 
     return errors
 

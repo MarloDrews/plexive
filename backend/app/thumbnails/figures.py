@@ -25,7 +25,7 @@ import os
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
-from PIL import Image, ImageChops, ImageDraw, ImageOps
+from PIL import Image, ImageChops, ImageDraw, ImageOps, ImageStat
 
 logger = logging.getLogger("app.thumbnails.figures")
 
@@ -62,6 +62,12 @@ MOTIF_LAYERS: Dict[str, Tuple[str, ...]] = {
 }
 MOTIF_NAMES = tuple(MOTIF_LAYERS)
 
+# How far a silhouette has to differ from its own mirror image, on a 0-255
+# scale, before the camera counts as looking at the figure from one side. A
+# front view differs only by render noise; an angled view differs hugely.
+SYMMETRY_GRID = 64
+SYMMETRY_TOLERANCE = 6.0
+
 # A pixel counts as backdrop above this brightness. Only used to rescue a layer
 # exported without an alpha channel -- see _keyed_alpha.
 WHITE_THRESHOLD = 244
@@ -76,6 +82,7 @@ class FigureError(RuntimeError):
 _layers: Dict[Tuple[str, str], Image.Image] = {}
 _angles: Optional[Dict[str, Dict[str, Path]]] = None
 _descriptions: Optional[Dict[str, str]] = None
+_sideways: Dict[str, bool] = {}
 
 
 def _scan() -> Dict[str, Dict[str, Path]]:
@@ -162,6 +169,7 @@ def reset_cache() -> None:
     _angles = None
     _descriptions = None
     _layers.clear()
+    _sideways.clear()
 
 
 def load_layer(angle: str, layer: str) -> Image.Image:
@@ -279,6 +287,7 @@ def compose(
     angle: str,
     box: Tuple[int, int],
     tints: Dict[str, Tuple[Tuple[int, int, int], Tuple[int, int, int]]],
+    mirror: bool = False,
 ) -> Image.Image:
     """The finished figure on its own transparent layer, scaled to fit `box`.
 
@@ -286,6 +295,10 @@ def compose(
     it keeps its original colours. The layers are cropped to their SHARED
     bounding box before scaling, so switching motif re-frames the card without
     ever breaking the alignment between brain and shell.
+
+    `mirror` turns the finished figure left-to-right. It is applied AFTER the
+    layers are stacked rather than to each of them, which is what makes it
+    impossible for a flip to knock the brain out of its skull.
     """
     layers = MOTIF_LAYERS.get(motif)
     if layers is None:
@@ -300,7 +313,9 @@ def compose(
         ramp = tints.get(name)
         stacked.alpha_composite(tint(cropped, *ramp) if ramp else cropped)
 
-    return _fit(stacked, box)
+    if mirror:
+        stacked = ImageOps.mirror(stacked)
+    return fit(stacked, box)
 
 
 def _bounds(motif: str, angle: str) -> Tuple[int, int, int, int]:
@@ -325,6 +340,41 @@ def bleeds_off_bottom(motif: str, angle: str) -> bool:
     return _bounds(motif, angle)[3] >= load_layer(angle, MOTIF_LAYERS[motif][0]).height
 
 
+def faces_sideways(angle: str) -> bool:
+    """Whether this camera looks at the figure from one side rather than head-on.
+
+    Measured off the silhouette instead of declared in angles.json, so dropping
+    a folder in stays the whole job of adding an angle.
+
+    It is asked before flipping a figure. A head-on view is very nearly its own
+    mirror image, so flipping one changes only which side the light falls from
+    -- not a different picture, but still a different content hash and so a
+    second file in storage. Only a figure that visibly points somewhere is
+    worth turning round.
+    """
+    cached = _sideways.get(angle)
+    if cached is not None:
+        return cached
+
+    layers = _scan().get(angle)
+    if not layers:
+        known = ", ".join(angle_names()) or "none"
+        raise FigureError(f"no figure angle {angle!r} in {ASSET_ROOT} (have: {known})")
+    # Whichever solid layer exists: the shell is the head's own outline, so any
+    # of them answers the same question about the camera.
+    name = next(layer for layer in LAYER_NAMES if layer in layers)
+
+    alpha = load_layer(angle, name).getchannel("A")
+    box = alpha.getbbox()
+    silhouette = (alpha.crop(box) if box else alpha).resize(
+        (SYMMETRY_GRID, SYMMETRY_GRID), Image.BILINEAR
+    )
+    difference = ImageChops.difference(silhouette, ImageOps.mirror(silhouette))
+    answer = ImageStat.Stat(difference).mean[0] > SYMMETRY_TOLERANCE
+    _sideways[angle] = answer
+    return answer
+
+
 def _union_bbox(images: List[Image.Image]) -> Optional[Tuple[int, int, int, int]]:
     boxes = [box for box in (image.getchannel("A").getbbox() for image in images) if box]
     if not boxes:
@@ -337,8 +387,12 @@ def _union_bbox(images: List[Image.Image]) -> Optional[Tuple[int, int, int, int]
     )
 
 
-def _fit(image: Image.Image, box: Tuple[int, int]) -> Image.Image:
-    """Scale to fill `box` on its tighter axis, without distorting."""
+def fit(image: Image.Image, box: Tuple[int, int]) -> Image.Image:
+    """Scale to fill `box` on its tighter axis, without distorting.
+
+    Public because every card has something to fit into a box -- a composed
+    figure here, a formula and a portrait on the concept card.
+    """
     max_width, max_height = box
     scale = min(max_width / image.width, max_height / image.height)
     size = (max(1, round(image.width * scale)), max(1, round(image.height * scale)))

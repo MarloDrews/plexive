@@ -30,9 +30,9 @@
   ],
   "thumbnail": {
     "generator": "geography",
-    "place": "Siberia + Alaska + Greenland",
-    "source": "natural_earth",
-    "caption": "Carbon locked in permafrost"
+    "place": "Arctic",
+    "caption": "1500bn tonnes carbon",
+    "source": "natural_earth"
   },
   "feed_card": {
     "headline": "Arctic permafrost holds about 1,500 billion tonnes of carbon, nearly twice the amount in the atmosphere today.",

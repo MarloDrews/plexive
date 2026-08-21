@@ -13,6 +13,11 @@
       "featured": true
     }
   ],
+  "thumbnail": {
+    "generator": "concept",
+    "formula": "\\Delta x = c\\,\\Delta t",
+    "caption": "GPS error from relativity"
+  },
   "feed_card": {
     "headline": "Turn off the relativity correction in GPS, and your location is 11 km wrong within a day.",
     "teasers": [

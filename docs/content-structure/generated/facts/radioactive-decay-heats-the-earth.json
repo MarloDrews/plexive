@@ -20,6 +20,11 @@
       "featured": false
     }
   ],
+  "thumbnail": {
+    "generator": "concept",
+    "share": 50,
+    "caption": "OF EARTH'S HEAT"
+  },
   "feed_card": {
     "headline": "About half of the 44 terawatts of heat escaping the Earth is made by radioactive decay inside it.",
     "teasers": [

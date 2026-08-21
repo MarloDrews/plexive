@@ -13,6 +13,11 @@
       "featured": false
     }
   ],
+  "thumbnail": {
+    "generator": "concept",
+    "share": 99.9,
+    "caption": "Killed on copper"
+  },
   "feed_card": {
     "headline": "Copper kills 99.9% of the MRSA on it within 2 hours, while stainless steel keeps those bacteria alive for days.",
     "teasers": [

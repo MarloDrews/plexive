@@ -18,7 +18,7 @@ import random
 from dataclasses import dataclass, field, replace
 from typing import Dict, List, Optional, Sequence, Tuple
 
-from PIL import Image, ImageChops, ImageDraw, ImageFilter
+from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageOps
 
 from .fonts import DEFAULT_FAMILY as DEFAULT_FONT_FAMILY
 from .fonts import FONT_FAMILY_NAMES, load_font, resolve_family
@@ -221,6 +221,46 @@ def resolve_font(name: Optional[str], subject: str) -> str:
     """Turn a requested typeface (possibly "auto" or nothing) into a real one."""
     key = (name or AUTO_FONT).strip().lower()
     return auto_font_for(subject) if key == AUTO_FONT else key
+
+
+# The banner goes under the card's subject or over it, derived from the subject
+# the way the colour is. With one fixed position every card in the feed has the
+# same silhouette however the artwork, colour and typeface change.
+#
+# Each layout is (caption centre, subject centre) as fractions of the height.
+# The SUBJECT moves out of the banner's way rather than the banner shrinking,
+# and the two still overlap slightly either way -- that overlap is what makes
+# the banner read as stuck ON the card instead of laid out beside the artwork.
+#
+# Shared rather than owned by the figure card: putting a banner above or below
+# the thing the card is about is the same decision for every generator that is
+# not the map (see mental.py, concept.py).
+CAPTION_LAYOUTS: Dict[str, Tuple[float, float]] = {
+    "below": (0.755, 0.42),
+    "above": (0.225, 0.58),
+}
+CAPTION_POSITIONS = tuple(CAPTION_LAYOUTS)
+
+# Asking for this position derives one, as "auto" does for palette and theme.
+AUTO_CAPTION_POSITION = "auto"
+
+
+def resolve_caption_position(position: Optional[str], subject: str) -> str:
+    """Turn a requested banner position (possibly "auto") into a real one."""
+    key = (position or AUTO_CAPTION_POSITION).strip().lower()
+    if key != AUTO_CAPTION_POSITION:
+        if key not in CAPTION_LAYOUTS:
+            raise ValueError(
+                f"caption_position must be one of {', '.join(CAPTION_POSITIONS)} "
+                f"or {AUTO_CAPTION_POSITION}, got {key!r}"
+            )
+        return key
+
+    # Its own hash prefix, like the theme and the typeface: four derived
+    # choices keyed off one string would move in lockstep and produce a
+    # fraction of the combinations they can make between them.
+    digest = hashlib.sha256(("caption|" + subject.strip().lower()).encode("utf-8")).digest()
+    return CAPTION_POSITIONS[digest[0] % len(CAPTION_POSITIONS)]
 
 
 # Typographic characters the caption font has no glyph for, and the plain
@@ -816,4 +856,78 @@ def fade(alpha: Image.Image, blur: float, opacity: float) -> Image.Image:
     """One blurred, faded copy of a silhouette, ready to use as a shadow mask."""
     return alpha.filter(ImageFilter.GaussianBlur(blur)).point(
         lambda value: int(value * opacity)
+    )
+
+
+# A soft pool of light behind whatever the card is about, so it is not a cutout
+# floating on a flat field. Sized against the artwork, not the frame.
+GLOW_GRID = 64
+GLOW_STRENGTH = 0.55
+GLOW_SPREAD = 1.35  # times the layer's own size
+
+# The artwork's contact shadow, in fractions of its height.
+LAYER_SHADOW_BLUR = 0.045
+LAYER_SHADOW_OFFSET = 0.03
+LAYER_SHADOW_OPACITY = 0.55
+
+
+def draw_glow(
+    canvas: Image.Image, layer: Image.Image, position: Tuple[int, int], style: Style
+) -> None:
+    """A soft pool of the theme's land grey behind an RGBA layer, in place.
+
+    Built at GLOW_GRID and stretched, the way the vignette is: it is a smooth
+    radial ramp, so a coarse grid interpolates to something identical to a
+    full-size one at a fraction of the cost.
+
+    Shared card furniture rather than figure internals -- a 3D head, a dot grid
+    and a portrait all need the same pool under them, and only that keeps the
+    cards looking like siblings.
+    """
+    values = []
+    for row in range(GLOW_GRID):
+        offset_y = (row + 0.5) / GLOW_GRID * 2 - 1
+        for column in range(GLOW_GRID):
+            offset_x = (column + 0.5) / GLOW_GRID * 2 - 1
+            ramp = max(0.0, 1.0 - min(1.0, math.hypot(offset_x, offset_y)))
+            values.append(int(255 * GLOW_STRENGTH * ramp * ramp))
+
+    mask = Image.new("L", (GLOW_GRID, GLOW_GRID))
+    mask.putdata(values)
+    # A one-cell border of zero, so the ramp is guaranteed to reach nothing at
+    # the box edge. The squared falloff above already rounds to zero in the
+    # outermost cell at the current strength, but a linear ramp or a stronger
+    # glow would not, and scaling a residual value up to 500 pixels draws a
+    # rectangle around the artwork.
+    mask = ImageOps.expand(mask, border=1, fill=0)
+
+    box = (round(layer.width * GLOW_SPREAD), round(layer.height * GLOW_SPREAD))
+    left = position[0] + layer.width // 2 - box[0] // 2
+    top = position[1] + layer.height // 2 - box[1] // 2
+    canvas.paste(
+        Image.new("RGB", box, style.land), (left, top), mask.resize(box, Image.BICUBIC)
+    )
+
+
+def draw_layer_shadow(
+    canvas: Image.Image, layer: Image.Image, position: Tuple[int, int], style: Style
+) -> None:
+    """A blurred copy of an RGBA layer's own silhouette, dropped below it.
+
+    Taken from the finished silhouette rather than guessed at, exactly as the
+    banner's halo is -- it is what stops the artwork looking pasted on.
+    """
+    blur = layer.height * LAYER_SHADOW_BLUR
+    # The layer touches all four edges of its own bounding box by definition,
+    # so blurring its silhouette in place clips the shadow off square. Pad
+    # first, blur into the padding, and shift the paste back by the same
+    # amount.
+    margin = round(3 * blur) + 2
+    silhouette = ImageOps.expand(layer.getchannel("A"), border=margin, fill=0)
+    mask = fade(silhouette, blur, style.shadow_opacity * LAYER_SHADOW_OPACITY)
+    drop = round(layer.height * LAYER_SHADOW_OFFSET)
+    canvas.paste(
+        Image.new("RGB", silhouette.size, style.shadow),
+        (position[0] - margin, position[1] - margin + drop),
+        mask,
     )

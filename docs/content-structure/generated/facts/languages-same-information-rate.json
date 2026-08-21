@@ -21,6 +21,11 @@
       "featured": false
     }
   ],
+  "thumbnail": {
+    "generator": "mental",
+    "motif": "head",
+    "caption": "Processing speech rate"
+  },
   "feed_card": {
     "headline": "Japanese is spoken far faster than Thai, yet both carry about 39 bits of information a second.",
     "teasers": [

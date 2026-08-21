@@ -67,14 +67,16 @@ def render(motif: str, caption: str, args, output: Path) -> None:
         theme=args.theme,
         font=args.font,
         caption_position=args.caption_position,
+        mirror=args.mirror,
         seed=args.seed,
     )
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_bytes(thumbnail.png)
     print(
         f"{output}  motif={thumbnail.motif} angle={thumbnail.angle} "
-        f"caption={thumbnail.caption_position} palette={thumbnail.palette} "
-        f"theme={thumbnail.theme} font={thumbnail.font}"
+        f"mirrored={thumbnail.mirrored} caption={thumbnail.caption_position} "
+        f"palette={thumbnail.palette} theme={thumbnail.theme} "
+        f"font={thumbnail.font}"
     )
 
 
@@ -118,6 +120,19 @@ def main() -> int:
         default=AUTO_CAPTION_POSITION,
         choices=(AUTO_CAPTION_POSITION,) + CAPTION_POSITIONS,
         help="Put the banner below the figure or above it.",
+    )
+    # Default None, not False: unset means "derive it from the subject", which
+    # is what a real card does. Both flags exist so a single render can be
+    # looked at either way round.
+    parser.add_argument(
+        "--mirror",
+        dest="mirror",
+        action="store_true",
+        default=None,
+        help="Force the figure to face the other way.",
+    )
+    parser.add_argument(
+        "--no-mirror", dest="mirror", action="store_false", help="Force it unflipped."
     )
     parser.add_argument("--seed", type=int, help="Pin the caption's random tilt.")
     parser.add_argument("--width", type=int, default=1280)

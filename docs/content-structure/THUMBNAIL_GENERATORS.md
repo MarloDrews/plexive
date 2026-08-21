@@ -7,6 +7,57 @@ A post JSON's optional top-level `thumbnail` object names one of these in its
 `generator` key; every other key is a parameter below. A post that suits none of
 them simply has no `thumbnail` object and falls back to the placeholder image.
 
+## `concept`
+
+A grid of a hundred dots with one share of them filled in colour, or a formula typeset as maths -- optionally beside a circular portrait of the person the claim belongs to, under the same tilted caption banner as the other two cards.
+
+**Use it when** the substance of the post is a SHARE OF A WHOLE or a RULE THAT CAN BE WRITTEN DOWN, and no place and no single mind anchors it. Ask WHAT IS THE CLAIM MADE OF: '8% of your DNA is the wreckage of old viruses' is a share, and the grid shows how much of you that is; 'every piano is tuned to the twelfth root of two' is a rule, and the formula IS the fact. This is the card for the posts a map and a head both have to decline -- a proportion is true of everyone and everywhere, so a country filled in red would say something false.
+
+**Do not use it when** the number in the post is not a share of anything. A RATIO is the common trap: 'nuclear power kills 800 times fewer people than coal' is a comparison, not a part of a hundred, and there is no whole for the grid to be. A rate, a duration, a temperature, a distance and a count are all the same refusal. Decline too when the post merely happens to contain a percentage: the share has to be what the post is ABOUT.
+
+Exactly one of `share` or `formula` is required.
+
+| Key | Type | Default | Values | Meaning |
+|---|---|---|---|---|
+| `share` | number | - | `0`–`100` | The percentage to fill in, 0 to 100. The grid is a hundred dots, so this is read straight off the card. |
+| `formula` | string | - | - | LaTeX maths WITHOUT the surrounding dollar signs, e.g. "\\sqrt[12]{2}" or "P(d)=\\log_{10}(1+1/d)". Drawn instead of the dot grid. |
+| `caption` | string | required | - | The words in the banner, rendered in capitals. Two to five words that name what the share is a share OF, or what the formula says. |
+| `benchmark` | number | - | `0`–`100` | A second share the post explicitly compares the first with, drawn as hollow dots inside the filled ones. Only for a post that states both numbers. |
+| `portrait` | string | - | - | The name of the PERSON the claim belongs to, looked up on Wikipedia: "Hermann Ebbinghaus", not "forgetting curve". Puts a circular portrait to the right of the content. Leave it out unless the post really hangs on one person -- see the rules. |
+| `portrait_file` | string | - | - | A Wikimedia Commons file name such as "File:Ebbinghaus2.jpg", used instead of `portrait` when a person's name resolves to the wrong image. |
+| `columns` | integer | `10` | `1`–`100` | How many dots per row. Must divide 100 exactly. Leave at 10 -- a ten-by-ten square is what lets a reader see a percentage without counting. |
+| `palette` | string | `auto` | `auto`, `blue`, `green`, `red`, `yellow` | Colour of the filled dots, the formula, the portrait and the banner; the empty dots stay grey. Four colours only. Leave it out -- see the rules. |
+| `theme` | string | `auto` | `auto`, `dark`, `light` | Whether the field behind the content is a dark slate (`dark`) or a pale paper (`light`). Leave it out: `auto` derives it from the subject, which keeps the feed from being all one or the other. |
+| `font` | string | `auto` | `auto`, `sans`, `serif` | The caption typeface, which the formula follows: `sans` sets the maths in a grotesque, `serif` in Computer Modern. Leave it out -- `auto` derives one from the subject. |
+| `uppercase` | boolean | `true` | - | Capitalise the caption. Leave on unless the caption is a proper name in mixed case. |
+| `seed` | integer | - | `0`–`2147483647` | Pins the caption's slight random tilt, so the same spec renders the same card twice. Omit to let each render differ. |
+| `width` | integer | `1280` | `320`–`3840` | Image width in pixels. Leave at the default. |
+| `height` | integer | `720` | `180`–`2160` | Image height in pixels. Leave at the default; cards are 16:9. |
+
+**Rules**
+
+- A SHARE IS NOT A RATIO, and this is the mistake to watch for. `share` is a part of one whole you can name: 8 of every 100 base pairs, 80 of every 100 nerve fibres. 'Eight hundred times fewer deaths than coal' has no whole -- it is two quantities divided by each other, and there is nothing for a hundred dots to represent. If you cannot finish the sentence '... out of a hundred WHAT', do not use this generator.
+- The caption must name the whole. The grid shows that 8 of a hundred somethings are filled; only the banner can say "of your DNA". A caption that leaves the reader asking '8% of what?' has failed at the one job it has on this card.
+- A formula has to be readable on one line at a glance. This is a thumbnail, not a blackboard: a derivation, a system of equations or anything three lines deep renders as a grey smear. If the rule cannot be written short, the post does not have a formula card.
+- Write the formula WITHOUT dollar signs and as LaTeX maths: "\\sqrt[12]{2}", not "$\\sqrt[12]{2}$" and not "the twelfth root of 2".
+- `portrait` takes a PERSON'S NAME, never the topic's. "Frank Benford", not "Benford's law" -- the topic article leads with a bar chart, and a lookup that returns a real image nobody checks is exactly how a card ends up with a diagram where a face should be.
+- Use `portrait` only when the post genuinely hangs on that person: they found it, or it carries their name. Not because they are mentioned. A portrait that cannot be used is dropped and the card comes out centred, so naming one is never fatal -- but naming one for a post that is not about anybody puts a stranger on the card.
+- Living people almost never work. Their photographs are under licences that oblige a visible credit the card cannot carry, so the lookup refuses them; historical figures are the ones whose portraits are in the public domain.
+- Never invent a `portrait_file`. Use `portrait` unless you know the exact Commons file you mean.
+- `benchmark` only when the post states BOTH numbers and contrasts them -- 30% observed against the 11% chance predicts. It is not a place to put a second interesting figure.
+- Leave `palette` out. Nothing about a proportion or a formula is red, yellow, green or blue, and picking a colour to match the mood of the topic is what made every second card red on the map generator. `auto` spreads the cards across all four on its own.
+- Leave `theme` out for the same reason: `auto` alternates dark and light across the feed, and pinning it throws that variety away.
+
+**Examples**
+
+```json
+{"generator": "concept", "share": 80, "caption": "Most of it goes up"}
+{"generator": "concept", "share": 8, "caption": "Old viruses in your DNA"}
+{"generator": "concept", "share": 30, "benchmark": 11, "caption": "Three times what chance predicts"}
+{"generator": "concept", "formula": "\\sqrt[12]{2}", "caption": "Every piano is out of tune"}
+{"generator": "concept", "formula": "R=e^{-t/S}", "portrait": "Hermann Ebbinghaus", "caption": "Memory fades on a curve"}
+```
+
 ## `geography`
 
 A greyscale world map -- dark or light -- with exactly one region filled in colour and a short caption in a tilted banner underneath.

@@ -20,6 +20,11 @@
       "featured": false
     }
   ],
+  "thumbnail": {
+    "generator": "concept",
+    "formula": "(3/2)^{12} \\neq 2^{7}",
+    "caption": "TWELVE FIFTHS ≠ SEVEN OCTAVES"
+  },
   "feed_card": {
     "headline": "Every piano is permanently, deliberately out of tune, and only the octave is spared.",
     "teasers": [

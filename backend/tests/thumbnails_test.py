@@ -1542,19 +1542,28 @@ def test_thumbnail_storage() -> None:
 # ---------------------------------------------------------------------------
 
 
-def _figure_assets(directory, glass_alpha: int = 110):
+def _figure_assets(directory, glass_alpha: int = 110, notch: bool = False):
     """A minimal angle: a tall "head", a smaller "brain" inside it, and a
     translucent copy of the head. Shapes are rectangles, so every expected
-    bounding box below is exact rather than approximate."""
+    bounding box below is exact rather than approximate.
+
+    `notch` bites a hole out of the left of the head, making the silhouette
+    asymmetric -- a stand-in for a camera that looks at the figure from one
+    side. The hole sits well inside the box, so the bounding boxes asserted
+    elsewhere are unchanged."""
     from PIL import Image, ImageDraw
 
     size = (200, 120)
     head_box = (40, 10, 160, 119)
     brain_box = (70, 25, 130, 70)
+    notch_box = (46, 30, 70, 60)
 
     def canvas(box, fill):
         image = Image.new("RGBA", size, (0, 0, 0, 0))
-        ImageDraw.Draw(image).rectangle(box, fill=fill)
+        draw = ImageDraw.Draw(image)
+        draw.rectangle(box, fill=fill)
+        if notch and box == head_box:
+            draw.rectangle(notch_box, fill=(0, 0, 0, 0))
         return image
 
     directory.mkdir(parents=True, exist_ok=True)
@@ -1565,7 +1574,7 @@ def _figure_assets(directory, glass_alpha: int = 110):
     return head_box, brain_box
 
 
-def _with_assets(body, glass_alpha: int = 110):
+def _with_assets(body, glass_alpha: int = 110, notch: bool = False):
     """Run `body(head_box, brain_box)` against a temp asset directory."""
     import tempfile
     from pathlib import Path
@@ -1575,7 +1584,7 @@ def _with_assets(body, glass_alpha: int = 110):
     original = figures.ASSET_ROOT
     with tempfile.TemporaryDirectory() as temp:
         root = Path(temp)
-        boxes = _figure_assets(root / "side", glass_alpha)
+        boxes = _figure_assets(root / "side", glass_alpha, notch)
         (root / "angles.json").write_text('{"side": "a made-up view"}', encoding="utf-8")
         figures.ASSET_ROOT = root
         figures.reset_cache()
@@ -1584,6 +1593,99 @@ def _with_assets(body, glass_alpha: int = 110):
         finally:
             figures.ASSET_ROOT = original
             figures.reset_cache()
+
+
+def test_a_side_on_figure_is_sometimes_mirrored() -> None:
+    """There is one render per camera angle, so half the cards turn it round.
+
+    Without this the head faces the same way on every card, and a column of
+    them in the feed reads as one picture repeated however the colour, the
+    typeface and the banner move.
+    """
+    import random
+
+    from PIL import ImageChops, ImageOps
+
+    from app.thumbnails import figures
+    from app.thumbnails.mental import _resolve_mirror, render_mental_thumbnail
+
+    def sideways(head_box, brain_box):
+        check("a figure with a side to it is recognised", figures.faces_sideways("side"))
+
+        # Mirroring the STACK, not the layers, is what keeps the brain inside
+        # the skull: an exact match against the flipped composite is only
+        # possible if every layer moved as one piece.
+        for motif in ("head", "brain", "brain_in_head"):
+            plain = figures.compose(motif, "side", (300, 300), {})
+            flipped = figures.compose(motif, "side", (300, 300), {}, mirror=True)
+            check(
+                f"{motif} flips as a single piece",
+                ImageChops.difference(flipped, ImageOps.mirror(plain)).getbbox() is None,
+            )
+            # Only the layers carrying the notch have a left and a right; the
+            # stand-in brain is a plain rectangle, so flipping it is a no-op
+            # here and says nothing either way.
+            if motif != "brain":
+                check(
+                    f"{motif} really changes when flipped",
+                    flipped.tobytes() != plain.tobytes(),
+                )
+
+        # Rolled, not derived. Hashing the subject measured a clean 50/50 over
+        # four thousand subjects and still sent all seven side-on cards in a
+        # real 14-post feed the same way; a hash returns that same bad run
+        # forever, where a roll deals a new hand next time.
+        rng = random.Random()
+        picked = [_resolve_mirror(None, "side", rng) for _ in range(400)]
+        check("both directions get used", set(picked) == {True, False}, str(set(picked)))
+        share = min(picked.count(value) for value in (True, False)) / len(picked)
+        check("neither direction is a rarity", share > 0.35, f"rarest share {share:.2f}")
+        check("an explicit flip is honoured", _resolve_mirror(True, "side", rng) is True)
+        check("an explicit refusal is honoured", _resolve_mirror(False, "side", rng) is False)
+
+        # Random, but reproducible on demand: seed= has to pin the whole card,
+        # or there is no way to render the same picture twice deliberately.
+        pinned = [
+            render_mental_thumbnail(
+                motif="head", caption="PIN ME", angle="side", palette="red",
+                theme="dark", caption_position="below", seed=7,
+            )
+            for _ in range(2)
+        ]
+        check("a seeded card faces the same way twice", pinned[0].mirrored == pinned[1].mirrored)
+        check("and is byte for byte the same card", pinned[0].png == pinned[1].png)
+
+        # Unseeded, the same spec has to be able to come out either way round.
+        directions = {
+            render_mental_thumbnail(
+                motif="head", caption="ROLL ME", angle="side", palette="red",
+                theme="dark", caption_position="below",
+            ).mirrored
+            for _ in range(40)
+        }
+        check("an unseeded card is not stuck facing one way", directions == {True, False})
+
+        rendered = {
+            flip: render_mental_thumbnail(
+                motif="head", caption="EITHER WAY", angle="side", palette="red",
+                theme="dark", caption_position="below", mirror=flip, seed=1,
+            )
+            for flip in (False, True)
+        }
+        check("the card reports which way it faces", rendered[True].mirrored is True)
+        check("and reports it the other way too", rendered[False].mirrored is False)
+        check("the two cards differ", rendered[True].png != rendered[False].png)
+
+    def head_on(head_box, brain_box):
+        check("a head-on figure is recognised", not figures.faces_sideways("side"))
+        rng = random.Random()
+        check(
+            "a head-on figure is never flipped, however the roll falls",
+            not any(_resolve_mirror(None, "side", rng) for _ in range(200)),
+        )
+
+    _with_assets(sideways, notch=True)
+    _with_assets(head_on)
 
 
 def test_auto_font_spreads_and_is_stable() -> None:
@@ -1625,11 +1727,14 @@ def test_caption_sits_above_as_well_as_below() -> None:
 
     from PIL import Image
 
-    from app.thumbnails.mental import (
+    # The layout constants and the resolver live in render.py -- putting a
+    # banner above or below the subject is the same decision for every card
+    # that is not the map, so the concept generator shares them.
+    from app.thumbnails.mental import render_mental_thumbnail
+    from app.thumbnails.render import (
         CAPTION_LAYOUTS,
         CAPTION_POSITIONS,
-        _resolve_caption_position,
-        render_mental_thumbnail,
+        resolve_caption_position,
     )
 
     def body(head_box, brain_box):
@@ -1668,14 +1773,14 @@ def test_caption_sits_above_as_well_as_below() -> None:
         check("the two positions really differ", below > above)
 
         # Derived, stable, and both used.
-        picked = [_resolve_caption_position("auto", f"post {n}") for n in range(200)]
+        picked = [resolve_caption_position("auto", f"post {n}") for n in range(200)]
         check("auto uses both positions", set(picked) == set(CAPTION_POSITIONS))
         check(
             "the same subject always gets the same position",
-            _resolve_caption_position("auto", "x") == _resolve_caption_position("auto", "x"),
+            resolve_caption_position("auto", "x") == resolve_caption_position("auto", "x"),
         )
         try:
-            _resolve_caption_position("sideways", "x")
+            resolve_caption_position("sideways", "x")
             check("an unknown position is rejected", False, "no error raised")
         except ValueError:
             check("an unknown position is rejected", True)
@@ -2047,14 +2152,13 @@ def test_figure_shadow_reaches_past_the_silhouette() -> None:
     """
     from PIL import Image
 
-    from app.thumbnails.mental import _draw_figure_shadow
-    from app.thumbnails.render import build_style
+    from app.thumbnails.render import build_style, draw_layer_shadow
 
     style = build_style("red", "light")
     canvas = Image.new("RGB", (400, 400), (255, 255, 255))
     figure = Image.new("RGBA", (120, 120), (0, 0, 0, 255))
 
-    _draw_figure_shadow(canvas, figure, (140, 140), style)
+    draw_layer_shadow(canvas, figure, (140, 140), style)
 
     # Just outside the silhouette on the left, level with its middle. The bar
     # is "any shadow at all": clipped to the bounding box this pixel is pure
@@ -2086,14 +2190,14 @@ def test_glow_ramp_reaches_zero_at_its_edge() -> None:
     """The glow must leave the field untouched outside its own box."""
     from PIL import Image
 
-    from app.thumbnails.mental import GLOW_SPREAD, _draw_glow
+    from app.thumbnails.render import GLOW_SPREAD, draw_glow
     from app.thumbnails.render import build_style
 
     style = build_style("red", "dark")
     field = style.ocean
     canvas = Image.new("RGB", (600, 600), field)
     figure = Image.new("RGBA", (200, 200), (0, 0, 0, 255))
-    _draw_glow(canvas, figure, (200, 200), style)
+    draw_glow(canvas, figure, (200, 200), style)
 
     span = round(200 * GLOW_SPREAD)
     left = 200 + 100 - span // 2
@@ -2156,6 +2260,472 @@ def test_mental_reports_a_motif_it_cannot_draw() -> None:
             )
 
     _with_assets(body)
+
+
+def _portrait_file(path, width: int = 600, height: int = 800):
+    """A stand-in portrait on disk: a vertical gradient, so tinting has a ramp
+    to work with and the crop has a recognisable top and bottom."""
+    image = Image.new("RGB", (width, height))
+    pixels = image.load()
+    for y in range(height):
+        level = 40 + int(180 * y / height)
+        for x in range(width):
+            pixels[x, y] = (level, level, level)
+    image.save(path)
+    return path
+
+
+def _with_portrait(body, refuse: str = ""):
+    """Run `body(fake)` with concept.lookup_portrait stubbed.
+
+    The suite never touches the network, and a portrait is the one part of this
+    card that would: `refuse` makes the stub fail the way a real licence or
+    shape rejection does.
+    """
+    import tempfile
+    from pathlib import Path
+
+    from app.thumbnails import concept
+    from app.thumbnails.wikimedia import Portrait, PortraitLookupError
+
+    original = concept.lookup_portrait
+    with tempfile.TemporaryDirectory() as temp:
+        path = _portrait_file(Path(temp) / "portrait.png")
+        fake = Portrait(
+            query="Someone",
+            title="Someone",
+            file="File:Someone.png",
+            path=path,
+            width=600,
+            height=800,
+            license="Public domain",
+            artist="Nobody",
+            credit_url="https://commons.wikimedia.org/wiki/File:Someone.png",
+        )
+
+        def stub(person=None, portrait_file=None, use_cache=True):
+            if refuse:
+                raise PortraitLookupError(refuse)
+            return fake
+
+        concept.lookup_portrait = stub
+        try:
+            return body(fake)
+        finally:
+            concept.lookup_portrait = original
+
+
+def _highlight_span(card, style, top: float = 0.0, bottom: float = 1.0):
+    """(leftmost, rightmost) x of the card's colour, as fractions of the width.
+
+    Measured off the finished picture rather than off the layout constants:
+    what matters is where the content actually landed, not where it was asked
+    to land. Returns (None, None) when the colour is absent.
+    """
+    target = style.highlight
+    left, right = None, None
+    for y in range(int(card.height * top), int(card.height * bottom)):
+        for x in range(card.width):
+            pixel = card.getpixel((x, y))
+            if max(abs(a - b) for a, b in zip(pixel, target)) <= 24:
+                left = x if left is None else min(left, x)
+                right = x if right is None else max(right, x)
+    if left is None:
+        return None, None
+    return left / card.width, right / card.width
+
+
+def test_concept_rounds_a_share_without_claiming_all_or_nothing() -> None:
+    """99.9% must not fill the last dot, and 0.4% must not leave the grid empty.
+
+    The whole point of the card is the one dot that is missing: a full grid says
+    "all of them", which is exactly the belief a 99.9% post is correcting.
+    """
+    from app.thumbnails.concept import DOT_TOTAL, dots_for
+
+    check("half fills half", dots_for(50) == 50)
+    check("a whole is a whole", dots_for(100) == DOT_TOTAL)
+    check("nothing is nothing", dots_for(0) == 0)
+    check("99.9% leaves one dot empty", dots_for(99.9) == 99, str(dots_for(99.9)))
+    check("99.6% still leaves one empty", dots_for(99.6) == 99, str(dots_for(99.6)))
+    check("0.4% still fills one", dots_for(0.4) == 1, str(dots_for(0.4)))
+    check("0.001% still fills one", dots_for(0.001) == 1, str(dots_for(0.001)))
+    check("ordinary shares round normally", dots_for(8) == 8 and dots_for(30) == 30)
+
+
+def _dot_layer_colour(share, benchmark=None, columns=10):
+    """(coloured pixels, grey pixels) in the dot grid layer itself.
+
+    Measured on the layer rather than on the finished card on purpose. The card
+    puts the same colour in the banner, dims it unevenly with the vignette and
+    softens every edge against the glow, so a count taken there is dominated by
+    everything except the dots -- the first version of this test compared two
+    cards that differed by eleven hollowed dots and could not see it.
+    """
+    from app.thumbnails.concept import _draw_dots
+    from app.thumbnails.render import build_style
+
+    style = build_style("red", "dark")
+    layer, filled, ringed = _draw_dots(share, benchmark, columns, (742, 446), style)
+
+    coloured = grey = 0
+    for pixel in layer.convert("RGBA").getdata():
+        if pixel[3] < 200:
+            continue
+        if max(abs(a - b) for a, b in zip(pixel[:3], style.highlight)) <= 24:
+            coloured += 1
+        elif max(abs(a - b) for a, b in zip(pixel[:3], style.land)) <= 24:
+            grey += 1
+    return coloured, grey, filled, ringed
+
+
+def test_concept_draws_as_many_dots_as_the_share_says() -> None:
+    """The picture has to carry the number, not just the return value.
+
+    A bug that reported 80 and drew 60 would pass every check made against the
+    dataclass alone, so this counts the pixels the grid actually colours in.
+    """
+    areas = {}
+    for share in (20, 40, 80):
+        coloured, grey, filled, _ = _dot_layer_colour(share)
+        check(f"{share}% fills {share} dots", filled == share)
+        areas[share] = coloured
+        # The hundred dots are always all drawn; only their colour changes.
+        check(
+            f"the other {100 - share} stay grey at {share}%",
+            grey > 0 and abs(grey / coloured - (100 - share) / share) < 0.05,
+            f"{coloured} coloured, {grey} grey",
+        )
+
+    check(
+        "more share means more colour",
+        areas[20] < areas[40] < areas[80],
+        str(areas),
+    )
+    # Twice the dots is twice the area, to within a rounding of edge pixels.
+    check(
+        "the area is proportional to the share",
+        abs(areas[40] - 2 * areas[20]) < 0.03 * areas[40],
+        f"{areas[20]} -> {areas[40]}",
+    )
+    check(
+        "and stays proportional at the top of the range",
+        abs(areas[80] - 4 * areas[20]) < 0.03 * areas[80],
+        f"{areas[20]} -> {areas[80]}",
+    )
+
+
+def test_concept_benchmark_dots_are_hollow_not_bullseyes() -> None:
+    """A benchmark dot is the same dot with its middle taken out.
+
+    Drawn the other way round -- a small ring INSIDE a solid dot -- it reads as
+    a target, as though something were wrong with those dots, rather than as an
+    outline round a group, which is what a benchmark is.
+    """
+    plain, _, filled, ringed = _dot_layer_colour(30)
+    check("no benchmark means no rings", ringed is None)
+
+    hollow, _, filled_again, ringed_again = _dot_layer_colour(30, benchmark=11)
+    check("the benchmark is reported", ringed_again == 11)
+    check("the share is unchanged by it", filled_again == filled == 30)
+
+    # Hollowing eleven of the thirty can only REMOVE colour, and it has to
+    # remove a visible amount: a ring so thick it swallowed the dot, or so thin
+    # it vanished in the downscale, would both show up here.
+    lost = plain - hollow
+    per_dot = plain / 30
+    check("hollow dots really lose their middles", lost > 0, str(lost))
+    check(
+        "eleven dots lose about a fifth of themselves each",
+        0.10 < lost / (11 * per_dot) < 0.40,
+        f"lost {lost} of {11 * per_dot:.0f}",
+    )
+
+    # And a benchmark bigger than the share hollows out grey dots instead of
+    # falling over.
+    over, _, _, over_ringed = _dot_layer_colour(10, benchmark=40)
+    check("a benchmark past the share still draws", over_ringed == 40 and over > 0)
+
+
+def test_concept_layout_follows_the_resolved_portrait() -> None:
+    """A portrait moves the content left; a REFUSED one must not.
+
+    This is the failure the card is most likely to ship with: the layout splits
+    on the parameter rather than on what the lookup returned, and every post
+    whose portrait was rejected goes out with a hole where the face should be.
+    """
+    from app.thumbnails.concept import render_concept_thumbnail
+    from app.thumbnails.render import build_style
+
+    style = build_style("blue", "dark")
+    settings = dict(
+        caption="WHERE DOES IT SIT", share=60, palette="blue", theme="dark",
+        caption_position="below", seed=5,
+    )
+
+    def card(png):
+        return Image.open(io.BytesIO(png)).convert("RGB")
+
+    plain_png = render_concept_thumbnail(**settings).png
+    centred = card(plain_png)
+    # Only the upper part of the card: below it lies the banner, which is the
+    # same colour as the dots and would swamp the measurement.
+    centre_left, centre_right = _highlight_span(centred, style, 0.0, 0.6)
+
+    def with_portrait(fake):
+        result = render_concept_thumbnail(portrait="Someone", **settings)
+        check("the portrait is reported back", result.portrait_file == "File:Someone.png")
+        check("with its licence", result.portrait_license == "Public domain")
+        check("and nothing is marked as skipped", result.portrait_skipped == "")
+        return card(result.png)
+
+    split = _with_portrait(with_portrait)
+    split_left, _ = _highlight_span(split, style, 0.0, 0.6)
+
+    check(
+        "the content moves left to make room",
+        split_left < centre_left - 0.05,
+        f"{split_left:.2f} vs {centre_left:.2f}",
+    )
+
+    # The portrait is duotoned across a ramp rather than drawn in the flat
+    # palette colour, so it is found by asking what CHANGED on the right of the
+    # card, not by looking for the highlight there.
+    def right_side_difference(other):
+        changed = 0
+        for y in range(0, int(centred.height * 0.6), 3):
+            for x in range(int(centred.width * 0.62), int(centred.width * 0.95), 3):
+                if centred.getpixel((x, y)) != other.getpixel((x, y)):
+                    changed += 1
+        return changed
+
+    check(
+        "and a portrait now occupies the right",
+        right_side_difference(split) > 500,
+        str(right_side_difference(split)),
+    )
+
+    def with_refused(fake):
+        result = render_concept_thumbnail(portrait="Someone", **settings)
+        check("the refusal is reported", "no licence" in result.portrait_skipped)
+        check("and no portrait is claimed", result.portrait_file is None)
+        return result.png
+
+    refused_png = _with_portrait(with_refused, refuse="no licence for this one")
+    # Byte-identical, not merely similar: a refused portrait has to leave the
+    # card exactly as if none had been asked for. Anything less means the
+    # layout split on the parameter somewhere and every post whose portrait was
+    # rejected ships with a hole where the face should be.
+    check(
+        "a refused portrait renders the very same card as no portrait at all",
+        refused_png == plain_png,
+    )
+
+
+def test_concept_content_never_runs_under_the_banner() -> None:
+    """The banner may overlap a head; it may not overlap the dots.
+
+    On the figure card that overlap is deliberate -- it is what makes the banner
+    read as stuck ON the card. Here it would hide dots, and a hidden dot makes
+    the card state a different proportion than the post does.
+    """
+    from app.thumbnails.concept import render_concept_thumbnail
+    from app.thumbnails.render import CAPTION_LAYOUTS, CAPTION_POSITIONS, build_style
+
+    style = build_style("green", "dark")
+    for position in CAPTION_POSITIONS:
+        result = render_concept_thumbnail(
+            caption="A FAIRLY LONG CAPTION HERE", share=100, palette="green",
+            theme="dark", caption_position=position, seed=6,
+        )
+        card = Image.open(io.BytesIO(result.png)).convert("RGB")
+
+        # Every dot is filled at share=100, so the grid is a solid block of
+        # colour and its rows are unambiguous. Rows holding the banner are
+        # nearly all colour across; rows holding dots are not.
+        banner_center = CAPTION_LAYOUTS[position][0]
+        coloured_rows = []
+        for y in range(card.height):
+            run = sum(
+                1
+                for x in range(0, card.width, 4)
+                if max(abs(a - b) for a, b in zip(card.getpixel((x, y)), style.highlight)) <= 24
+            )
+            coloured_rows.append(run)
+
+        wide = max(coloured_rows)
+        banner_rows = [y for y, run in enumerate(coloured_rows) if run > wide * 0.9]
+        grid_rows = [
+            y for y, run in enumerate(coloured_rows) if 0 < run <= wide * 0.75
+        ]
+        check(f"the banner is found with the caption {position}", bool(banner_rows))
+        check(f"the grid is found with the caption {position}", bool(grid_rows))
+        check(
+            f"the banner really sits {position}",
+            abs(sum(banner_rows) / len(banner_rows) / card.height - banner_center) < 0.12,
+        )
+        overlap = set(range(min(banner_rows), max(banner_rows) + 1)) & set(grid_rows)
+        check(
+            f"no dot row is under the banner ({position})",
+            not overlap,
+            f"{len(overlap)} rows",
+        )
+
+
+def test_concept_refuses_a_spec_that_cannot_mean_one_thing() -> None:
+    """share and formula both given is a spec that does not know what it wants."""
+    from app.thumbnails.catalog import validate_spec
+    from app.thumbnails.concept import render_concept_thumbnail
+    from app.thumbnails.generators import GENERATORS
+
+    info = GENERATORS["concept"]
+    both = validate_spec(info, {"generator": "concept", "caption": "x", "share": 30, "formula": "y"})
+    check("the validator rejects both", any("only one of" in e for e in both), str(both))
+
+    neither = validate_spec(info, {"generator": "concept", "caption": "x"})
+    check("and rejects neither", any("one of" in e for e in neither), str(neither))
+
+    # The same rule now guards place/osm_id, which had the ambiguity silently.
+    geography = validate_spec(
+        GENERATORS["geography"],
+        {"generator": "geography", "place": "Iceland", "osm_id": "R9407"},
+    )
+    check("the map card is guarded too", any("only one of" in e for e in geography), str(geography))
+
+    for kwargs in ({}, {"share": 30, "formula": "y"}, {"share": 140}):
+        try:
+            render_concept_thumbnail(caption="x", **kwargs)
+            check(f"the renderer refuses {kwargs}", False, "no error raised")
+        except ValueError:
+            check(f"the renderer refuses {kwargs}", True)
+
+
+def test_concept_formula_reports_bad_latex_as_its_own_error() -> None:
+    """matplotlib raises from deep inside its parser and never says which
+    formula was at fault; a batch run has to be able to tell a bad spec from a
+    bug."""
+    from app.thumbnails.formula import FormulaError, render_formula
+
+    good = render_formula(r"\sqrt[12]{2}", "serif")
+    check("a real formula renders", good.width > 10 and good.height > 10, str(good.size))
+    check(
+        "and it is cropped to what it drew",
+        good.getchannel("A").getbbox() == (0, 0, good.width, good.height),
+    )
+
+    for bad, why in (
+        (r"\frac{1}{", "unbalanced"),
+        ("", "empty"),
+        ("$x$", "dollar signs"),
+        (r"\notacommand{2}", "unknown command"),
+    ):
+        try:
+            render_formula(bad)
+            check(f"{why} is refused", False, "no error raised")
+        except FormulaError as exc:
+            check(f"{why} is refused", True, str(exc)[:40])
+
+
+def test_portrait_licence_filter_only_lets_credit_free_images_through() -> None:
+    """Only public domain and CC0 are drawn.
+
+    Not because anything else is unusable, but because everything else obliges a
+    visible credit, and there is nowhere on a 1280x720 card to put one.
+    """
+    from app.thumbnails.wikimedia import PortraitLookupError, _check_license
+
+    def allowed(meta, repository="shared"):
+        try:
+            _check_license(meta, "File:X.jpg", repository)
+            return True
+        except PortraitLookupError:
+            return False
+
+    check("public domain passes", allowed({"License": "pd-old-70", "LicenseShortName": "Public domain"}))
+    check("pd-us passes", allowed({"License": "pd-us-expired"}))
+    check("cc0 passes", allowed({"License": "cc0"}))
+    check(
+        "public domain with no machine-readable field still passes",
+        allowed({"LicenseShortName": "Public domain"}),
+    )
+    check("cc-by-sa is refused", not allowed({"License": "cc-by-sa-4.0"}))
+    check("cc-by is refused", not allowed({"License": "cc-by-3.0"}))
+    check("an unstated licence is refused", not allowed({}))
+    check(
+        "restrictions are refused even on a free licence",
+        not allowed({"License": "pd", "Restrictions": "trademarked"}),
+    )
+    check(
+        "a local (fair-use) upload is refused whatever it claims",
+        not allowed({"License": "pd"}, repository="local"),
+    )
+
+
+def test_portrait_shape_filter_rejects_the_articles_diagram() -> None:
+    """pageimages returns the article's LEAD image, not a guaranteed portrait.
+
+    "Benford's law" leads with a bar chart. The same trap the map generator
+    documents: a lookup that returns something real but wrong is one nothing
+    downstream can catch.
+    """
+    from app.thumbnails.wikimedia import PortraitLookupError, _check_shape, _plain
+
+    def allowed(width, height):
+        try:
+            _check_shape(width, height, "File:X.jpg")
+            return True
+        except PortraitLookupError:
+            return False
+
+    check("a tall portrait passes", allowed(600, 800))
+    check("a square crop passes", allowed(800, 800))
+    check("a slightly wide crop still passes", allowed(860, 800))
+    check("a landscape diagram is refused", allowed(1600, 900) is False)
+    check("a panorama is refused", allowed(3000, 800) is False)
+    check("a sizeless file is refused", allowed(0, 0) is False)
+
+    # Commons templates carry the same wording twice, once hidden for
+    # translation, which strips to "Unknown authorUnknown author".
+    check(
+        "a doubled credit is halved",
+        _plain("<span>Unknown author</span><span>Unknown author</span>") == "Unknown author",
+        _plain("<span>Unknown author</span><span>Unknown author</span>"),
+    )
+    check("an ordinary credit is left alone", _plain("<a href='#'>Oren Jack Turner</a>") == "Oren Jack Turner")
+
+
+def test_concept_is_reproducible_and_uses_every_colour() -> None:
+    """Same spec, same bytes -- the stored filename is a content hash."""
+    from app.thumbnails.concept import render_concept_thumbnail
+    from app.thumbnails.render import PALETTES, THEMES
+
+    first = render_concept_thumbnail(caption="STABLE", share=42, seed=9)
+    again = render_concept_thumbnail(caption="STABLE", share=42, seed=9)
+    check("the same seed is byte-identical", first.png == again.png)
+    check(
+        "auto resolved to something real",
+        first.palette in PALETTES and first.theme in THEMES,
+        f"{first.palette}/{first.theme}",
+    )
+
+    # Every palette and theme renders, and the dots really take the colour.
+    for palette in sorted(PALETTES):
+        for theme in sorted(THEMES):
+            result = render_concept_thumbnail(
+                caption="COLOUR", share=50, palette=palette, theme=theme, seed=9
+            )
+            card = Image.open(io.BytesIO(result.png)).convert("RGB")
+            left, right = _highlight_span(card, build_style(palette, theme), 0.0, 0.6)
+            check(f"{palette} on {theme} draws its dots", left is not None)
+
+    spread = {
+        (
+            render_concept_thumbnail(caption=f"POST {n}", share=n % 100, seed=1).palette,
+            render_concept_thumbnail(caption=f"POST {n}", share=n % 100, seed=1).theme,
+        )
+        for n in range(60)
+    }
+    check("auto spreads across colours and themes", len(spread) >= 6, str(len(spread)))
 
 
 def main() -> int:
