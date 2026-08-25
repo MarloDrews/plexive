@@ -61,6 +61,18 @@ class Post(Base):
     # Cannot be derived from author_id because seed posts also have an author.
     is_user_content = Column(Boolean, nullable=False, default=False)
 
+    # Public Supabase Storage URL of this post's own 16:9 thumbnail. NULL until
+    # one was generated or uploaded -- the card then falls back to the shared
+    # placeholder image. Added to the live DB by scripts/add_thumbnail_columns.py.
+    thumbnail_url = Column(String, nullable=True)
+
+    # How this post's thumbnail is produced, e.g.
+    # {"generator": "geography", "place": "Mediterranean Sea", "caption": "...",
+    #  "palette": "blue"}. Authored in the post JSON under "thumbnail" and kept
+    # on the row so scripts/generate_thumbnails.py can re-render from the DB
+    # alone, and so future per-format generators plug in by generator name only.
+    thumbnail_spec = Column(JSON, nullable=True)
+
     interests = relationship("Interest", secondary=post_interests)
     author    = relationship("User", back_populates="posts", foreign_keys=[author_id])
 
@@ -75,6 +87,10 @@ class Post(Base):
     @property
     def author_avatar_url(self):
         return self.author.avatar_url if self.author else None
+
+    @property
+    def author_avatar_frame_id(self):
+        return self.author.avatar_frame_id if self.author else None
 
 
 class PostEdge(Base):
@@ -137,7 +153,16 @@ class User(Base):
     id            = Column(Integer, primary_key=True)
     email         = Column(String, unique=True, nullable=False, index=True)
     username      = Column(String, unique=True, nullable=False)
-    password_hash = Column(String, nullable=False)
+    # Nullable since M-google: accounts created via Google sign-in have no
+    # password. A NULL hash means "no password set"; verify_password treats it as
+    # never matching, so such accounts can only sign in through Google.
+    password_hash = Column(String, nullable=True)
+    # Google account subject id ("sub" claim) for accounts that use Google
+    # sign-in. Stable per Google account and never reused, so it is the durable
+    # link even if the user later changes their Google email. NULL for
+    # password-only accounts. Added to the live DB by
+    # scripts/add_google_auth_columns.py.
+    google_sub    = Column(String, unique=True, nullable=True, index=True)
     created_at    = Column(DateTime, default=utcnow)
     is_active     = Column(Boolean, default=True, nullable=False)
     # Cosmetic verification badge ONLY (0/1/2). Split from the two capabilities
@@ -156,6 +181,18 @@ class User(Base):
     bio           = Column(String, nullable=True)
     avatar_url    = Column(String, nullable=True)
 
+    # Cosmetic accessories, purely decorative and never a capability gate.
+    # avatar_frame_id: the overlay circle drawn on top of the profile picture.
+    # badge_id: the Arena (ranked) waiting-room tile artwork.
+    # The frontend owns the id -> artwork mapping (lib/accessories.ts); the
+    # backend only stores and serves the number, so adding a design needs no
+    # backend change. NULL -- or any id the frontend does not know -- renders
+    # the default look, which keeps an unknown value harmless rather than
+    # breaking the avatar. Nothing in the UI writes these yet: they are set by
+    # hand in the DB. Added to the live DB by scripts/add_accessory_columns.py.
+    avatar_frame_id = Column(Integer, nullable=True)
+    badge_id        = Column(Integer, nullable=True)
+
     # Single unified knowledge score (the "Knowledge score" and the Train Elo are
     # the same number). NULL until the user's first scored answer, then it behaves
     # like a 1000-start Elo. answered_count drives the provisional/stable K-factor
@@ -172,6 +209,13 @@ class User(Base):
     token_version            = Column(Integer, nullable=False, default=0)
 
     posts = relationship("Post", back_populates="author", foreign_keys="Post.author_id")
+
+    @property
+    def has_google(self) -> bool:
+        # Whether a Google account is connected. Read by UserOut (from_attributes)
+        # so the profile UI can show "Connected" instead of the connect button;
+        # never exposes the google_sub value itself.
+        return self.google_sub is not None
 
 
 class Follow(Base):

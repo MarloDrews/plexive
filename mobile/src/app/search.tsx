@@ -82,7 +82,7 @@ function PostResultCard({ post }: { post: Post }) {
       </Text>
       <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: 2 }}>
         <Text style={{ fontFamily: fonts.sans, fontSize: 12, color: colors["ink-faint"] }}>
-          {post.is_user_content && post.author_username ? `@${post.author_username}` : "Deepscroll"}
+          {post.is_user_content && post.author_username ? `@${post.author_username}` : "Plexive"}
         </Text>
         {post.is_user_content && post.author_is_verified != null && post.author_is_verified > 0 && (
           <VerifiedBadge size={14} level={post.author_is_verified} />

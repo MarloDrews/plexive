@@ -21,6 +21,11 @@
       "featured": false
     }
   ],
+  "thumbnail": {
+    "generator": "geography",
+    "place": "Europe + Asia + North America + South America + Oceania",
+    "caption": "1‑4% Neanderthal DNA"
+  },
   "feed_card": {
     "headline": "Every person whose ancestry lies outside Africa carries 1% to 4% Neanderthal DNA.",
     "teasers": [

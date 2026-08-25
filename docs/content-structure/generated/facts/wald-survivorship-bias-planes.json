@@ -13,6 +13,11 @@
       "featured": false
     }
   ],
+  "thumbnail": {
+    "generator": "mental",
+    "motif": "head",
+    "caption": "Survivorship bias"
+  },
   "feed_card": {
     "headline": "To armor a bomber, you reinforce the spots where the planes that came back were never hit.",
     "teasers": [

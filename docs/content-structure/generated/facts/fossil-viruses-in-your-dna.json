@@ -13,6 +13,11 @@
       "featured": false
     }
   ],
+  "thumbnail": {
+    "generator": "concept",
+    "share": 8,
+    "caption": "Ancient viruses in DNA"
+  },
   "feed_card": {
     "headline": "About 1.5% of your DNA codes for proteins, the working parts of you. Roughly 8% is the wreckage of ancient viruses that infected your ancestors and never left.",
     "teasers": [

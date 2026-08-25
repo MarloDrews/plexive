@@ -124,7 +124,7 @@ in this branch; items marked **[noted]** are intentionally left for a human deci
 
 ### Direction
 
-Deepscroll is a calm, intellectual anti-doomscroll reader, and the existing SVG standard
+Plexive is a calm, intellectual anti-doomscroll reader, and the existing SVG standard
 (flat, stroke-based, no shadows/gradients/filters) already defines its voice. The house style
 extends that into the UI: **editorial dark** — a permanent zinc-950 base, generous vertical
 rhythm, a strict typographic hierarchy (Geist), and exactly one accent per surface, supplied

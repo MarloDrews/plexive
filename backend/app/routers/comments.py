@@ -34,6 +34,7 @@ class CommentOut(BaseModel):
     username: str
     is_verified: int
     avatar_url: str | None = None
+    avatar_frame_id: int | None = None
     body: str
     created_at: datetime
 
@@ -49,6 +50,7 @@ class CommentOut(BaseModel):
                 "username": data.user.username,
                 "is_verified": data.user.is_verified,
                 "avatar_url": data.user.avatar_url,
+                "avatar_frame_id": data.user.avatar_frame_id,
                 "body": data.body,
                 "created_at": data.created_at,
             }
@@ -111,6 +113,7 @@ def create_comment(
         username=current_user.username,
         is_verified=current_user.is_verified,
         avatar_url=current_user.avatar_url,
+        avatar_frame_id=current_user.avatar_frame_id,
         body=comment.body,
         created_at=comment.created_at,
     )

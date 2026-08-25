@@ -24,6 +24,7 @@ export default function CommentRow({ comment, isOwn, deleting, onDelete }: Comme
       <Avatar
         username={comment.username}
         avatarUrl={comment.avatar_url}
+        frameId={comment.avatar_frame_id}
         size={28}
         className="mt-0.5"
       />

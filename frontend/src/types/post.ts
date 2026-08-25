@@ -439,6 +439,7 @@ export interface Post {
   author_username: string | null
   author_is_verified: number | null
   author_avatar_url: string | null
+  author_avatar_frame_id: number | null
   status: string
   created_at: string
   is_user_content: boolean
@@ -447,6 +448,10 @@ export interface Post {
   // Reading time computed on the server from the post's text (see backend
   // reading_time.py); present on both list and detail responses.
   reading_minutes: number
+  // Public URL of this post's own 16:9 card thumbnail, generated or uploaded on
+  // the server. Null when the post has none yet; the card then falls back to the
+  // shared placeholder image.
+  thumbnail_url?: string | null
   interests: string[]
   // Display name of the primary category (tags[0]), resolved on the server from
   // the post's own interests (Interest.name) so the card eyebrow and the interest

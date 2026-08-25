@@ -137,6 +137,8 @@ def create_post(
         feed_card=feed_card,
         sections=sections_list,
         reading_minutes=compute_reading_minutes(sections_list),
+        # Validated in PostCreate: either empty or a file in our own storage.
+        thumbnail_url=data.thumbnail_url,
         author_id=current_user.id,
         is_user_content=True,
         # Publishing is gated by the can_publish capability (M116), no longer by

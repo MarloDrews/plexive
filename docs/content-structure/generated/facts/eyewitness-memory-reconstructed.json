@@ -13,6 +13,11 @@
       "featured": false
     }
   ],
+  "thumbnail": {
+    "generator": "mental",
+    "motif": "head",
+    "caption": "Memory rewrites itself"
+  },
   "feed_card": {
     "headline": "Eyewitness memory is reconstructed at recall, not recorded, so a leading question can add details that were never there, and mistaken witnesses figure in 69% of DNA exonerations.",
     "teasers": [

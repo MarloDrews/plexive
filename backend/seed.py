@@ -145,6 +145,10 @@ def upsert_post(db, marlo, post_format, data, slug, allow_legacy_adopt):
     sections = data["sections"]
     tags = data.get("tags", [])
     connections = data.get("connections", [])
+    # Optional: how this post's thumbnail is rendered. The image itself is
+    # produced later by scripts/generate_thumbnails.py, never here -- seeding
+    # must stay offline and fast.
+    thumbnail_spec = data.get("thumbnail")
     title = _post_title(feed_card)
     identity_key = post_identity_key(post_format, feed_card)
     interests = _resolve_interests(db, tags, post_format)
@@ -168,6 +172,12 @@ def upsert_post(db, marlo, post_format, data, slug, allow_legacy_adopt):
         existing.connections = connections
         existing.interests = interests
         existing.status = "published"
+        # Drop the rendered image ONLY when the spec actually changed, so a
+        # routine re-seed never throws away a generated thumbnail. The next
+        # generate_thumbnails.py run then picks the post up again.
+        if existing.thumbnail_spec != thumbnail_spec:
+            existing.thumbnail_spec = thumbnail_spec
+            existing.thumbnail_url = None
         # Rebuild this post's edges and activate any latent edges pointing at
         # it, then ONE commit so post + edges land atomically (M149/BE-013).
         on_post_written(db, existing)
@@ -185,6 +195,7 @@ def upsert_post(db, marlo, post_format, data, slug, allow_legacy_adopt):
         reading_minutes=compute_reading_minutes(sections),
         tags=tags,
         connections=connections,
+        thumbnail_spec=thumbnail_spec,
         author_id=marlo.id,
         status="published",
         is_user_content=False,

@@ -98,6 +98,84 @@ def apply_answer_timed(db: Session, user: User, difficulty, correct: bool, answe
     return _update(db, user, difficulty, correct, time_bonus=bonus)
 
 
+def match_delta(
+    rating: float,
+    answered_count: int,
+    score: float,
+    opponents: list[tuple[float, float]],
+) -> float:
+    """One player's rating change from a finished Arena match (placement-based).
+
+    A free-for-all is scored as the round-robin it effectively is: the player
+    meets every opponent once, taking 1 / 0.5 / 0 for a higher / equal / lower
+    score, and the usual Elo expectation is taken against that opponent's
+    rating. The pairwise deltas are averaged (not summed) so a 4-player match
+    moves a rating about as much as one duel would -- otherwise Arena would
+    swing ratings three times faster than every other scored surface.
+
+    `opponents` is (rating, score) per opponent, all snapshotted BEFORE any
+    rating in the match is written, so the result does not depend on the order
+    the four players are updated in.
+    """
+    if not opponents:
+        return 0.0
+    k = K_PROVISIONAL if answered_count < PROVISIONAL_ANSWERS else K_STABLE
+    total = 0.0
+    for opp_rating, opp_score in opponents:
+        if score > opp_score:
+            actual = 1.0
+        elif score == opp_score:
+            actual = 0.5
+        else:
+            actual = 0.0
+        total += actual - expected_score(rating, opp_rating)
+    return k * total / len(opponents)
+
+
+def apply_match(db: Session, entries: list[tuple[User, float]]) -> dict[int, tuple[float, float]]:
+    """Apply one finished Arena match to every participant's knowledge_rating.
+
+    `entries` is (user, score) per player. Returns {user_id: (new_rating,
+    effective_delta)}; the delta is post-floor-clamp (BUG-078) so a stored or
+    displayed delta always reconciles with the rating.
+
+    Rows are locked in ascending user id order: four players finishing at once
+    is the normal case here, and two matches sharing a player would otherwise
+    be free to grab the same rows in opposite orders and deadlock. Ratings are
+    read into a snapshot before any write, so every player is scored against
+    the ratings that entered the match. Caller commits.
+    """
+    ordered = sorted(entries, key=lambda e: e[0].id)
+    for user, _ in ordered:
+        db.refresh(user, with_for_update=True)
+
+    snapshot = {
+        user.id: (
+            user.knowledge_rating if user.knowledge_rating is not None else START_RATING,
+            user.knowledge_answered_count,
+            score,
+        )
+        for user, score in ordered
+    }
+
+    out: dict[int, tuple[float, float]] = {}
+    for user, score in ordered:
+        rating, answered, _ = snapshot[user.id]
+        opponents = [
+            (opp_rating, opp_score)
+            for uid, (opp_rating, _, opp_score) in snapshot.items()
+            if uid != user.id
+        ]
+        delta = match_delta(rating, answered, score, opponents)
+        new_rating = max(FLOOR_RATING, rating + delta)
+        user.knowledge_rating = new_rating
+        # A rated match counts as one scored event toward the provisional K
+        # window, the same way a single question does.
+        user.knowledge_answered_count += 1
+        out[user.id] = (new_rating, new_rating - rating)
+    return out
+
+
 def elo_summary(user: User) -> int | None:
     """The user's single knowledge rating, rounded, or None before the first
     scored answer.

@@ -57,7 +57,7 @@ python -m venv .venv
 # Windows:        .venv\Scripts\activate
 # macOS / Linux:  source .venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env   # then fill in the values below
+cp .env .env   # then fill in the values below
 uvicorn app.main:app --reload
 ```
 
@@ -78,7 +78,7 @@ To load sample content into the database, set `SEED_ADMIN_PASSWORD` in `backend/
 ```bash
 cd frontend
 npm install
-cp .env.example .env.local   # sets NEXT_PUBLIC_API_URL=http://localhost:8000
+cp .env .env.local   # sets NEXT_PUBLIC_API_URL=http://localhost:8000
 npm run dev
 ```
 
@@ -116,7 +116,7 @@ Plexive is licensed under the GNU Affero General Public License v3.0. See [LICEN
 ## Documentation
 
 - [ARCHITECTURE.md](ARCHITECTURE.md) map of every module and component.
-- [Content structure](docs/content-structure/DEEPSCROLL_CONTENT_STRUCTURE.md) the post and section schema.
+- [Content structure](docs/content-structure/PLEXIVE_CONTENT_STRUCTURE.md) the post and section schema.
 - [docs/content-structure/STYLE_GUIDE_LONGFORM.md](docs/content-structure/STYLE_GUIDE_LONGFORM.md) writing style for long-form content.
 - [docs/content-structure/LAYOUT_STANDARD.md](docs/content-structure/LAYOUT_STANDARD.md) how posts are laid out and rendered.
 - [docs/content-structure/IMAGE_STANDARD.md](docs/content-structure/IMAGE_STANDARD.md) and [SVG_STANDARD.md](docs/content-structure/SVG_STANDARD.md) image and SVG rules.

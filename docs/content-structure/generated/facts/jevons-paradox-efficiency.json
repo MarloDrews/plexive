@@ -20,6 +20,11 @@
       "featured": false
     }
   ],
+  "thumbnail": {
+    "generator": "geography",
+    "place": "United Kingdom",
+    "caption": "Efficiency spurs more coal"
+  },
   "feed_card": {
     "headline": "Steam engines that used 75% less coal for the same work helped Britain burn more coal than ever before.",
     "teasers": [

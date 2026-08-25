@@ -28,6 +28,11 @@
       "featured": false
     }
   ],
+  "thumbnail": {
+    "generator": "mental",
+    "motif": "head",
+    "caption": "Losses hurt twice as much"
+  },
   "feed_card": {
     "headline": "Losing \\$100 hurts about twice as much as winning \\$100 feels good.",
     "teasers": [

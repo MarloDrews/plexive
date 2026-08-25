@@ -21,6 +21,12 @@
       "featured": false
     }
   ],
+  "thumbnail": {
+    "generator": "geography",
+    "place": "Mediterranean Sea",
+    "caption": "Crystals grow",
+    "palette": "blue"
+  },
   "feed_card": {
     "headline": "Seawater destroys modern concrete within decades, but for 2,000 years it has been growing the crystals that hold Roman sea walls together.",
     "teasers": [

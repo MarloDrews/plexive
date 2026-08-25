@@ -50,7 +50,12 @@ def hash_password(plain: str) -> str:
     return _bcrypt_lib.hashpw(plain.encode("utf-8")[:72], _bcrypt_lib.gensalt()).decode("utf-8")
 
 
-def verify_password(plain: str, hashed: str) -> bool:
+def verify_password(plain: str, hashed: Optional[str]) -> bool:
+    # A NULL hash means the account has no password (Google-only sign-in): treat
+    # it as never matching so a password login attempt is a clean "wrong
+    # credentials" rather than a 500 on hashed.encode.
+    if not hashed:
+        return False
     # A malformed stored hash (legacy or hand-inserted row) raises ValueError
     # inside checkpw; that must be "wrong password", not a 500 on the login
     # path (BUG-075/M151).

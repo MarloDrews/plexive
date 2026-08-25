@@ -3,7 +3,7 @@
 param([Parameter(Mandatory = $true)][string]$Name)
 
 $adb = "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe"
-$dir = "d:\Projects\deepscroll\mobile\.verify"
+$dir = "d:\Projects\Plexive\mobile\.verify"
 $raw = Join-Path $dir "$Name-raw.png"
 $out = Join-Path $dir "$Name.png"
 

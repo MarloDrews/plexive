@@ -28,6 +28,11 @@
       "featured": false
     }
   ],
+  "thumbnail": {
+    "generator": "concept",
+    "share": 50,
+    "caption": "Carbon in dry wood"
+  },
   "feed_card": {
     "headline": "Dry out a tree and half its weight is carbon, every gram of it pulled from the air.",
     "teasers": [

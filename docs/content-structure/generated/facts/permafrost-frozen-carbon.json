@@ -28,6 +28,12 @@
       "featured": false
     }
   ],
+  "thumbnail": {
+    "generator": "geography",
+    "place": "Arctic",
+    "caption": "1500bn tonnes carbon",
+    "source": "natural_earth"
+  },
   "feed_card": {
     "headline": "Arctic permafrost holds about 1,500 billion tonnes of carbon, nearly twice the amount in the atmosphere today.",
     "teasers": [

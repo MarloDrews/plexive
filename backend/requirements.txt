@@ -15,3 +15,16 @@ Pillow
 lxml
 defusedxml
 supabase
+# Verifies Google Sign-In ID tokens (signature, expiry, audience) against
+# Google's public keys for the /api/auth/google endpoint. `requests` is a
+# separate, required dependency: google.auth.transport.requests (used to fetch
+# Google's signing keys) imports it explicitly and google-auth does NOT pull it
+# in on its own.
+google-auth
+requests
+# Typesets the `concept` thumbnail's LaTeX formulas via matplotlib.mathtext,
+# which is a LaTeX maths parser built into matplotlib -- no TeX installation,
+# offline, deterministic. Imported lazily inside app/thumbnails/formula.py:
+# thumbnails are rendered by scripts/generate_thumbnails.py and the make_*
+# CLIs, never in a request, so the API process never loads it.
+matplotlib

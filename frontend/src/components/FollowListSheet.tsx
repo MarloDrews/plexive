@@ -9,6 +9,7 @@ export interface ListUser {
   is_verified: number
   is_private: boolean
   avatar_url: string | null
+  avatar_frame_id: number | null
 }
 
 // Followers / following bottom sheet, shared by the account and public profile
@@ -62,7 +63,7 @@ export default function FollowListSheet({
                     onClick={onClose}
                     className="flex items-center gap-3 px-2 py-2 rounded-2xl hover:bg-white/[0.06] transition-colors duration-150"
                   >
-                    <Avatar username={u.username} avatarUrl={u.avatar_url} size={40} verified={u.is_verified} />
+                    <Avatar username={u.username} avatarUrl={u.avatar_url} frameId={u.avatar_frame_id} size={40} verified={u.is_verified} />
                     <span className="flex items-center gap-1.5 text-ink text-sm font-medium">
                       @{u.username}
                       {u.is_verified > 0 && <VerifiedBadge size={14} level={u.is_verified} />}

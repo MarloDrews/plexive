@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 
-// Stage primitives shared by Train (Marathon) and Battle, mirroring the mobile
+// Stage primitives shared by Arena and Battle, mirroring the mobile
 // stage.tsx (Frosted + SlabGlow + MessageSlab). On web the frosted slab is the
 // .card class (translucent white fill + backdrop blur); the glow is a static
 // lamp radial-gradient overlay clipped by the card's rounded corners.

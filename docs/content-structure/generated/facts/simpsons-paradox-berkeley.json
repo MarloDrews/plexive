@@ -29,6 +29,12 @@
       "featured": false
     }
   ],
+  "thumbnail": {
+    "generator": "concept",
+    "share": 44,
+    "benchmark": 35,
+    "caption": "Men admitted vs women"
+  },
   "feed_card": {
     "headline": "Berkeley admitted 44% of men and 35% of women in 1973, yet most departments admitted women at an equal or higher rate.",
     "teasers": [

@@ -11,17 +11,18 @@ import ToastHost from "@/components/ToastHost"
 import FeedHeader, { FEED_TABS_ID, type FeedTab } from "@/components/FeedHeader"
 import type { Post } from "@/types/post"
 import { useAuth, hasToken } from "@/lib/auth"
+import { INTERESTS_KEY } from "@/lib/storage"
 import { scrollBehavior } from "@/lib/motion"
 import { tabPanelProps } from "@/lib/tablist"
 import { useSwipeTabs } from "@/lib/useSwipeTabs"
 import { useWindowedFeed } from "@/lib/useWindowedFeed"
 
-// Train and Battle ship as their own lazy chunks: their whole import graphs
-// (stage kit, sockets, question pools, Elo math) otherwise sit in the entry
-// chunk of the app's most-visited route while rendering is already gated on
-// tab activation. The loading fallback is the same empty surface the
-// non-activated tab shows, so nothing changes visually while the chunk loads.
-const Marathon = dynamic(() => import("@/components/Marathon"), {
+// Arena and Battle ship as their own lazy chunks: their whole import graphs
+// (stage kit, sockets, question pools) otherwise sit in the entry chunk of the
+// app's most-visited route while rendering is already gated on tab activation.
+// The loading fallback is the same empty surface the non-activated tab shows,
+// so nothing changes visually while the chunk loads.
+const Arena = dynamic(() => import("@/components/Arena"), {
   ssr: false,
   loading: () => <div className="h-full bg-surface-0" />,
 })
@@ -29,17 +30,26 @@ const Battle = dynamic(() => import("@/components/Battle"), {
   ssr: false,
   loading: () => <div className="h-full bg-surface-0" />,
 })
+// Net ships as its own lazy chunk too: it pulls in react-force-graph (canvas +
+// d3-force), which must stay out of the entry chunk and off the server (ssr:
+// false -- the library touches window/canvas at import).
+const Net = dynamic(() => import("@/components/Net"), {
+  ssr: false,
+  loading: () => <div className="h-full bg-surface-0" />,
+})
 
 const TABS: FeedTab[] = [
   // The feed has no format-specific tabs (books, people, etc.); format filtering
-  // lives only in the search view now, matching the mobile tab set. These four
+  // lives only in the search view now, matching the mobile tab set. These five
   // non-format tabs carry no accent dot; the capsule itself stays neutral.
   // Following sits left of For You, but For You stays the default open tab.
-  // Train and Battle sit right of For You (matching the mobile tab order); they
-  // host their own components instead of a card feed (see the pager map below).
+  // Net, Arena and Battle sit right of For You and host their own full-screen
+  // components instead of a card feed (see the pager map below): Net renders the
+  // interactive post graph, Arena the ranked 1v1v1v1, Battle the friendly 1v1.
   { id: "following", label: "Following", format: null, accent: "#eceeff" },
   { id: "for-you", label: "For You", format: null, accent: "#eceeff" },
-  { id: "train", label: "Train", format: null, accent: "#eceeff" },
+  { id: "net", label: "Net", format: null, accent: "#eceeff" },
+  { id: "arena", label: "Arena", format: null, accent: "#eceeff" },
   { id: "battle", label: "Battle", format: null, accent: "#eceeff" },
 ]
 
@@ -166,7 +176,7 @@ function TabPage({
   }, [posts, tab.id])
 
   return (
-    // pb-24 clears the floating dock (12px inset + 56px tall).
+    // pb-24 clears the bottom nav bar (56px tall + safe-area inset).
     <div
       ref={scrollRef}
       {...tabPanelProps(FEED_TABS_ID, index, isActive)}
@@ -234,6 +244,13 @@ function TabPage({
 export default function Home() {
   const router = useRouter()
   const [slugs, setSlugs] = useState<string[]>([])
+  // The Arena owns the bottom of the viewport while its waiting room OR a live
+  // match is showing (the match pins a strip of participant badges where the
+  // dock would sit), so the nav dock is hidden then (Arena reports the change).
+  const [arenaOwnsBottom, setArenaOwnsBottom] = useState(false)
+  // A live Arena match also hides the feed header (full-screen battle); the
+  // waiting room does not, so this is separate from arenaOwnsBottom.
+  const [arenaHideHeader, setArenaHideHeader] = useState(false)
   // The swipe pager, sliding indicator and active/activated tab state all
   // live in the shared hook; the indicator is the neutral pill fill whose
   // color never changes — the per-post accent switches hard with the
@@ -253,7 +270,7 @@ export default function Home() {
 
   // Check localStorage on mount, store interests, and restore active tab from sessionStorage
   useEffect(() => {
-    const saved = localStorage.getItem("deepscroll_interests")
+    const saved = localStorage.getItem(INTERESTS_KEY)
     if (!saved) {
       router.replace("/onboarding")
       return
@@ -312,6 +329,7 @@ export default function Home() {
         tabRefs={tabRefs}
         indicatorRef={indicatorRef}
         tabStripRef={tabStripRef}
+        hidden={arenaHideHeader}
       />
 
       {/* Horizontal strip — one full-width page per tab */}
@@ -321,11 +339,11 @@ export default function Home() {
       >
         {TABS.map((tab, i) => {
           const isActivated = activatedIndices.has(i)
-          // Train and Battle host their own full-screen component instead of a
-          // card feed. Gate on activation so the marathon does not run and the
-          // battle socket does not connect until the tab is first opened (the
-          // empty page keeps swiping cheap, like TabPage's own placeholder).
-          if (tab.id === "train" || tab.id === "battle") {
+          // Net hosts its own full-screen graph. Gate on activation so the graph
+          // fetch and the canvas mount only happen once the tab is first opened
+          // (the empty page keeps swiping cheap, like Train/Battle); the active
+          // flag pauses the force simulation while the tab is swiped away.
+          if (tab.id === "net") {
             return (
               <div
                 key={tab.id}
@@ -334,8 +352,36 @@ export default function Home() {
               >
                 {!isActivated ? (
                   <div className="h-full bg-surface-0" />
-                ) : tab.id === "train" ? (
-                  <Marathon onExit={handleExitToFeed} />
+                ) : (
+                  <Net active={activeIndex === i} />
+                )}
+              </div>
+            )
+          }
+          // Arena and Battle host their own full-screen component instead of a
+          // card feed. Gate on activation so neither socket connects until the
+          // tab is first opened (the empty page keeps swiping cheap, like
+          // TabPage's own placeholder).
+          if (tab.id === "arena" || tab.id === "battle") {
+            return (
+              <div
+                key={tab.id}
+                {...tabPanelProps(FEED_TABS_ID, i, activeIndex === i)}
+                className="w-full shrink-0 snap-start h-[100dvh] bg-surface-0"
+              >
+                {!isActivated ? (
+                  <div className="h-full bg-surface-0" />
+                ) : tab.id === "arena" ? (
+                  // active gates the arena socket the same way (M143):
+                  // swiping away disconnects, which also drops the player out
+                  // of the matchmaking queue rather than matching someone who
+                  // is not watching.
+                  <Arena
+                    onExit={handleExitToFeed}
+                    active={activeIndex === i}
+                    onOwnsBottomChange={setArenaOwnsBottom}
+                    onHeaderHiddenChange={setArenaHideHeader}
+                  />
                 ) : (
                   // active gates the battle socket (M143): swiping away
                   // disconnects it, so a background tab is never silently
@@ -357,7 +403,7 @@ export default function Home() {
           )
         })}
       </div>
-      <BottomNav activeTab="feed" />
+      {!arenaOwnsBottom && <BottomNav activeTab="feed" />}
       {/* The one toast element for every card's share feedback. */}
       <ToastHost />
     </PhoneFrame>

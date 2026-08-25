@@ -189,6 +189,7 @@ def search_users(
             "is_private": u.is_private,
             "bio": u.bio,
             "avatar_url": u.avatar_url,
+            "avatar_frame_id": u.avatar_frame_id,
             "is_self": current_user is not None and u.id == current_user.id,
             "follow_status": (
                 None if current_user is None or u.id == current_user.id

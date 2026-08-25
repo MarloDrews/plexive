@@ -41,7 +41,19 @@ export interface NumericQuestion extends BaseQuestion {
   unit?: string // optional suffix shown after the number
 }
 
-export type MarathonQuestion = ChoiceQuestion | NumericQuestion
+// Map question: the player drops a pin on a world map to guess where something
+// is. The answer is a single lat/lng; the guess is graded by great-circle
+// distance (partial credit that rises as the pin nears the target, see
+// @/lib/train/scoring). answerLat/answerLng are CLIENT-SIDE for now (mock phase,
+// see top-of-file note); the server keeps its own copy in app/train_bank.py.
+export interface MapQuestion extends BaseQuestion {
+  kind: "map"
+  answerLat: number // correct latitude, degrees [-90, 90]
+  answerLng: number // correct longitude, degrees [-180, 180]
+  answerLabel?: string // human place name shown in feedback (e.g. "Paris, France")
+}
+
+export type MarathonQuestion = ChoiceQuestion | NumericQuestion | MapQuestion
 
 export interface AnswerResult {
   correct: boolean

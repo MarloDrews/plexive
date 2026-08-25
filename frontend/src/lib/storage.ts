@@ -18,6 +18,46 @@ if (typeof window !== "undefined" && !API_URL) {
 // chat/battle sockets.
 export const TOKEN_KEY = "deepscroll_token"
 
+// Active interests key. Drives the onboarding gate and the feed query, and works
+// for anonymous browsing too. Cleared on any account transition (see auth).
+export const INTERESTS_KEY = "deepscroll_interests"
+
+// Per-account backup of the picked interests, keyed by user id, so logging back
+// into an account that already onboarded on THIS device restores its interests
+// instead of forcing the topic picker again. There is no server copy, so a first
+// login on a new device still onboards. Shape: { [userId: number]: string[] }.
+const INTERESTS_BY_USER_KEY = "deepscroll_interests_by_user"
+
+function readInterestsMap(): Record<string, string[]> {
+  try {
+    const raw = localStorage.getItem(INTERESTS_BY_USER_KEY)
+    const parsed = raw ? JSON.parse(raw) : null
+    return parsed && typeof parsed === "object" ? (parsed as Record<string, string[]>) : {}
+  } catch {
+    return {}
+  }
+}
+
+// Save this account's interests so a later login on this device can restore them.
+export function rememberInterestsForUser(userId: number, slugs: string[]): void {
+  try {
+    const map = readInterestsMap()
+    map[userId] = slugs
+    localStorage.setItem(INTERESTS_BY_USER_KEY, JSON.stringify(map))
+  } catch {}
+}
+
+// The remembered interests for this account, or null if it never onboarded here.
+export function recallInterestsForUser(userId: number): string[] | null {
+  const value = readInterestsMap()[userId]
+  return Array.isArray(value) ? value : null
+}
+
+// Google OAuth Web client id for "Sign in with Google". Must match the backend's
+// GOOGLE_CLIENT_ID. Empty when unset -- GoogleSignInButton then renders nothing,
+// so email/password stays the only visible option.
+export const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? ""
+
 // http -> ws, https -> wss, appended with the given API path. The backend
 // rejects plain ws outside local dev, so production must serve the API over https.
 export function wsUrl(path: string): string {

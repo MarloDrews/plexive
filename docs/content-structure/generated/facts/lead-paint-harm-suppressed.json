@@ -20,6 +20,11 @@
       "featured": false
     }
   ],
+  "thumbnail": {
+    "generator": "geography",
+    "place": "United States",
+    "caption": "Lead paint legal"
+  },
   "feed_card": {
     "headline": "Doctors tied lead paint to childhood brain damage in 1904. The United States kept it legal in homes until 1978.",
     "teasers": [

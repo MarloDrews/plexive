@@ -13,6 +13,11 @@
       "featured": false
     }
   ],
+  "thumbnail": {
+    "generator": "concept",
+    "share": 30,
+    "caption": "Numbers start with 1"
+  },
   "feed_card": {
     "headline": "In real-world data, about 30% of numbers start with the digit 1, nearly three times what equal chance would predict.",
     "teasers": [

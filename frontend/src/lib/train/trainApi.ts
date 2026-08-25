@@ -59,7 +59,11 @@ export async function fetchNextQuestion(params: {
   answeredIds: string[] // exclude already-seen this session
 }): Promise<MarathonQuestion | null> {
   const seen = new Set(params.answeredIds)
-  const remaining = mockQuestions.filter((q) => !seen.has(q.id))
+  // Map questions are excluded from the solo marathon: they need the world-map
+  // picker, which this adaptive flow does not render. This is independent of the
+  // Arena/Battle seeded shuffle, which draws from the WHOLE pool, so parity is
+  // unaffected.
+  const remaining = mockQuestions.filter((q) => !seen.has(q.id) && q.kind !== "map")
   // Returns null once the mock pool is exhausted for this session.
   return selectAdaptive(remaining, params.currentElo)
 }
@@ -79,11 +83,16 @@ export async function submitAnswer(params: {
   // Local correctness is computed only for the immediate feedback display; the
   // authoritative score comes from the server grade below (logged-in path).
   const numeric = question.kind === "numeric"
+  // Map questions are not served by the solo marathon (see fetchNextQuestion),
+  // so this branch never runs for them; it exists to keep the union exhaustive.
+  const isMap = question.kind === "map"
   const correct = numeric
     ? numericMatch(chosenValue ?? NaN, question.answerValue, question.min, question.step ?? 1)
-    : chosenIndex === question.answerIndex
+    : isMap
+      ? false
+      : chosenIndex === question.answerIndex
   // Per-kind correct answer to show in feedback (only one applies).
-  const correctIndex = numeric ? undefined : question.answerIndex
+  const correctIndex = numeric || isMap ? undefined : question.answerIndex
   const correctValue = numeric ? question.answerValue : undefined
   const eloBefore = Math.round(currentElo)
 

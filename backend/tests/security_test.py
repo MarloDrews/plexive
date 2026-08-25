@@ -332,19 +332,19 @@ trainer = register("trainer@example.com", "trainer")
 # A wrong choice answer must grade as incorrect even though the client used to
 # assert correctness; the body no longer carries a `correct` field at all.
 r = client.post("/api/train/answer",
-                json={"question_id": "geo-sun-rise", "chosen_index": 0, "answer_ms": 1000},
+                json={"question_id": "sci-krebs-location", "chosen_index": 0, "answer_ms": 1000},
                 headers=auth(trainer["access_token"]))
 check("train wrong answer graded incorrect server-side",
       r.status_code == 200 and r.json()["correct"] is False, r.text)
 # A correct choice answer grades correct.
 r = client.post("/api/train/answer",
-                json={"question_id": "sci-planet-red", "chosen_index": 1, "answer_ms": 1000},
+                json={"question_id": "lit-ulysses-author", "chosen_index": 1, "answer_ms": 1000},
                 headers=auth(trainer["access_token"]))
 check("train correct answer graded correct server-side",
       r.status_code == 200 and r.json()["correct"] is True, r.text)
 # A correct numeric answer grades correct via the step-scaled match.
 r = client.post("/api/train/answer",
-                json={"question_id": "geo-continents", "chosen_value": 7, "answer_ms": 1000},
+                json={"question_id": "hist-westphalia-year", "chosen_value": 1648, "answer_ms": 1000},
                 headers=auth(trainer["access_token"]))
 check("train numeric answer graded correct server-side",
       r.status_code == 200 and r.json()["correct"] is True, r.text)

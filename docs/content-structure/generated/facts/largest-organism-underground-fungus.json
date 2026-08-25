@@ -20,6 +20,11 @@
       "featured": false
     }
   ],
+  "thumbnail": {
+    "generator": "geography",
+    "place": "Oregon",
+    "caption": "Largest living thing"
+  },
   "feed_card": {
     "headline": "The largest living thing on Earth is a fungus in Oregon, one clone spread across 2,385 acres.",
     "teasers": [

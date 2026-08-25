@@ -1,5 +1,5 @@
 // concepts_skeleton.jsonc
-// Deepscroll: Concepts format skeleton.
+// Plexive: Concepts format skeleton.
 // Thesis: the concept is taught for use, not consumption, and the central diagram is
 // constitutive, not decorative. A reader who finds the idea interesting should move
 // from intuition to how_to_apply without friction, pulled by recognition. Accent:
@@ -90,7 +90,7 @@
 //   STYLE_GUIDE_LONGFORM.md.
 // Zero em-dashes in user-facing text. Default voice is third-person assertive;
 // "you" is reserved for how_to_apply. Full prose rules: STYLE_GUIDE_LONGFORM.md.
-// Schema and rationale: DEEPSCROLL_CONTENT_STRUCTURE.md. Diagrams: SVG_STANDARD.md.
+// Schema and rationale: PLEXIVE_CONTENT_STRUCTURE.md. Diagrams: SVG_STANDARD.md.
 // Sourced images (photos, portraits, card images): IMAGE_STANDARD.md.
 
 {

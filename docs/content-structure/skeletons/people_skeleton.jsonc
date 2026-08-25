@@ -1,5 +1,5 @@
 // people_skeleton.jsonc
-// Deepscroll: People format skeleton.
+// Plexive: People format skeleton.
 // Thesis: tell a life as a story of consequence, not a resume, and the life_arc
 // timeline is constitutive, not decorative. A reader who finds the person
 // interesting should move from the face to the legacy without friction, pulled
@@ -77,7 +77,7 @@
 // warmth; the tone yields to the subject (A14), drop the punch on death,
 // suffering, or atrocity. Evaluative-label bans and every other prose rule live
 // in STYLE_GUIDE_LONGFORM.md (Part B People, A1, A3); reference them, never
-// restate them here. Schema and rationale: DEEPSCROLL_CONTENT_STRUCTURE.md.
+// restate them here. Schema and rationale: PLEXIVE_CONTENT_STRUCTURE.md.
 // Diagrams: SVG_STANDARD.md. Sourced images (portraits, archival photos):
 // IMAGE_STANDARD.md.
 

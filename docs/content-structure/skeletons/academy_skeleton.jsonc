@@ -1,5 +1,5 @@
 // academy_skeleton.jsonc
-// Deepscroll: Academy format skeleton.
+// Plexive: Academy format skeleton.
 // Thesis: the post explains one real piece of research at the level a curious
 // near-peer can follow, the equations and figures carry the argument, and the
 // strength of the evidence is reported as honestly as the finding. Accent: the
@@ -110,7 +110,7 @@
 //   marker, read only OUTSIDE the $...$ math spans, so an asterisk inside math is untouched;
 //   avoid stray asterisk pairs. Named principles and laws are not frameworks and stay plain
 //   (Occam's razor). Full borderline policy: STYLE_GUIDE_LONGFORM.md.
-// Schema and rationale: DEEPSCROLL_CONTENT_STRUCTURE.md. Diagrams: SVG_STANDARD.md.
+// Schema and rationale: PLEXIVE_CONTENT_STRUCTURE.md. Diagrams: SVG_STANDARD.md.
 // Sourced images (photos, portraits, card images): IMAGE_STANDARD.md.
 
 {

@@ -17,6 +17,7 @@ interface UserResult {
   username: string
   is_verified: number
   avatar_url: string | null
+  avatar_frame_id: number | null
   is_self: boolean
 }
 
@@ -34,7 +35,7 @@ function ConversationAvatar({ conv, me }: { conv: Conversation; me: string }) {
     )
   }
   const other = conv.participants.find((p) => p.username !== me)
-  return <Avatar username={other?.username ?? "?"} avatarUrl={other?.avatar_url} size={48} verified={other?.is_verified} />
+  return <Avatar username={other?.username ?? "?"} avatarUrl={other?.avatar_url} frameId={other?.avatar_frame_id} size={48} verified={other?.is_verified} />
 }
 
 function NewChatOverlay({ onClose, onCreated }: { onClose: () => void; onCreated: (id: number) => void }) {
@@ -138,7 +139,7 @@ function NewChatOverlay({ onClose, onCreated }: { onClose: () => void; onCreated
                 aria-label={`Remove @${u.username}`}
                 className="flex items-center gap-1.5 bg-white/[0.06] rounded-full pl-1 pr-2.5 py-1 text-xs text-ink cursor-pointer"
               >
-                <Avatar username={u.username} avatarUrl={u.avatar_url} size={20} />
+                <Avatar username={u.username} avatarUrl={u.avatar_url} frameId={u.avatar_frame_id} size={20} />
                 @{u.username}
                 <span className="text-ink-muted" aria-hidden="true">×</span>
               </button>
@@ -171,7 +172,7 @@ function NewChatOverlay({ onClose, onCreated }: { onClose: () => void; onCreated
               aria-checked={isSelected}
               className="w-full flex items-center gap-3 py-2.5 text-left cursor-pointer"
             >
-              <Avatar username={u.username} avatarUrl={u.avatar_url} size={40} verified={u.is_verified} />
+              <Avatar username={u.username} avatarUrl={u.avatar_url} frameId={u.avatar_frame_id} size={40} verified={u.is_verified} />
               <span className="flex-1 flex items-center gap-1.5 text-ink text-sm font-medium truncate">
                 @{u.username}
                 {u.is_verified > 0 && <VerifiedBadge size={14} level={u.is_verified} />}

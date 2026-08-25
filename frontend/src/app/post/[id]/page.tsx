@@ -45,7 +45,7 @@ function HeaderMeta({ post }: { post: Post }) {
           href={`/profile/${post.author_username}`}
           className="flex items-center gap-1.5 min-w-0 hover:text-ink-body transition-colors"
         >
-          <Avatar username={post.author_username} avatarUrl={post.author_avatar_url} size={24} />
+          <Avatar username={post.author_username} avatarUrl={post.author_avatar_url} frameId={post.author_avatar_frame_id} size={24} />
           <span className="text-ink-dim truncate">@{post.author_username}</span>
           {(post.author_is_verified ?? 0) > 0 && (
             <VerifiedBadge size={12} level={post.author_is_verified ?? 1} />
@@ -611,7 +611,7 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                             href={`/profile/${post.author_username}`}
                             className="flex items-center gap-1.5 text-ink-muted text-xs hover:text-ink-body transition-colors"
                           >
-                            <Avatar username={post.author_username} avatarUrl={post.author_avatar_url} size={20} />
+                            <Avatar username={post.author_username} avatarUrl={post.author_avatar_url} frameId={post.author_avatar_frame_id} size={20} />
                             <span>@{post.author_username}</span>
                           </Link>
                           {(post.author_is_verified ?? 0) > 0 && (

@@ -1,4 +1,4 @@
-# Deepscroll: Long-Form Style Guide
+# Plexive: Long-Form Style Guide
 
 The binding standard for **how the language reads** across all seven formats:
 books, facts, people, concepts, questions, stories, academy.

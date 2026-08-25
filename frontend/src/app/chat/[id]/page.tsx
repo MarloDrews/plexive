@@ -332,7 +332,7 @@ export default function ConversationPage() {
             </svg>
           </button>
           {headerAvatarUser && (
-            <Avatar username={headerAvatarUser.username} avatarUrl={headerAvatarUser.avatar_url} size={32} verified={headerAvatarUser.is_verified} />
+            <Avatar username={headerAvatarUser.username} avatarUrl={headerAvatarUser.avatar_url} frameId={headerAvatarUser.avatar_frame_id} size={32} verified={headerAvatarUser.is_verified} />
           )}
           <div className="flex-1 min-w-0">
             <h1 className="text-ink text-sm font-semibold truncate">{conversation?.name ?? "Chat"}</h1>
