@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.ktlint)
 }
 
 // The shared module has a single Android variant, so the base URL cannot vary by build type and is
@@ -76,5 +77,30 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+    }
+}
+
+// Spike only: ktlint is evaluated here, not adopted.
+ktlint {
+    version.set(libs.versions.ktlintTool)
+    // The KMP source set detection otherwise picks up generated Compose resource collectors under
+    // build/, which are not ours to format and fail on a package name the generator chooses.
+    filter {
+        exclude { it.file.path.replace('\\', '/').contains("/build/") }
+    }
+}
+
+// The jlleitschuh plugin wires ktlintCheck into the check lifecycle task, and it does so for each
+// KMP source set as that source set is created, which is after this build script is evaluated.
+// afterEvaluate is therefore the only point where every ktlint task already exists to be detached.
+// The spike must leave no gate behind.
+// Detaching ktlint from check via dependsOn filtering does not work on this KMP module: the
+// hierarchy source sets (appleMain, nativeMain, iosTest) are materialized after both a plain and a
+// nested afterEvaluate, so their ktlint tasks re-attach to check afterwards. configureEach applies
+// to tasks created at any point, so the guard below is ordering-proof: ktlint runs only when it is
+// asked for by name, and is skipped when reached through check. The spike leaves no gate behind.
+tasks.matching { it.name.contains("ktlint", ignoreCase = true) }.configureEach {
+    onlyIf {
+        gradle.startParameter.taskNames.any { it.contains("ktlint", ignoreCase = true) }
     }
 }
