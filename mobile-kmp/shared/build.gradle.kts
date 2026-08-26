@@ -52,7 +52,6 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.bundles.ktor)
             implementation(libs.androidx.nav3)
-            implementation(libs.compose.adaptiveNavigation3)
             implementation(libs.compose.viewmodelNavigation3)
             implementation(libs.bundles.koin)
             implementation(libs.bundles.supabase)
