@@ -52,9 +52,10 @@ ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref="ktor" }
 ktor-client-serialization = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-client-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref="ktor" }
+ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
 
 [bundles]
-ktor = ["ktor-client-cio", "ktor-client-json", "ktor-client-serialization", "ktor-client-core"]
+ktor = ["ktor-client-cio", "ktor-client-json", "ktor-client-serialization", "ktor-client-core", "ktor-client-logging"]
 koin = ["koin-annotations", "koin-compose", "koin-compose-vm", "koin-nav3"]
 
 [plugins]
