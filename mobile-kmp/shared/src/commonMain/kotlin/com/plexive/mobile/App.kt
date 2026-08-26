@@ -17,41 +17,37 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import com.plexive.mobile.navigation.NavigationViewModel
 import com.plexive.mobile.navigation.Screen
-import org.koin.compose.KoinApplication
 import org.koin.compose.navigation3.koinEntryProvider
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
-import org.koin.dsl.koinConfiguration
 
+// Koin is started globally from each platform entry point (see data/di/initKoin), so this
+// composable resolves from the default context instead of hosting its own container.
 @OptIn(KoinExperimentalAPI::class)
 @Composable
 @Preview
 fun App() {
     MaterialTheme {
-        KoinApplication(configuration = koinConfiguration {
-            
-        }) {
-            Surface(
-                modifier = Modifier
-                    .background(MaterialTheme.colorScheme.primaryContainer)
-                    .safeContentPadding()
-                    .fillMaxSize()
-            ) {
-                val viewModel = koinViewModel<NavigationViewModel>()
-                val entryProvider = koinEntryProvider<Any>()
-                NavDisplay(
-                    backStack = viewModel.backStack,
-                    modifier = Modifier,
-                    transitionSpec = {
-                        fadeIn(tween(300)) togetherWith fadeOut(tween(300))
-                    },
-                    /*entryDecorators = listOf(
-                        rememberSceneSetupNavEntryDecorator(),
-                        rememberSavedStateNavEntryDecorator(),
-                    ),*/
-                    entryProvider = entryProvider
-                )
-            }
+        Surface(
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.primaryContainer)
+                .safeContentPadding()
+                .fillMaxSize()
+        ) {
+            val viewModel = koinViewModel<NavigationViewModel>()
+            val entryProvider = koinEntryProvider<Any>()
+            NavDisplay(
+                backStack = viewModel.backStack,
+                modifier = Modifier,
+                transitionSpec = {
+                    fadeIn(tween(300)) togetherWith fadeOut(tween(300))
+                },
+                /*entryDecorators = listOf(
+                    rememberSceneSetupNavEntryDecorator(),
+                    rememberSavedStateNavEntryDecorator(),
+                ),*/
+                entryProvider = entryProvider
+            )
         }
     }
 }
