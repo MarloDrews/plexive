@@ -13,7 +13,7 @@ class PlexiveApplication
 // so only the hand-written Navigation 3 module has to be listed here.
 fun initKoin(configuration: KoinAppDeclaration? = null) {
     startKoin<PlexiveApplication> {
-        includes(configuration)
+        configuration?.invoke(this)
         modules(feedNavModule)
     }
 }
