@@ -11,6 +11,7 @@ import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.URLBuilder
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.koin.core.annotation.ComponentScan
@@ -62,18 +63,54 @@ class NetworkModule {
 // and the response coming back.
 private fun sessionAuth(sessionStore: SessionStore) = createClientPlugin("SessionAuth") {
     on(Send) { request ->
-        val token = sessionStore.token.value
-        if (token != null) {
-            request.headers[HttpHeaders.Authorization] = "Bearer $token"
+        val establishesSession = establishesSession(request.url.requestPath())
+        val stored = sessionStore.token.value
+        // Protection 1: a request that creates a session must never carry one. Sending a bearer
+        // token to a sign-in endpoint is meaningless anyway, and it is what let a wrong password
+        // answer 401 on a request that looked authenticated.
+        val sentToken = stored != null && !establishesSession
+        if (sentToken) {
+            request.headers[HttpHeaders.Authorization] = "Bearer $stored"
         }
         val call = proceed(request)
-        // Only clear when this request actually carried a token. The backend can invalidate a token
-        // at any time through its token_version counter (a password change, an account deletion), so
-        // a stored token can stop working while still looking well-formed on the device. Gating on
-        // the header also keeps a failed sign-in, which sends no token, from clearing anything.
-        if (token != null && call.response.status == HttpStatusCode.Unauthorized) {
+        // Protection 2, deliberately independent of protection 1: a 401 from a session-establishing
+        // endpoint never clears the stored token, even if a header somehow reached it. Either check
+        // alone is enough, so the defect needs both to be wrong before it can come back.
+        //
+        // sentToken is still required: the backend can invalidate a token at any time through its
+        // token_version counter (a password change, an account deletion), so a stored token can stop
+        // working while still looking well-formed on the device. That is the case this clears for.
+        if (sentToken && !establishesSession && call.response.status == HttpStatusCode.Unauthorized) {
             sessionStore.clear()
         }
         call
     }
 }
+
+// The endpoints that create a session rather than use one, read off the backend router
+// (backend/app/routers/auth.py) rather than off their names: each takes no user dependency and
+// returns TokenResponse, so each mints a token. They are the only three in the whole backend that
+// do, and there is no logout, refresh or password reset to consider.
+//
+// POST /api/auth/google/link is deliberately absent. It depends on get_current_user and returns
+// UserOut, so it attaches a Google identity to an account that is already signed in and needs the
+// header. PATCH /api/auth/me is the same shape: it can return a fresh token after a password
+// change, but it depends on get_current_user, so it uses a session rather than establishing one.
+private val SESSION_ESTABLISHING_PATHS = listOf(
+    "/api/auth/login",
+    "/api/auth/register",
+    "/api/auth/google",
+)
+
+// endsWith rather than contains, so a base URL carrying a subpath still matches while
+// /api/auth/google/link stays out: it contains "/api/auth/google" but does not end with it. A
+// contains check would silently sweep the link endpoint onto the session-establishing side and
+// strip the header it actually needs.
+private fun establishesSession(path: String): Boolean =
+    SESSION_ESTABLISHING_PATHS.any { path == it || path.endsWith(it) }
+
+// URLBuilder in ktor-http 3.5.0 exposes encodedPathSegments and no encodedPath (checked with javap
+// against the pinned jar, not the docs). Empty segments are dropped so a leading or trailing slash
+// cannot change the result, giving a plain "/api/auth/login" for the matcher to compare.
+private fun URLBuilder.requestPath(): String =
+    "/" + encodedPathSegments.filter { it.isNotEmpty() }.joinToString("/")
