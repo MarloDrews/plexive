@@ -29,7 +29,11 @@ class FeedViewModel(private val repository: FeedRepository) : ViewModel() {
             } catch (e: Exception) {
                 // Any transport or parse failure lands here. The message is shown verbatim, since
                 // the point of this screen is to make a failed request visible rather than pretty.
-                _state.value = FeedUiState(error = e.message ?: "Request failed")
+                // Several network exceptions carry no message at all (UnresolvedAddressException is
+                // one), so fall back to the class name rather than to a string that says nothing.
+                _state.value = FeedUiState(
+                    error = e.message ?: e::class.simpleName ?: "Request failed"
+                )
             }
         }
     }
