@@ -55,6 +55,10 @@ jobs:
             --no-configuration-cache \
             --console=plain 2>&1 | tee "$RUNNER_TEMP/gradle.log"
 
+      - name: TEMPORARY negative test - run the build a second time
+        run: |
+          ./gradlew :androidApp:assembleDebug             --no-build-cache             --no-configuration-cache             --console=plain 2>&1 | tee -a "$RUNNER_TEMP/gradle.log"
+
       - name: TEMPORARY discovery - daemon JVM provisioning
         run: |
           echo "--- auto-provisioned JDKs in the Gradle user home ---"
