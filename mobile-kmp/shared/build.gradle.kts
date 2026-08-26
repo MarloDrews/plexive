@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.koin.compiler)
     alias(libs.plugins.ktlint)
+    alias(libs.plugins.detekt)
 }
 
 // Writes the backend address into commonMain as a generated Kotlin file, so the address is a
@@ -147,5 +148,17 @@ ktlint {
 tasks.matching { it.name.contains("ktlint", ignoreCase = true) }.configureEach {
     onlyIf {
         gradle.startParameter.taskNames.any { it.contains("ktlint", ignoreCase = true) }
+    }
+}
+
+// Spike only: Detekt is evaluated here, not adopted. Same ordering-proof guard as ktlint, so Detekt
+// runs only when asked for by name and never gates check.
+detekt {
+    buildUponDefaultConfig = true
+    ignoreFailures = false
+}
+tasks.matching { it.name.contains("detekt", ignoreCase = true) }.configureEach {
+    onlyIf {
+        gradle.startParameter.taskNames.any { it.contains("detekt", ignoreCase = true) }
     }
 }
