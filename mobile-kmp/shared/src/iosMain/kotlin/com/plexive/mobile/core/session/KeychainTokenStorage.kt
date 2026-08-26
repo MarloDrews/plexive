@@ -8,8 +8,10 @@ import com.russhwolf.settings.KeychainSettings
 // SecItemCopyMatching/SecItemDelete, which is the real Keychain and not the NSUserDefaults fallback
 // some settings libraries use on Apple platforms.
 //
-// UNVERIFIED. Nothing in this project can compile, link or run an Apple target, so this file has
-// never been through a compiler. See ARCHITECTURE.md for what the first Mac build has to check.
+// PARTLY VERIFIED. :shared:compileIosMainKotlinMetadata compiles this source set on Windows, so
+// Kotlin 2.4 does read the library and this file does type-check against KeychainSettings. That is
+// the whole of it: the framework has never been linked, and no Keychain call here has ever run on a
+// device or a simulator. See ARCHITECTURE.md for what the first Mac build has to check.
 @OptIn(ExperimentalSettingsImplementation::class)
 class KeychainTokenStorage : TokenStorage {
 

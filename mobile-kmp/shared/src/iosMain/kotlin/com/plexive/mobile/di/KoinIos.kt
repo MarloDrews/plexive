@@ -6,7 +6,9 @@ import com.plexive.mobile.core.session.iosSessionModule
 // module whose TokenStorage cannot be discovered by the compiler plugin. The Swift entry point has
 // to call this before showing MainViewController.
 //
-// UNVERIFIED, like everything else in iosMain: no Apple target has ever been compiled here.
+// PARTLY VERIFIED, like everything else in iosMain: it type-checks under
+// :shared:compileIosMainKotlinMetadata, but it has never been linked into a framework or run on a
+// device or a simulator.
 fun initKoinIos() {
     initKoin {
         modules(iosSessionModule)
