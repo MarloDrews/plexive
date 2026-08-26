@@ -12,11 +12,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation3.runtime.entryProvider
+// Held deliberately, unused for now: navigation state restoration after process death is still
+// an open question. Remove this only once that is decided.
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import com.plexive.mobile.navigation.NavigationViewModel
-import com.plexive.mobile.navigation.Screen
 import org.koin.compose.navigation3.koinEntryProvider
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -42,10 +42,6 @@ fun App() {
                 transitionSpec = {
                     fadeIn(tween(300)) togetherWith fadeOut(tween(300))
                 },
-                /*entryDecorators = listOf(
-                    rememberSceneSetupNavEntryDecorator(),
-                    rememberSavedStateNavEntryDecorator(),
-                ),*/
                 entryProvider = entryProvider
             )
         }

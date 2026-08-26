@@ -1,4 +1,4 @@
-rootProject.name = "mobile-kmp"
+rootProject.name = "Plexive"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {

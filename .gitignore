@@ -27,6 +27,7 @@ node_modules/
 .DS_Store
 .vscode/
 !.vscode/extensions.json
+.idea/
 
 docs/content-structure/generated/*/_batches/
 
