@@ -41,7 +41,6 @@ jobs:
       - name: TEMPORARY discovery - Android SDK on the runner image
         run: |
           echo "ANDROID_HOME=$ANDROID_HOME"
-          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
           echo "--- platforms ---"
           ls -1 "$ANDROID_HOME/platforms" || echo "(none)"
           echo "--- build-tools ---"
@@ -56,9 +55,45 @@ jobs:
             --no-configuration-cache \
             --console=plain 2>&1 | tee "$RUNNER_TEMP/gradle.log"
 
-      - name: TEMPORARY discovery - task outcome lines and daemon JVM provisioning
+      - name: TEMPORARY discovery - daemon JVM provisioning
         run: |
-          echo "--- every task outcome line ---"
-          grep -E '^> Task ' "$RUNNER_TEMP/gradle.log" || echo "(no task lines)"
           echo "--- auto-provisioned JDKs in the Gradle user home ---"
           ls -1 "$HOME/.gradle/jdks" 2>/dev/null || echo "(none)"
+
+      # A green check that proves nothing is worse than no check. Gradle prints one outcome line per
+      # task under --console=plain: a task that really executed carries no suffix, while FROM-CACHE,
+      # UP-TO-DATE, NO-SOURCE and SKIPPED all mean the work was not done. This step fails the job if
+      # a compile task is missing from the output or carries any such suffix.
+      #
+      # The task names below were read out of a real run of this build, not guessed. The shared
+      # module uses the AGP Kotlin Multiplatform library plugin, whose Kotlin compile task is
+      # compileAndroidMain, not compileDebugKotlinAndroid. A pattern like "compile*Kotlin" matches
+      # only androidApp and would leave the module holding the actual application code unchecked.
+      - name: Assert the Kotlin compile tasks executed
+        run: |
+          log="$RUNNER_TEMP/gradle.log"
+          if [ ! -s "$log" ]; then
+            echo "FAIL: $log is missing or empty, so nothing can be asserted about the build."
+            exit 1
+          fi
+
+          status=0
+          for task in :shared:compileAndroidMain :androidApp:compileDebugKotlin; do
+            lines=$(grep -E "^> Task ${task}([[:space:]]|$)" "$log" || true)
+            if [ -z "$lines" ]; then
+              echo "FAIL: ${task} never appeared in the build output."
+              status=1
+              continue
+            fi
+            while IFS= read -r line; do
+              # Whatever follows the task path is the outcome suffix. Empty means it really ran.
+              outcome=$(printf '%s' "${line#"> Task ${task}"}" | tr -d '[:space:]')
+              if [ -n "$outcome" ]; then
+                echo "FAIL: ${task} did not execute (${outcome})."
+                status=1
+              else
+                echo "OK: ${task} executed."
+              fi
+            done <<< "$lines"
+          done
+          exit $status
