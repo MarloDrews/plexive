@@ -87,6 +87,13 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
         }
+        iosMain.dependencies {
+            // Only iOS gets this: its KeychainSettings is the tested Keychain implementation nobody
+            // here can write and verify. The Android half is hand-written against the Keystore,
+            // because this library has no encrypted Android implementation and the one it documents
+            // (EncryptedSharedPreferences) was deprecated in androidx.security 1.1.0.
+            implementation(libs.multiplatform.settings)
+        }
         commonMain {
             // flatMap on the task's output carries the task dependency, so every target that
             // compiles commonMain generates the file first.

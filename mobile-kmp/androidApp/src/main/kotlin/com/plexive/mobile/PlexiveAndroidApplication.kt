@@ -1,7 +1,7 @@
 package com.plexive.mobile
 
 import android.app.Application
-import com.plexive.mobile.di.initKoin
+import com.plexive.mobile.di.initKoinAndroid
 
 // The Android platform entry point. Application.onCreate runs once per process, so Koin is
 // started exactly once; starting it from an Activity would run again on every configuration
@@ -9,6 +9,8 @@ import com.plexive.mobile.di.initKoin
 class PlexiveAndroidApplication : Application() {
     override fun onCreate() {
         super.onCreate()
-        initKoin()
+        // The Context is passed through because the secure token storage needs one; everything else
+        // is discovered by the Koin compiler plugin.
+        initKoinAndroid(this)
     }
 }
