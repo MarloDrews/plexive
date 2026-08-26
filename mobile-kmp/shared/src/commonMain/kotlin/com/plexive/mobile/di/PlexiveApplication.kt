@@ -1,4 +1,4 @@
-package com.plexive.mobile.data.di
+package com.plexive.mobile.di
 
 import com.plexive.mobile.features.feed.presentation.feedNavModule
 import org.koin.core.annotation.KoinApplication
