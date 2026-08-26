@@ -8,7 +8,7 @@ import org.koin.dsl.module
 import org.koin.dsl.navigation3.navigation
 
 @Module
-@ComponentScan
+@ComponentScan("com.plexive.mobile.features.feed")
 @Configuration
 class FeedModule
 

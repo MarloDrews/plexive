@@ -1,7 +1,7 @@
 package com.plexive.mobile
 
 import android.app.Application
-import com.plexive.mobile.data.di.initKoin
+import com.plexive.mobile.di.initKoin
 
 // The Android platform entry point. Application.onCreate runs once per process, so Koin is
 // started exactly once; starting it from an Activity would run again on every configuration

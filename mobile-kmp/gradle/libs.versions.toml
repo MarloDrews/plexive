@@ -20,7 +20,6 @@ nav3 = "1.1.1"
 compose-multiplatform-adaptive = "1.3.0-beta02"
 compose-multiplatform-lifecycle = "2.10.0"
 koin-plugin = "1.0.1"
-supabase = "3.7.0-beta-1"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -53,16 +52,11 @@ ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref="ktor" }
 ktor-client-serialization = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-client-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref="ktor" }
-
-supabase-auth = { module = "io.github.jan-tennert.supabase:auth-kt", version.ref="supabase"}
-supabase-postgrest = { module = "io.github.jan-tennert.supabase:postgrest-kt", version.ref="supabase"}
-supabase-storage = { module = "io.github.jan-tennert.supabase:storage-kt", version.ref="supabase"}
-
+ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
 
 [bundles]
-ktor = ["ktor-client-cio", "ktor-client-json", "ktor-client-serialization", "ktor-client-core"]
+ktor = ["ktor-client-cio", "ktor-client-json", "ktor-client-serialization", "ktor-client-core", "ktor-client-logging"]
 koin = ["koin-annotations", "koin-compose", "koin-compose-vm", "koin-nav3"]
-supabase = ["supabase-auth", "supabase-postgrest", "supabase-storage"]
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

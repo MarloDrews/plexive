@@ -21,7 +21,7 @@ import org.koin.compose.navigation3.koinEntryProvider
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 
-// Koin is started globally from each platform entry point (see data/di/initKoin), so this
+// Koin is started globally from each platform entry point (see di/initKoin), so this
 // composable resolves from the default context instead of hosting its own container.
 @OptIn(KoinExperimentalAPI::class)
 @Composable

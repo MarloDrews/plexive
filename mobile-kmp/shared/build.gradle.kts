@@ -54,7 +54,6 @@ kotlin {
             implementation(libs.androidx.nav3)
             implementation(libs.compose.viewmodelNavigation3)
             implementation(libs.bundles.koin)
-            implementation(libs.bundles.supabase)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
