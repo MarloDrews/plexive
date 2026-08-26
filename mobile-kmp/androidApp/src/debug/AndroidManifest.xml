@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Debug builds only. Android blocks cleartext HTTP from target SDK 28 upwards, which would stop a
+  local backend override such as http://10.0.2.2:8000 before it reached the network. Scoping the
+  opt-in to this source set leaves release builds cleartext-free.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application android:usesCleartextTraffic="true" />
+
+</manifest>
