@@ -38,31 +38,12 @@ jobs:
       # is disabled on the Gradle invocation below, so no task result is ever reused or written.
       - uses: gradle/actions/setup-gradle@v4
 
-      - name: TEMPORARY discovery - Android SDK on the runner image
-        run: |
-          echo "ANDROID_HOME=$ANDROID_HOME"
-          echo "--- platforms ---"
-          ls -1 "$ANDROID_HOME/platforms" || echo "(none)"
-          echo "--- build-tools ---"
-          ls -1 "$ANDROID_HOME/build-tools" || echo "(none)"
-          echo "--- java on PATH ---"
-          java -version
-
       - name: Build Android debug APK
         run: |
           ./gradlew :androidApp:assembleDebug \
             --no-build-cache \
             --no-configuration-cache \
             --console=plain 2>&1 | tee "$RUNNER_TEMP/gradle.log"
-
-      - name: TEMPORARY negative test - run the build a second time
-        run: |
-          ./gradlew :androidApp:assembleDebug             --no-build-cache             --no-configuration-cache             --console=plain 2>&1 | tee -a "$RUNNER_TEMP/gradle.log"
-
-      - name: TEMPORARY discovery - daemon JVM provisioning
-        run: |
-          echo "--- auto-provisioned JDKs in the Gradle user home ---"
-          ls -1 "$HOME/.gradle/jdks" 2>/dev/null || echo "(none)"
 
       # A green check that proves nothing is worse than no check. Gradle prints one outcome line per
       # task under --console=plain: a task that really executed carries no suffix, while FROM-CACHE,
