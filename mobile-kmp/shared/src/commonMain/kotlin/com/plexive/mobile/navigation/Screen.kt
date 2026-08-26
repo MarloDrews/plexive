@@ -9,6 +9,7 @@ sealed interface Screen: NavKey {
     @Serializable data object ChatList : Screen
     @Serializable data object Stats : Screen
     @Serializable data object FeedRoot : Screen
+    @Serializable data object Login : Screen
     @Serializable data object Creator : Screen
     @Serializable data object Profile : Screen
 

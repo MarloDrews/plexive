@@ -2,6 +2,7 @@ package com.plexive.mobile.features.feed.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.plexive.mobile.core.session.SessionStore
 import com.plexive.mobile.features.feed.data.FeedRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,13 +13,22 @@ import org.koin.core.annotation.KoinViewModel
 // Holds the feed screen's state. A StateFlow rather than Compose snapshot state, so this class can
 // be tested without a Compose runtime.
 @KoinViewModel
-class FeedViewModel(private val repository: FeedRepository) : ViewModel() {
+class FeedViewModel(
+    private val repository: FeedRepository,
+    private val sessionStore: SessionStore,
+) : ViewModel() {
 
     private val _state = MutableStateFlow(FeedUiState(loading = true))
     val state: StateFlow<FeedUiState> = _state.asStateFlow()
 
     init {
-        load()
+        // GET /api/feed takes an optional viewer, so the same request returns different content with
+        // and without a token. Reload whenever the token changes, or signing in would leave the
+        // anonymous feed on screen. The flow emits its current value straight away, which is what
+        // performs the first load.
+        viewModelScope.launch {
+            sessionStore.token.collect { load() }
+        }
     }
 
     fun load() {
