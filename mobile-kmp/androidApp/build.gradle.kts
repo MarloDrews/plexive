@@ -113,6 +113,14 @@ detekt {
     ignoreFailures = false
 }
 tasks.matching { it.name.contains("detekt", ignoreCase = true) }.configureEach {
+    // Detekt 2.0.0-alpha.6 pulls generated Compose resource sources under build/ into its source
+    // sets, which Detekt 1.23.8 did not. They are not ours to fix, so they are excluded here.
+    // A plain exclude("**/build/**") does not work here: SourceTask patterns are matched against
+    // paths relative to each source root, and the generated Compose roots are themselves inside
+    // build/, so "build" never appears in the relative path. The absolute path is matched instead.
+    if (this is SourceTask) {
+        exclude { it.file.invariantSeparatorsPath.contains("/build/generated/") }
+    }
     onlyIf {
         gradle.startParameter.taskNames.any { it.contains("detekt", ignoreCase = true) }
     }
