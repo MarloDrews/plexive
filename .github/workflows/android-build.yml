@@ -26,9 +26,12 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      # mobile-kmp/gradle/gradle-daemon-jvm.properties pins the daemon JVM to vendor AMAZON, so a
+      # Temurin JDK does not satisfy it and Gradle downloads Corretto 21 from foojay on every run.
+      # Corretto here matches the pin and keeps the build off that network dependency.
       - uses: actions/setup-java@v5
         with:
-          distribution: temurin
+          distribution: corretto
           java-version: '21'
 
       # Dependency caching (Gradle User Home) stays on. Task-output caching is a different cache and
