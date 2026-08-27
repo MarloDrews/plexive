@@ -55,7 +55,7 @@ requests==2.34.2
 # subtree, so this version comes from resolution, not from production. The API is
 # unaffected because the import is lazy; the practical consequence is that
 # generate_thumbnails.py and the make_* CLIs cannot run on the Pi.
-matplotlib==3.11.1 ; sys_platform == "win32"
+matplotlib==3.11.1
 
 # --- Transitive dependencies ---
 # Pinned too, not only the direct ones above. The drift that made this file

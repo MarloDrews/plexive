@@ -112,7 +112,7 @@ jobs:
                       if not line:
                           continue
                       line = line.split(";", 1)[0].strip()   # drop the environment marker
-                      if "==" not in line:
+                      if "===" not in line:
                           continue
                       name, version = line.split("==", 1)
                       name = name.split("[", 1)[0].strip()   # drop extras: uvicorn[standard]
