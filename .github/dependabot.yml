@@ -56,7 +56,7 @@ updates:
 # block here would parse fine and never produce a pull request. Covering mobile-kmp/ needs
 # gradle/actions/dependency-submission, which is a build, and therefore its own decision.
 #
-# npm for mobile/. The legacy React Native app is 260 tracked files with its own package-lock.json,
-# and the dependency graph does see it. It needs no block here precisely because security updates are
+# npm for mobile/. The React Native app -- current, not legacy: 260 tracked files with its own
+# package-lock.json, and the dependency graph does see it. It needs no block here precisely because security updates are
 # repository-wide: mobile/ is already covered, and listing it would only add a version update stream
 # to switch off. Absence from this file is not absence from coverage.
