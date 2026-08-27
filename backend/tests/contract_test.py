@@ -205,9 +205,9 @@ def main():
     r = client.get("/api/posts/mine", headers=a_h, params={"limit": 1, "before_id": mine1})
     check("posts/mine before_id pages", r.status_code == 200 and r.json()[0]["id"] < mine1)
 
-    r = client.post(f"/api/users/alice/follow", headers=b_h)
+    r = client.post("/api/users/alice/follow", headers=b_h)
     assert r.status_code == 200, r.text
-    r = client.post(f"/api/users/alice/follow", headers=c_h)
+    r = client.post("/api/users/alice/follow", headers=c_h)
     assert r.status_code == 200, r.text
     following = feed_ids("/api/feed/following?limit=1", headers=b_h)
     check("following feed limit", len(following) == 1)
