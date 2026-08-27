@@ -1,5 +1,6 @@
-import time  # THROWAWAY PROOF: hang past SUITE_TIMEOUT
-time.sleep(400)
+import os  # THROWAWAY PROOF: SIGKILL well inside SUITE_TIMEOUT, must report KILLED
+import signal
+os.kill(os.getpid(), signal.SIGKILL)
 """Post-graph edge tests against a throwaway database.
 
 Run from backend/:
