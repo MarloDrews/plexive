@@ -1,3 +1,5 @@
+import time  # THROWAWAY PROOF: hang past SUITE_TIMEOUT
+time.sleep(400)
 """Post-graph edge tests against a throwaway database.
 
 Run from backend/:
