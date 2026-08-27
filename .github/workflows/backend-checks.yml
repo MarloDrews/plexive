@@ -260,6 +260,9 @@ jobs:
           # and spend most of the headroom.
           SUITE_TIMEOUT=300
 
+          # No core file. SIGABRT below is otherwise entitled to write one next to the dump.
+          ulimit -c 0
+
           # Only a SIGKILL at or after this many seconds is read as a timeout. See the KILLED branch.
           # timeout cannot fire before its own limit, so the only slack this needs is for measuring the
           # elapsed time in the shell; 10% is far more than that, and it stays far above the ~130 s of
@@ -286,11 +289,29 @@ jobs:
             # completely silent -- which is why the 2026-08-27 hang could only be attributed by
             # cancelling the run. This line is the difference between "something is stuck" and
             # "battle_test.py is stuck" while it is still happening, rather than 300 s later.
+            # ABRT, not the default TERM, and -X faulthandler: this is what turns the next
+            # hang into evidence. -X faulthandler dumps every thread's stack when the
+            # interpreter takes a FATAL signal -- SIGSEGV/SIGFPE/SIGABRT/SIGBUS/SIGILL, and
+            # NOT SIGTERM. Measured on this runner: -X faulthandler with SIGTERM prints
+            # nothing at all, exactly as before, so the flag alone would have been a no-op.
+            # ABRT is the member of that set that means "abort now", and it dumps and dies.
+            #
+            # The exit code is unchanged at 124, so the classification below is untouched:
+            # GNU timeout reports 124 for a timeout whatever signal it sent, unless
+            # --preserve-status. Measured here as 124 for TERM and ABRT alike. The 137 branch
+            # still matters, because --kill-after can still SIGKILL a suite that somehow
+            # survives ABRT.
+            #
+            # Rejected alternative: faulthandler.register(SIGTERM) from a sitecustomize on
+            # PYTHONPATH, which needs no signal change. It dumps, but register() does not
+            # terminate, so the suite outlived its own dump and --kill-after SIGKILLed it:
+            # exit 137, landing in the KILLED branch that exists to flag a suspected OOM.
+            # Buying a traceback by making a timeout look like an OOM is a bad trade.
             echo "--> running $f (limit ${SUITE_TIMEOUT}s)"
             start=$(date +%s%N)
             rc=0
-            timeout --signal=TERM --kill-after=10s "${SUITE_TIMEOUT}s" \
-              python "$f" > "$RUNNER_TEMP/suite.log" 2>&1 || rc=$?
+            timeout --signal=ABRT --kill-after=10s "${SUITE_TIMEOUT}s" \
+              python -X faulthandler "$f" > "$RUNNER_TEMP/suite.log" 2>&1 || rc=$?
             ms=$(( ($(date +%s%N) - start) / 1000000 ))
             secs=$(( ms / 1000 ))
 
@@ -322,7 +343,14 @@ jobs:
               if [ "$status" = TIMEOUT ]; then
                 echo "----- $f TIMED OUT after ${SUITE_TIMEOUT}s (rc $rc) -----"
                 echo "It did not finish, so its output below is whatever it managed to print."
-                echo "See the CI notes in CLAUDE.md for the 2026-08-27 battle_test.py hang."
+                echo "See the CI notes in CLAUDE.md for the 2026-08-27 battle_test.py hangs."
+                echo "It was aborted under -X faulthandler, so the output should END with an"
+                echo "all-thread stack dump naming where every thread was standing. If there"
+                echo "is no dump, THAT is the finding: report it rather than re-running."
+                echo "----- $f FULL output (not tailed: the dump is the evidence) -----"
+                cat "$RUNNER_TEMP/suite.log"
+                echo "----- end $f -----"
+                continue
               elif [ "$status" = KILLED ]; then
                 echo "----- $f was SIGKILLed after ${secs}s, inside the ${SUITE_TIMEOUT}s limit -----"
                 echo "This is NOT a timeout. The cause is unknown; the kernel OOM killer is the likely"
