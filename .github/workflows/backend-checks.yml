@@ -33,29 +33,125 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      # 3.12 because backend/.venv is 3.12.10 and that is the only interpreter the suite has ever
-      # demonstrably passed on. docs/SERVER.md records the Pi's SYSTEM python as 3.13, but not what the
-      # Pi's own backend/.venv was built with, so 3.13 here would be a guess about production rather
-      # than a match to it. Nothing in the project pins a Python version, which makes this line the de
-      # facto pin; reconciling it with the Pi's real version is a separate decision.
+      # 3.13 because production is 3.13.5. This used to say 3.12, on the reasoning that backend/.venv
+      # is 3.12.10 and that was the only interpreter the suite had demonstrably passed on; that was
+      # correct with the information available then. The Pi's freeze has since been read, and a gate
+      # that tests a version nobody ships tests the wrong thing.
+      #
+      # The MINOR version is the pin, not the patch. Behavioural compatibility lives at the minor
+      # version -- the failure this whole batch exists to fix was fastapi 0.136 against 0.141 -- and the
+      # Pi's own patch level is not pinned either, so '3.13.5' here would only mirror production until
+      # someone runs apt upgrade, after which the two would disagree silently. Floating the patch also
+      # keeps picking up language security fixes, which we are already giving up on 69 packages.
+      #
+      # The Pi is on 3.13.5 today. A MINOR version bump there is a change to be matched here
+      # deliberately, not discovered later.
       - uses: actions/setup-python@v6
         with:
-          python-version: '3.12'
+          python-version: '3.13'
           cache: pip
           cache-dependency-path: |
             backend/requirements.txt
             backend/requirements-dev.txt
 
-      # requirements.txt pins nothing and there is no lockfile, so every run resolves whatever is
-      # current that day. pip list afterwards is what makes that drift visible in the run log.
-      # requirements-dev.txt carries httpx, which FastAPI's TestClient imports at runtime.
+      # The exact patch this run used, on its own, so a divergence from the Pi's 3.13.5 is one click
+      # away in the log rather than invisible.
+      - name: Python version
+        run: python -V
+
+      # Both files are now pinned to the exact versions production runs (see requirements.txt).
+      # requirements-dev.txt carries httpx, which FastAPI's TestClient imports at runtime; its httpx
+      # pin must equal the one in requirements.txt, and pip enforces that by failing with
+      # ResolutionImpossible rather than silently choosing one.
+      #
+      # "time" stays because install duration is how a cache regression shows up. pip list stays as the
+      # human-readable record; the machine-readable check is the next step.
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           time python -m pip install -r requirements.txt -r requirements-dev.txt
           echo "--- resolved versions ---"
-          python -V
           python -m pip list
+
+      # The point of pinning is not that it worked once, it is that it is still true in six months,
+      # by which time nobody is reading install logs. This step is that assertion, mechanically.
+      #
+      # Exact equality in both directions. A package resolving HIGHER than its pin is precisely the
+      # drift the pinning exists to stop, so it fails; "at least the pinned version" would pass the
+      # very thing being guarded against.
+      #
+      # Markers: this runner is Linux, so every marker in requirements.txt is expected to resolve TRUE
+      # and every marked package must therefore be present. Today that is uvloop alone. If a
+      # sys_platform == "win32" marker is ever added, this check would demand a package pip correctly
+      # skipped, and the fix is to evaluate the marker here rather than to delete the assertion.
+      #
+      # pip-audit's own transitive tree is deliberately unpinned (see requirements-dev.txt), so extra
+      # packages in pip freeze that this file does not name are expected and are not an error.
+      - name: Verify pins resolved
+        run: |
+          python - <<'PY'
+          import re
+          import subprocess
+          import sys
+
+          def norm(name):
+              return re.sub(r"[-_.]+", "-", name).lower()
+
+          # Anti-vacuity guard. A parser that matches nothing compares nothing and passes green, which
+          # is the exact failure class every other step here already guards against; it would be
+          # embarrassing for it to land inside the step built to prevent it. 70 unique pinned names
+          # across both files when this was written. It only moves down by deleting a dependency,
+          # which is worth a deliberate edit here.
+          MIN_PINS = 70
+
+          pinned = {}
+          for path in ("requirements.txt", "requirements-dev.txt"):
+              with open(path, encoding="utf-8") as fh:
+                  for raw in fh:
+                      line = raw.split("#", 1)[0].strip()
+                      if not line:
+                          continue
+                      line = line.split(";", 1)[0].strip()   # drop the environment marker
+                      if "==" not in line:
+                          continue
+                      name, version = line.split("==", 1)
+                      name = name.split("[", 1)[0].strip()   # drop extras: uvicorn[standard]
+                      pinned[norm(name)] = (name, version.strip())
+
+          print(f"parsed {len(pinned)} unique pinned packages from the two requirements files")
+          if len(pinned) < MIN_PINS:
+              print(f"FAIL: parsed only {len(pinned)} pins, expected at least {MIN_PINS}.")
+              print("The parser matched almost nothing, so this step is comparing nothing.")
+              sys.exit(1)
+
+          frozen = {}
+          for line in subprocess.run(
+              [sys.executable, "-m", "pip", "freeze"],
+              capture_output=True, text=True, check=True,
+          ).stdout.splitlines():
+              if "==" in line:
+                  name, version = line.split("==", 1)
+                  frozen[norm(name)] = version.strip()
+
+          missing = sorted(k for k in pinned if k not in frozen)
+          mismatched = sorted(
+              (pinned[k][0], pinned[k][1], frozen[k])
+              for k in pinned
+              if k in frozen and frozen[k] != pinned[k][1]
+          )
+
+          for name in missing:
+              print(f"MISSING: {pinned[name][0]}=={pinned[name][1]} is pinned but not installed")
+          for name, want, got in mismatched:
+              print(f"MISMATCH: {name} pinned {want}, resolved {got}")
+
+          if missing or mismatched:
+              print(f"FAIL: {len(missing)} missing, {len(mismatched)} mismatched.")
+              print("pip did not install what the requirements files say. The pins are not in effect.")
+              sys.exit(1)
+
+          print(f"all {len(pinned)} pinned versions match what pip installed, exactly")
+          PY
 
       # --- Cheapest first, so a failure surfaces fast. ---
 
@@ -80,13 +176,16 @@ jobs:
       # tests/_throwaway_db.py pins DATABASE_URL to a temp SQLite file and blanks the Supabase env
       # before any app module loads, so this can never reach a real database.
       #
-      # The count is the number of OpenAPI paths, NOT len(app.routes). len(app.routes) is not stable
-      # across FastAPI versions and requirements.txt pins nothing: 0.136.3 (local dev) reports 57
-      # there, because it holds one flattened APIRoute per endpoint, while 0.141.1 (what CI resolved
-      # on 2026-08-27) reports 23, because include_router now leaves a single _IncludedRouter object
-      # per router. The API surface is identical either way -- app.openapi()["paths"] is 45 on both --
-      # so the OpenAPI count measures the thing this check is actually about and does not move when a
-      # dependency changes its internals underneath.
+      # The count is the number of OpenAPI paths, NOT len(app.routes), and it stays that way now that
+      # fastapi is pinned. len(app.routes) was never stable across FastAPI versions -- 0.136.3 reports
+      # 57, one flattened APIRoute per endpoint, while 0.141.1 (what CI resolved unpinned on
+      # 2026-08-27) reports 23, because include_router leaves a single _IncludedRouter per router --
+      # and with requirements.txt unpinned both were "correct" on the same day.
+      #
+      # Pinning fastapi==0.136.3 removes that drift, so the route count would now be stable too. It is
+      # still the wrong thing to assert: the OpenAPI path count describes the API, while the route
+      # count describes how the installed FastAPI happens to represent it internally. Pinning makes
+      # the bad measure stable; it does not make it the right measure. Do not switch back.
       #
       # It is a FLOOR, not the observed 45. Its job is to rule out an app that imported but registered
       # nothing. Asserting the exact count would turn every new endpoint into a red gate during correct
@@ -101,7 +200,8 @@ jobs:
           import _throwaway_db  # noqa: F401 - must run before any app import
           from app.main import app
 
-          MIN_PATHS = 20  # floor; 45 observed on 2026-08-27 under both FastAPI 0.136.3 and 0.141.1
+          MIN_PATHS = 20  # floor; 45 observed under both 0.136.3 and 0.141.1, and now stable at
+          # the 0.136.3 value because requirements.txt pins fastapi exactly.
           paths = len(app.openapi()["paths"])
           print(f"app.main imported, {paths} OpenAPI paths, {len(app.routes)} route objects")
           if paths < MIN_PATHS:

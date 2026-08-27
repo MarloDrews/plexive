@@ -1,30 +1,139 @@
-fastapi
-uvicorn[standard]
-sqlalchemy
-psycopg2-binary
-bcrypt
+# Backend runtime dependencies, pinned to the exact versions running in production.
+#
+# Source: `pip freeze` in the Raspberry Pi's backend/.venv, Python 3.13.5, read on
+# 2026-08-27. The Pi is the pinning target rather than a developer laptop, because
+# CI has to mirror what ships. Nothing here is an upgrade: where production ran an
+# older version than the laptop, production won.
+#
+# Why this file exists at all: unpinned, CI resolved fastapi 0.141.1 on the same
+# commit the Pi runs 0.136.3, and the two disagree on behaviour (len(app.routes)
+# is 23 against 57). The boot guard counted routes at the time, against a floor of
+# 20, so it survived that by three on luck. It counts OpenAPI paths now, but the
+# drift it was reacting to is what this file removes.
+#
+# To regenerate: create a clean virtual environment on Python 3.13, install this
+# file, run `pip freeze`, and reconcile the result against the blocks below. Keep
+# the split. It is the only thing that still records what this backend actually
+# depends on, as opposed to what pip happened to pull in behind it.
+#
+# There is deliberately no pip-tools, uv, poetry or lockfile here. Those are
+# structurally better, and they add a workflow step for everyone who touches the
+# backend, including a collaborator who is not a developer.
+
+# --- Direct dependencies (what the backend imports) ---
+fastapi==0.136.3
+uvicorn[standard]==0.49.0
+sqlalchemy==2.0.50
+psycopg2-binary==2.9.12
+bcrypt==5.0.0
 # python-jose pulls in `ecdsa`, which has an unfixable Minerva timing advisory
 # (PYSEC-2026-1325 / CVE-2024-23342) the maintainers will not patch. It affects
 # only ECDSA signing/keygen/ECDH; we sign JWTs with HS256 (HMAC) and never touch
 # an ECDSA code path, so the advisory is not exploitable here. Accepted (M135).
-python-jose[cryptography]
-python-dotenv
-email-validator
-python-multipart
-Pillow
-lxml
-defusedxml
-supabase
+python-jose[cryptography]==3.5.0
+python-dotenv==1.2.2
+email-validator==2.3.0
+python-multipart==0.0.32
+Pillow==12.2.0
+lxml==6.1.1
+defusedxml==0.7.1
+supabase==2.31.0
 # Verifies Google Sign-In ID tokens (signature, expiry, audience) against
 # Google's public keys for the /api/auth/google endpoint. `requests` is a
 # separate, required dependency: google.auth.transport.requests (used to fetch
 # Google's signing keys) imports it explicitly and google-auth does NOT pull it
 # in on its own.
-google-auth
-requests
+google-auth==2.56.2
+requests==2.34.2
 # Typesets the `concept` thumbnail's LaTeX formulas via matplotlib.mathtext,
 # which is a LaTeX maths parser built into matplotlib -- no TeX installation,
 # offline, deterministic. Imported lazily inside app/thumbnails/formula.py:
 # thumbnails are rendered by scripts/generate_thumbnails.py and the make_*
 # CLIs, never in a request, so the API process never loads it.
-matplotlib
+#
+# NOT INSTALLED IN PRODUCTION. The Pi's venv contains neither matplotlib nor its
+# subtree, so this version comes from resolution, not from production. The API is
+# unaffected because the import is lazy; the practical consequence is that
+# generate_thumbnails.py and the make_* CLIs cannot run on the Pi.
+matplotlib==3.11.1
+
+# --- Transitive dependencies ---
+# Pinned too, not only the direct ones above. The drift that made this file
+# necessary was in a transitive package: fastapi 0.136 -> 0.141 reached CI through
+# starlette, which nothing here names. Pinning only the direct set would leave
+# exactly that hole open.
+#
+# Nothing below is imported by our own code. Do not add a line here in order to
+# start using something; add it to the direct block instead.
+#
+# Versions come from the Pi, except the matplotlib subtree (contourpy, cycler,
+# fonttools, kiwisolver, numpy, pyparsing, python-dateutil), which production does
+# not have and which is therefore pinned from a clean resolve.
+annotated-doc==0.0.4
+annotated-types==0.7.0
+anyio==4.13.0
+certifi==2026.5.20
+cffi==2.0.0
+charset-normalizer==3.4.9
+click==8.4.1
+contourpy==1.3.3
+cryptography==48.0.1
+cycler==0.12.1
+deprecation==2.1.0
+dnspython==2.8.0
+ecdsa==0.19.2
+fonttools==4.63.0
+greenlet==3.5.1
+h11==0.16.0
+h2==4.3.0
+hpack==4.1.0
+httpcore==1.0.9
+httptools==0.8.0
+httpx==0.28.1
+hyperframe==6.1.0
+idna==3.18
+kiwisolver==1.5.0
+multidict==6.7.1
+numpy==2.5.2
+packaging==26.2
+postgrest==2.31.0
+propcache==0.5.2
+pyasn1==0.6.3
+pyasn1_modules==0.4.2
+pycparser==3.0
+pydantic==2.13.4
+pydantic_core==2.46.4
+PyJWT==2.13.0
+pyparsing==3.3.2
+python-dateutil==2.9.0.post0
+PyYAML==6.0.3
+realtime==2.31.0
+rsa==4.9.1
+six==1.17.0
+starlette==1.2.1
+storage3==2.31.0
+StrEnum==0.4.15
+supabase-auth==2.31.0
+supabase-functions==2.31.0
+typing-inspection==0.4.2
+typing_extensions==4.15.0
+urllib3==2.7.0
+watchfiles==1.2.0
+websockets==15.0.1
+yarl==1.24.2
+
+# --- Not installable on Windows ---
+# A platform condition, NOT an optional dependency. uvloop publishes no Windows
+# wheel at the pinned version (checked against PyPI: sdist only) and its build
+# refuses to run there, so an unconditional
+# pin makes `pip install -r requirements.txt` fail outright on the Windows dev
+# machine -- and a file that cannot be installed where development happens is a
+# file that gets worked around, at which point the pinning is worth nothing.
+#
+# uvicorn[standard] carries this same condition internally; naming uvloop here to
+# pin it discards that, so it has to be restated. Linux (the Pi, CI) and macOS all
+# install it; only Windows skips it.
+#
+# Do not delete this line. The marker means "not available on this platform", not
+# "we are not sure we need it".
+uvloop==0.22.1 ; sys_platform != "win32"

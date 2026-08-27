@@ -26,7 +26,7 @@ A graph view that links related posts (in the style of Obsidian) is planned and 
 - **Web:** Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4. (`frontend/package.json`)
 - **Mobile:** React Native 0.85 with Expo SDK 56, expo-router, NativeWind. (`mobile/package.json`)
 
-Dependency versions are unpinned in the backend; the versions above are the major versions the project currently builds against.
+Backend dependency versions are pinned exactly, to what the production server runs (`backend/requirements.txt`); the versions above are the major versions the project currently builds against.
 
 ## Repository structure
 
