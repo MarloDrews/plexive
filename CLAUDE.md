@@ -25,6 +25,14 @@ SVG security: `is_user_content=false` (seed/official) uses `dangerouslySetInnerH
 
 Changes reach `main` this way: branch off `main`, push the branch, let `android-build` run and go green on it, open a pull request, then merge. This is not a review requirement; the same person may open and merge the pull request.
 
+The build runs twice per pull request, once from the `push` trigger and once from `pull_request`. Both report the same `android-build` check name. Harmless, and a cleanup for its own batch.
+
+## CI Notes
+
+The workflow uses `distribution: corretto` because `mobile-kmp/gradle/gradle-daemon-jvm.properties` pins `toolchainVendor=AMAZON`. Any other vendor makes Gradle ignore the installed JDK and download Corretto from foojay on every run. Changing that line means changing `.github/workflows/android-build.yml` too.
+
+`gradle/actions/setup-gradle@v4` emits a Node.js 20 deprecation warning on every run. v4 was chosen over v6 for predictability, and that argument weakens as v4 ages. Revisit when v6's cache provider leaves free preview.
+
 ## Rules
 - All code comments in English
 - No emojis in code or comments
