@@ -4,6 +4,10 @@ description: Commit and push changes using conventional commits format (type(sco
 
 # Git Commit Skill
 
+NOTE: the PreToolUse hook in `.claude/settings.json` does not read this file. It injects its
+own hardcoded copy of these rules, so editing this file alone changes nothing a session is
+told. Change both or neither.
+
 ## Commit Message Format
 Use conventional commits: type(scope): description
 
