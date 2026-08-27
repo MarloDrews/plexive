@@ -77,6 +77,20 @@ ESLint is deliberately not in `frontend-checks`. It reports 88 errors and 13 war
 
 `gradle/actions/setup-gradle@v4` emits a Node.js 20 deprecation warning on every run. v4 was chosen over v6 for predictability, and that argument weakens as v4 ages. Revisit when v6's cache provider leaves free preview.
 
+## Repository Security Settings
+
+These are repository settings, not files, so nothing in the tree records them and `git log` will not show them changing. Enabled 2026-08-27, all free because the repository is public.
+
+`secret_scanning` and `secret_scanning_push_protection` were ALREADY on before this batch, which is worth knowing before anyone claims credit for them: GitHub switches both on by default for public repositories. `dependabot_security_updates` was off and was switched on, together with the Dependabot alerts it depends on. Still off and deliberately untouched: `secret_scanning_validity_checks` and `secret_scanning_non_provider_patterns`, the latter because non-provider patterns are the generic ones and their false positive rate is the whole question.
+
+Push protection was verified to BLOCK rather than merely to be configured, the same way the force-push block was. A throwaway branch carrying five invented credentials was pushed and the push was declined with `GH013: Repository rule violations found`, naming Amazon AWS Access Key ID, Amazon AWS Secret Access Key, SendGrid API Key, Slack API Token and Stripe API Key, each with an unblock URL. The branch never reached the remote, since the push is refused before the ref is created, so cleanup was a local `git branch -D` and nothing else. No real credential was involved at any point.
+
+Code scanning uses the ADVANCED setup, meaning `.github/workflows/codeql.yml`, and GitHub's default setup is deliberately left `not-configured`. The two are mutually exclusive: enabling default setup would disable the workflow.
+
+One gap worth naming, because it is invisible from the Security tab. `mobile-kmp/` has no dependency scanning at all. Dependabot security updates are driven by alerts, alerts are driven by the dependency graph, and the dependency graph does not parse Gradle statically -- Maven `pom.xml` it reads, Gradle it does not, and Gradle reaches the graph only through the Dependency Submission API, which means running a real build. The repository SBOM confirms the effect rather than assuming it: 1266 packages, not one of them a Maven coordinate, while every backend pin, both `package-lock.json` files and all five pinned actions are there. Closing it needs `gradle/actions/dependency-submission`, which is a build and therefore its own decision.
+
+The remaining `ecdsa` PYSEC-2026-1325 advisory will not produce a Dependabot pull request. It has no fix version, and Dependabot opens a pull request only when there is a version to move to. Its silence on that one is not a sign that it is not working.
+
 ## Rules
 - All code comments in English
 - No emojis in code or comments
