@@ -64,6 +64,14 @@ carol = register("battle.carol@example.com", "b_carol")
 register("battle.dave@example.com", "b_dave")  # never connects: the offline target
 
 with ExitStack() as stack:
+    # Enter the client, do not merely construct it. An un-entered TestClient gives
+    # every websocket_connect its own portal, its own event loop and its own
+    # thread, so a relay from one user's handler into another user's socket is a
+    # cross-loop wakeup that anyio can lose: the frame is delivered and the
+    # receiving loop is never woken. Every socket must live on ONE event loop.
+    # See docs/research/battle-hang-diagnosis-2026-08.md.
+    stack.enter_context(client)
+
     ws_a = stack.enter_context(client.websocket_connect("/api/battle/ws"))
     ws_b = stack.enter_context(client.websocket_connect("/api/battle/ws"))
     check("alice auth_ok", ws_auth(ws_a, alice["access_token"])["type"] == "auth_ok")

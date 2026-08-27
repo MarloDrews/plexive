@@ -12,6 +12,7 @@ unauthenticated rejection). Same throwaway-DB pattern as smoke_test.py.
 import json
 import os
 import sys
+from contextlib import ExitStack
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import _throwaway_db  # noqa: F401 — must run before any app import
@@ -26,6 +27,15 @@ from app.main import app  # noqa: E402
 
 Base.metadata.create_all(bind=engine)
 client = TestClient(app)
+
+_stack = ExitStack()
+# Enter the client, do not merely construct it. An un-entered TestClient gives
+# every websocket_connect its own portal, its own event loop and its own
+# thread, so a relay from one user's handler into another user's socket is a
+# cross-loop wakeup that anyio can lose: the frame is delivered and the
+# receiving loop is never woken. Every socket must live on ONE event loop.
+# See docs/research/battle-hang-diagnosis-2026-08.md.
+_stack.enter_context(client)
 
 PASS = 0
 
@@ -255,7 +265,6 @@ check(
 )
 
 sockets = []
-from contextlib import ExitStack  # noqa: E402
 
 with ExitStack() as stack:
     for i in range(chat_manager.MAX_SOCKETS_PER_USER + 1):
@@ -274,3 +283,4 @@ check(
 )
 
 print(f"\nAll {PASS} chat checks passed.")
+_stack.close()
