@@ -3,6 +3,8 @@
 ## FOLDER STRUCTURE
 
 ```
+.github/
+  workflows/android-build.yml   CI: builds mobile-kmp/ Android on every push and PR (ubuntu-24.04, Corretto 21 to match the AMAZON daemon JVM pin, setup-gradle v4 dependency cache, --no-build-cache --no-configuration-cache); job name android-build is the required check on main; a final step parses the --console=plain task lines and fails the job unless :shared:compileAndroidMain and :androidApp:compileDebugKotlin both ran with no UP-TO-DATE/FROM-CACHE/NO-SOURCE/SKIPPED suffix
 backend/
   requirements.txt              fastapi, uvicorn[standard], sqlalchemy, psycopg2-binary, bcrypt, python-jose[cryptography], python-dotenv, email-validator, python-multipart, Pillow, lxml, defusedxml, supabase
   requirements-dev.txt          test-only dependencies (httpx for FastAPI TestClient; pip-audit for the pre-release dependency scan, M135); install alongside requirements.txt before running tests/*

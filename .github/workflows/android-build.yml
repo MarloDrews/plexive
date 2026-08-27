@@ -1,0 +1,84 @@
+# Builds the Android target of mobile-kmp/ on every push and pull request.
+#
+# mobile-kmp/ is a standalone Gradle build with its own settings file and wrapper, and there is no
+# settings file at the repository root, so Gradle has to be invoked from inside that directory.
+name: Android build
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  android-build:
+    # This name is the identity of the required status check on main. Do not rename it casually.
+    name: android-build
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        # The Linux default shell is "bash -e {0}", without pipefail. Piping Gradle into tee under
+        # that default would hide a compile failure behind tee's exit code and report a green job on
+        # a broken build. "shell: bash" is "bash --noprofile --norc -eo pipefail {0}".
+        shell: bash
+        working-directory: mobile-kmp
+    steps:
+      - uses: actions/checkout@v5
+
+      # mobile-kmp/gradle/gradle-daemon-jvm.properties pins the daemon JVM to vendor AMAZON, so a
+      # Temurin JDK does not satisfy it and Gradle downloads Corretto 21 from foojay on every run.
+      # Corretto here matches the pin and keeps the build off that network dependency.
+      - uses: actions/setup-java@v5
+        with:
+          distribution: corretto
+          java-version: '21'
+
+      # Dependency caching (Gradle User Home) stays on. Task-output caching is a different cache and
+      # is disabled on the Gradle invocation below, so no task result is ever reused or written.
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Build Android debug APK
+        run: |
+          ./gradlew :androidApp:assembleDebug \
+            --no-build-cache \
+            --no-configuration-cache \
+            --console=plain 2>&1 | tee "$RUNNER_TEMP/gradle.log"
+
+      # A green check that proves nothing is worse than no check. Gradle prints one outcome line per
+      # task under --console=plain: a task that really executed carries no suffix, while FROM-CACHE,
+      # UP-TO-DATE, NO-SOURCE and SKIPPED all mean the work was not done. This step fails the job if
+      # a compile task is missing from the output or carries any such suffix.
+      #
+      # The task names below were read out of a real run of this build, not guessed. The shared
+      # module uses the AGP Kotlin Multiplatform library plugin, whose Kotlin compile task is
+      # compileAndroidMain, not compileDebugKotlinAndroid. A pattern like "compile*Kotlin" matches
+      # only androidApp and would leave the module holding the actual application code unchecked.
+      - name: Assert the Kotlin compile tasks executed
+        run: |
+          log="$RUNNER_TEMP/gradle.log"
+          if [ ! -s "$log" ]; then
+            echo "FAIL: $log is missing or empty, so nothing can be asserted about the build."
+            exit 1
+          fi
+
+          status=0
+          for task in :shared:compileAndroidMain :androidApp:compileDebugKotlin; do
+            lines=$(grep -E "^> Task ${task}([[:space:]]|$)" "$log" || true)
+            if [ -z "$lines" ]; then
+              echo "FAIL: ${task} never appeared in the build output."
+              status=1
+              continue
+            fi
+            while IFS= read -r line; do
+              # Whatever follows the task path is the outcome suffix. Empty means it really ran.
+              outcome=$(printf '%s' "${line#"> Task ${task}"}" | tr -d '[:space:]')
+              if [ -n "$outcome" ]; then
+                echo "FAIL: ${task} did not execute (${outcome})."
+                status=1
+              else
+                echo "OK: ${task} executed."
+              fi
+            done <<< "$lines"
+          done
+          exit $status

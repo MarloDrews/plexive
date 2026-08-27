@@ -19,6 +19,12 @@ Posts use a `sections` JSON array and a `feed_card` JSON object. The old per-for
 
 SVG security: `is_user_content=false` (seed/official) uses `dangerouslySetInnerHTML`; `is_user_content=true` (user submissions) uses a base64 `<img>` data URL. This applies in `SectionRenderer` (CoreIdeasSection, TakeawaySection) and `PostCard`.
 
+## Git Workflow
+
+`main` is protected by a ruleset: the `android-build` status check is required and force pushes are blocked. A commit therefore cannot be pushed straight to `main`, because a fresh commit has no check result yet.
+
+Changes reach `main` this way: branch off `main`, push the branch, let `android-build` run and go green on it, open a pull request, then merge. This is not a review requirement; the same person may open and merge the pull request.
+
 ## Rules
 - All code comments in English
 - No emojis in code or comments
