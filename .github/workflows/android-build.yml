@@ -1,4 +1,5 @@
 # Builds the Android target of mobile-kmp/ on every push and pull request.
+# Throwaway probe line, not intended to be merged.
 #
 # mobile-kmp/ is a standalone Gradle build with its own settings file and wrapper, and there is no
 # settings file at the repository root, so Gradle has to be invoked from inside that directory.
