@@ -13,8 +13,18 @@ httpx==0.28.1
 
 # Dependency vulnerability scanner (M135). Run before a release:
 #   python -m pip_audit -r requirements.txt
-# The one remaining finding, ecdsa PYSEC-2026-1325 (CVE-2024-23342), is a known
-# accepted item documented in requirements.txt (we sign with HS256, not ECDSA).
+# This comment used to say there was one remaining finding. When the command was
+# actually run, on 2026-08-27, it reported 32 findings in 6 packages -- 23 distinct
+# advisories, since some are carried in more than one source database. The 2026-08
+# security batch cleared 22 of the 23 by moving Pillow, starlette, pyasn1,
+# cryptography, h2 and hpack (see docs/research/dependency-audit-2026-08.md).
+#
+# The command now reports exactly one finding: ecdsa PYSEC-2026-1325
+# (CVE-2024-23342). It is accepted because there is no fix to take -- pip-audit
+# reports an empty fix_versions list, the maintainers consider side-channel
+# attacks out of scope, and requirements.txt records the two separate reasons it
+# does not reach this codebase. Every other finding was a version bump away, which
+# is the part the old wording hid.
 #
 # The tool is pinned; its own ~19 transitive packages deliberately are not. The
 # reason to pin transitively in requirements.txt is that drift there reaches
