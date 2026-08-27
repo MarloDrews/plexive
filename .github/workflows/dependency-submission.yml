@@ -1,0 +1,70 @@
+# Submits mobile-kmp/'s resolved Gradle dependency graph to the Dependency Submission API.
+#
+# WHY THIS EXISTS. Dependabot security updates are driven by alerts, alerts are driven by the
+# dependency graph, and the dependency graph does not parse Gradle statically -- unlike Maven's
+# pom.xml, a Gradle build reaches the graph only by being run and reporting what it resolved. Until
+# this file existed, mobile-kmp/ had no dependency scanning at all: the repository SBOM listed 1268
+# packages and not one Maven coordinate, while every backend pin, both package-lock.json files and
+# every pinned action were present. That gap was invisible from the Security tab, which is what made
+# it worth closing.
+#
+# WHY IT IS ITS OWN WORKFLOW AND NOT A STEP IN android-build.yml. Three reasons, in order of weight:
+#
+#   1. Permissions. Submitting a snapshot needs "contents: write". android-build.yml runs on every
+#      pull request with "contents: read", and folding this in would hand write scope to the job that
+#      builds unreviewed pull request code. Splitting them keeps android-build read-only.
+#   2. Triggers. A dependency graph snapshot describes the DEFAULT BRANCH. This should run on main
+#      only, while android-build must run on pull requests, so the two want different triggers and
+#      one file cannot have both without one of them running where it should not.
+#   3. Cost to the gate. This action runs its own Gradle invocation. Inside android-build that time
+#      would be added to a required check; in a separate workflow it runs in parallel and android-build
+#      is not slowed by it at all. It also leaves android-build's "Assert the Kotlin compile tasks
+#      executed" step untouched, which parses that job's own --console=plain log and would otherwise
+#      have a second Gradle run's output to contend with.
+#
+# This is NOT a gate and must not become one. It is deliberately absent from the main ruleset, which
+# still requires exactly three checks: android-build, backend-checks and frontend-checks. It also
+# never runs on pull_request, so it contributes no check name to any pull request at all.
+name: Dependency submission
+
+on:
+  # main only. A snapshot from a pull request branch would describe a branch that is not the default
+  # one, which is not what the graph is for.
+  push:
+    branches: [main]
+  # Manual re-submission, for when the graph needs refreshing without a merge.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  gradle-dependency-submission:
+    name: gradle-dependency-submission
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      # The whole point of the job: writing the resolved graph back to the repository.
+      contents: write
+    defaults:
+      run:
+        # Same reason as every other workflow here: the Linux default is "bash -e {0}", without
+        # pipefail, which is how a piped failure becomes a green check.
+        shell: bash
+    steps:
+      - uses: actions/checkout@v5
+
+      # mobile-kmp/gradle/gradle-daemon-jvm.properties pins the daemon JVM to vendor AMAZON, so a
+      # Temurin JDK does not satisfy it and Gradle downloads Corretto 21 from foojay on every run.
+      # This must stay in step with android-build.yml.
+      - uses: actions/setup-java@v5
+        with:
+          distribution: corretto
+          java-version: '21'
+
+      # v4 to match setup-gradle@v4 in android-build.yml. mobile-kmp/ is a standalone Gradle build
+      # with its own settings file and wrapper, and there is no settings file at the repository root,
+      # so the build root has to be named explicitly.
+      - uses: gradle/actions/dependency-submission@v4
+        with:
+          build-root-directory: mobile-kmp

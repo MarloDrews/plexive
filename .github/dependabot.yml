@@ -47,14 +47,19 @@ updates:
 # NOT LISTED, both on purpose.
 #
 # gradle for mobile-kmp/. Dependabot supports the gradle ecosystem in a subdirectory, and the layout
-# here is the standard one it expects (mobile-kmp/gradle/libs.versions.toml). It would still buy
-# nothing. Security updates are driven by Dependabot ALERTS, alerts are driven by the dependency
-# graph, and the dependency graph does not parse Gradle statically -- unlike Maven, Gradle reaches the
-# graph only through the Dependency Submission API, which means running a real Gradle build in a
-# workflow. The repository SBOM confirms it: 1266 packages, none of them Maven coordinates, while
-# every backend pin, both package-lock.json files and all five pinned actions are present. A gradle
-# block here would parse fine and never produce a pull request. Covering mobile-kmp/ needs
-# gradle/actions/dependency-submission, which is a build, and therefore its own decision.
+# here is the standard one it expects (mobile-kmp/gradle/libs.versions.toml). It still needs no block,
+# for the same reason mobile/ does not: security updates are repository-wide and need nothing listed
+# here, while a block would only add a version update stream to switch off.
+#
+# What changed on 2026-08-27 is the thing UNDER the alerts. Security updates are driven by Dependabot
+# ALERTS, alerts are driven by the dependency graph, and the dependency graph does not parse Gradle
+# statically -- unlike Maven, Gradle reaches the graph only through the Dependency Submission API,
+# which means running a real Gradle build. Before that date the repository SBOM listed 1268 packages
+# and not one Maven coordinate, so mobile-kmp/ had no dependency scanning at all and a gradle block
+# would have parsed fine and never produced a pull request. .github/workflows/dependency-submission.yml
+# now submits the resolved graph on every push to main, so the coordinates are there to raise alerts
+# against. Whether they in turn produce pull requests is an observation still to be made, not a
+# promise: that needs a real advisory against something mobile-kmp/ actually resolves.
 #
 # npm for mobile/. The React Native app -- current, not legacy: 260 tracked files with its own
 # package-lock.json, and the dependency graph does see it. It needs no block here precisely because security updates are

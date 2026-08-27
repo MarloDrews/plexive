@@ -1,20 +1,32 @@
 # CodeQL static analysis for the Python backend and the TypeScript/JavaScript frontend.
 #
-# This is the only workflow here that is NOT a gate. It is deliberately absent from the main ruleset,
-# which still requires exactly three checks: android-build, backend-checks and frontend-checks. CodeQL
+# This is not a gate, and neither is dependency-submission.yml; the other three workflows are. It is
+# deliberately absent from the main ruleset, which still requires exactly three checks:
+# android-build, backend-checks and frontend-checks. CodeQL
 # reports into the Security tab, and a security finding is a thing to triage, not a thing to block a
 # merge on while nobody has read the first run yet. Adding it to the ruleset before anyone has decided
 # what its false positive rate looks like is the fastest way to get a required check switched off.
 name: CodeQL
 
 on:
-  # Weekly plus pull requests, and deliberately no "push:" trigger, which is where this workflow
-  # differs from the other three.
+  # Push on main, weekly, and pull requests.
   #
-  # The consequence is worth knowing: code scanning tracks alerts against the DEFAULT BRANCH, so the
-  # Security tab is populated by the scheduled run on main, not by pull request runs. A pull request
-  # run reports findings on that pull request only. The schedule is therefore load bearing here, not a
-  # nice-to-have -- without it nothing would ever establish the main-branch baseline.
+  # Code scanning tracks alerts against the DEFAULT BRANCH: the Security tab is populated by runs on
+  # main, and a pull request run reports findings on that pull request only. Until 2026-08-27 there
+  # was no "push:" trigger here and the baseline came from the schedule alone, which meant a merge did
+  # not refresh the Security tab and the baseline could be up to a week stale. That was traded for one
+  # extra run per merge, deliberately: Actions minutes are unmetered on a public repository, and a
+  # stale baseline is the more expensive of the two.
+  #
+  # Scoped to main for the same reason as the other three workflows: an unscoped "push:" also fires on
+  # the branch behind a pull request, so one commit gets two runs sharing a check name.
+  #
+  # Adding it also silences the "Please specify an on.push hook" warning that codeql-action/init
+  # emitted on every run, once per matrix leg.
+  push:
+    branches: [main]
+  # The schedule is no longer the only thing establishing the baseline, but it stays: it is what keeps
+  # the analysis fresh against newly published CodeQL queries during a quiet week with no merges.
   schedule:
     # Mondays 06:17 UTC. Off the hour on purpose: scheduled workflows queue against everyone else's
     # cron, and the top of the hour is the worst slot on shared runners.
