@@ -162,6 +162,28 @@ jobs:
           print(f"all {len(pinned)} pinned versions match what pip installed, exactly")
           PY
 
+      # THROWAWAY PROOF STEP -- not for main. Settles whether SIGABRT actually writes a
+      # core file, since `timeout` reported "dumped core" on the hang-direction run and a
+      # multi-hundred-MB core per hang would be a side effect worth knowing about.
+      - name: PROOF - core file check
+        run: |
+          echo "default ulimit -c in this shell: $(ulimit -c)"
+          ulimit -c 0
+          echo "after ulimit -c 0: $(ulimit -c)"
+          cat > "$RUNNER_TEMP/h.py" <<'PYEOF'
+          import time
+          time.sleep(600)
+          PYEOF
+          cd "$RUNNER_TEMP"
+          rc=0
+          timeout --signal=ABRT --kill-after=5s 3s python -X faulthandler h.py > c.log 2>&1 || rc=$?
+          echo "exit=$rc"
+          cat c.log
+          echo "--- core files anywhere writable ---"
+          find "$RUNNER_TEMP" /tmp "$GITHUB_WORKSPACE" -maxdepth 3 -name 'core*' -type f 2>/dev/null | head -5 || true
+          echo "--- core_pattern ---"
+          cat /proc/sys/kernel/core_pattern 2>/dev/null || echo "  unreadable"
+
       # --- Cheapest first, so a failure surfaces fast. ---
 
       # A compileall over a path that does not exist still exits 0, so count the files first. The floor
