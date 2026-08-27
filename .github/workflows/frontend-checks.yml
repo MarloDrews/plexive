@@ -1,0 +1,118 @@
+# Runs the web frontend's checks on every pull request, and on main after a merge.
+#
+# The frontend already had node:test suites, TypeScript strict mode and npm scripts. Nothing ran them,
+# and Vercel deploys main automatically, so until now nothing stood between a merge and production.
+name: Frontend checks
+
+on:
+  # Scoped to main for the same reason as android-build.yml: an unscoped "push:" also fires on the
+  # branch behind a pull request, so one commit gets two runs reporting the same frontend-checks name
+  # and the required check resolves to whichever finishes last.
+  #
+  # Deliberately no "paths:" filter. A workflow skipped by a top-level paths filter reports no status
+  # at all, and a required check that never reports blocks the pull request permanently.
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  frontend-checks:
+    # This name is the identity of the required status check on main. Do not rename it casually.
+    name: frontend-checks
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        # The Linux default shell is "bash -e {0}", without pipefail. npm test below is piped into tee
+        # so its summary can be parsed, and without pipefail a failing test run would exit 0 through
+        # tee and report a green check. "shell: bash" is "bash --noprofile --norc -eo pipefail {0}".
+        shell: bash
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v5
+
+      # 24 because local dev and the Pi both run v24.16.0, so it is the only major this code is known
+      # to run on. Nothing in the project pins a Node version -- no .nvmrc, no .node-version, no
+      # engines field -- which makes this line the de facto pin.
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          if [ ! -d node_modules ] || [ -z "$(ls -A node_modules)" ]; then
+            echo "FAIL: npm ci left no node_modules, so every step after this would test nothing."
+            exit 1
+          fi
+
+      # "node --test" over a directory that matches no test file exits 0 and prints "pass 0". That is
+      # the silent failure this guards against, so the summary is parsed rather than trusted.
+      #
+      # The summary lines look like "i tests 40" / "i pass 40" / "i fail 0" with a leading unicode
+      # info glyph, so awk matches on the second-to-last field and ignores the glyph entirely.
+      - name: Tests
+        run: |
+          npm test 2>&1 | tee "$RUNNER_TEMP/test.log"
+
+          # If the summary is absent the parse below silently yields 0 and the comparison against an
+          # empty string is a shell error, not a failure, so the step would pass having proved nothing.
+          # Assert the lines exist before reading them.
+          if ! grep -qE '(^|[[:space:]])pass[[:space:]]+[0-9]+[[:space:]]*$' "$RUNNER_TEMP/test.log"; then
+            echo "FAIL: no test summary in the output; the runner reported no pass count."
+            exit 1
+          fi
+
+          # "NF >= 2" matters: $(NF-1) on a blank line is a fatal awk error, and the log has blank
+          # lines. Matching on the second-to-last field ignores the leading unicode info glyph.
+          pass=$(awk 'NF >= 2 && $(NF-1) == "pass" { p = $NF } END { print p + 0 }' "$RUNNER_TEMP/test.log")
+          fail=$(awk 'NF >= 2 && $(NF-1) == "fail" { f = $NF } END { print f + 0 }' "$RUNNER_TEMP/test.log")
+          echo "parsed: pass=$pass fail=$fail"
+
+          # A floor, not the exact count. 40 passing tests across 5 files when this was written; the
+          # count only moves down through a deliberate deletion, which is worth a deliberate edit here.
+          if [ "$pass" -lt 40 ]; then
+            echo "FAIL: only $pass tests passed, expected at least 40."
+            echo "Either tests were deleted or the runner matched no files and proved nothing."
+            exit 1
+          fi
+          if [ "$fail" -ne 0 ]; then
+            echo "FAIL: $fail tests failed."
+            exit 1
+          fi
+
+      # next build type-checks internally under tsconfig strict: true, so it is a superset of a
+      # separate "tsc --noEmit" and that is not run. It does NOT run ESLint -- Next 16 dropped that --
+      # and ESLint is deliberately absent from this job: it reports 88 errors on tracked files today,
+      # so it cannot gate anything, and a check that reports without ever failing is noise. Its own
+      # batch.
+      - name: Build
+        run: |
+          npm run build
+
+          # A build can print a route table and still have produced nothing. Assert on the artefacts:
+          # BUILD_ID only exists after a completed build, and the manifest is the route list Next
+          # actually emitted, which beats parsing the box-drawing table off the console.
+          if [ ! -s .next/BUILD_ID ]; then
+            echo "FAIL: .next/BUILD_ID is missing or empty, so no build completed."
+            exit 1
+          fi
+
+          manifest=.next/app-path-routes-manifest.json
+          if [ ! -s "$manifest" ]; then
+            echo "FAIL: $manifest is missing, so the route count cannot be asserted."
+            exit 1
+          fi
+          routes=$(node -e "console.log(Object.keys(require('./$manifest')).length)")
+          echo "build emitted $routes app routes (BUILD_ID $(cat .next/BUILD_ID))"
+
+          # A floor, not the observed number. 17 entries when this was written; the route list grows
+          # with the product, so an exact assertion would red the gate during correct work.
+          if [ "$routes" -lt 5 ]; then
+            echo "FAIL: $routes routes is below the floor of 5; the build emitted almost nothing."
+            exit 1
+          fi
