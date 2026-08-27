@@ -44,12 +44,12 @@ updates:
       interval: weekly
     open-pull-requests-limit: 0
 
-# NOT LISTED, both on purpose.
+# NOT LISTED, on purpose.
 #
 # gradle for mobile-kmp/. Dependabot supports the gradle ecosystem in a subdirectory, and the layout
-# here is the standard one it expects (mobile-kmp/gradle/libs.versions.toml). It still needs no block,
-# for the same reason mobile/ does not: security updates are repository-wide and need nothing listed
-# here, while a block would only add a version update stream to switch off.
+# here is the standard one it expects (mobile-kmp/gradle/libs.versions.toml). It still needs no block:
+# security updates are repository-wide and need nothing listed here, while a block would only add a
+# version update stream to switch off.
 #
 # What changed on 2026-08-27 is the thing UNDER the alerts. Security updates are driven by Dependabot
 # ALERTS, alerts are driven by the dependency graph, and the dependency graph does not parse Gradle
