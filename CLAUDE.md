@@ -33,7 +33,9 @@ The workflow uses `distribution: corretto` because `mobile-kmp/gradle/gradle-dae
 
 The `push` trigger is scoped to `branches: [main]` on purpose. Unscoped, it also fires on the branch behind a pull request, so one commit gets two runs reporting the same `android-build` check name and the required check resolves to whichever finishes last. Do not widen it to make branches build; branches build through their pull request. Keeping `main` is what seeds the Gradle dependency cache, since `setup-gradle` only writes the cache from the default branch, and a cold run takes about 3m25s against about 40s warm.
 
-There are three workflow files, one per codebase, one job each: `android-build.yml`, `backend-checks.yml`, `frontend-checks.yml`. One job per codebase on purpose. The number of check names a person has to interpret on a pull request is the real budget, and three is what it will bear.
+There are four workflow files. Three are gates, one per codebase, one job each: `android-build.yml`, `backend-checks.yml`, `frontend-checks.yml`. One job per codebase on purpose. The number of check names a person has to interpret on a pull request is the real budget, and three is what it will bear.
+
+`codeql.yml` is the fourth and is not a gate. It is deliberately absent from the ruleset, so the required checks are still exactly those three, and it is the reason the sentence above says "three gates" rather than "three workflows". It also breaks two of the patterns below on purpose. It has no `push:` trigger, only `schedule:` plus `pull_request:`, which matters because code scanning tracks alerts against the DEFAULT BRANCH: the Security tab is populated by the weekly scheduled run on `main`, and a pull request run reports on that pull request alone. The schedule is therefore load bearing rather than a backstop. And it runs a matrix, so it contributes two check names, `codeql (python)` and `codeql (javascript-typescript)`, neither of which is required. Its languages are `python` and `javascript-typescript`; `java-kotlin` is excluded because CodeQL cannot analyse Kotlin without a build -- `build-mode: none` is supported for Java and explicitly not for Kotlin, where it skips the code and emits a warning -- so covering `mobile-kmp/` would mean a second real Gradle build alongside `android-build.yml`. That is a separate decision, not an oversight.
 
 No workflow has a `paths:` filter. A workflow skipped by a top-level `paths:` filter reports no status at all, and a required check that never reports blocks the pull request permanently. Actions minutes are unmetered here, so the saving would buy nothing anyway.
 
@@ -67,13 +69,27 @@ CI mirrors production, not this laptop. `backend/requirements.txt` pins all 69 p
 
 `frontend-checks.yml` (Node 24) is still a de facto pin in the old sense: nothing pins Node anywhere, and there is no production Node to mirror, since Vercel builds the frontend.
 
-Pinning every transitive package means none of them receives a security update on its own any more. `pip-audit` is in `requirements-dev.txt` with a comment saying to run it before a release, and nothing runs it. That was already true; pinning is what makes it matter. It was finally run by hand on 2026-08-27 and reported 23 distinct advisories across 6 packages, against a comment in `requirements-dev.txt` asserting there was one. The 2026-08 security batch cleared 22 of them; the remaining one is `ecdsa` PYSEC-2026-1325, which has no fix version. Nothing runs `pip-audit` automatically even now, so the next reading of this paragraph should assume the number has drifted again.
+Pinning every transitive package means none of them receives a security update on its own any more. Dependabot security updates were switched on for exactly this cost, and they are the automatic half now: an advisory against a pinned package raises an alert and Dependabot opens the bump as a pull request, which then goes through the same three checks as anything else. `pip-audit` is still in `requirements-dev.txt` with a comment saying to run it before a release, and nothing runs it. That was already true; pinning is what makes it matter. It was finally run by hand on 2026-08-27 and reported 23 distinct advisories across 6 packages, against a comment in `requirements-dev.txt` asserting there was one. The 2026-08 security batch cleared 22 of them; the remaining one is `ecdsa` PYSEC-2026-1325, which has no fix version. Nothing runs `pip-audit` automatically even now, so the next reading of this paragraph should assume the number has drifted again.
 
 `backend-checks` asserts that pip installed exactly what the requirements files say, rather than trusting that pinning worked. The step has its own floor on the number of pins it parsed, because a parser that matches nothing compares nothing and reports green.
 
 ESLint is deliberately not in `frontend-checks`. It reports 88 errors and 13 warnings on tracked files, so it cannot gate anything until those are cleared, and a check that reports without ever failing is noise.
 
 `gradle/actions/setup-gradle@v4` emits a Node.js 20 deprecation warning on every run. v4 was chosen over v6 for predictability, and that argument weakens as v4 ages. Revisit when v6's cache provider leaves free preview.
+
+## Repository Security Settings
+
+These are repository settings, not files, so nothing in the tree records them and `git log` will not show them changing. Enabled 2026-08-27, all free because the repository is public.
+
+`secret_scanning` and `secret_scanning_push_protection` were ALREADY on before this batch, which is worth knowing before anyone claims credit for them: GitHub switches both on by default for public repositories. `dependabot_security_updates` was off and was switched on, together with the Dependabot alerts it depends on. Still off and deliberately untouched: `secret_scanning_validity_checks` and `secret_scanning_non_provider_patterns`, the latter because non-provider patterns are the generic ones and their false positive rate is the whole question.
+
+Push protection was verified to BLOCK rather than merely to be configured, the same way the force-push block was. A throwaway branch carrying five invented credentials was pushed and the push was declined with `GH013: Repository rule violations found`, naming Amazon AWS Access Key ID, Amazon AWS Secret Access Key, SendGrid API Key, Slack API Token and Stripe API Key, each with an unblock URL. The branch never reached the remote, since the push is refused before the ref is created, so cleanup was a local `git branch -D` and nothing else. No real credential was involved at any point.
+
+Code scanning uses the ADVANCED setup, meaning `.github/workflows/codeql.yml`, and GitHub's default setup is deliberately left `not-configured`. The two are mutually exclusive: enabling default setup would disable the workflow.
+
+One gap worth naming, because it is invisible from the Security tab. `mobile-kmp/` has no dependency scanning at all. Dependabot security updates are driven by alerts, alerts are driven by the dependency graph, and the dependency graph does not parse Gradle statically -- Maven `pom.xml` it reads, Gradle it does not, and Gradle reaches the graph only through the Dependency Submission API, which means running a real build. The repository SBOM confirms the effect rather than assuming it: 1266 packages, not one of them a Maven coordinate, while every backend pin, both `package-lock.json` files and all five pinned actions are there. Closing it needs `gradle/actions/dependency-submission`, which is a build and therefore its own decision.
+
+The remaining `ecdsa` PYSEC-2026-1325 advisory will not produce a Dependabot pull request. It has no fix version, and Dependabot opens a pull request only when there is a version to move to. Its silence on that one is not a sign that it is not working.
 
 ## Rules
 - All code comments in English
