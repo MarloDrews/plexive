@@ -98,7 +98,7 @@ numpy==2.5.2
 packaging==26.2
 postgrest==2.31.0
 propcache==0.5.2
-pyasn1==0.6.3
+pyasn1==0.6.4
 pyasn1_modules==0.4.2
 pycparser==3.0
 pydantic==2.13.4
