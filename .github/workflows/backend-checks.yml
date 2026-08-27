@@ -80,10 +80,18 @@ jobs:
       # tests/_throwaway_db.py pins DATABASE_URL to a temp SQLite file and blanks the Supabase env
       # before any app module loads, so this can never reach a real database.
       #
-      # The route count is a FLOOR, not the observed number (57 when this was written: 53 real routes
-      # plus FastAPI's four docs routes). Its job is to rule out an app that imported but registered
+      # The count is the number of OpenAPI paths, NOT len(app.routes). len(app.routes) is not stable
+      # across FastAPI versions and requirements.txt pins nothing: 0.136.3 (local dev) reports 57
+      # there, because it holds one flattened APIRoute per endpoint, while 0.141.1 (what CI resolved
+      # on 2026-08-27) reports 23, because include_router now leaves a single _IncludedRouter object
+      # per router. The API surface is identical either way -- app.openapi()["paths"] is 45 on both --
+      # so the OpenAPI count measures the thing this check is actually about and does not move when a
+      # dependency changes its internals underneath.
+      #
+      # It is a FLOOR, not the observed 45. Its job is to rule out an app that imported but registered
       # nothing. Asserting the exact count would turn every new endpoint into a red gate during correct
-      # work, and the route list grows with the product.
+      # work, and the route list grows with the product. WebSocket routes are absent from OpenAPI by
+      # design, so the three of them are not counted here.
       - name: App boots
         run: |
           python - <<'PY'
@@ -93,11 +101,11 @@ jobs:
           import _throwaway_db  # noqa: F401 - must run before any app import
           from app.main import app
 
-          MIN_ROUTES = 20  # floor; 57 observed on 2026-08-27
-          routes = len(app.routes)
-          print(f"app.main imported, {routes} routes registered")
-          if routes < MIN_ROUTES:
-              print(f"FAIL: {routes} routes is below the floor of {MIN_ROUTES}.")
+          MIN_PATHS = 20  # floor; 45 observed on 2026-08-27 under both FastAPI 0.136.3 and 0.141.1
+          paths = len(app.openapi()["paths"])
+          print(f"app.main imported, {paths} OpenAPI paths, {len(app.routes)} route objects")
+          if paths < MIN_PATHS:
+              print(f"FAIL: {paths} OpenAPI paths is below the floor of {MIN_PATHS}.")
               print("The app imported but registered almost nothing, so this proves nothing.")
               sys.exit(1)
           PY
