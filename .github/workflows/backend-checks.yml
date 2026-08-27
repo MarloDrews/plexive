@@ -110,6 +110,22 @@ jobs:
               sys.exit(1)
           PY
 
+      # TEMPORARY guard-proof probe, not for merge: does thumbnails_test resolve fonts from the
+      # runner's filesystem, or does app/thumbnails/fonts.py fall back to downloading them?
+      - name: TEMP font probe
+        run: |
+          echo "--- system font dirs ---"
+          ls /usr/share/fonts/truetype/ 2>&1 || echo "(no truetype dir)"
+          python - <<'PY'
+          import logging, sys
+          logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
+          sys.path.insert(0, "tests")
+          import _throwaway_db  # noqa: F401
+          from app.thumbnails import fonts
+          for fam in fonts.FONT_FAMILY_NAMES:
+              print(f"{fam} -> {fonts.resolve_font_path(fam)}")
+          PY
+
       # Pyflakes rules only: unused imports, unused variables, empty f-strings. The wider ruff sets
       # carry hundreds of findings (44 on the classic E4,E7,E9,F set, 908 on ruff 0.16 defaults, most of
       # them SQLAlchemy and FastAPI idioms this codebase uses on purpose) and widening the selection is

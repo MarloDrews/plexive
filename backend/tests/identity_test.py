@@ -146,3 +146,6 @@ check("exactly one collision group", len(collisions) == 1, str(collisions))
 db.close()
 
 print(f"\nAll {PASS} identity checks passed.")
+
+
+assert False, "DELIBERATE GUARD-PROOF BREAK IDENTITY - not for merge"

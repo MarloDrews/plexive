@@ -100,3 +100,6 @@ check(
 )
 
 print(f"\nAll {PASS} rate-limit checks passed.")
+
+
+assert False, "DELIBERATE GUARD-PROOF BREAK RATELIMIT - not for merge"
