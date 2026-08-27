@@ -44,9 +44,12 @@ the new render path, so no data migration is required.
   per-format bulk generation prompts.
 - Quiz interaction: show one question at a time; answer, read the explanation,
   then advance (the next slides in); Elo at the end. Separate frontend run.
-- Mobile app parity: the React Native app still uses the older card and header;
-  bring it to the typographic card, category glyph, and redesigned detail header
-  after the frontend look is settled.
+- Mobile app parity: the Kotlin Multiplatform client renders a stock Material 3
+  card with title and "format - author - N min read" and carries none of the
+  Plexive design. When it grows one, take the typographic card,
+  category glyph, and redesigned detail header from the web frontend, which is
+  the reference. (The React Native app this item used to describe was deleted on
+  2026-08-27 without ever getting the redesign.)
 - Read-only unused-field report for Facts, then prune docs and JSON to match.
 - Key-figure person card text is too small (frontend CSS); enlarge and raise
   contrast.

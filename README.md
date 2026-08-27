@@ -24,7 +24,7 @@ A graph view that links related posts (in the style of Obsidian) is planned and 
 
 - **Backend:** Python, FastAPI, SQLAlchemy. Data lives in Supabase (PostgreSQL); uploads go to Supabase Storage. (`backend/requirements.txt`)
 - **Web:** Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4. (`frontend/package.json`)
-- **Mobile:** React Native 0.85 with Expo SDK 56, expo-router, NativeWind. (`mobile/package.json`)
+- **Mobile:** Kotlin Multiplatform with Compose Multiplatform, targeting Android and iOS. Early: it builds and runs on Android, and has not yet been linked or run on iOS. (`mobile-kmp/`)
 
 Backend dependency versions are pinned exactly, to what the production server runs (`backend/requirements.txt`); the versions above are the major versions the project currently builds against.
 
@@ -33,7 +33,7 @@ Backend dependency versions are pinned exactly, to what the production server ru
 ```
 backend/    FastAPI + SQLAlchemy API, Supabase PostgreSQL and Storage
 frontend/   Next.js web app (App Router, TypeScript, Tailwind)
-mobile/     React Native + Expo app
+mobile-kmp/ Kotlin Multiplatform mobile app (Compose Multiplatform, Android + iOS)
 docs/       Content model, style and layout standards, roadmap
 LICENSE         AGPL-3.0
 ARCHITECTURE.md One-line-per-item map of the codebase
@@ -88,22 +88,9 @@ Other scripts: `npm run build`, `npm run start`, `npm run lint`.
 
 ### Mobile
 
-```bash
-cd mobile
-npm install --legacy-peer-deps
-npm start
-```
+The mobile app is a Kotlin Multiplatform project under `mobile-kmp/`, with its own Gradle build and wrapper. See `mobile-kmp/README.md` for prerequisites and how to run it; it needs an Android SDK, and the iOS target needs a Mac.
 
-`--legacy-peer-deps` is required because of a react / react-dom peer version mismatch. `npm start` launches the Expo dev server; from there you can open the app on Android (`npm run android`), iOS (`npm run ios`), or the web (`npm run web`).
-
-The mobile app reads `EXPO_PUBLIC_API_URL` (the backend URL) and `EXPO_PUBLIC_WEB_URL`. There is no committed example file, so create `mobile/.env` yourself:
-
-```
-EXPO_PUBLIC_API_URL=http://10.0.2.2:8000
-EXPO_PUBLIC_WEB_URL=http://localhost:3000
-```
-
-`10.0.2.2` is the host machine as seen from an Android emulator. On a physical device on the same network, use your computer's LAN IP instead. Restart Expo with `npm start -- -c` after changing env values.
+It reads the backend URL from `plexive.api.baseUrl` in `mobile-kmp/gradle.properties`, which defaults to the deployed API rather than a local one.
 
 ## Contributing
 

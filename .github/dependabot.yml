@@ -64,8 +64,6 @@ updates:
 # mobile-kmp/settings.gradle.kts and dominated by build-tooling coordinates (io.netty:*,
 # kotlin-gradle-plugin, bouncycastle). None triaged; see CLAUDE.md before reading the number as 50
 # things shipping in the app.
-#
-# npm for mobile/. The React Native app -- current, not legacy: 260 tracked files with its own
-# package-lock.json, and the dependency graph does see it. It needs no block here precisely because security updates are
-# repository-wide: mobile/ is already covered, and listing it would only add a version update stream
-# to switch off. Absence from this file is not absence from coverage.
+# (The React Native app at mobile/ was deleted on 2026-08-27, so the npm block that used to be
+# described here as deliberately absent is now moot in both directions. Its three open alerts --
+# uuid and two against image-size, all filed on mobile/package-lock.json -- close with the manifest.)
