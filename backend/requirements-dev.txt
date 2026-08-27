@@ -1,10 +1,24 @@
 # Test-only dependencies (not needed at runtime).
 # Install alongside requirements.txt before running backend/tests/*.
+# Pinned the same way requirements.txt is, and for the same reason.
+
 # FastAPI's TestClient imports httpx at runtime.
-httpx
+#
+# This pin is duplicated in requirements.txt, where httpx appears as a transitive
+# dependency of supabase. The two must stay identical. Nothing extra enforces
+# that, and nothing needs to: CI installs both files in a single pip invocation,
+# and pip fails with ResolutionImpossible on conflicting pins rather than picking
+# one. If you change this version, change it there too.
+httpx==0.28.1
 
 # Dependency vulnerability scanner (M135). Run before a release:
 #   python -m pip_audit -r requirements.txt
 # The one remaining finding, ecdsa PYSEC-2026-1325 (CVE-2024-23342), is a known
 # accepted item documented in requirements.txt (we sign with HS256, not ECDSA).
-pip-audit
+#
+# The tool is pinned; its own ~19 transitive packages deliberately are not. The
+# reason to pin transitively in requirements.txt is that drift there reaches
+# users. Drift inside a scanner that never ships reaches nobody, and its tree in a
+# file about production dependencies only costs readability. Pinning the tool does
+# not make the scan stale either: pip-audit fetches advisory data at run time.
+pip-audit==2.10.1
