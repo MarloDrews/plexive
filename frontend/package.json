@@ -21,10 +21,12 @@
     "The arithmetic: every 16.2.x declares sharp ^0.34.5, whose ceiling is <0.35.0,",
     "and the fix is 0.35.0 exactly. next@16.3.3 declares sharp ^0.35.3, so clearing",
     "it means moving off the 16.2 line, which is a separate decision.",
-    "Whether it matters at all is UNSETTLED: the frontend deploys on Vercel, which",
-    "supplies its own image optimisation, so the bundled sharp may never run in",
-    "production. Nobody has checked which one Vercel uses. Settle that before",
-    "treating the advisory as either urgent or irrelevant. Recorded 2026-08-27."
+    "SETTLED 2026-08-28: Vercel serves the images (97 Image Optimization",
+    "Transformations over 30 days, all from this project, usage dashboard), so",
+    "the bundled sharp at 0.34.5 is not on the production serving path and the",
+    "advisory is build-time only. The 16.3 move waits on route smoke tests: 40",
+    "tests today, none of which renders a route, cannot verify an App Router",
+    "minor bump. Dependabot #59 was closed on those two reasons."
   ],
   "dependencies": {
     "@diffusionstudio/vits-web": "^1.0.3",
