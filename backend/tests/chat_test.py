@@ -41,9 +41,22 @@ _stack.enter_context(client)
 
 # A missing frame would otherwise park forever inside a blocking receive_json,
 # with no output to show for it. Fail the run loudly instead, and leave a stack.
-# 90s is well inside the 300s CI budget, so a hang here reports FAIL rather than
-# TIMEOUT; the announcement below is what tells the reader which one it was.
-_WATCHDOG_SECONDS = 90
+#
+# 180s, and the binding constraint is LOCAL false positives rather than CI cost.
+# In CI this watchdog earns little: timeout --signal=ABRT 300s under
+# -X faulthandler already produces the same all-thread stack, so here it only
+# makes that stack arrive sooner, and 180s out of a 300s per-suite budget and a
+# 20-minute job ceiling costs nothing. Its unique value is local, where none of
+# that instrumentation runs -- and local is where the margin is thin. 180s is
+# about 5.7x the worst healthy run measured: 31.5s on a 12-core laptop
+# deliberately oversubscribed with 12 concurrent test processes, against ~2.7s
+# in CI. The dangerous direction is DOWN, exactly as for the 300s: a watchdog
+# that fires on a slow-but-healthy run is a gate that gets switched off. At 90s
+# the local margin was only 2.9x, which is why this is 180 and not 90.
+#
+# A hang here reports FAIL at 180s rather than TIMEOUT at 300s; the announcement
+# below is what tells the reader which one it was.
+_WATCHDOG_SECONDS = 180
 
 
 def _watchdog_fire() -> None:
