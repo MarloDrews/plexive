@@ -4,9 +4,8 @@ import { applyDelta, computeDelta, DIFFICULTY_RATING, pickDifficulty } from "./e
 import { numericMatch } from "./numeric"
 import { apiFetch } from "@/lib/api"
 
-// THE SEAM (ported from mobile/src/lib/train/trainApi.ts). Question SELECTION
-// still runs against the local mock pool (there is no shared question backend
-// yet). SCORING is split by auth:
+// THE SEAM. Question SELECTION still runs against the local mock pool (there is
+// no shared question backend yet). SCORING is split by auth:
 //   - Logged-in players: the answer is POSTed to /api/train/answer as the raw
 //     choice (question_id + chosen_index/chosen_value), and the SERVER grades
 //     correctness from its own bank (app/train_bank.py) and updates the user's

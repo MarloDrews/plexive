@@ -5,8 +5,9 @@
 //
 // "Circuit" palette: muted technical inks in blue/purple tones at matched
 // lightness. The accent hexes here are a hand-maintained mirror of the
-// --color-fmt-* tokens in globals.css (web source of truth) and of
-// mobile/src/theme/tokens.ts; update all together. The Tailwind classes below
+// --color-fmt-* tokens in globals.css (web source of truth); update both
+// together. No client outside the web app carries these colors today, so one
+// that adds format colors mirrors globals.css too. The Tailwind classes below
 // reference the globals.css tokens. Inside post rendering the active ink is
 // exposed as the CSS variable --accent on the container.
 

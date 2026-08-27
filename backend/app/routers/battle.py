@@ -46,8 +46,10 @@ WS_CLOSE_INSECURE = 4403
 WS_CLOSE_TRY_AGAIN = 4429  # too many handshake attempts, or the pre-auth pool is full
 
 # Number of questions in one duel. The clients derive the SAME question
-# sequence from the shared seed (mobile/src/lib/battle/seededQuestions.ts), so
-# the server only needs to agree on the length.
+# sequence from the shared seed, so the server only needs to agree on the
+# length. frontend/src/lib/battle/seededQuestions.ts is the only client that
+# implements the derivation today; a second one must produce an identical
+# sequence from the same seed.
 BATTLE_QUESTION_COUNT = 7
 
 

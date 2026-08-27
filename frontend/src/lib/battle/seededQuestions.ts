@@ -2,9 +2,10 @@ import type { MarathonQuestion } from "@/types/train"
 import { mockQuestions } from "@/lib/train/mockQuestions"
 import { mulberry32 } from "@/lib/prng"
 
-// Deterministic question sequence for a Battle duel. Ported from the mobile app
-// (mobile/src/lib/battle/seededQuestions.ts); identical math so a web client and
-// a mobile client given the same seed derive the SAME sequence.
+// Deterministic question sequence for a Battle duel. The server agrees only the
+// seed and the question count (backend/app/routers/battle.py); each client
+// derives the sequence itself, so any two clients given the same seed must
+// arrive at the SAME sequence. This is the only implementation today.
 //
 // Both devices must see the SAME questions in the SAME order, but there is no
 // server question bank yet (the Train tab is still in the "mock phase", see
