@@ -34,7 +34,7 @@ python-jose[cryptography]==3.5.0
 python-dotenv==1.2.2
 email-validator==2.3.0
 python-multipart==0.0.32
-Pillow==12.2.0
+Pillow==12.3.0
 lxml==6.1.1
 defusedxml==0.7.1
 supabase==2.31.0
