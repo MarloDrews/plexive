@@ -12,7 +12,7 @@
   },
   "overrides": {
     "js-yaml": "^4.1.2",
-    "postcss": "^8.5.10"
+    "postcss": "^8.5.23"
   },
   "//next-sharp": [
     "The next pin below is 16.2.11, the security floor that clears all nine Next",
