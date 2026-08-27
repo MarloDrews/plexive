@@ -29,6 +29,14 @@ def _assert_single_worker() -> None:
     never fill a lobby between them. Fail the boot loudly instead
     of degrading silently. Replica count cannot be detected from inside the
     process; that half of the invariant lives in backend/railway.toml.
+
+    One process also means one EVENT LOOP, and the registries depend on that
+    and not merely on being process-local: chat, battle and arena all relay by
+    awaiting send_json on ANOTHER user's socket, which is only correct while
+    every socket lives on the same loop. One worker gives that for free, so
+    this guard never has to check it. A test harness can still break it -- an
+    un-entered TestClient opens one event loop per websocket and the relay is
+    silently lost (docs/research/battle-hang-diagnosis-2026-08.md).
     """
     for var in ("WEB_CONCURRENCY", "UVICORN_WORKERS"):
         raw = os.getenv(var, "").strip()

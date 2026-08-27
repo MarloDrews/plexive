@@ -13,9 +13,11 @@ score/index validation rejecting bool and out-of-range values (BUG-086).
 Run with: .venv\\Scripts\\python.exe tests\\battle_test.py
 """
 
+import faulthandler
 import json
 import os
 import sys
+import threading
 from contextlib import ExitStack
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -32,6 +34,44 @@ from app.main import app  # noqa: E402
 
 Base.metadata.create_all(bind=engine)
 client = TestClient(app)
+
+# A missing frame would otherwise park forever inside a blocking receive_json,
+# with no output to show for it. Fail the run loudly instead, and leave a stack.
+#
+# 180s, and the binding constraint is LOCAL false positives rather than CI cost.
+# In CI this watchdog earns little: timeout --signal=ABRT 300s under
+# -X faulthandler already produces the same all-thread stack, so here it only
+# makes that stack arrive sooner, and 180s out of a 300s per-suite budget and a
+# 20-minute job ceiling costs nothing. Its unique value is local, where none of
+# that instrumentation runs -- and local is where the margin is thin. 180s is
+# about 5.7x the worst healthy run measured: 31.5s on a 12-core laptop
+# deliberately oversubscribed with 12 concurrent test processes, against ~2.7s
+# in CI. The dangerous direction is DOWN, exactly as for the 300s: a watchdog
+# that fires on a slow-but-healthy run is a gate that gets switched off. At 90s
+# the local margin was only 2.9x, which is why this is 180 and not 90.
+#
+# A hang here reports FAIL at 180s rather than TIMEOUT at 300s; the announcement
+# below is what tells the reader which one it was.
+_WATCHDOG_SECONDS = 180
+
+
+def _watchdog_fire() -> None:
+    print(
+        f"\nWATCHDOG: battle_test.py hit its {_WATCHDOG_SECONDS}s limit and is presumed "
+        "hung. This is the watchdog firing, NOT an assertion failing. Exiting 1, "
+        "so the suite loop counts it as FAIL. All-thread stack follows.",
+        # os._exit skips every cleanup path, and CI redirects stdout to a file,
+        # where it is block-buffered: without this flush every ok: line above
+        # dies with the process and the log shows the stack alone.
+        flush=True,
+    )
+    faulthandler.dump_traceback()
+    os._exit(1)
+
+
+_watchdog = threading.Timer(_WATCHDOG_SECONDS, _watchdog_fire)
+_watchdog.daemon = True
+_watchdog.start()
 
 PASS = 0
 
@@ -64,6 +104,14 @@ carol = register("battle.carol@example.com", "b_carol")
 register("battle.dave@example.com", "b_dave")  # never connects: the offline target
 
 with ExitStack() as stack:
+    # Enter the client, do not merely construct it. An un-entered TestClient gives
+    # every websocket_connect its own portal, its own event loop and its own
+    # thread, so a relay from one user's handler into another user's socket is a
+    # cross-loop wakeup that anyio can lose: the frame is delivered and the
+    # receiving loop is never woken. Every socket must live on ONE event loop.
+    # See docs/research/battle-hang-diagnosis-2026-08.md.
+    stack.enter_context(client)
+
     ws_a = stack.enter_context(client.websocket_connect("/api/battle/ws"))
     ws_b = stack.enter_context(client.websocket_connect("/api/battle/ws"))
     check("alice auth_ok", ws_auth(ws_a, alice["access_token"])["type"] == "auth_ok")

@@ -355,7 +355,11 @@ class ConnectionManager:
     """In-memory registry of open sockets per user id. Single-process only,
     consistent with the in-memory rate limiter; a multi-worker deployment
     would need a shared broker (e.g. Redis pub/sub) instead. Protected by the
-    single-worker deployment invariant (M138, see backend/railway.toml).
+    single-worker deployment invariant (M138, see backend/railway.toml), which
+    means ONE EVENT LOOP as well as one process: send_to_users awaits send_json
+    on every OTHER participant's socket, and that is only correct while all of
+    them live on the same loop
+    (docs/research/battle-hang-diagnosis-2026-08.md).
 
     Sockets per user are CAPPED (M147/ARCH-011): the registry held every
     authenticated socket a single account opened, so one scripted account

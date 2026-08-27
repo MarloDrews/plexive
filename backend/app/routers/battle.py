@@ -81,7 +81,10 @@ class BattleManager:
     Single-process only, consistent with the chat ConnectionManager and the
     in-memory rate limiter; a multi-worker deployment would need a shared
     broker (e.g. Redis pub/sub). Protected by the single-worker deployment
-    invariant (M138, see backend/railway.toml).
+    invariant (M138, see backend/railway.toml), which means ONE EVENT LOOP as
+    well as one process: send() below awaits send_json on the OTHER player's
+    socket, and that is only correct while both sockets live on the same loop
+    (docs/research/battle-hang-diagnosis-2026-08.md).
 
     Every decision that reads AND writes pairing state happens inside one lock
     acquisition (M142): the old check-then-pair sequence took the lock once per

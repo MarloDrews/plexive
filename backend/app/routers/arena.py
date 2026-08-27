@@ -184,7 +184,12 @@ Notification = Tuple[int, dict]
 
 class ArenaManager:
     """In-memory registry of arena sockets, the matchmaking queue and live
-    matches. One socket per user (latest connection wins).
+    matches. One socket per user (latest connection wins). Single-process only,
+    like the chat ConnectionManager and the BattleManager, and protected by the
+    same deployment invariant (M138, see backend/railway.toml) -- which means
+    ONE EVENT LOOP as well as one process: send/broadcast await send_json on
+    every OTHER player's socket, and that is only correct while all of them
+    live on the same loop (docs/research/battle-hang-diagnosis-2026-08.md).
 
     Every read-then-write of queue/match state happens inside ONE lock
     acquisition, following the BattleManager rewrite (M142): taking the lock
