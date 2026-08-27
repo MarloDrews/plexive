@@ -87,9 +87,6 @@ jobs:
       #
       # pip-audit's own transitive tree is deliberately unpinned (see requirements-dev.txt), so extra
       # packages in pip freeze that this file does not name are expected and are not an error.
-      - name: PROOF ONLY - force a version higher than the pin
-        run: python -m pip install --no-deps certifi==2026.7.22
-
       - name: Verify pins resolved
         run: |
           python - <<'PY'
