@@ -43,6 +43,8 @@ Every check asserts on a count, not only on an exit code, because all of them ca
 
 The backend suites run as a per-file subprocess loop, not `pytest tests`. 12 of the 16 suites execute their whole body at import and share one app instance, one in-memory rate limiter and the first module's temp SQLite file, so in one process they collide: pytest collects 92 of about 979 assertions and interrupts on 4 collection errors. The loop also runs every suite after one fails, so a second failure is not hidden behind the first.
 
+The backend boot check counts `app.openapi()["paths"]`, not `len(app.routes)`. The route count is not a property of this codebase, it is a property of the installed FastAPI version: on the same commit it was 57 on the dev laptop (0.136.3, one flattened `APIRoute` per endpoint) and 23 in CI (0.141.1, where `include_router` leaves one `_IncludedRouter` per router). Since `requirements.txt` pins nothing, both are "correct" on the same day. The OpenAPI path count was 45 on both, so that is what the guard asserts. Do not change it back to counting routes.
+
 Neither Python nor Node is pinned anywhere in the project, so `backend-checks.yml` (Python 3.12) and `frontend-checks.yml` (Node 24) are now the de facto pins. Both were chosen as the versions the code is known to run on locally, not as a claim about what the Pi runs.
 
 ESLint is deliberately not in `frontend-checks`. It reports 88 errors and 13 warnings on tracked files, so it cannot gate anything until those are cleared, and a check that reports without ever failing is noise.
