@@ -1,0 +1,11 @@
+# Claude Code reads a skill's frontmatter from SKILL.md, and the description is the whole
+# matching surface. Observed 2026-08-28: with the file CRLF the session skill list shows the
+# H1 instead of the description; with it LF the description resolves. core.autocrlf=true is
+# set on the Windows dev machine and there is no other .gitattributes, so every checkout
+# rewrote it CRLF. Pin these files to LF.
+#
+# Deliberately scoped to this one pattern. No `* text=auto`, so nothing already committed
+# renormalizes. The pattern is a glob rather than the single path because the only reason
+# .claude/skills/ui-ux-pro-max/SKILL.md never hit this is .gitignore:24 excluding it, so the
+# next tracked skill would inherit the problem.
+.claude/skills/**/SKILL.md text eol=lf
