@@ -3,8 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { TOKEN_KEY, wsUrl } from "@/lib/storage"
 
-// Battle WebSocket hook for web, modeled on chatSocket.ts and the mobile
-// battleSocket (mobile/src/lib/battle/battleSocket.ts). Like chat it pairs by
+// Battle WebSocket hook for web, modeled on chatSocket.ts. The frame protocol
+// belongs to the server (backend/app/routers/battle.py). Like chat it pairs by
 // account: the first frame is {type:"auth", token} (the JWT from localStorage,
 // never in the URL), so a duel is between two logged-in users found via the user
 // search. The protocol is the 1v1 relay (challenge a username / progress /

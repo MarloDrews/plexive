@@ -179,7 +179,7 @@ jobs:
 
       # The check that matters most. This backend boot-fails on purpose on a weak JWT_SECRET, a missing
       # DATABASE_URL, WEB_CONCURRENCY > 1 and an empty CORS origin list, and a boot failure crash-loops
-      # systemd on the Pi and takes the API down for the web app and both mobile apps.
+      # systemd on the Pi and takes the API down for the web app and the mobile app.
       # docs/SERVER.md:191-197 records that this has really happened.
       #
       # tests/_throwaway_db.py pins DATABASE_URL to a temp SQLite file and blanks the Supabase env

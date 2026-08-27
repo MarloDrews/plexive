@@ -14,8 +14,7 @@ import { GlowCard, MessageSlab, LABEL_CAPS } from "./stage"
 import Avatar from "@/components/Avatar"
 import VerifiedBadge from "@/components/VerifiedBadge"
 
-// The Battle tab for web: a real-time 1v1 quiz duel against a friend. Ported
-// from the mobile Battle (mobile/src/components/battle/Battle.tsx). It mirrors
+// The Battle tab for web: a real-time 1v1 quiz duel against a friend. It mirrors
 // the Train marathon's look (frosted glow slabs, mono labels) but instead of a
 // solo Elo climb, two accounts race through the SAME questions and a winner is
 // declared. You find an opponent with the user search (the same

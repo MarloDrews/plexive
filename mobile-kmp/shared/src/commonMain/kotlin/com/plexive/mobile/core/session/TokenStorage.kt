@@ -6,8 +6,8 @@ package com.plexive.mobile.core.session
 //
 // Deliberately not suspend: every implementation is one local read plus one decrypt, which costs
 // well under a millisecond, and a synchronous read means the token is already in memory before the
-// first request goes out. This mirrors mobile/src/lib/api.ts, which caches the token at startup for
-// the same reason.
+// first request goes out, so the Ktor client can attach the Authorization header without awaiting
+// anything.
 interface TokenStorage {
 
     fun read(): String?

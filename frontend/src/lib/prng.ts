@@ -1,9 +1,11 @@
 // Deterministic, non-cryptographic PRNG helpers shared by the generated book
 // cover (bookCover.ts) and the Battle seed (battle/seededQuestions.ts).
 //
-// Parity note: the Battle sequence math must stay identical to the mobile app
-// (mobile/src/lib/battle/seededQuestions.ts). Cross-repo parity is by convention
-// (mobile keeps its own copy), so these bodies must not change.
+// Parity note: the Battle sequence is derived from a seed the server hands both
+// players (backend/app/routers/battle.py), so every client must reach the same
+// sequence from the same seed. battle/seededQuestions.ts is the only client that
+// implements that derivation today, and a client written later has to reproduce
+// these bodies exactly, so they must not change.
 
 // xmur3: a tiny string hash producing a well-mixed 32-bit seed. Same string in
 // -> same seed out, so a book's identity (title + author) always yields the same

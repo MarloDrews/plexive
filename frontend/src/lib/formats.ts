@@ -1,12 +1,14 @@
-// Single source of truth for the 8 feed formats and their visual identity.
+// Single source of truth for the 7 feed formats and their visual identity
+// (7, from FORMAT_IDS below).
 // Every place that needs a format color/label (feed tabs, PostCard, search
 // chips, create wizard, empty states) must read from here so the accent
 // system stays consistent.
 //
 // "Circuit" palette: muted technical inks in blue/purple tones at matched
 // lightness. The accent hexes here are a hand-maintained mirror of the
-// --color-fmt-* tokens in globals.css (web source of truth) and of
-// mobile/src/theme/tokens.ts; update all together. The Tailwind classes below
+// --color-fmt-* tokens in globals.css (web source of truth); update both
+// together. No client outside the web app carries these colors today, so one
+// that adds format colors mirrors globals.css too. The Tailwind classes below
 // reference the globals.css tokens. Inside post rendering the active ink is
 // exposed as the CSS variable --accent on the container.
 

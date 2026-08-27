@@ -2,12 +2,11 @@
 
 import { useCallback, useRef, useState } from "react"
 
-// A tactile slider for Train/Battle numeric questions, ported from the mobile
-// NumberSlider (mobile/src/components/train/NumberSlider.tsx). Pointer drag (or
-// click) on the track snaps the value to `step`; the thumb swells while held.
-// In result mode the track locks and the correct value is marked with a tick,
-// the thumb tinted good/bad. No haptics on web; otherwise the feel mirrors
-// mobile. `min`/`max` are the question's limits; the parent owns `value`.
+// A tactile slider for Train/Battle numeric questions. Pointer drag (or click)
+// on the track snaps the value to `step`; the thumb swells while held. In result
+// mode the track locks and the correct value is marked with a tick, the thumb
+// tinted good/bad. `min`/`max` are the question's limits; the parent owns
+// `value`.
 
 const TRACK_H = 6
 const THUMB = 28 // thumb diameter (also the visual grab target)

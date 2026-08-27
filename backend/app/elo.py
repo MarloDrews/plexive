@@ -15,7 +15,7 @@ at 100 so a losing streak can never produce absurd negative numbers.
 
 The Train marathon layers a time bonus on top of a correct gain (faster correct
 answers earn more); it only ever ADDS to a correct delta. This mirrors the
-client-side simulator in mobile/src/lib/train/elo.ts so the number behaves the
+client-side simulator in frontend/src/lib/train/elo.ts so the number behaves the
 same wherever it is updated.
 """
 
@@ -31,7 +31,7 @@ PROVISIONAL_ANSWERS = 30
 
 DIFFICULTY_RATING = {1: 800.0, 2: 1000.0, 3: 1200.0}
 
-# Train time bonus (mirrors mobile/src/lib/train/elo.ts): full bonus at/under
+# Train time bonus (mirrors frontend/src/lib/train/elo.ts): full bonus at/under
 # FAST_MS, none at/over SLOW_MS, linear in between. Only sweetens a correct gain.
 FAST_MS = 3000
 SLOW_MS = 15000

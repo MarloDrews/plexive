@@ -1,5 +1,4 @@
-// Marathon Elo simulator + adaptive difficulty picker. Ported verbatim from the
-// mobile app (mobile/src/lib/train/elo.ts) so the guest simulation matches.
+// Marathon Elo simulator + adaptive difficulty picker for the local/guest path.
 //
 // The AUTHORITATIVE knowledge rating is the SERVER's per-format Elo
 // (backend/app/elo.py, persisted in UserElo). This module simulates a

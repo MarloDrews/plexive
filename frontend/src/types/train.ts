@@ -1,5 +1,5 @@
-// Train marathon data layer types. Ported from the mobile app
-// (mobile/src/types/train.ts) so web and mobile share the same shapes.
+// Train marathon data layer types: the client side of the Train contract. No
+// second client implements Train today; one that does must use these shapes.
 //
 // IMPORTANT (mock phase): `answerIndex` lives CLIENT-SIDE only because there is
 // no Train question backend yet. Correctness is decided here in the app against
