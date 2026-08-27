@@ -41,3 +41,4 @@ The `push` trigger is scoped to `branches: [main]` on purpose. Unscoped, it also
 - I am a beginner, briefly explain what you are doing and why
 - Always ask before making changes outside the current task
 - After every change, update ARCHITECTURE.md. One line per new or changed item. No explanations beyond what is already there — just add or update the relevant entry. Never let it grow into prose.
+- A change that makes existing documentation false must correct it in the same commit or the same batch, even when that falls outside the stated scope. This covers ARCHITECTURE.md, CLAUDE.md and the CI notes. Scope boundaries exist to prevent creep, not to preserve known-false text.
