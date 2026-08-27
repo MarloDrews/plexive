@@ -1,6 +1,6 @@
+import getpass
 import json
 import os
-import secrets
 import sys
 
 from dotenv import load_dotenv
@@ -228,23 +228,57 @@ def _get_or_create_marlo(db) -> User:
             db.commit()
         return marlo
 
-    # Load seed password from .env; generate if absent
+    # Load seed password from .env; ask for one at the terminal if absent.
     env_path = os.path.join(os.path.dirname(__file__), ".env")
     load_dotenv(env_path)
     password = os.environ.get("SEED_ADMIN_PASSWORD", "").strip()
 
     if not password:
-        password = secrets.token_urlsafe(16)
+        # This branch used to generate a password and print it, which is what
+        # py/clear-text-logging-sensitive-data flagged: stdout is redirected often enough that the
+        # value landed in a file on disk. Relocating the output does not help, because stderr and a
+        # file write are sinks of their own. Asking for the password instead means the script has
+        # nothing to disclose: the operator already knows it, and getpass does not echo, so it
+        # reaches neither the terminal scrollback nor a redirected stream.
+        #
+        # The no-terminal check comes first. It used to sit after the reveal, so a non-interactive
+        # run printed the password and only then refused to continue.
+        if not sys.stdin.isatty():
+            print(
+                "ERROR: SEED_ADMIN_PASSWORD is not set in backend/.env, and there is no terminal\n"
+                "       to ask on. Add SEED_ADMIN_PASSWORD=<password> to backend/.env and re-run."
+            )
+            sys.exit(1)
+
         print(
             "\n"
-            "WARNING: SEED_ADMIN_PASSWORD is not set in backend/.env.\n"
-            f"         Generated seed password: {password}\n"
-            "         Save this now — it will not be shown again.\n"
-            "         Add SEED_ADMIN_PASSWORD=<password> to backend/.env\n"
-            "         and re-run seed.py to use a stable password.\n"
+            "SEED_ADMIN_PASSWORD is not set in backend/.env.\n"
+            "Choose a password for the seed admin account. It is not echoed and never printed.\n"
+            "Add SEED_ADMIN_PASSWORD=<password> to backend/.env to skip this prompt next time.\n"
         )
-        if not sys.stdin.isatty():
-            print("ERROR: Running non-interactively without SEED_ADMIN_PASSWORD set. Exiting.")
+        # EOFError covers the case where getpass cannot control the terminal and falls back to
+        # input(), which raises on a closed stdin; without this that surfaces as a traceback
+        # instead of the message above. It does NOT cover a Windows dev machine running
+        # `seed.py < /dev/null`: isatty() reports NUL as a terminal there (NUL is a character
+        # device), so this prompt is reached, and getpass then reads the console rather than
+        # stdin and simply waits. Measured, not assumed. That path blocks at a prompt with a
+        # human in front of it, so it fails safe, and it does not exist on the Pi, where
+        # isatty() answers correctly. Pipes and regular files report correctly on both.
+        try:
+            password = getpass.getpass("Seed admin password: ")
+            repeated = getpass.getpass("Repeat: ")
+        except (EOFError, KeyboardInterrupt):
+            print(
+                "\nERROR: No password was entered, so SEED_ADMIN_PASSWORD is still unset.\n"
+                "       Add SEED_ADMIN_PASSWORD=<password> to backend/.env and re-run."
+            )
+            sys.exit(1)
+        if password != repeated:
+            print("ERROR: The two entries did not match. Nothing was written.")
+            sys.exit(1)
+        password = password.strip()
+        if not password:
+            print("ERROR: An empty password is not accepted. Nothing was written.")
             sys.exit(1)
 
     marlo = User(

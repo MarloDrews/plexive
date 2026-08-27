@@ -71,7 +71,7 @@ Environment variables the backend reads (set them in `backend/.env`; see `backen
 - `SUPABASE_SERVICE_KEY` Supabase service role key (server-side only, keep it secret).
 - `FRONTEND_ORIGIN` optional, comma-separated allowed CORS origins. Defaults to `http://localhost:3000`.
 
-To load sample content into the database, set `SEED_ADMIN_PASSWORD` in `backend/.env` and run `python seed.py` from the `backend/` directory. This is optional and writes to whatever database `DATABASE_URL` points at.
+To load sample content into the database, set `SEED_ADMIN_PASSWORD` in `backend/.env` and run `python seed.py` from the `backend/` directory. If it is unset, the script asks for a password at the terminal; it never generates one, and without a terminal to ask on it exits rather than continuing. This is optional and writes to whatever database `DATABASE_URL` points at.
 
 ### Web
 
