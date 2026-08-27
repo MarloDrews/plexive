@@ -1,11 +1,20 @@
-# Builds the Android target of mobile-kmp/ on every push and pull request.
+# Builds the Android target of mobile-kmp/ on every pull request, and on main after a merge.
 #
 # mobile-kmp/ is a standalone Gradle build with its own settings file and wrapper, and there is no
 # settings file at the repository root, so Gradle has to be invoked from inside that directory.
 name: Android build
 
 on:
+  # Scoped to main on purpose. An unscoped "push:" also fires on the branch behind a pull request,
+  # so the same commit gets two runs reporting the same android-build check name, and the required
+  # check then resolves to whichever finishes last: a pull request where one run fails and the other
+  # passes has an ordering-dependent outcome. Do not widen this to make branches build. Branches
+  # build through their pull request, which is the thing the check actually gates.
+  #
+  # Keeping main here is what seeds the dependency cache, because setup-gradle only writes the cache
+  # from the default branch. Removing it would leave every run cold.
   push:
+    branches: [main]
   pull_request:
 
 permissions:
