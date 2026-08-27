@@ -24,6 +24,15 @@ jobs:
     # This name is the identity of the required status check on main. Do not rename it casually.
     name: backend-checks
     runs-on: ubuntu-24.04
+    # Backstop for a hang OUTSIDE the suite loop -- in pip install or the boot check -- where the
+    # per-suite timeout below cannot help. Without it a hang burns toward GitHub's six-hour default,
+    # which is what happened on 2026-08-27.
+    #
+    # About 5x the observed 3m37s-3m55s. It is deliberately not tighter, because the number is set by an
+    # interaction and not by the margin alone: a job killed by timeout-minutes prints no summary table,
+    # and that table is the only thing that names the suite that hung. One suite burning its full 300 s
+    # puts the job near 9 minutes and two near 14, and both still print the summary inside 20.
+    timeout-minutes: 20
     defaults:
       run:
         # The Linux default shell is "bash -e {0}", without pipefail, which is how a piped failure
@@ -232,9 +241,31 @@ jobs:
       # interrupts. Each suite gets its own process, which is what every suite docstring prescribes.
       #
       # The loop runs every suite even after one fails. A gate that stops at the first failure hides the
-      # second problem and costs an extra round trip every time.
+      # second problem and costs an extra round trip every time. A timeout is a failure like any other
+      # here: it does not cancel the suites after it.
+      #
+      # Every suite runs under a timeout because on 2026-08-27 a run hung -- battle_test.py produced no
+      # output for 19 minutes on a commit that touched one line of ARCHITECTURE.md, and the unchanged
+      # re-run passed in 2.681 s. That hang is unexplained and was not investigated; one occurrence is
+      # not enough to chase. What is fixed here is that it burned toward the six-hour default instead of
+      # failing, and that the only way to learn which suite was stuck was to cancel the run.
       - name: Test suites
         run: |
+          # Seconds allowed per suite. Derived from thumbnails_test.py, the slowest healthy suite at
+          # about 130 s (arena_test.py about 29 s, every other suite under 10 s), so this is about 2.3x
+          # the real worst case. The dangerous direction is DOWN: a timeout that fires on a
+          # slow-but-healthy run converts a reliable gate into an unreliable one, which is the fastest
+          # way to get a gate switched off, and hosted runner speed is not ours to control. Against 19
+          # minutes of silence, 300 s is already the whole win; trimming to 240 s would buy one minute
+          # and spend most of the headroom.
+          SUITE_TIMEOUT=300
+
+          # Only a SIGKILL at or after this many seconds is read as a timeout. See the KILLED branch.
+          # timeout cannot fire before its own limit, so the only slack this needs is for measuring the
+          # elapsed time in the shell; 10% is far more than that, and it stays far above the ~130 s of
+          # the slowest healthy suite, which is the case it has to tell apart.
+          TIMEOUT_FLOOR=$(( SUITE_TIMEOUT * 9 / 10 ))
+
           files=$(ls tests/*_test.py | sort)
           count=$(printf '%s\n' "$files" | grep -c . || true)
           echo "found $count suite files"
@@ -246,21 +277,57 @@ jobs:
           fi
 
           failed=0
+          timedout=0
           summary="$RUNNER_TEMP/summary.txt"
           : > "$summary"
           for f in $files; do
+            # Printed BEFORE the suite runs, and deliberately not redirected. Each suite's own output
+            # goes to a file and is dumped only on failure, so during a hang the live log is otherwise
+            # completely silent -- which is why the 2026-08-27 hang could only be attributed by
+            # cancelling the run. This line is the difference between "something is stuck" and
+            # "battle_test.py is stuck" while it is still happening, rather than 300 s later.
+            echo "--> running $f (limit ${SUITE_TIMEOUT}s)"
             start=$(date +%s%N)
-            if python "$f" > "$RUNNER_TEMP/suite.log" 2>&1; then
+            rc=0
+            timeout --signal=TERM --kill-after=10s "${SUITE_TIMEOUT}s" \
+              python "$f" > "$RUNNER_TEMP/suite.log" 2>&1 || rc=$?
+            ms=$(( ($(date +%s%N) - start) / 1000000 ))
+            secs=$(( ms / 1000 ))
+
+            if [ "$rc" -eq 0 ]; then
               status=PASS
+            elif [ "$rc" -eq 124 ] || { [ "$rc" -eq 137 ] && [ "$secs" -ge "$TIMEOUT_FLOOR" ]; }; then
+              # 124 is timeout firing at the limit with SIGTERM. 137 is SIGKILL, which --kill-after
+              # sends when the suite ignored SIGTERM -- a plausible shape for a process wedged in a
+              # socket wait, which is what the one observed hang looked like.
+              status=TIMEOUT
+              timedout=$((timedout + 1))
+              failed=$((failed + 1))
+            elif [ "$rc" -eq 137 ]; then
+              # SIGKILL well inside the limit, so timeout did not send it: the kernel OOM killer sends
+              # the same signal, and thumbnails_test.py is image-heavy and the most plausible OOM
+              # candidate on a shared runner. Filing this under TIMEOUT would hide a second cause in
+              # the same bucket, which is the exact reason TIMEOUT is not filed under FAIL.
+              status=KILLED
+              failed=$((failed + 1))
             else
               status=FAIL
               failed=$((failed + 1))
             fi
-            ms=$(( ($(date +%s%N) - start) / 1000000 ))
-            line=$(printf '%-34s %s %d.%03ds' "$f" "$status" "$((ms / 1000))" "$((ms % 1000))")
+
+            line=$(printf '%-34s %-7s %d.%03ds' "$f" "$status" "$secs" "$((ms % 1000))")
             echo "$line"
             echo "$line" >> "$summary"
-            if [ "$status" = FAIL ]; then
+            if [ "$status" != PASS ]; then
+              if [ "$status" = TIMEOUT ]; then
+                echo "----- $f TIMED OUT after ${SUITE_TIMEOUT}s (rc $rc) -----"
+                echo "It did not finish, so its output below is whatever it managed to print."
+                echo "See the CI notes in CLAUDE.md for the 2026-08-27 battle_test.py hang."
+              elif [ "$status" = KILLED ]; then
+                echo "----- $f was SIGKILLed after ${secs}s, inside the ${SUITE_TIMEOUT}s limit -----"
+                echo "This is NOT a timeout. The cause is unknown; the kernel OOM killer is the likely"
+                echo "one, and this job has no memory instrumentation to confirm it."
+              fi
               echo "----- $f output (last 40 lines) -----"
               tail -40 "$RUNNER_TEMP/suite.log"
               echo "----- end $f -----"
@@ -269,7 +336,7 @@ jobs:
 
           echo "===== summary ====="
           cat "$summary"
-          echo "$count suites run, $failed failed"
+          echo "$count suites run, $failed failed ($timedout timed out)"
           if [ "$failed" -gt 0 ]; then
             exit 1
           fi
