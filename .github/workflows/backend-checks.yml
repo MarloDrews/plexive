@@ -162,6 +162,51 @@ jobs:
           print(f"all {len(pinned)} pinned versions match what pip installed, exactly")
           PY
 
+      # THROWAWAY PROOF STEP -- not for main. Establishes, on the real Linux runner:
+      #   1. which signal actually makes faulthandler dump, since -X faulthandler covers
+      #      SIGSEGV/SIGFPE/SIGABRT/SIGBUS/SIGILL and NOT the SIGTERM timeout sends today
+      #   2. what exit code GNU timeout reports for each, which the loop classifies on
+      #   3. whether the dump names every thread, which is the whole point for a WS race
+      - name: PROOF - faulthandler mechanism probe
+        run: |
+          cat > "$RUNNER_TEMP/hang.py" <<'PYEOF'
+          import threading, time
+          def worker():
+              time.sleep(600)
+          threading.Thread(target=worker, name="ws-worker", daemon=True).start()
+          print("probe: hanging now", flush=True)
+          time.sleep(600)
+          PYEOF
+
+          # sitecustomize is the fallback candidate: it registers SIGTERM without any
+          # test file being edited, because PYTHONPATH is set only for this invocation.
+          mkdir -p "$RUNNER_TEMP/sc"
+          cat > "$RUNNER_TEMP/sc/sitecustomize.py" <<'PYEOF'
+          import faulthandler, signal, sys
+          faulthandler.enable()
+          faulthandler.register(signal.SIGTERM, file=sys.stderr, all_threads=True, chain=False)
+          PYEOF
+
+          # A: today's behaviour, for the baseline.
+          rc=0; timeout --signal=TERM --kill-after=5s 3s python "$RUNNER_TEMP/hang.py" > "$RUNNER_TEMP/p.log" 2>&1 || rc=$?
+          echo "=== CASE A: plain python, SIGTERM (today) -> EXIT $rc"; cat "$RUNNER_TEMP/p.log"
+
+          # B: -X faulthandler with SIGTERM. Expected to NOT dump; proves the gap is real.
+          rc=0; timeout --signal=TERM --kill-after=5s 3s python -X faulthandler "$RUNNER_TEMP/hang.py" > "$RUNNER_TEMP/p.log" 2>&1 || rc=$?
+          echo "=== CASE B: -X faulthandler, SIGTERM -> EXIT $rc"; cat "$RUNNER_TEMP/p.log"
+
+          # C: -X faulthandler with SIGABRT. The candidate the brief proposed.
+          rc=0; timeout --signal=ABRT --kill-after=5s 3s python -X faulthandler "$RUNNER_TEMP/hang.py" > "$RUNNER_TEMP/p.log" 2>&1 || rc=$?
+          echo "=== CASE C: -X faulthandler, SIGABRT -> EXIT $rc"; cat "$RUNNER_TEMP/p.log"
+
+          # D: sitecustomize registering SIGTERM. The fallback, if C is unusable.
+          rc=0; PYTHONPATH="$RUNNER_TEMP/sc" timeout --signal=TERM --kill-after=5s 3s python "$RUNNER_TEMP/hang.py" > "$RUNNER_TEMP/p.log" 2>&1 || rc=$?
+          echo "=== CASE D: sitecustomize SIGTERM register -> EXIT $rc"; cat "$RUNNER_TEMP/p.log"
+
+          # E: does either add output to a HEALTHY run? Must be silent.
+          rc=0; python -X faulthandler -c "print('healthy ok')" > "$RUNNER_TEMP/p.log" 2>&1 || rc=$?
+          echo "=== CASE E: healthy run under -X faulthandler -> EXIT $rc"; cat "$RUNNER_TEMP/p.log"
+
       # --- Cheapest first, so a failure surfaces fast. ---
 
       # A compileall over a path that does not exist still exits 0, so count the files first. The floor
