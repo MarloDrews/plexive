@@ -1,4 +1,5 @@
-// Single source of truth for the 8 feed formats and their visual identity.
+// Single source of truth for the 7 feed formats and their visual identity
+// (7, from FORMAT_IDS below).
 // Every place that needs a format color/label (feed tabs, PostCard, search
 // chips, create wizard, empty states) must read from here so the accent
 // system stays consistent.
