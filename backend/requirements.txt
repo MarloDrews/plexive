@@ -85,8 +85,8 @@ ecdsa==0.19.2
 fonttools==4.63.0
 greenlet==3.5.1
 h11==0.16.0
-h2==4.3.0
-hpack==4.1.0
+h2==4.4.1
+hpack==4.2.0
 httpcore==1.0.9
 httptools==0.8.0
 httpx==0.28.1
