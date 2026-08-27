@@ -14,6 +14,18 @@
     "js-yaml": "^4.1.2",
     "postcss": "^8.5.10"
   },
+  "//next-sharp": [
+    "The next pin below is 16.2.11, the security floor that clears all nine Next",
+    "advisories (every one reports its fixed range as >=16.0.0 <16.2.11).",
+    "It does NOT clear GHSA-f88m-g3jw-g9cj in sharp, and no 16.2.x release can.",
+    "The arithmetic: every 16.2.x declares sharp ^0.34.5, whose ceiling is <0.35.0,",
+    "and the fix is 0.35.0 exactly. next@16.3.3 declares sharp ^0.35.3, so clearing",
+    "it means moving off the 16.2 line, which is a separate decision.",
+    "Whether it matters at all is UNSETTLED: the frontend deploys on Vercel, which",
+    "supplies its own image optimisation, so the bundled sharp may never run in",
+    "production. Nobody has checked which one Vercel uses. Settle that before",
+    "treating the advisory as either urgent or irrelevant. Recorded 2026-08-27."
+  ],
   "dependencies": {
     "@diffusionstudio/vits-web": "^1.0.3",
     "d3-geo": "^3.1.1",
