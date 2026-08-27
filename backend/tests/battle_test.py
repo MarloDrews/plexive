@@ -13,9 +13,11 @@ score/index validation rejecting bool and out-of-range values (BUG-086).
 Run with: .venv\\Scripts\\python.exe tests\\battle_test.py
 """
 
+import faulthandler
 import json
 import os
 import sys
+import threading
 from contextlib import ExitStack
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -32,6 +34,31 @@ from app.main import app  # noqa: E402
 
 Base.metadata.create_all(bind=engine)
 client = TestClient(app)
+
+# A missing frame would otherwise park forever inside a blocking receive_json,
+# with no output to show for it. Fail the run loudly instead, and leave a stack.
+# 90s is well inside the 300s CI budget, so a hang here reports FAIL rather than
+# TIMEOUT; the announcement below is what tells the reader which one it was.
+_WATCHDOG_SECONDS = 90
+
+
+def _watchdog_fire() -> None:
+    print(
+        f"\nWATCHDOG: battle_test.py hit its {_WATCHDOG_SECONDS}s limit and is presumed "
+        "hung. This is the watchdog firing, NOT an assertion failing. Exiting 1, "
+        "so the suite loop counts it as FAIL. All-thread stack follows.",
+        # os._exit skips every cleanup path, and CI redirects stdout to a file,
+        # where it is block-buffered: without this flush every ok: line above
+        # dies with the process and the log shows the stack alone.
+        flush=True,
+    )
+    faulthandler.dump_traceback()
+    os._exit(1)
+
+
+_watchdog = threading.Timer(_WATCHDOG_SECONDS, _watchdog_fire)
+_watchdog.daemon = True
+_watchdog.start()
 
 PASS = 0
 

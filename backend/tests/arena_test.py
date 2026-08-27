@@ -14,6 +14,7 @@ roster re-broadcast to everyone queued on every join and leave.
 Run with: venv\\Scripts\\python.exe tests\\arena_test.py
 """
 
+import faulthandler
 import json
 import os
 import sys
@@ -39,8 +40,27 @@ Base.metadata.create_all(bind=engine)
 client = TestClient(app)
 
 # A missing frame would otherwise park forever inside a blocking receive_json,
-# with no output to show for it. Fail the run loudly instead.
-_watchdog = threading.Timer(90, lambda: os._exit(1))
+# with no output to show for it. Fail the run loudly instead, and leave a stack.
+# 90s is well inside the 300s CI budget, so a hang here reports FAIL rather than
+# TIMEOUT; the announcement below is what tells the reader which one it was.
+_WATCHDOG_SECONDS = 90
+
+
+def _watchdog_fire() -> None:
+    print(
+        f"\nWATCHDOG: arena_test.py hit its {_WATCHDOG_SECONDS}s limit and is presumed "
+        "hung. This is the watchdog firing, NOT an assertion failing. Exiting 1, "
+        "so the suite loop counts it as FAIL. All-thread stack follows.",
+        # os._exit skips every cleanup path, and CI redirects stdout to a file,
+        # where it is block-buffered: without this flush every ok: line above
+        # dies with the process and the log shows the stack alone.
+        flush=True,
+    )
+    faulthandler.dump_traceback()
+    os._exit(1)
+
+
+_watchdog = threading.Timer(_WATCHDOG_SECONDS, _watchdog_fire)
 _watchdog.daemon = True
 _watchdog.start()
 

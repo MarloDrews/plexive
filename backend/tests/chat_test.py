@@ -9,9 +9,11 @@ dedupe, groups), message history authorization, and the WebSocket flow
 unauthenticated rejection). Same throwaway-DB pattern as smoke_test.py.
 """
 
+import faulthandler
 import json
 import os
 import sys
+import threading
 from contextlib import ExitStack
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -36,6 +38,31 @@ _stack = ExitStack()
 # receiving loop is never woken. Every socket must live on ONE event loop.
 # See docs/research/battle-hang-diagnosis-2026-08.md.
 _stack.enter_context(client)
+
+# A missing frame would otherwise park forever inside a blocking receive_json,
+# with no output to show for it. Fail the run loudly instead, and leave a stack.
+# 90s is well inside the 300s CI budget, so a hang here reports FAIL rather than
+# TIMEOUT; the announcement below is what tells the reader which one it was.
+_WATCHDOG_SECONDS = 90
+
+
+def _watchdog_fire() -> None:
+    print(
+        f"\nWATCHDOG: chat_test.py hit its {_WATCHDOG_SECONDS}s limit and is presumed "
+        "hung. This is the watchdog firing, NOT an assertion failing. Exiting 1, "
+        "so the suite loop counts it as FAIL. All-thread stack follows.",
+        # os._exit skips every cleanup path, and CI redirects stdout to a file,
+        # where it is block-buffered: without this flush every ok: line above
+        # dies with the process and the log shows the stack alone.
+        flush=True,
+    )
+    faulthandler.dump_traceback()
+    os._exit(1)
+
+
+_watchdog = threading.Timer(_WATCHDOG_SECONDS, _watchdog_fire)
+_watchdog.daemon = True
+_watchdog.start()
 
 PASS = 0
 
