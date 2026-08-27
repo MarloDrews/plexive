@@ -57,9 +57,11 @@ updates:
 # which means running a real Gradle build. Before that date the repository SBOM listed 1268 packages
 # and not one Maven coordinate, so mobile-kmp/ had no dependency scanning at all and a gradle block
 # would have parsed fine and never produced a pull request. .github/workflows/dependency-submission.yml
-# now submits the resolved graph on every push to main, so the coordinates are there to raise alerts
-# against. Whether they in turn produce pull requests is an observation still to be made, not a
-# promise: that needs a real advisory against something mobile-kmp/ actually resolves.
+# now submits the resolved graph on every push to main: the SBOM went from 1268 packages and 0 Maven
+# coordinates to 1965 and 696, so the coordinates are there to raise alerts against. Whether they in
+# turn produce pull requests is an observation still to be made, not a promise: that needs a real
+# advisory against something mobile-kmp/ actually resolves, and mobile-kmp/ raised no alerts at all
+# on the first submission.
 #
 # npm for mobile/. The React Native app -- current, not legacy: 260 tracked files with its own
 # package-lock.json, and the dependency graph does see it. It needs no block here precisely because security updates are
