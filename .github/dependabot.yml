@@ -1,0 +1,62 @@
+# Dependabot: security updates only, deliberately not version updates.
+#
+# WHY THE FILE EXISTS AT ALL. Dependabot SECURITY updates are a repository setting, not a setting in
+# this file -- they are on, and they would work with no dependabot.yml present. Version updates are the
+# opposite: they exist only because this file lists an ecosystem. So every block below is a version
+# update block that has been switched off, and the file's real job is to say out loud which ecosystems
+# exist and that the stream of version bumps was refused on purpose.
+#
+# WHY VERSION UPDATES ARE OFF. backend/requirements.txt pins all 69 packages by hand, transitive ones
+# included, and there is no lockfile. Version updates over that set would open a pull request per
+# package per release, for packages nobody is waiting on. That is the documented way this feature ends
+# up muted, and a muted Dependabot also hides the security pull requests that are the point.
+#
+# HOW IT IS SWITCHED OFF. "open-pull-requests-limit: 0" disables version updates for that ecosystem.
+# Security update pull requests are explicitly not subject to this limit and do not count toward it,
+# so setting it to 0 leaves exactly the half that pays for the pinning decision.
+#
+# Do not add "groups:" or "cooldown:" here. Both only affect version updates, which are off, so they
+# would configure nothing. That is a separate decision to make after seeing the security volume.
+version: 2
+
+updates:
+  # The pinned backend. This is the ecosystem the whole batch is for: pinning every transitive package
+  # means none of them receives a security update on its own any more, and pip-audit is in
+  # requirements-dev.txt with a comment saying to run it before a release while nothing runs it.
+  - package-ecosystem: pip
+    directory: /backend
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 0
+
+  - package-ecosystem: npm
+    directory: /frontend
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 0
+
+  # The workflows pin action versions (actions/checkout@v5, gradle/actions/setup-gradle@v4 and so on),
+  # which is a dependency set like any other. Directory is the repository root, not .github/workflows:
+  # for this ecosystem the root is where Dependabot looks for the workflow directory.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 0
+
+# NOT LISTED, both on purpose.
+#
+# gradle for mobile-kmp/. Dependabot supports the gradle ecosystem in a subdirectory, and the layout
+# here is the standard one it expects (mobile-kmp/gradle/libs.versions.toml). It would still buy
+# nothing. Security updates are driven by Dependabot ALERTS, alerts are driven by the dependency
+# graph, and the dependency graph does not parse Gradle statically -- unlike Maven, Gradle reaches the
+# graph only through the Dependency Submission API, which means running a real Gradle build in a
+# workflow. The repository SBOM confirms it: 1266 packages, none of them Maven coordinates, while
+# every backend pin, both package-lock.json files and all five pinned actions are present. A gradle
+# block here would parse fine and never produce a pull request. Covering mobile-kmp/ needs
+# gradle/actions/dependency-submission, which is a build, and therefore its own decision.
+#
+# npm for mobile/. The legacy React Native app is 260 tracked files with its own package-lock.json,
+# and the dependency graph does see it. It needs no block here precisely because security updates are
+# repository-wide: mobile/ is already covered, and listing it would only add a version update stream
+# to switch off. Absence from this file is not absence from coverage.

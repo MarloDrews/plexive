@@ -1,0 +1,97 @@
+# CodeQL static analysis for the Python backend and the TypeScript/JavaScript frontend.
+#
+# This is the only workflow here that is NOT a gate. It is deliberately absent from the main ruleset,
+# which still requires exactly three checks: android-build, backend-checks and frontend-checks. CodeQL
+# reports into the Security tab, and a security finding is a thing to triage, not a thing to block a
+# merge on while nobody has read the first run yet. Adding it to the ruleset before anyone has decided
+# what its false positive rate looks like is the fastest way to get a required check switched off.
+name: CodeQL
+
+on:
+  # Weekly plus pull requests, and deliberately no "push:" trigger, which is where this workflow
+  # differs from the other three.
+  #
+  # The consequence is worth knowing: code scanning tracks alerts against the DEFAULT BRANCH, so the
+  # Security tab is populated by the scheduled run on main, not by pull request runs. A pull request
+  # run reports findings on that pull request only. The schedule is therefore load bearing here, not a
+  # nice-to-have -- without it nothing would ever establish the main-branch baseline.
+  schedule:
+    # Mondays 06:17 UTC. Off the hour on purpose: scheduled workflows queue against everyone else's
+    # cron, and the top of the hour is the worst slot on shared runners.
+    - cron: '17 6 * * 1'
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    name: codeql (${{ matrix.language }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      # Writing the analysis result back is the entire point of the job.
+      security-events: write
+      contents: read
+      # Read-only access to the Actions API, used by the action to look up workflow run status.
+      actions: read
+    defaults:
+      run:
+        # Same reason as the other three workflows: the Linux default is "bash -e {0}", without
+        # pipefail, which is how a piped failure becomes a green check.
+        shell: bash
+    strategy:
+      # One language failing should not hide the other language's result.
+      fail-fast: false
+      matrix:
+        include:
+          - language: python
+            build-mode: none
+          - language: javascript-typescript
+            build-mode: none
+          # Kotlin (language: java-kotlin) is deliberately NOT here. It is free on a public repo, but
+          # it does not meet the other condition: CodeQL cannot analyse Kotlin without a build.
+          # "build-mode: none" is supported for Java and explicitly not for Kotlin -- with it set, the
+          # Kotlin code is skipped and a warning is produced -- so covering mobile-kmp/ would mean
+          # running a real Gradle build inside this workflow. That is a separate decision, since it
+          # duplicates android-build.yml's build cost and its Corretto/AMAZON toolchain constraints.
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build-mode }}
+
+      - name: Analyze
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: /language:${{ matrix.language }}
+          # Written locally as well as uploaded, purely so the step below can assert on it.
+          output: sarif-results
+
+      # Same reasoning as every other check in this repo: a green result must mean something was
+      # actually analysed. CodeQL exits 0 having scanned nothing if the extractor matched no files,
+      # which for a language filter over the wrong directory is a silent no-op that looks like a pass.
+      #
+      # The assertion is on the number of RULES the run carried, not the number of results. Results
+      # are allowed to be zero -- that is the good outcome -- but a run that carried no rules ran no
+      # queries. Rules live under tool.driver and under tool.extensions, so both are counted.
+      - name: Assert the analysis ran queries
+        run: |
+          sarif=$(find sarif-results -name '*.sarif' | head -1)
+          if [ -z "$sarif" ] || [ ! -s "$sarif" ]; then
+            echo "FAIL: no non-empty SARIF file under sarif-results/, so nothing was analysed."
+            exit 1
+          fi
+
+          rules=$(jq '[.runs[0].tool.driver.rules // [], ((.runs[0].tool.extensions // [])[].rules // [])] | map(length) | add // 0' "$sarif")
+          results=$(jq '.runs[0].results | length' "$sarif")
+          echo "${{ matrix.language }}: $rules rules ran, $results results"
+
+          if [ "$rules" -lt 1 ]; then
+            echo "FAIL: the run carried 0 rules, so no query was executed against the database."
+            exit 1
+          fi
