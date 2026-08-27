@@ -101,7 +101,3 @@ test("safeImageSrc keeps http(s) and relative URLs, blanks dangerous schemes", (
   assert.equal(safeImageSrc("data:image/svg+xml,x"), "")
   assert.equal(safeImageSrc(null), "")
 })
-
-import { test as _t } from "node:test"
-import assert from "node:assert"
-_t("DELIBERATE GUARD-PROOF BREAK - not for merge", () => { assert.equal(1, 2) })
