@@ -22,6 +22,7 @@ from app.database import Base, SessionLocal, engine  # noqa: E402
 from app.main import app  # noqa: E402
 from app.models import Post  # noqa: E402
 from app.routers import auth as auth_router  # noqa: E402
+from app.train_bank import TRAIN_QUESTIONS  # noqa: E402
 
 
 class _FakeStorage:
@@ -174,9 +175,18 @@ def main():
     check("unscored user has no global elo", r.json()["global_rating"] is None)
 
     # --- Train answer moves the same unified knowledge score (server-graded, M120) ---
+    # The question id is taken from the live bank, not written out here. The bank gets
+    # replaced wholesale -- 481e190 dropped the entire easy pool and every id in it, which
+    # left this check asserting a dead id and the suite red for five weeks. Any "choice"
+    # entry works: its answer_index is the correct answer, so the server must grade it
+    # correct. Picking the kind matters because numeric and map questions score partial
+    # credit and would not satisfy the correct-is-True assertion below.
+    train = next(((qid, q) for qid, q in TRAIN_QUESTIONS.items() if q["kind"] == "choice"), None)
+    check("train bank has a choice question", train is not None, f"bank size {len(TRAIN_QUESTIONS)}")
+    train_qid, train_q = train
     before = client.get("/api/users/alice/elo").json()["global_rating"]
     r = client.post("/api/train/answer", headers=a_h,
-                    json={"question_id": "sci-speed-of-light", "chosen_index": 2, "answer_ms": 1000})
+                    json={"question_id": train_qid, "chosen_index": train_q["answer_index"], "answer_ms": 1000})
     td = r.json()
     check("train answer ok", r.status_code == 200, str(td))
     check("train graded correct server-side", td["correct"] is True, str(td))
@@ -184,7 +194,8 @@ def main():
     after = client.get("/api/users/alice/elo").json()["global_rating"]
     check("train moved knowledge score", after >= before)
     check("train requires auth", client.post(
-        "/api/train/answer", json={"question_id": "sci-speed-of-light", "chosen_index": 2, "answer_ms": 0}
+        "/api/train/answer",
+        json={"question_id": train_qid, "chosen_index": train_q["answer_index"], "answer_ms": 0},
     ).status_code in (401, 403))
 
     # --- Bad inputs rejected ---

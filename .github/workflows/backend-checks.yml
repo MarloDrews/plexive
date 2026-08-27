@@ -1,0 +1,175 @@
+# Runs the backend's checks on every pull request, and on main after a merge.
+#
+# The backend was never unchecked, only unenforced: backend/tests/ is 16 suites and about 979
+# assertions, and smoke_test.py had been failing for five weeks before anyone looked. This workflow is
+# the thing that looks.
+name: Backend checks
+
+on:
+  # Same shape as android-build.yml, and scoped to main for the same reason: an unscoped "push:" also
+  # fires on the branch behind a pull request, so one commit gets two runs reporting the same
+  # backend-checks name and the required check resolves to whichever finishes last.
+  #
+  # Deliberately no "paths:" filter. A workflow skipped by a top-level paths filter reports no status
+  # at all, and a required check that never reports blocks the pull request permanently.
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  backend-checks:
+    # This name is the identity of the required status check on main. Do not rename it casually.
+    name: backend-checks
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        # The Linux default shell is "bash -e {0}", without pipefail, which is how a piped failure
+        # turns into a green check. "shell: bash" is "bash --noprofile --norc -eo pipefail {0}".
+        shell: bash
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v5
+
+      # 3.12 because backend/.venv is 3.12.10 and that is the only interpreter the suite has ever
+      # demonstrably passed on. docs/SERVER.md records the Pi's SYSTEM python as 3.13, but not what the
+      # Pi's own backend/.venv was built with, so 3.13 here would be a guess about production rather
+      # than a match to it. Nothing in the project pins a Python version, which makes this line the de
+      # facto pin; reconciling it with the Pi's real version is a separate decision.
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: |
+            backend/requirements.txt
+            backend/requirements-dev.txt
+
+      # requirements.txt pins nothing and there is no lockfile, so every run resolves whatever is
+      # current that day. pip list afterwards is what makes that drift visible in the run log.
+      # requirements-dev.txt carries httpx, which FastAPI's TestClient imports at runtime.
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          time python -m pip install -r requirements.txt -r requirements-dev.txt
+          echo "--- resolved versions ---"
+          python -V
+          python -m pip list
+
+      # --- Cheapest first, so a failure surfaces fast. ---
+
+      # A compileall over a path that does not exist still exits 0, so count the files first. The floor
+      # is a floor, not the exact count: 100 .py files were present when this was written.
+      - name: Syntax check
+        run: |
+          count=$(find app scripts tests -name '*.py' -not -path '*/__pycache__/*' | wc -l)
+          echo "found $count Python files under app/ scripts/ tests/"
+          if [ "$count" -lt 80 ]; then
+            echo "FAIL: only $count Python files found, expected at least 80 (100 when this was written)."
+            echo "Either the paths moved or this step is checking nothing."
+            exit 1
+          fi
+          python -m compileall -q app scripts tests seed.py
+
+      # The check that matters most. This backend boot-fails on purpose on a weak JWT_SECRET, a missing
+      # DATABASE_URL, WEB_CONCURRENCY > 1 and an empty CORS origin list, and a boot failure crash-loops
+      # systemd on the Pi and takes the API down for the web app and both mobile apps.
+      # docs/SERVER.md:191-197 records that this has really happened.
+      #
+      # tests/_throwaway_db.py pins DATABASE_URL to a temp SQLite file and blanks the Supabase env
+      # before any app module loads, so this can never reach a real database.
+      #
+      # The count is the number of OpenAPI paths, NOT len(app.routes). len(app.routes) is not stable
+      # across FastAPI versions and requirements.txt pins nothing: 0.136.3 (local dev) reports 57
+      # there, because it holds one flattened APIRoute per endpoint, while 0.141.1 (what CI resolved
+      # on 2026-08-27) reports 23, because include_router now leaves a single _IncludedRouter object
+      # per router. The API surface is identical either way -- app.openapi()["paths"] is 45 on both --
+      # so the OpenAPI count measures the thing this check is actually about and does not move when a
+      # dependency changes its internals underneath.
+      #
+      # It is a FLOOR, not the observed 45. Its job is to rule out an app that imported but registered
+      # nothing. Asserting the exact count would turn every new endpoint into a red gate during correct
+      # work, and the route list grows with the product. WebSocket routes are absent from OpenAPI by
+      # design, so the three of them are not counted here.
+      - name: App boots
+        run: |
+          python - <<'PY'
+          import sys
+
+          sys.path.insert(0, "tests")
+          import _throwaway_db  # noqa: F401 - must run before any app import
+          from app.main import app
+
+          MIN_PATHS = 20  # floor; 45 observed on 2026-08-27 under both FastAPI 0.136.3 and 0.141.1
+          paths = len(app.openapi()["paths"])
+          print(f"app.main imported, {paths} OpenAPI paths, {len(app.routes)} route objects")
+          if paths < MIN_PATHS:
+              print(f"FAIL: {paths} OpenAPI paths is below the floor of {MIN_PATHS}.")
+              print("The app imported but registered almost nothing, so this proves nothing.")
+              sys.exit(1)
+          PY
+
+      # Pyflakes rules only: unused imports, unused variables, empty f-strings. The wider ruff sets
+      # carry hundreds of findings (44 on the classic E4,E7,E9,F set, 908 on ruff 0.16 defaults, most of
+      # them SQLAlchemy and FastAPI idioms this codebase uses on purpose) and widening the selection is
+      # a separate decision. The version is pinned exactly because an unpinned linter changes its own
+      # rules under you and reds the gate on a day nobody touched the code.
+      - name: Ruff (pyflakes rules)
+        run: |
+          python -m pip install ruff==0.16.4
+          count=$(ruff check --select F --show-files . | wc -l)
+          echo "ruff would check $count files"
+          if [ "$count" -lt 80 ]; then
+            echo "FAIL: ruff found only $count files to check, expected at least 80 (102 when this was written)."
+            exit 1
+          fi
+          ruff check --select F .
+
+      # Not "pytest tests". 12 of the 16 suites execute their whole body at import and share one app
+      # instance, one in-memory rate limiter and the first module's temp SQLite file, so in one process
+      # they collide: pytest collects 92 of about 979 assertions, hits 4 collection errors and
+      # interrupts. Each suite gets its own process, which is what every suite docstring prescribes.
+      #
+      # The loop runs every suite even after one fails. A gate that stops at the first failure hides the
+      # second problem and costs an extra round trip every time.
+      - name: Test suites
+        run: |
+          files=$(ls tests/*_test.py | sort)
+          count=$(printf '%s\n' "$files" | grep -c . || true)
+          echo "found $count suite files"
+          # A loop that globs nothing exits 0 and reports a green check having run no tests.
+          if [ "$count" -lt 16 ]; then
+            echo "FAIL: found $count suite files, expected at least 16."
+            echo "Either the glob is wrong or suites were deleted; either way this step proves nothing."
+            exit 1
+          fi
+
+          failed=0
+          summary="$RUNNER_TEMP/summary.txt"
+          : > "$summary"
+          for f in $files; do
+            start=$(date +%s%N)
+            if python "$f" > "$RUNNER_TEMP/suite.log" 2>&1; then
+              status=PASS
+            else
+              status=FAIL
+              failed=$((failed + 1))
+            fi
+            ms=$(( ($(date +%s%N) - start) / 1000000 ))
+            line=$(printf '%-34s %s %d.%03ds' "$f" "$status" "$((ms / 1000))" "$((ms % 1000))")
+            echo "$line"
+            echo "$line" >> "$summary"
+            if [ "$status" = FAIL ]; then
+              echo "----- $f output (last 40 lines) -----"
+              tail -40 "$RUNNER_TEMP/suite.log"
+              echo "----- end $f -----"
+            fi
+          done
+
+          echo "===== summary ====="
+          cat "$summary"
+          echo "$count suites run, $failed failed"
+          if [ "$failed" -gt 0 ]; then
+            exit 1
+          fi

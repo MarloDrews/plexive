@@ -31,7 +31,7 @@ from sqlalchemy import event  # noqa: E402
 
 from app.database import Base, SessionLocal, engine  # noqa: E402
 from app.main import app  # noqa: E402
-from app.models import Comment, Event, Follow, Post, User  # noqa: E402
+from app.models import Follow, Post  # noqa: E402
 from app.reading_time import compute_reading_minutes  # noqa: E402
 from app.routers import stats as stats_router  # noqa: E402
 
@@ -192,8 +192,9 @@ def main():
                         feed_card={"headline": "Zurich guide", "essence": "the best cafe culture"})
     r = client.get("/api/search", params={"q": "CAFE"})
     check("ASCII query matches the cafe post", cafe_id in {p["id"] for p in r.json()})
-    cafe_uni = make_post("Vienna guide",
-                         feed_card={"headline": "Vienna guide", "essence": "an old cafe called cafe"})
+    # The post has to exist for the query below; only the binding was unused.
+    make_post("Vienna guide",
+              feed_card={"headline": "Vienna guide", "essence": "an old cafe called cafe"})
     r = client.get("/api/search", params={"q": "café"})
     # 'cafe' (ASCII) is a substring of neither 'café'; this only checks the
     # non-ASCII path does not error and returns a well-formed list.

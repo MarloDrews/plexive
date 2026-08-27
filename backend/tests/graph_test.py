@@ -16,7 +16,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import _throwaway_db  # noqa: F401 -- must run before any app import
 
-from app.graph_view import build_edges, build_nodes, count_quiz_items  # noqa: E402
+from app.graph_view import build_edges, count_quiz_items  # noqa: E402
 from app.schemas import GraphNode  # noqa: E402
 
 PASS = 0
