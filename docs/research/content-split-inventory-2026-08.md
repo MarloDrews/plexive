@@ -1,5 +1,13 @@
 # Content / application split - inventory
 
+> **THIS FILE IS THE EXCEPTION TO THE `docs/research/` CONVENTION. It was EDITED AFTER THE FACT, on
+> 2026-08-28.** Every other document in this directory is a dated snapshot that is never revised, so
+> a reader who relies on that convention needs telling that this one does not follow it. Two rounds
+> of correction are marked inline: sections 4d/4e/4f and contradiction 2 (the thumbnail subsystem,
+> retracted after re-testing from the clients), and sections 2 and 3c (the reference search, whose
+> glob could not see the file types that referenced its target). The corrections are marked in place
+> rather than applied silently, because the wrong version is the useful part of the record.
+
 Date: 2026-08-28. Uncommitted, by instruction. **Revised the same day** on two points from the
 owner: the second-author question is resolvable (section 7), and the thumbnail subsystem was
 re-tested from the clients, which **retracted a conclusion in the first pass** (sections 4d, 4e, 4f
