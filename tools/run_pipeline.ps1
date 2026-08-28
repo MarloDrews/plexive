@@ -45,8 +45,14 @@ $PushToMain = ($env:PUSH_TO_MAIN -eq '1')
 $RepoRoot = (& git rev-parse --show-toplevel).Trim()
 Set-Location $RepoRoot
 
-$Checker    = 'tools/texture_check.py'
-$PromptsDir = "tools/pipeline_prompts/$Format"
+# The checker and the step prompts are METHODOLOGY and live in the private
+# content repository (2026-08-28). This script stayed here because it publishes
+# into THIS repository -- it commits to docs/content-structure/generated/ and
+# merges into main -- so it belongs where the repository it publishes to lives.
+# Point PLEXIVE_CONTENT_REPO at a clone of the private repository to run it.
+$ContentRepo = if ($env:PLEXIVE_CONTENT_REPO) { $env:PLEXIVE_CONTENT_REPO } else { '.' }
+$Checker    = "$ContentRepo/tools/texture_check.py"
+$PromptsDir = "$ContentRepo/tools/pipeline_prompts/$Format"
 $GenDir     = "docs/content-structure/generated/$Format"
 $BatchDir   = "$GenDir/_batches/$Batch"
 $Branch     = "bulk/$Format-$Batch"
@@ -66,10 +72,27 @@ $Steps = @(
 )
 
 # ---- preflight (fail loudly) ------------------------------------------------
-if (-not (Test-Path $Checker))    { Write-Error "FATAL: checker not found at $Checker"; exit 1 }
-if (-not (Test-Path $PromptsDir)) { Write-Error "FATAL: no rendered prompts at $PromptsDir"; exit 1 }
+# Shared explanation for the two methodology preflights, so a missing checker
+# and missing prompts give the same, actionable answer.
+function Show-ContentRepoHelp {
+  Write-Host "The generation methodology is not in this repository. It was moved to the"
+  Write-Host "private content repository on 2026-08-28, deliberately: the application is"
+  Write-Host "public under AGPL-3.0, the methodology is not."
+  if ($ContentRepo -eq '.') {
+    Write-Host "PLEXIVE_CONTENT_REPO is unset, so this looked in the public checkout."
+    Write-Host "If you have access, clone the private repository alongside this one and run:"
+    Write-Host "  `$env:PLEXIVE_CONTENT_REPO='C:\path\to\plexive-content'; tools\run_pipeline.ps1 $Format $Batch"
+  } else {
+    Write-Host "PLEXIVE_CONTENT_REPO is set to '$ContentRepo', but the file above is not there."
+    Write-Host "Check that it points at the ROOT of a plexive-content clone."
+  }
+  Write-Host "Without access to it, this script cannot run and that is the intended state."
+}
+
+if (-not (Test-Path $Checker))    { Write-Host "FATAL: checker not found at $Checker"; Show-ContentRepoHelp; exit 1 }
+if (-not (Test-Path $PromptsDir)) { Write-Host "FATAL: no rendered prompts at $PromptsDir"; Show-ContentRepoHelp; exit 1 }
 foreach ($n in 1..6) {
-  if (-not (Test-Path "$PromptsDir/step$n.txt")) { Write-Error "FATAL: missing $PromptsDir/step$n.txt"; exit 1 }
+  if (-not (Test-Path "$PromptsDir/step$n.txt")) { Write-Host "FATAL: missing $PromptsDir/step$n.txt"; Show-ContentRepoHelp; exit 1 }
 }
 if (-not (Get-Command claude -ErrorAction SilentlyContinue)) { Write-Error "FATAL: claude CLI not on PATH"; exit 1 }
 
@@ -159,6 +182,17 @@ if ($LASTEXITCODE -eq 0) {
 }
 
 # ---- publish, only when explicitly asked -------------------------------------
+#
+# KNOWN BROKEN, RECORDED 2026-08-28, DELIBERATELY NOT FIXED HERE. The branch
+# below ends in `git push origin main`, and main is protected by a ruleset
+# requiring the android-build, backend-checks and frontend-checks status checks.
+# A freshly created commit carries no check result, so the push is REJECTED --
+# see the Git Workflow section of CLAUDE.md. PUSH_TO_MAIN=1 therefore cannot
+# work and has not since the ruleset landed; the run still succeeds up to this
+# point and the batch is merged into the integration branch locally.
+# Fixing it means routing the publish through a pull request, which is a
+# decision about how content releases should work, not a repair. Until then,
+# leave PUSH_TO_MAIN unset and publish by hand through a pull request.
 if (-not $PushToMain) {
   Write-Host ""
   Write-Host "===== batch complete (not published) ====="

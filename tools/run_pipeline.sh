@@ -34,19 +34,44 @@ PUSH_TO_MAIN="${PUSH_TO_MAIN:-}"
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 cd "$REPO_ROOT"
 
-CHECKER="tools/texture_check.py"
-PROMPTS_DIR="tools/pipeline_prompts/$FORMAT"
+# The checker and the step prompts are METHODOLOGY and live in the private
+# content repository (2026-08-28). This script stayed here because it publishes
+# into THIS repository -- it commits to docs/content-structure/generated/ and
+# merges into main -- so it belongs where the repository it publishes to lives.
+# Point PLEXIVE_CONTENT_REPO at a clone of the private repository to run it.
+# Unset, the paths below resolve inside this repository, where they no longer
+# exist, and the preflight explains that rather than failing bare.
+CONTENT_REPO="${PLEXIVE_CONTENT_REPO:-.}"
+CHECKER="$CONTENT_REPO/tools/texture_check.py"
+PROMPTS_DIR="$CONTENT_REPO/tools/pipeline_prompts/$FORMAT"
 GEN_DIR="docs/content-structure/generated/$FORMAT"
 BATCH_DIR="$GEN_DIR/_batches/$BATCH"
 BRANCH="bulk/$FORMAT-$BATCH"
 INTEGRATION="integration/$FORMAT-all"
 ALLOWED_TOOLS="WebSearch,WebFetch,Read,Edit,Write,MultiEdit,Bash"
 
+# Shared explanation for the two methodology preflights below, so a missing
+# checker and missing prompts give the same, actionable answer.
+content_repo_help() {
+  echo "The generation methodology is not in this repository. It was moved to the"
+  echo "private content repository on 2026-08-28, deliberately: the application is"
+  echo "public under AGPL-3.0, the methodology is not."
+  if [ "$CONTENT_REPO" = "." ]; then
+    echo "PLEXIVE_CONTENT_REPO is unset, so this looked in the public checkout."
+    echo "If you have access, clone the private repository alongside this one and run:"
+    echo "  PLEXIVE_CONTENT_REPO=/path/to/plexive-content tools/run_pipeline.sh $FORMAT $BATCH"
+  else
+    echo "PLEXIVE_CONTENT_REPO is set to '$CONTENT_REPO', but the file above is not there."
+    echo "Check that it points at the ROOT of a plexive-content clone."
+  fi
+  echo "Without access to it, this script cannot run and that is the intended state."
+}
+
 # preflight
-[ -f "$CHECKER" ] || { echo "FATAL: checker not found at $CHECKER"; exit 1; }
-[ -d "$PROMPTS_DIR" ] || { echo "FATAL: no rendered prompts at $PROMPTS_DIR"; exit 1; }
+[ -f "$CHECKER" ] || { echo "FATAL: checker not found at $CHECKER"; content_repo_help; exit 1; }
+[ -d "$PROMPTS_DIR" ] || { echo "FATAL: no rendered prompts at $PROMPTS_DIR"; content_repo_help; exit 1; }
 for n in 1 2 3 4 5 6; do
-  [ -f "$PROMPTS_DIR/step$n.txt" ] || { echo "FATAL: missing $PROMPTS_DIR/step$n.txt"; exit 1; }
+  [ -f "$PROMPTS_DIR/step$n.txt" ] || { echo "FATAL: missing $PROMPTS_DIR/step$n.txt"; content_repo_help; exit 1; }
 done
 command -v claude >/dev/null 2>&1 || { echo "FATAL: claude CLI not on PATH"; exit 1; }
 
@@ -121,6 +146,17 @@ else
 fi
 
 # publish, only when explicitly asked.
+#
+# KNOWN BROKEN, RECORDED 2026-08-28, DELIBERATELY NOT FIXED HERE. The branch
+# below ends in `git push origin main`, and main is protected by a ruleset
+# requiring the android-build, backend-checks and frontend-checks status checks.
+# A freshly created commit carries no check result, so the push is REJECTED --
+# see the Git Workflow section of CLAUDE.md. PUSH_TO_MAIN=1 therefore cannot
+# work and has not since the ruleset landed; the run still succeeds up to this
+# point and the batch is merged into the integration branch locally.
+# Fixing it means routing the publish through a pull request, which is a
+# decision about how content releases should work, not a repair. Until then,
+# leave PUSH_TO_MAIN unset and publish by hand through a pull request.
 if [ "$PUSH_TO_MAIN" != "1" ]; then
   echo; echo "===== batch complete (not published) ====="
   echo "The batch is merged into $INTEGRATION locally. main and origin were NOT touched."

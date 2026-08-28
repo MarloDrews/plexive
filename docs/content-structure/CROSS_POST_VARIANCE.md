@@ -1,6 +1,6 @@
 # Cross-post variance standard
 
-Companion to HUMAN_TEXTURE_STANDARD (how one post reads) and STYLE_GUIDE_LONGFORM (the language
+Companion to HUMAN_TEXTURE_STANDARD (how one post reads; moved to the private content repository on 2026-08-28, see README.md) and STYLE_GUIDE_LONGFORM (the language
 rules). This one governs how a SET of posts reads: it keeps a feed from feeling templated even when
 every post reads human on its own. Cross-format (all seven).
 
