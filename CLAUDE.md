@@ -173,7 +173,7 @@ THE NUMBERED LIVE-COMMAND ORDER IS IN `docs/SERVER.md`, under "Schema-Migratione
 
 Everything else, including the predicted drift derived from reading all 17 scripts against `models.py` before any measurement and the interpretation guide per difference kind: `docs/research/schema-drift-2026-08.md`.
 
-The 17 scripts STAY. Converting them retroactively into migrations is a separate decision and probably a bad one. `RUN_STARTUP_DDL=0` on the Pi is the follow-up once the stamp has happened, so that two mechanisms are not both touching the schema; it is a live-config change and has not been made.
+The 17 scripts STAY. Converting them retroactively into migrations is a separate decision and probably a bad one. `RUN_STARTUP_DDL=0` on the Pi is the follow-up now that the stamp has happened, so that two mechanisms are not both touching the schema; it is a live-config change and has still not been made.
 
 ## Backups
 
