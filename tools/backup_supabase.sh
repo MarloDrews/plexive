@@ -14,11 +14,13 @@
 # it by hand is still the documented way to take a backup right now, and the
 # numbered Alembic runbook in docs/SERVER.md still does exactly that.
 #
-# MIND THE DEFAULT DIRECTORY BELOW. It is $HOME/plexive-backups, which is NOT
-# where the schedule writes and NOT where tools/check_backup_age.sh looks: those
-# use <OneDrive>/plexive-backups. A bare run of this script therefore produces a
-# real backup that the age check will never see. Pass PLEXIVE_BACKUP_DIR, as
-# every documented invocation does, or run tools/backup_scheduled.sh instead.
+# THE DEFAULT DIRECTORY IS <OneDrive>/plexive-backups SINCE 2026-08-28, which is
+# exactly where the schedule writes and where tools/check_backup_age.sh looks.
+# It used to be $HOME/plexive-backups, and the paragraph here used to warn that a
+# bare run produced a backup the age check would never see. The warning is gone
+# because the trap is gone: the fix was to make the obvious command correct
+# rather than to document that it was not. Without OneDrive -- the Pi -- it still
+# falls back to $HOME and says so on stdout.
 #
 # It is deliberately run from the LAPTOP rather than the Pi, scheduled or not:
 # the Pi is one device with one SD card at home and is
@@ -49,7 +51,34 @@ set -uo pipefail
 # The dump contains every user row, including email addresses and bcrypt
 # password hashes. THIS REPOSITORY IS PUBLIC. The default output directory is
 # therefore outside the working tree, and the script refuses to write inside it.
-PLEXIVE_BACKUP_DIR="${PLEXIVE_BACKUP_DIR:-$HOME/plexive-backups}"
+#
+# THE DEFAULT IS THE DIRECTORY THE AGE CHECK READS, and that is the whole point
+# of this block. It used to be $HOME/plexive-backups, which
+# tools/check_backup_age.sh does not look at: a bare `bash tools/backup_supabase.sh`
+# produced a real backup, reported success, and left the monitor still saying
+# the last backup was however old it had been. A tool whose default output is
+# invisible to its own monitor is this project's recurring defect built in, and
+# it fired only for the obvious command -- every documented invocation passes
+# PLEXIVE_BACKUP_DIR explicitly, so nothing depended on the old default.
+#
+# Resolution is identical in all three scripts (here, backup_scheduled.sh and
+# check_backup_age.sh) so they cannot disagree about where backups live.
+if [ -z "${PLEXIVE_BACKUP_DIR:-}" ]; then
+  _ONEDRIVE="${PLEXIVE_ONEDRIVE_ROOT:-${OneDrive:-$HOME/OneDrive}}"
+  if command -v cygpath >/dev/null 2>&1; then
+    _ONEDRIVE="$(cygpath -u "$_ONEDRIVE" 2>/dev/null || printf '%s' "$_ONEDRIVE")"
+  fi
+  if [ -d "$_ONEDRIVE" ]; then
+    PLEXIVE_BACKUP_DIR="$_ONEDRIVE/plexive-backups"
+  else
+    # No OneDrive: the Pi, which is the documented fallback host and must keep
+    # working. It falls back rather than refusing, because unlike the scheduled
+    # wrapper this script is the one a person runs deliberately -- but it SAYS
+    # so, because a silent fallback here would recreate the very trap above.
+    PLEXIVE_BACKUP_DIR="$HOME/plexive-backups"
+    _ONEDRIVE_MISSING=1
+  fi
+fi
 
 # Not named DATABASE_URL by default so that merely having backend/.env sourced
 # is never enough to dump production by accident; DATABASE_URL is still accepted
@@ -114,6 +143,12 @@ CLIENT_V="$(pg_dump --version | sed -E 's/.* ([0-9]+).*/\1/')"
 echo "Plexive database backup"
 echo "-----------------------"
 echo "target dir : $OUT_ABS"
+if [ "${_ONEDRIVE_MISSING:-0}" = "1" ]; then
+  echo "             NOTE: no OneDrive directory on this machine, so this fell"
+  echo "             back to \$HOME. tools/check_backup_age.sh reads the OneDrive"
+  echo "             path, so it will NOT see this backup. Expected on the Pi;"
+  echo "             on the laptop it means OneDrive is missing or renamed."
+fi
 # Host only. Never the whole URL: it carries the password.
 echo "host       : $(echo "$PLEXIVE_BACKUP_URL" | sed -E 's#.*@([^/?]*).*#\1#')"
 echo "pg_dump    : major $CLIENT_V"

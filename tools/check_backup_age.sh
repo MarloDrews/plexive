@@ -268,8 +268,19 @@ if [ "$SYNC" = "untracked" ]; then
   echo "  Get-Process OneDrive -ErrorAction SilentlyContinue"
   echo "  Start-Process \"\$env:LOCALAPPDATA\\Microsoft\\OneDrive\\OneDrive.exe\" -ArgumentList '/background'"
   echo
-  echo "Then re-run this check. Also worth ruling out: sync paused, signed out,"
-  echo "out of quota, or a sync conflict on the folder."
+  echo "Then re-run this check."
+  echo
+  echo "WHY IT WAS NOT RUNNING, on 2026-08-28: OneDrive was DISABLED IN WINDOWS"
+  echo "STARTUP APPS. The registry Run entry was present and correct, which is"
+  echo "what made it look configured -- Windows keeps a separate enable/disable"
+  echo "state that switches an entry off without removing it. Check Settings >"
+  echo "Apps > Startup, and OneDrive's own 'start when I sign in' option; each"
+  echo "overrides the others independently. Note also that"
+  echo "OneDrive.Sync.Service.exe can be running while syncing nothing -- it is"
+  echo "OneDrive.exe that matters."
+  echo
+  echo "Also worth ruling out: sync paused, signed out, out of quota, or a sync"
+  echo "conflict on the folder."
   exit 3
 fi
 
