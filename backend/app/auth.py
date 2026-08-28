@@ -14,6 +14,19 @@ from .models import User
 
 load_dotenv()
 
+# Closed beta (2026-08). One definition, imported by main.py's gate middleware
+# and by routers/auth.py's registration block, so the door and the sign-up form
+# can never disagree about whether the beta is closed. It lives here rather than
+# in main.py because both consumers already import this module and main.py
+# imports the routers, so the reverse direction would be a cycle.
+#
+# "1" enables; anything else, including unset, leaves everything open exactly as
+# before. Deliberately not fail-closed: refusing to boot over a missing optional
+# flag is a worse failure than the one it guards. main.py's _announce_gate()
+# prints the resolved value at startup so an unset variable is visible in the
+# service log rather than only in an outside probe.
+CLOSED_BETA = os.getenv("CLOSED_BETA", "0") == "1"
+
 # JWT_SECRET must be set in .env before starting the server — see .env.example.
 # HS256 makes the secret the ONLY barrier to forging a token for any user id, so
 # reject a missing, placeholder, or weak (short) secret at startup rather than
