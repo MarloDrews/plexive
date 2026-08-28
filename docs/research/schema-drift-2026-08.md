@@ -272,3 +272,87 @@ created and dropped for the purpose. Nothing in this section touched Supabase.
   SQLite-shaped baseline would have affected is `upgrade head` on a fresh
   database -- which is precisely what a disaster recovery runs. So this mattered
   for RECOVERY, not for the measurement.
+
+## 10. An open modelling question, and a claim that was wrong
+
+### 10a. What the types actually are
+
+Measured 2026-08-28 by applying `0001_baseline.py` with `upgrade head` to an
+empty PostgreSQL 17.11 database and reading `information_schema.columns`:
+
+| PostgreSQL type | columns |
+|---|---|
+| `integer` | 38 |
+| `character varying` (no length) | **21** |
+| `timestamp without time zone` | **10** |
+| `boolean` | 8 |
+| `json` | 5 |
+| `text` | 2 |
+| `double precision` | **2** |
+
+The two `double precision` columns are `users.knowledge_rating` and
+`quiz_answers.rating_delta`. There are **no `numeric` columns anywhere** in the
+schema.
+
+**All of this comes from `models.py`, not from the migration.** It renders 21
+`String` columns without length, 10 `Column(DateTime)` with `timezone=True` on
+none of them, and `Column(Float)` on the two rating columns, which is
+`double precision` on PostgreSQL. Autogenerate renders from the model metadata
+rather than from whatever database it was pointed at, which is why the SQLite-
+and PostgreSQL-generated baselines came out **byte-identical over 213 lines**.
+`create_all` produces the same types, so this is what the application has always
+built.
+
+### 10b. It is a modelling question, and it has never been decided
+
+Nobody has ever asked whether unbounded `VARCHAR` and naive timestamps are
+intended here. They are recorded as an open question in their own right,
+separate from anything about migrations. **Naive timestamps are the half worth
+naming**: a product with its users in one timezone today and a launch aimed
+wider is exactly where that surfaces later and expensively.
+
+**But both halves were measured before being written down, and both are benign,
+so this is recorded as SMALL rather than as a lurking defect.**
+
+*Unbounded `VARCHAR` versus `TEXT`* -- no practical difference in PostgreSQL,
+measured rather than asserted: both report `atttypmod = -1` (no length limit) and
+`typlen = -1`, both carry storage class `x` (TOAST-able), both accepted a
+100,000-character value, and an implicit `varchar -> text` cast exists. This is
+also why section 2a predicts production's `TEXT` columns may not even be reported
+as a difference.
+
+*Naive timestamps* -- they are **UTC by construction**, through one helper.
+`app/time_utils.py:14-16`:
+
+    def utcnow() -> datetime:
+        """Current UTC time as a NAIVE datetime, matching every stored timestamp."""
+        return datetime.now(timezone.utc).replace(tzinfo=None)
+
+Every `Column(DateTime, default=...)` in `models.py` uses it, and there are
+**zero bare `datetime.now()` calls in `app/`**, so no local-time value can reach
+a column. The only timezone-aware datetime in the application is `auth.py:89`,
+a JWT expiry, which is not stored in a column.
+
+So no stored timestamp is ambiguous today. What a naive column still cannot do
+is carry an offset, so a future feature that needs one would have to convert at
+the edges. That is the whole of the residue.
+
+### 10c. A claim made in this conversation that was NOT supported
+
+It was said during this batch that the SQLite-generated baseline had produced
+**wrong types** -- specifically twelve unbounded `VARCHAR`, three Elo columns as
+`NUMERIC` instead of `DOUBLE PRECISION`, and eleven naive timestamps -- and that
+regenerating against PostgreSQL had fixed them.
+
+**None of that is supported by the artifacts.** The counts are 21, 10 and 2, not
+12, 11 and 3; the two rating columns are `double precision` already, so the
+`NUMERIC` claim is the reverse of what the database contains; and no repair took
+place, because the regenerated baseline is byte-identical to the committed one.
+
+It is written down rather than quietly dropped because a research document that
+silently loses a claim it once carried is worse than one that says which claim
+was wrong: the next reader is otherwise left wondering whether they misremembered
+it. The claim came from inferring a repair from a plausible reading of an earlier
+report rather than from an artifact, which is the same failure shape as the rest
+of this document -- a conclusion that was never measured, reading exactly like one
+that was.
