@@ -148,6 +148,134 @@ deepscroll-frontend`); damit entfällt auch das RAM-Problem beim Build auf dem P
   sudo env $(sudo cat /etc/deepscroll/backend.env | grep -v '^#' | xargs) .venv/bin/python seed.py
   ```
 
+## Backups
+
+Supabase macht auf dem Free-Tier **keine automatischen Backups**. Bis das anders
+ist, ist `tools/backup_supabase.sh` die einzige Kopie, die es gibt.
+
+**Der Laptop ist der primäre Host, nicht der Pi.** Das ist eine Entscheidung und
+keine Bequemlichkeit: der Pi ist ein Gerät mit einer SD-Karte zu Hause und steht
+unter „Offene Punkte" selbst als Single Point of Failure. Ein Dump, der auf dem
+Pi liegt, verschiebt das Risiko, statt es zu entfernen. Auf dem Pi laufen lassen
+und danach herunterkopieren funktioniert -- und ist die Variante, die man nach
+dem dritten Mal sein lässt. Der Pi bleibt der dokumentierte Ausweichweg: das
+Skript ist bash und läuft dort unverändert, und `alembic` steht in
+`requirements.txt`, also kann der Pi nach einem normalen Deploy-Install
+mitmachen.
+
+Voraussetzung sind die PostgreSQL-Client-Tools (`pg_dump`, `pg_restore`, `psql`):
+
+```bash
+winget install --id PostgreSQL.PostgreSQL.17 -e
+```
+
+Die **Major-Version muss zum Server passen**. `pg_dump` verweigert den Dienst
+gegen einen neueren Server, und ein Dump von einem neueren Client lässt sich
+nicht zuverlässig in einen älteren Server zurückspielen. Welche Version Supabase
+fährt:
+
+```bash
+psql "$DATABASE_URL" -tAc "show server_version"
+```
+
+Lauf:
+
+```bash
+PLEXIVE_BACKUP_DIR=/d/plexive-backups bash tools/backup_supabase.sh
+```
+
+Das Skript schreibt drei Dateien und **weigert sich, ins Repository zu
+schreiben** -- das Repo ist öffentlich und der Dump enthält jede E-Mail-Adresse
+und jeden bcrypt-Hash.
+
+**Das Manifest ist der wertvollere Teil, nicht der Dump.** Ein Dump nützt erst
+etwas, wenn ihn jemand zurückspielt. Das Manifest nützt in dem Moment etwas, in
+dem es entsteht, weil es die erste schriftliche Aufzeichnung davon ist, was in
+der Produktion tatsächlich steht: Zeilenzahlen pro Tabelle, RLS-Status,
+Policy-Liste.
+
+**Manifeste nicht aufräumen.** Die Dateinamen tragen einen Zeitstempel und nichts
+wird überschrieben. Die Folge der Manifeste ist eine Schema- und
+Wachstumshistorie, die sonst niemand führt. Dumps darf man wegwerfen, Manifeste
+nicht.
+
+Was ein Dump **nicht** abdeckt -- das Skript sagt es bei jedem Lauf selbst:
+
+- **Supabase-Storage-Objekte.** Die Dateien selbst liegen in keinem
+  PostgreSQL-Dump und werden von keinem Supabase-Tier gesichert. Nur die
+  Metadaten-Zeilen in `storage.objects` sind dabei. Ein Restore liefert also
+  Zeilen, die auf Bilder zeigen, die es nicht mehr gibt.
+- **Row Level Security.** Steht im Dump, aber das Einschalten beim Restore
+  braucht Table Ownership. Ein Restore unter einer Rolle ohne Ownership kann mit
+  RLS **aus** zurückkommen und trotzdem Erfolg melden -- ein Sicherheitsvorfall
+  im Kostüm eines sauberen Restores. Nach **jedem** Restore gegen die
+  RLS-Tabelle im Manifest vergleichen, nicht annehmen.
+- **Datenbank-Rollen und deren Passwörter.**
+- Alles außerhalb der Datenbank: Vercel, Cloudflare,
+  `/etc/deepscroll/backend.env`.
+
+Konten-Hinweis: Plexive nutzt **kein Supabase Auth**. Die Konten liegen in
+`public.users` mit bcrypt-Hash und selbst ausgestelltem JWT, und Google-Sign-in
+schreibt `public.users.google_sub`. `auth.users` ist hier also erwartbar leer;
+eine niedrige Zahl dort ist kein fehlendes Backup, sondern der Normalzustand.
+
+---
+
+## Secrets vom Pi herunterholen
+
+`/etc/deepscroll/backend.env` existiert genau einmal, auf einer SD-Karte in einem
+Gerät zu Hause. Stirbt die Karte, ist nicht nur der Dienst weg, sondern auch
+`JWT_SECRET`, die DB-Zugangsdaten und der Supabase-Service-Key. Das Folgende ist
+zu **tun**, nicht zu wissen.
+
+1. Datei vom Laptop aus über Tailscale holen:
+
+   ```bash
+   ssh silas@100.64.140.55 'sudo cat /etc/deepscroll/backend.env' > backend.env.pi
+   ```
+
+2. In den Passwortmanager legen (als Anhang oder sichere Notiz), danach die
+   lokale Kopie löschen:
+
+   ```bash
+   rm backend.env.pi
+   ```
+
+3. **Wohin sie nicht darf:** nicht ins Repository (es ist öffentlich), nicht in
+   einen Cloud-Ordner im Klartext, nicht in einen Chat, nicht als E-Mail an sich
+   selbst, und nicht auf dieselbe SD-Karte.
+
+4. **In dieselbe Ablage gehört außerdem:**
+   - die Vercel-Environment-Variablen des Projekts, inklusive der
+     Basic-Auth-Zugangsdaten der Closed Beta (Benutzer `beta`; das Passwort steht
+     bewusst nirgends im Repo und enthält ein Euro-Zeichen)
+   - die Cloudflare-Tunnel-Credentials vom Pi (`/etc/cloudflared/*.json` und
+     `cert.pem`). Ohne sie ist `api.plexive.org` nicht wiederherstellbar.
+   - die Supabase-Datenbank-URL und der `SUPABASE_SERVICE_KEY`
+   - Google-OAuth-Client-ID und Client-Secret
+   - Name des Supabase-Projekts und der Cloudflare-Zone
+
+5. **Recovery-Codes.** Für jedes dieser Konten die Zwei-Faktor-Recovery-Codes
+   erzeugen und in dieselbe Ablage legen. Sortiert nach Schaden bei Verlust:
+
+   | Konto | Warum der Verlust das Projekt beenden würde |
+   |---|---|
+   | Google (`marlo07drews@gmail.com`) | Zuerst, weil es der Wiederherstellungsweg für alle anderen ist. Trägt außerdem den OAuth-Client für Google-Sign-in. |
+   | Supabase | Datenbank und Storage. Verlust = alle Nutzerdaten, und auf dem Free-Tier gibt es kein automatisches Backup, das einspringt. |
+   | Cloudflare | DNS für plexive.org **und** der Tunnel. Verlust nimmt die API vom Netz und die Domain in Geiselhaft. |
+   | GitHub (`MarloDrews`) | Code, Ruleset und das private Content-Repository. |
+   | Registrar von plexive.org | Die Nameserver liegen bei Cloudflare, die Domain selbst nicht zwingend. |
+   | Vercel | Am wenigsten kritisch: das Frontend lässt sich anderswo neu deployen. |
+
+   Nicht auf dieser Liste, weil ersetzbar: `JWT_SECRET`. Geht es verloren, werden
+   alle Sessions ungültig und alle müssen sich neu anmelden -- ärgerlich, aber
+   kein Datenverlust.
+
+6. Wiederholen, wenn sich eine Variable ändert. `EnvironmentFile=` wird nur beim
+   Start gelesen, also fällt eine veraltete Kopie sonst erst im Ernstfall auf.
+
+---
+
 ## Netzwerk
 
 - **App-Zugriff:** `https://plexive.org` – öffentlich, kein Tailscale nötig.
@@ -271,8 +399,26 @@ Diese Schichtung hat sich bewährt – sie sagt, in welcher Ebene es klemmt:
 - **Backend-Update auf dem Pi ist manuell.** Vercel deployt das Frontend beim Push
   auf `main` automatisch; auf dem Pi bleibt `git pull` + `systemctl restart` von
   Hand. Auto-Deploy per systemd-Timer (Self-Pull) wäre die einfachste Ergänzung.
-- **Schema-Migrationen:** `create_all` fügt keine neuen Spalten zu bestehenden
-  Tabellen hinzu. Sobald ein Update das Schema ändert → **Alembic** einführen.
-  Bis dahin: das passende Skript aus `backend/scripts/` von Hand laufen lassen.
+- **Schema-Migrationen:** Alembic ist seit 2026-08-28 eingerichtet
+  (`backend/alembic/`), aber **noch nicht gestempelt**. `create_all` fügt
+  weiterhin keine neuen Spalten zu bestehenden Tabellen hinzu, und die 17
+  Skripte in `backend/scripts/` bleiben.
+  **Die Reihenfolge ist der Punkt, nicht der Baseline:** erst Backup, dann
+  `scripts/schema_diff.py` lesen, erst danach `alembic stamp head`. Stempeln
+  *behauptet*, dass die Datenbank zum Baseline passt; vorher zu stempeln
+  zerstört die einzige Gelegenheit, das zu prüfen.
+  **`alembic check` ist dafür nicht zu gebrauchen, und zwar aus zwei Gründen.**
+  Es verlangt die Datenbank auf `head`, scheitert an einer ungestempelten also
+  mit Exit 127 (`Target database is not up to date.`) -- und es **legt dabei die
+  Tabelle `alembic_version` an**. Gemessen an drei identischen frischen
+  `create_all`-Datenbanken mit je 12 Tabellen: `alembic check` hinterlässt
+  **13**, `alembic current` 12, `scripts/schema_diff.py` 12. Der einzige
+  Alembic-Befehl, dessen Name „lesen" sagt, schreibt also -- und zwar genau in
+  die Datenbank, deren unveränderter Zustand der Beweis ist. Deshalb ist die
+  Reihenfolge oben nicht Vorsicht, sondern Messung, und deshalb gibt es den
+  `PLEXIVE_DB_WRITE`-Schalter in `alembic/env.py`. Vollständig in
+  `docs/research/schema-drift-2026-08.md`.
+  Erst danach offen: `RUN_STARTUP_DDL=0` in `/etc/deepscroll/backend.env`, damit
+  nicht zwei Mechanismen dasselbe Schema anfassen.
 - **Single Point of Failure:** Strom- oder Internetausfall zu Hause legt das
   Backend lahm. Für die Testphase akzeptabel.
