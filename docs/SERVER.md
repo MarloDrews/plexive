@@ -318,7 +318,7 @@ public.comments                                   ...
 
 public tables: 14, rows in public: ...
 
-archive check: 131 restorable entries (floor 40)
+archive check: <n> restorable entries (floor 40)
 
 Wrote:
   dump           .../plexive-<zeitstempel>.dump (... bytes)
