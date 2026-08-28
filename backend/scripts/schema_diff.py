@@ -10,7 +10,10 @@ actually does.
 
 This script uses alembic.autogenerate.compare_metadata, which compares a live
 connection against Base.metadata and never consults alembic_version. It works on
-an unstamped database, which is exactly the state production is in today.
+an unstamped database -- which is the state production was in until it was
+stamped on 2026-08-28 -- and it keeps working afterwards, including while a
+migration is pending and `alembic check` refuses because the database is behind
+head rather than merely because it is unstamped.
 
 Measured 2026-08-28 on three identical fresh create_all databases (12 tables
 each), which is the second reason to reach for this one first:
