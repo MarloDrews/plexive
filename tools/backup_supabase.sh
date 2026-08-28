@@ -111,7 +111,13 @@ case "$PLEXIVE_BACKUP_URL" in
            echo "         direct connection on port 5432 if this run fails." ;;
 esac
 
-SERVER_VFULL="$(psql "$PLEXIVE_BACKUP_URL" -tAc 'show server_version' 2>/dev/null)"
+# psql.exe on Windows ends every row with CRLF, so a captured field arrives
+# carrying a trailing \r. That is NOT cosmetic: $((TOTAL_ROWS + n)) on "41\r" is
+# a bash arithmetic SYNTAX ERROR, which left the total at 0 and made this script
+# FATAL at its own row floor on EVERY Windows run -- so the laptop, which this
+# script names as its primary host, could not produce a dump at all. Measured
+# 2026-08-28 with od -c. Every psql capture below therefore strips \r.
+SERVER_VFULL="$(psql "$PLEXIVE_BACKUP_URL" -tAc 'show server_version' 2>/dev/null | tr -d '\r')"
 if [ -z "$SERVER_VFULL" ]; then
   fatal "could not connect, or could not read server_version.
        Nothing was written. Check the URL, the network, and that the database
@@ -135,11 +141,67 @@ if [ "$CLIENT_V" -gt "$SERVER_V" ]; then
 fi
 echo
 
+# --- preflight: row-level security vs the DUMPING role ----------------------
+# pg_dump runs every COPY with row_security = off. That does NOT dump a visible
+# subset -- PostgreSQL ERRORS. So a role that is neither superuser, nor BYPASSRLS,
+# nor the table's owner cannot back up an RLS-enabled table AT ALL, and pg_dump
+# aborts part-way leaving a truncated file that looks like a backup.
+#
+# Measured 2026-08-28 on a local PostgreSQL 17.11 against exactly that shape:
+#   pg_dump: error: query failed: ERROR: row-level security policy for table
+#            "t_alien" would affect the query
+#   pg_dump: detail: Query was: COPY public.t_alien (id, owner, payload) TO stdout;
+#
+# This guard exists so that arrives as a sentence naming the tables and the
+# reason, rather than as pg_dump's error after a partial write. It asserts on a
+# COUNT of blocking tables, like every other check here.
+ROLE_EXEMPT="$(psql "$PLEXIVE_BACKUP_URL" -tAc   "select (rolsuper or rolbypassrls) from pg_roles where rolname = current_user;"   2>/dev/null | tr -d '\r')"
+
+# A table blocks when RLS is on and the role is not exempt for it. Ownership
+# normally exempts the owner -- unless FORCE ROW LEVEL SECURITY is set, which
+# subjects the owner too, so that case is included rather than assumed away.
+RLS_BLOCKERS="$(psql "$PLEXIVE_BACKUP_URL" -tAc "
+  select n.nspname || '.' || c.relname
+  from pg_class c join pg_namespace n on n.oid = c.relnamespace
+  where c.relrowsecurity
+    and c.relkind in ('r','p')
+    and n.nspname not in ('pg_catalog','information_schema')
+    and n.nspname !~ '^pg_toast'
+    and (pg_get_userbyid(c.relowner) <> current_user or c.relforcerowsecurity)
+  order by 1;" 2>/dev/null | tr -d '\r')"
+
+BLOCK_COUNT="$(echo "$RLS_BLOCKERS" | grep -c '[^[:space:]]')"
+echo "rls        : role exempt (superuser or BYPASSRLS) = ${ROLE_EXEMPT:-unknown}, ${BLOCK_COUNT} RLS table(s) not readable by ownership"
+
+if [ "$ROLE_EXEMPT" != "t" ] && [ "$BLOCK_COUNT" -gt 0 ]; then
+  fatal "row-level security blocks this backup, and nothing was written.
+
+       This role is neither superuser nor BYPASSRLS, and these $BLOCK_COUNT table(s)
+       have row-level security enabled but are not owned by it:
+
+$(echo "$RLS_BLOCKERS" | sed 's/^/         /')
+
+       pg_dump issues every COPY with row_security = off, and PostgreSQL then
+       ERRORS instead of dumping the rows this role happens to see. The dump
+       would abort part-way and leave a truncated file that looks like a backup.
+
+       Connect as a role that owns those tables, or as one with BYPASSRLS:
+         ALTER ROLE <role> BYPASSRLS;      -- needs superuser
+       On Supabase the postgres role has BYPASSRLS (rolsuper false). Check with:
+         select rolsuper, rolbypassrls from pg_roles where rolname = current_user;"
+fi
+
 # --- the measurements, taken BEFORE the dump --------------------------------
 # These are what make the manifest worth more than the dump.
 
 echo "Reading what is actually there..."
-ROWCOUNTS="$(psql "$PLEXIVE_BACKUP_URL" -tAF'|' -c "
+# row_security=off is what pg_dump uses. Without it this query silently returns
+# FEWER rows for an RLS table this role does not own -- measured 2026-08-28 as
+# 0 for a table holding 6 -- and the manifest, whose entire purpose is to be
+# compared against after a restore, records a plausible WRONG number.
+# It goes in PGOPTIONS rather than as a "set" inside -c: psql echoes the SET
+# command tag as a row, and that line appeared in the manifest table listing.
+ROWCOUNTS="$(PGOPTIONS='-c row_security=off' psql "$PLEXIVE_BACKUP_URL" -tAF'|' -c "
   select table_schema || '.' || table_name,
          (xpath('/row/c/text()',
                 query_to_xml(format('select count(*) as c from %I.%I', table_schema, table_name),
@@ -147,15 +209,15 @@ ROWCOUNTS="$(psql "$PLEXIVE_BACKUP_URL" -tAF'|' -c "
   from information_schema.tables
   where table_type = 'BASE TABLE'
     and table_schema in ('public','auth','storage')
-  order by 1;" 2>/dev/null)"
+  order by 1;" 2>/dev/null | tr -d '\r')"
 
 RLS="$(psql "$PLEXIVE_BACKUP_URL" -tAF'|' -c "
   select schemaname || '.' || tablename, rowsecurity
-  from pg_tables where schemaname in ('public','auth','storage') order by 1;" 2>/dev/null)"
+  from pg_tables where schemaname in ('public','auth','storage') order by 1;" 2>/dev/null | tr -d '\r')"
 
 POLICIES="$(psql "$PLEXIVE_BACKUP_URL" -tAF'|' -c "
   select schemaname || '.' || tablename, policyname, cmd
-  from pg_policies order by 1,2;" 2>/dev/null)"
+  from pg_policies order by 1,2;" 2>/dev/null | tr -d '\r')"
 
 TOTAL_ROWS=0
 PUBLIC_TABLES=0
