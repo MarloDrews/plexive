@@ -335,7 +335,13 @@ a JWT expiry, which is not stored in a column.
 
 So no stored timestamp is ambiguous today. What a naive column still cannot do
 is carry an offset, so a future feature that needs one would have to convert at
-the edges. That is the whole of the residue.
+the edges. That is the whole of the residue -- and it is also the shape of the
+future work, which is the reason this is worth a line at all rather than
+nothing: **a later move to `timestamptz` starts at the EDGES, not in the
+schema.** Because every stored value is already UTC, the column type change is
+the small half; what has to be decided is where an offset enters and leaves the
+system -- request parsing, serialisation, and anything that renders a local time
+to a user.
 
 ### 10c. A claim made in this conversation that was NOT supported
 
