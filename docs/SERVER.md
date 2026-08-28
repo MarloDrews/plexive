@@ -219,6 +219,249 @@ Konten-Hinweis: Plexive nutzt **kein Supabase Auth**. Die Konten liegen in
 schreibt `public.users.google_sub`. `auth.users` ist hier also erwartbar leer;
 eine niedrige Zahl dort ist kein fehlendes Backup, sondern der Normalzustand.
 
+## Schema-Migrationen (Alembic)
+
+Das hier ist die operative Reihenfolge -- die Befehle, die jemand wirklich tippt.
+Sie steht in dieser Datei und nicht in `docs/research/schema-drift-2026-08.md`:
+das Forschungsdokument ist eine datierte Aufzeichnung, ein Ablauf, den jemand
+ausführt, gehört ins Runbook.
+
+**Wo diese Befehle laufen:** vom **Laptop** aus, aus dem Verzeichnis `backend/`,
+gegen die `DATABASE_URL` in `backend/.env`. Der Pi ist der dokumentierte
+Ausweichweg: dort ist das Verzeichnis `/home/silas/deepscroll/backend` und der
+Interpreter `.venv/bin/alembic` statt `.venv/Scripts/alembic.exe`. `alembic`
+steht in `requirements.txt`, die Produktion hat es aber noch nie installiert --
+es kommt dort mit dem nächsten `pip install -r requirements.txt` an.
+
+**Die PostgreSQL-Client-Tools müssen auf dem PATH liegen**, sonst bricht
+Schritt 1 mit `FATAL: pg_dump is not on PATH` ab. Der winget-Install legt sie
+nicht auf den PATH von Git Bash:
+
+```bash
+export PATH="/c/Program Files/PostgreSQL/17/bin:$PATH"
+```
+
+### Zwei Dinge, bevor Schritt 1 läuft
+
+**Die Zielzeile lesen.** `app/database.py:8` ruft ein blankes `load_dotenv()`
+auf, das `backend/.env` aus **jedem** Arbeitsverzeichnis findet. Deshalb sagt
+jeder Alembic-Befehl auf stderr, wohin er verbindet, *bevor* er verbindet:
+
+```
+[alembic] online target: scheme=postgresql host=aws-1-eu-central-2.pooler.supabase.com port=5432 db=postgres user=postgres.<projekt-ref> (password redacted)
+```
+
+Steht dort `host=localhost`, ist es nicht die Produktion. Die Ansage ist **nicht**
+der Schutz -- eine Zeile, die niemand liest, schützt nichts --, das ist
+`PLEXIVE_DB_WRITE=1` (`alembic/env.py:66,92`). Ohne diese Variable weigern sich
+`upgrade`, `downgrade`, `stamp` und `merge`, und zwar bevor überhaupt eine
+Verbindung aufgebaut wird:
+
+```
+REFUSED: upgrade can write to the database and PLEXIVE_DB_WRITE is not set.
+  Nothing was connected to and nothing was changed.
+```
+
+**`alembic check` niemals gegen eine ungestempelte Datenbank.** Es verlangt die
+Datenbank auf `head`, scheitert sonst mit Exit 127 (`Target database is not up to
+date.`) -- und **legt dabei `alembic_version` an**: aus 12 Tabellen werden 13.
+Der einzige Alembic-Befehl, dessen Name „lesen" sagt, schreibt also, und zwar
+genau in die Datenbank, deren unveränderter Zustand der Beweis ist. Für eine
+ungestempelte Datenbank ist `scripts/schema_diff.py` das Werkzeug: es liest
+`alembic_version` nie und schreibt nichts. Diese Warnung bleibt stehen, obwohl
+die Produktion seit dem 28.08.2026 gestempelt ist -- sie gilt für jede künftige
+Datenbank, die es nicht ist.
+
+### 1. Backup ziehen
+
+**Verzeichnis:** Repository-Wurzel.
+
+```bash
+PLEXIVE_BACKUP_URL="$(grep -E '^DATABASE_URL=' backend/.env | cut -d= -f2-)" \
+  PLEXIVE_BACKUP_DIR=/c/Users/marlo/GitHub/plexive-backups \
+  bash tools/backup_supabase.sh
+```
+
+Die URL steht ausgeschrieben, weil der dokumentierte Rückfall auf `DATABASE_URL`
+in der Praxis **nicht greift**: in einer normalen Shell ist die Variable nicht
+exportiert, und das Skript bricht ab, bevor man Schritt 2 überhaupt erreicht:
+
+```
+FATAL: no database URL.
+       Set PLEXIVE_BACKUP_URL, or DATABASE_URL, to the connection string.
+```
+
+`PLEXIVE_BACKUP_DIR` muss **außerhalb des Repositories** liegen -- das Repo ist
+öffentlich, der Dump enthält jede E-Mail-Adresse und jeden bcrypt-Hash. Welches
+Verzeichnis es ist, spielt keine Rolle; ein Pfad im Repo wird abgelehnt:
+
+```
+FATAL: refusing to write into the repository (/c/Users/marlo/GitHub/deepscroll/backups).
+```
+
+**Erwartete Ausgabe** (gekürzt; gegen die Produktion sind die Zeilenzahlen
+größer):
+
+```
+Plexive database backup
+-----------------------
+target dir : /c/Users/marlo/GitHub/plexive-backups
+host       : aws-1-eu-central-2.pooler.supabase.com:5432
+pg_dump    : major 17
+server     : major 17 (17.6)
+
+rls        : role exempt (superuser or BYPASSRLS) = t, 0 RLS table(s) not readable by ownership
+Reading what is actually there...
+TABLE                                            ROWS
+public.alembic_version                              1
+public.comments                                   ...
+
+public tables: 14, rows in public: ...
+
+archive check: 131 restorable entries (floor 40)
+
+Wrote:
+  dump           .../plexive-<zeitstempel>.dump (... bytes)
+  schema         .../plexive-<zeitstempel>-schema.sql (... bytes)
+
+NOT COVERED, and this is not a footnote:
+  ...
+
+  manifest: .../plexive-<zeitstempel>-manifest.txt
+```
+
+Der Manifest-Pfad kommt **zuletzt**, und das ist Absicht: der Dump nützt erst
+etwas, wenn ihn jemand zurückspielt, das Manifest nützt in dem Moment etwas, in
+dem es entsteht. Manifeste nicht aufräumen.
+
+### 2. Drift lesen
+
+**Verzeichnis:** `backend/`. Read-only: keine DDL, nichts geschrieben, nicht
+gestempelt. Funktioniert gestempelt wie ungestempelt.
+
+```bash
+.venv/Scripts/python.exe scripts/schema_diff.py
+```
+
+**Erwartete Ausgabe** (gegen die Produktion gemessen, 28.08.2026, nach dem
+Stempeln):
+
+```
+target: host=aws-1-eu-central-2.pooler.supabase.com port=5432 db=postgres user=postgres.<projekt-ref>
+mode:   read-only (no DDL, no writes, no stamp)
+
+compared 12 tables declared in models.py against 14 tables in the database
+not compared (deliberately unmanaged, alembic/policy.py): user_elo
+differences: 3
+
+==============================================================================
+EXTRA IN THE DATABASE -- production has it, models.py does not declare it
+==============================================================================
+  [benign] ix_conversation_participants_conversation_id on conversation_participants(conversation_id)  [remove_index]
+  [benign] ix_follows_id on follows(id)  [remove_index]
+  [benign] ix_quiz_answers_user_id on quiz_answers(user_id)  [remove_index]
+
+3 difference(s), 0 of them ALARMING
+```
+
+**Die Ausgabe rückwärts lesen.** Alembic benennt einen Unterschied nach der
+Migration, die es erzeugen *würde*. `remove_index` heißt deshalb: die
+**Datenbank** hat den Index und `models.py` nicht -- eine Migration würde ihn
+LÖSCHEN. Für `remove_column` und `remove_table` gilt dasselbe, und so löscht
+jemand eine Spalte, der die sichere Richtung gewählt zu haben glaubte.
+
+Genau diese drei Zeilen sind erwartet; sie sind der Grund für Revision `0002`.
+Eine **vierte** Zeile ist neue Drift.
+
+Zu „12 gegen 14 Tabellen": `user_elo` wird in der Zeile darüber genannt, die
+14. ist `alembic_version`, die Alembic selbst aus dem Vergleich nimmt.
+
+### 3. Stempeln -- ERLEDIGT am 28.08.2026, nicht wiederholen
+
+```bash
+PLEXIVE_DB_WRITE=1 .venv/Scripts/alembic.exe stamp head
+```
+
+Dieser Schritt ist Geschichte, keine Anweisung. Er steht hier, weil die
+**Reihenfolge** der eigentliche Punkt ist: `stamp` *behauptet*, dass die
+Datenbank zum Baseline passt. Wer vor Schritt 1 und 2 stempelt, zerstört die
+einzige Gelegenheit, diese Behauptung zu prüfen -- und `stamp` ist billig
+auszuführen, was genau die Versuchung ist.
+
+Für eine künftige, noch ungestempelte Datenbank gilt die Reihenfolge
+unverändert: erst 1, dann 2, dann 3.
+
+### 4. Bestätigen
+
+**Verzeichnis:** `backend/`. Read-only; `current` steht nicht in
+`WRITE_COMMANDS` und braucht die Schreibfreigabe nicht.
+
+```bash
+.venv/Scripts/alembic.exe current
+```
+
+**Erwartete Ausgabe** -- und hier ist die Klammer die eigentliche Information:
+
+```
+[alembic] online target: scheme=postgresql host=... db=postgres user=... (password redacted)
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+0001
+```
+
+Am 28.08.2026, unmittelbar nach dem Stempeln, stand dort `0001 (head)`. Seit
+Revision `0002` im Repository liegt, ist `0001` **nicht mehr** `head`, und die
+fehlende Klammer ist genau das Signal, dass eine Migration bereitliegt. Nach
+Schritt 5 steht dort `0002 (head)`.
+
+Kommt gar keine Revisionszeile, ist die Datenbank nicht gestempelt.
+
+### 5. Migration anwenden
+
+**Verzeichnis:** `backend/`. **Schritt 1 ist Voraussetzung, nicht Empfehlung.**
+
+```bash
+PLEXIVE_DB_WRITE=1 .venv/Scripts/alembic.exe upgrade head
+```
+
+**Erwartete Ausgabe** für Revision `0002` (gemessen auf einer lokalen
+Wegwerf-Datenbank, die in genau der Index-Gestalt der Produktion aufgebaut
+wurde):
+
+```
+INFO  [alembic.runtime.migration] Running upgrade 0001 -> 0002, drop redundant indexes
+[0002] dropped ix_follows_id on follows -- covered by follows_pkey UNIQUE btree (id) -- identical column list
+[0002] dropped ix_quiz_answers_user_id on quiz_answers -- covered by uq_quiz_answer UNIQUE btree (user_id, post_id, question_index) -- leading column
+[0002] dropped ix_conversation_participants_conversation_id on conversation_participants -- covered by uq_conversation_participant UNIQUE btree (conversation_id, user_id) -- leading column
+[0002] dropped 3 of 3 redundant indexes
+```
+
+`dropped 3 of 3` ist die Zahl, auf die es ankommt. `dropped 0 of 3` ist auf einer
+**frischen** Datenbank richtig -- dort hat `0001` diese Indizes nie angelegt --,
+gegen die Produktion aber falsch: dann hat sie jemand vorher von Hand gelöscht.
+
+### 6. Danach auf Drift prüfen
+
+**Verzeichnis:** `backend/`. Jetzt -- und erst jetzt -- ist `alembic check` das
+richtige Werkzeug.
+
+```bash
+.venv/Scripts/alembic.exe check
+```
+
+**Erwartete Ausgabe:**
+
+```
+No new upgrade operations detected.
+```
+
+**`check` verlangt die Datenbank auf `head`, nicht bloß „gestempelt".** Solange
+`0002` im Repository liegt und noch nicht angewendet ist, steht die Produktion
+auf `0001` und damit *hinter* `head`; `check` antwortet dann mit Exit 127 und
+`Target database is not up to date.` -- gemessen, nicht vermutet. Das ist kein
+Fehler, sondern die Aussage „es liegt eine Migration bereit". In diesem Zustand
+antwortet `scripts/schema_diff.py` aus Schritt 2 trotzdem.
+
 ---
 
 ## Secrets vom Pi herunterholen
@@ -399,26 +642,18 @@ Diese Schichtung hat sich bewährt – sie sagt, in welcher Ebene es klemmt:
 - **Backend-Update auf dem Pi ist manuell.** Vercel deployt das Frontend beim Push
   auf `main` automatisch; auf dem Pi bleibt `git pull` + `systemctl restart` von
   Hand. Auto-Deploy per systemd-Timer (Self-Pull) wäre die einfachste Ergänzung.
-- **Schema-Migrationen:** Alembic ist seit 2026-08-28 eingerichtet
-  (`backend/alembic/`), aber **noch nicht gestempelt**. `create_all` fügt
-  weiterhin keine neuen Spalten zu bestehenden Tabellen hinzu, und die 17
-  Skripte in `backend/scripts/` bleiben.
-  **Die Reihenfolge ist der Punkt, nicht der Baseline:** erst Backup, dann
-  `scripts/schema_diff.py` lesen, erst danach `alembic stamp head`. Stempeln
-  *behauptet*, dass die Datenbank zum Baseline passt; vorher zu stempeln
-  zerstört die einzige Gelegenheit, das zu prüfen.
-  **`alembic check` ist dafür nicht zu gebrauchen, und zwar aus zwei Gründen.**
-  Es verlangt die Datenbank auf `head`, scheitert an einer ungestempelten also
-  mit Exit 127 (`Target database is not up to date.`) -- und es **legt dabei die
-  Tabelle `alembic_version` an**. Gemessen an drei identischen frischen
-  `create_all`-Datenbanken mit je 12 Tabellen: `alembic check` hinterlässt
-  **13**, `alembic current` 12, `scripts/schema_diff.py` 12. Der einzige
-  Alembic-Befehl, dessen Name „lesen" sagt, schreibt also -- und zwar genau in
-  die Datenbank, deren unveränderter Zustand der Beweis ist. Deshalb ist die
-  Reihenfolge oben nicht Vorsicht, sondern Messung, und deshalb gibt es den
-  `PLEXIVE_DB_WRITE`-Schalter in `alembic/env.py`. Vollständig in
-  `docs/research/schema-drift-2026-08.md`.
-  Erst danach offen: `RUN_STARTUP_DDL=0` in `/etc/deepscroll/backend.env`, damit
-  nicht zwei Mechanismen dasselbe Schema anfassen.
+- **Schema-Migrationen:** Alembic ist seit dem 28.08.2026 eingerichtet
+  (`backend/alembic/`) und seit demselben Tag **gestempelt**: `alembic_version`
+  enthält `0001`. `create_all` fügt weiterhin keine neuen Spalten zu bestehenden
+  Tabellen hinzu, und die 17 Skripte in `backend/scripts/` bleiben.
+  Die Befehle -- Backup, Drift lesen, stempeln, bestätigen, anwenden, prüfen --
+  stehen als nummerierte Liste unter „Schema-Migrationen (Alembic)" weiter oben
+  in dieser Datei. Warum die Reihenfolge so ist und was vorher gemessen wurde,
+  steht in `docs/research/schema-drift-2026-08.md`.
+  **Offen:** Revision `0002` (löscht drei redundante Indizes) liegt bereit und
+  ist noch **nicht angewendet**; solange das so ist, meldet `alembic check`
+  Exit 127, weil die Datenbank hinter `head` steht. Danach offen:
+  `RUN_STARTUP_DDL=0` in `/etc/deepscroll/backend.env`, damit nicht zwei
+  Mechanismen dasselbe Schema anfassen.
 - **Single Point of Failure:** Strom- oder Internetausfall zu Hause legt das
   Backend lahm. Für die Testphase akzeptabel.

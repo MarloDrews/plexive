@@ -4,18 +4,23 @@ Revision ID: 0001
 Revises: 
 Create Date: 2026-08-28 18:46:39.502186
 
-THIS FILE WAS REGENERATED IN PLACE ON 2026-08-28, KEEPING revision = '0001',
-AND THAT WAS ONLY SAFE BECAUSE NOTHING HAD BEEN STAMPED YET. A revision id is a
-claim about what a stamped database contains. While no database has ever
-recorded '0001', no such claim exists and the id is free to be reused; the
-regeneration was a documentation change, catching the baseline up with the
-models.py reconciliation of the same day (docs/research/schema-drift-2026-08.md
-section 6b).
+THIS FILE IS FROZEN. DO NOT EDIT IT. `alembic stamp head` ran against production
+on 2026-08-28, so a real database now asserts that it matches revision '0001'.
+Editing the file under that id would make that assertion false while changing
+nothing that could detect it: there is no checker for this, which is why the
+warning is here instead of in a gate. Any further schema change is a NEW
+revision -- 0002 onwards -- and never an edit to this file.
 
-ONCE `alembic stamp head` HAS RUN ANYWHERE, THAT STOPS BEING TRUE. From then on
-a database asserts that it matches THIS revision id, and editing the file under
-the id makes that assertion false without changing anything that could detect
-it. After the stamp, a schema change is a NEW revision, never an edit here.
+THAT IS THE FIRED FORM OF A CONDITION THIS HEADER USED TO CARRY, and the earlier
+wording is kept rather than deleted because a conditional whose condition has
+fired still reads as permission. It said: this file WAS REGENERATED IN PLACE on
+2026-08-28, keeping revision = '0001', and that was safe ONLY BECAUSE NOTHING
+HAD BEEN STAMPED YET. A revision id is a claim about what a stamped database
+contains; while no database had ever recorded '0001' there was no claim to
+break, so the id was free to be reused and the regeneration was a documentation
+change, catching the baseline up with the models.py reconciliation of the same
+day (docs/research/schema-drift-2026-08.md section 6b). The stamp closed that
+window later the same day.
 
 REVIEW THIS FILE BY HAND BEFORE RUNNING IT. If it was produced by
 --autogenerate, it is a candidate, not a migration.

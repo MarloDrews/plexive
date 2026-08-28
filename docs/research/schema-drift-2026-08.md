@@ -8,6 +8,19 @@ survivors. Production was right in every case and nothing was applied to the
 database. Sections 1-5 are kept as they were WRITTEN BEFORE the measurement, so the
 prediction can still be read against the result; 6a scores it row by row.
 
+**STAMPED 2026-08-28**, after the measurement below and in that order.
+`alembic_version` holds `0001`. Revision `0002` then drops the three survivors of
+section 6c/6d; it is written and not yet applied.
+
+**The operational sequence is NOT in this document and never was.** It is in
+`docs/SERVER.md`, under "Schema-Migrationen (Alembic)": literal command, working
+directory and expected output per step. This file is a dated record of one
+measurement, so a procedure that has to stay current does not belong in it -- and
+a pointer here that claimed otherwise sent somebody looking twice. Everything
+below remains as measured on 2026-08-28 and is deliberately NOT updated: the
+counts it quotes (13 tables in the database, differences 9 then 3) describe the
+schema at `29730c7`, before `alembic_version` existed.
+
 ---
 
 ## 1. Why nobody knows
