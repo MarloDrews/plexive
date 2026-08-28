@@ -190,18 +190,85 @@ heading. And the clean direction: the same database before injection reported
 `compared 12 tables declared in models.py against 13 tables in the database` and
 `differences: 0` — a zero next to a count, rather than a zero on its own.
 
-## 8. Not established
+## 8. Established since this document was written
 
-- **Whether the Supabase project is on the free tier.** Free performs no
-  automatic backups at all. Establish it in the dashboard; do not assume it.
-- **The PostgreSQL major version of the Supabase server**, which decides which
-  `pg_dump` to install.
-- **Whether the baseline renders identically under the PostgreSQL dialect.** It
-  was generated against a disposable SQLite database because no PostgreSQL was
-  available on the machine. `models.py` uses only generic SQLAlchemy types, so
-  the rendering should not differ — but *should not* is not *does not*, and this
-  is the one claim in this document resting on reasoning rather than a
-  measurement. Regenerate against a disposable PostgreSQL and diff the two files
-  before relying on the baseline for anything but a stamp.
-- **Row-level security state in production.** `tools/backup_supabase.sh` records
-  it in its manifest; that manifest is the first written record of it.
+Measured 2026-08-28 on a **local PostgreSQL 17.11**, against disposable databases
+created and dropped for the purpose. Nothing in this section touched Supabase.
+
+- **The Supabase project is on the free tier**, confirmed in the dashboard. Free
+  performs no automatic backups at all, so `tools/backup_supabase.sh` is the only
+  copy that exists.
+
+- **The Supabase server is PostgreSQL 17.6** and the client here is 17.11, which
+  is the safe direction. The rule is exact rather than folklore, and it is worth
+  stating because the first real run should not be where anyone finds out:
+  `_check_database_version()` in `pg_backup_db.c` aborts only when
+
+      remoteversion != PG_VERSION_NUM
+        && (remoteversion < minRemoteVersion || remoteversion > maxRemoteVersion)
+
+  and `pg_dump.c` sets `minRemoteVersion = 90200`, `maxRemoteVersion =
+  (PG_VERSION_NUM / 100) * 100 + 99`. For a 17.11 client that ceiling is
+  **170099**, so every 17.x server passes; 17.6 is 170006. The refusal is on the
+  **major** version, not the minor, and a 17.11 client raises no objection at all
+  against 17.6.
+
+- **The round trip works.** Fixture of 6 tables and 92 rows, RLS plus one policy
+  on one of them: `backup_supabase.sh` -> `dropdb` -> `createdb` -> `pg_restore`
+  returned row counts IDENTICAL to the manifest across all 6 tables, with RLS and
+  the policy back. Run under `plexive_verify`, **`rolsuper` false**, and that is
+  load-bearing: a superuser restore would have established almost nothing, since
+  superusers bypass the ownership check entirely, so a green result would have
+  been equally consistent with "ownership was correct" and "ownership was never
+  checked".
+
+- **The non-owner restore loses row-level security, and how loudly depends on the
+  path.** Measured in the Supabase role shape (`rolsuper` false, `rolbypassrls`
+  true, which is what Supabase's `postgres` reports). A table the restoring role
+  does not own comes back with **RLS off, no policy and no rows**; the control
+  table it does own comes back intact in the same run.
+
+  | restore path | exit | RLS restored | visible |
+  |---|---|---|---|
+  | `pg_restore` (custom format) | **1**, `errors ignored on restore: 9` | no | every failure printed with its command |
+  | `psql -f <schema>.sql` (the plain companion) | **0** | no | 7 errors on stderr only |
+  | `psql -v ON_ERROR_STOP=1 -f` | **3** | no | stops at the first failure |
+
+  So "comes back with RLS off and still reports success" is real, but it is a
+  property of the **plain-SQL path without `ON_ERROR_STOP`**, not of restoring in
+  general. `pg_restore` does report.
+
+- **A role that is neither superuser, `BYPASSRLS`, nor the table's owner cannot
+  back the table up at all.** `pg_dump` issues every `COPY` with
+  `row_security = off`, and PostgreSQL then ERRORS rather than dumping a visible
+  subset, aborting part-way and leaving a truncated file. `backup_supabase.sh`
+  now refuses first, naming the blocking tables. Supabase's `postgres` has
+  `rolbypassrls` true, so this does not bite production today -- but that is a
+  property of Supabase's current role configuration, not a guarantee.
+
+## 9. Still not established
+
+- **Row-level security state in production.** Everything above is local.
+  `tools/backup_supabase.sh` records it in its manifest; that manifest is still
+  the first written record of it, and it has not been run against Supabase.
+- **That a real Supabase restore behaves as the local one did.** The mechanism is
+  now measured, the destination is not.
+- **Whether the baseline renders identically under the PostgreSQL dialect.**
+  SETTLED, and it does. Regenerated 2026-08-28 against an empty disposable
+  PostgreSQL 17.11 with the existing revision parked aside: the operational body
+  is **byte-identical**, 213 lines, zero differing lines. The file is kept, not
+  replaced.
+
+  The stronger measurement is the one next to it, because it tests the thing that
+  actually depends on the rendering. `alembic upgrade head` against an empty
+  PostgreSQL database succeeded, and the schema it built matched `models.py`:
+  `schema_diff.py` reported `compared 12 tables ... differences: 0`, and
+  `alembic check` -- which is valid there, since `upgrade head` stamps it --
+  reported `No new upgrade operations detected`.
+
+  **Which half of this work that affects is worth being precise about.** Section
+  6's drift comparison uses `compare_metadata` against live metadata and never
+  reads the baseline at all, so it was unaffected either way. What a
+  SQLite-shaped baseline would have affected is `upgrade head` on a fresh
+  database -- which is precisely what a disaster recovery runs. So this mattered
+  for RECOVERY, not for the measurement.
