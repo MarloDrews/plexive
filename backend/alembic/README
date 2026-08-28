@@ -1,0 +1,34 @@
+Alembic migration environment for Plexive.
+
+Start with backend/alembic.ini -- its header explains the rename hazard and why
+there is no sqlalchemy.url in it.
+
+Three things here are not stock and should not be "tidied" back:
+
+  env.py            Reads app.database.DATABASE_URL rather than alembic.ini, so
+                    there is one definition of where the database is. Announces
+                    the resolved host before connecting. Refuses upgrade /
+                    downgrade / stamp / merge unless PLEXIVE_DB_WRITE=1, and
+                    fails closed when it cannot tell which command is running.
+
+  policy.py         What counts as a difference: the deliberately unmanaged
+                    tables, and the compare_type / compare_server_default /
+                    include_schemas settings. Imported by env.py AND by
+                    scripts/schema_diff.py so the two cannot drift apart.
+
+  script.py.mako    Puts the review warnings at the top of every generated
+                    migration, which is where somebody about to apply one will
+                    actually read them.
+
+To ask whether the live schema matches models.py, do NOT start with
+`alembic check`: it requires the database to be at the head revision, so against
+an unstamped database it exits 127 with "Target database is not up to date", and
+it creates an empty alembic_version table on the way. Use the read-only report,
+which works unstamped and writes nothing:
+
+    .venv\Scripts\python.exe scripts\schema_diff.py
+
+`alembic check` becomes the right tool once the database has been stamped.
+
+Full reasoning, the interpretation guide for each kind of difference, and the
+order the live commands must be run in: docs/research/schema-drift-2026-08.md

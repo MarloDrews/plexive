@@ -1,3 +1,18 @@
+# SCHEMA CHANGES GO THROUGH ALEMBIC AS OF 2026-08-28 (backend/alembic/).
+# alembic/versions/0001_baseline.py describes this file as it stood then, so a
+# column added here without a migration is drift, not a change.
+#
+# Before changing a column, two things worth knowing:
+#   - Autogenerate CANNOT detect a rename. It renders one as a drop plus an add,
+#     which destroys that column's data. Rename by hand, with op.alter_column.
+#   - The live database is NOT known to match this file. It accumulated from
+#     create_all plus 17 hand-run scripts/add_*.py, and several of those issued
+#     types this file does not declare (JSONB where it says JSON). Ask, do not
+#     assume: .venv\Scripts\python.exe scripts\schema_diff.py  (read-only).
+#
+# The cross-repository column contract that nothing gates is recorded next to
+# the columns it names, on posts.thumbnail_url below.
+
 from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Index, Integer, JSON, String, Table, Text, UniqueConstraint, text
 from sqlalchemy.orm import relationship
 

@@ -12,6 +12,12 @@
 # and this file is the target rather than the mirror. Everything else still comes
 # from the freeze.
 #
+# THREE MORE LINES ARE AHEAD OF IT FOR A DIFFERENT REASON, added 2026-08-28:
+# alembic, and the Mako + MarkupSafe it pulls in. Production has never installed
+# these, so unlike the security six they are not "a newer version of something
+# the Pi runs" -- they are new packages that reach the Pi on its next
+# `pip install -r requirements.txt`. Nothing in app/ imports any of them.
+#
 # Why this file exists at all: unpinned, CI resolved fastapi 0.141.1 on the same
 # commit the Pi runs 0.136.3, and the two disagree on behaviour (len(app.routes)
 # is 23 against 57). The boot guard counted routes at the time, against a floor of
@@ -31,6 +37,13 @@
 fastapi==0.136.3
 uvicorn[standard]==0.49.0
 sqlalchemy==2.0.50
+# The schema ledger (alembic.ini, alembic/env.py), added 2026-08-28. The
+# application never imports it -- it is an operator tool run by hand from
+# backend/. It sits in this file rather than requirements-dev.txt so that the Pi
+# ends up able to run a migration after an ordinary deploy install: docs/SERVER.md
+# records the laptop as the primary host and the Pi as the documented fallback,
+# and a fallback that needs an extra install step is one nobody can use in a hurry.
+alembic==1.19.1
 psycopg2-binary==2.9.12
 bcrypt==5.0.0
 # python-jose pulls in `ecdsa`, which has an unfixable Minerva timing advisory
@@ -99,6 +112,9 @@ httptools==0.8.0
 httpx==0.28.1
 hyperframe==6.1.0
 idna==3.18
+# Mako renders alembic's migration template; MarkupSafe is Mako's own.
+Mako==1.4.1
+MarkupSafe==3.0.3
 multidict==6.7.1
 packaging==26.2
 postgrest==2.31.0
