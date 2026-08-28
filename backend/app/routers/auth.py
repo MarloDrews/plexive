@@ -13,7 +13,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from ..account_lifecycle import is_reserved_username, scramble_and_detach
-from ..auth import create_access_token, get_current_user, hash_password, verify_password
+from ..auth import CLOSED_BETA, create_access_token, get_current_user, hash_password, verify_password
 from ..database import get_db
 from ..models import Follow, User
 from ..rate_limit import check_rate_limit
@@ -113,6 +113,15 @@ class PatchMeResponse(UserOut):
 
 @router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
 def register(body: RegisterRequest, request: Request, db: Session = Depends(get_db)):
+    # Closed beta: sign-up is shut. Checked here as well as in main.py's gate
+    # middleware, on purpose -- the two are independent, so reopening the gate
+    # for any reason does not silently reopen registration with it. Issuing
+    # invites is a separate job; this only closes the door.
+    if CLOSED_BETA:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Plexive is in closed beta. New accounts are by invitation only.",
+        )
     check_rate_limit(f"ip:{_client_ip(request)}", "register", 10, 3600)
     # EmailStr lowercases only the domain; normalize the whole address so
     # Bob@x.com and bob@x.com are one account and login is case-insensitive
@@ -242,6 +251,16 @@ def google_auth(body: GoogleAuthRequest, request: Request, db: Session = Depends
             db.refresh(user)
 
     # 3) Brand-new visitor: create an account from the Google profile.
+    #    Closed beta splits this endpoint in two. Steps 1 and 2 above are
+    #    sign-in for an account that already exists and stay open, or existing
+    #    Google users would be locked out of their own beta. Only the branch
+    #    that CREATES an account is closed, which is what makes this endpoint
+    #    "sign in but never register" rather than simply off.
+    if user is None and CLOSED_BETA:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Plexive is in closed beta. New accounts are by invitation only.",
+        )
     if user is None:
         username = _generate_unique_username(db, email, idinfo.get("name"))
         user = User(email=email, username=username, password_hash=None, google_sub=sub, badge_id=_random_signup_badge())
