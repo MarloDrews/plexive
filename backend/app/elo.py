@@ -113,6 +113,18 @@ def match_delta(
     moves a rating about as much as one duel would -- otherwise Arena would
     swing ratings three times faster than every other scored surface.
 
+    NEITHER OF THOSE TWO RULES IS DEFENDED BY A TEST, measured 2026-08-28 by a
+    mutation run over this module. Replacing the `/ len(opponents)` below with
+    `* len(opponents)` -- nine times the intended swing on a four-player match,
+    the exact thing the paragraph above warns against -- leaves the whole suite
+    green. The 1 / 0.5 / 0 tie rule goes the same way: widening `score >
+    opp_score` to `>=`, and flipping `score == opp_score` to `!=`, both survive.
+    The reason is that every Arena assertion checks only the SIGN of a delta;
+    arena_test.py does assert the two tied players get equal deltas, but that
+    holds under both mutations because the tied pair is mutated symmetrically.
+    The code here is correct. What is missing is anything that would notice if it
+    stopped being. See docs/research/mutation-test-2026-08.md, mutants 87/75/78.
+
     `opponents` is (rating, score) per opponent, all snapshotted BEFORE any
     rating in the match is written, so the result does not depend on the order
     the four players are updated in.
