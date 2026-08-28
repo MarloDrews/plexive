@@ -5,15 +5,22 @@
 # Before changing a column, two things worth knowing:
 #   - Autogenerate CANNOT detect a rename. It renders one as a drop plus an add,
 #     which destroys that column's data. Rename by hand, with op.alter_column.
-#   - The live database is NOT known to match this file. It accumulated from
-#     create_all plus 17 hand-run scripts/add_*.py, and several of those issued
-#     types this file does not declare (JSONB where it says JSON). Ask, do not
-#     assume: .venv\Scripts\python.exe scripts\schema_diff.py  (read-only).
+#   - The live database WAS reconciled against this file on 2026-08-28, and the
+#     answer was that production was right and the declarations were wrong: it
+#     had jsonb where this file said JSON, TEXT where it said String, and a
+#     unique index where it said a unique constraint. Those six differences are
+#     gone, fixed HERE and never in the database. Three remain by decision --
+#     ix_follows_id, ix_quiz_answers_user_id and
+#     ix_conversation_participants_conversation_id, each recorded next to its
+#     table -- so schema_diff.py reports 3, not 0, until the DROP INDEX
+#     migration runs. Any FOURTH entry is new drift.
+#     Ask, do not assume: .venv\Scripts\python.exe scripts\schema_diff.py
 #
 # The cross-repository column contract that nothing gates is recorded next to
 # the columns it names, on posts.thumbnail_url below.
 
 from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Index, Integer, JSON, String, Table, Text, UniqueConstraint, text
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 
 from .database import Base
@@ -41,12 +48,32 @@ class Post(Base):
     id         = Column(Integer, primary_key=True)
     format     = Column(String, nullable=False, index=True)
     title      = Column(String, nullable=False)
+    # json, NOT jsonb, on both sides -- and that is an accident of mechanism
+    # rather than a decision. These two came with the table from create_all,
+    # which renders Column(JSON) as PostgreSQL json; the four jsonb columns below
+    # were added later by hand-written scripts that typed JSONB themselves.
+    # Nobody ever compared the two. Left alone deliberately, because feed_card is
+    # the one JSON column the app actually queries (routers/search.py casts it to
+    # Text and runs ILIKE over it) and jsonb's cast to text is NORMALIZED --
+    # reordered keys, whitespace stripped -- so switching it would silently
+    # change which search strings match. That is a search decision, not a schema
+    # tidy-up. Measured on production 2026-08-28: both report json, atttypmod -1.
     feed_card  = Column(JSON, nullable=False)
     sections   = Column(JSON, nullable=False)
-    # Graph fields: top-level taxonomy slugs and cross-post links. JSON parallels
-    # feed_card/sections. Added to the live DB by scripts/add_graph_columns.py.
-    tags        = Column(JSON, nullable=False, default=list)
-    connections = Column(JSON, nullable=False, default=list)
+    # Graph fields: top-level taxonomy slugs and cross-post links. Added to the
+    # live DB by scripts/add_graph_columns.py:29-30, which issued JSONB -- so
+    # jsonb is what production has always had, and this declaration follows it.
+    # The models are the wrong side here, never the database: an ALTER TYPE on a
+    # populated column rewrites the table.
+    #
+    # .with_variant is load-bearing, not decoration. Every suite runs on SQLite
+    # (tests/_throwaway_db.py:24) and SQLite cannot render JSONB, so a bare JSONB
+    # would break create_all and take out all 16 of them. Same dialect-split
+    # pattern as uq_events_user_like's postgresql_where/sqlite_where below.
+    # Nothing in app/ uses a jsonb operator today; declaring it is what makes
+    # containment and GIN indexing reachable if anything ever wants them.
+    tags        = Column(JSON().with_variant(JSONB(), "postgresql"), nullable=False, default=list)
+    connections = Column(JSON().with_variant(JSONB(), "postgresql"), nullable=False, default=list)
     author_id  = Column(Integer, ForeignKey("users.id"), nullable=True, index=True)
     status     = Column(String, nullable=False, default="published", index=True)
     created_at = Column(DateTime, default=utcnow, index=True)
@@ -90,7 +117,11 @@ class Post(Base):
     # one was generated or uploaded -- the card then falls back to the shared
     # placeholder image. Added to the live DB by scripts/add_thumbnail_columns.py.
     # Written offline by the private renderer; nothing in this repository sets it.
-    thumbnail_url = Column(String, nullable=True)
+    # Text rather than String because scripts/add_thumbnail_columns.py:31 issued
+    # TEXT. PostgreSQL treats an unbounded VARCHAR and TEXT identically -- both
+    # atttypmod -1, same storage class, implicit cast, measured 2026-08-28 -- so
+    # this aligns the declaration with production and changes nothing else.
+    thumbnail_url = Column(Text, nullable=True)
 
     # How this post's thumbnail is produced, e.g.
     # {"generator": "geography", "place": "Mediterranean Sea", "caption": "...",
@@ -98,7 +129,12 @@ class Post(Base):
     # here by seed.py as opaque JSON (this backend never validates or renders
     # it), and read by the private renderer so it can re-render from the DB
     # alone. The generator names are catalogued in that repository.
-    thumbnail_spec = Column(JSON, nullable=True)
+    # jsonb in production since scripts/add_thumbnail_columns.py:32; variant-typed
+    # for the same SQLite reason as tags/connections above. NOTE that no test
+    # exercises this column at all -- "thumbnail" appears nowhere in backend/tests/
+    # -- so a green suite says nothing about it, which is the same gap the
+    # cross-repository warning above describes.
+    thumbnail_spec = Column(JSON().with_variant(JSONB(), "postgresql"), nullable=True)
 
     interests = relationship("Interest", secondary=post_interests)
     author    = relationship("User", back_populates="posts", foreign_keys=[author_id])
@@ -249,6 +285,18 @@ class Follow(Base):
     __tablename__ = "follows"
     # uq_follow already serves follower_id-prefixed lookups; follower counts
     # filter on (following_id, status) and need their own index.
+    #
+    # PRODUCTION ALSO CARRIES ix_follows_id ON (id), WHICH IS NOT DECLARED HERE
+    # AND IS NOT A MISTAKE. create_all built it from an index=True flag that
+    # ada78e5 (2026-07-06) removed from the id column as redundant -- id is the
+    # primary key and already indexed. That commit changed the declaration only
+    # and said dropping the live index was "a separate manual op"; the op was
+    # never run, so the index has outlived its declaration. It is therefore
+    # PENDING A DROP INDEX MIGRATION, committed to as the first real migration
+    # after the stamp. Until that runs, schema_diff.py and alembic check both
+    # report it as EXTRA IN THE DATABASE, and that entry is expected.
+    # The same applies to ix_quiz_answers_user_id and
+    # ix_conversation_participants_conversation_id below.
     __table_args__ = (
         UniqueConstraint("follower_id", "following_id", name="uq_follow"),
         Index("ix_follows_following_id_status", "following_id", "status"),
@@ -271,6 +319,13 @@ class Follow(Base):
 
 class QuizAnswer(Base):
     __tablename__ = "quiz_answers"
+    # PRODUCTION ALSO CARRIES ix_quiz_answers_user_id ON (user_id), UNDECLARED ON
+    # PURPOSE. uq_quiz_answer leads with user_id, so a btree on that triple
+    # already serves user_id-prefixed lookups and the standalone index buys
+    # nothing. create_all built it from an index=True flag ada78e5 (2026-07-06)
+    # removed for exactly that reason, leaving the live index behind as "a
+    # separate manual op" nobody ran. Pending a DROP INDEX migration, committed
+    # to as the first migration after the stamp; see Follow above.
     __table_args__ = (
         UniqueConstraint("user_id", "post_id", "question_index", name="uq_quiz_answer"),
     )
@@ -287,6 +342,17 @@ class QuizAnswer(Base):
 
 class Conversation(Base):
     __tablename__ = "conversations"
+    # A named unique INDEX, not an inline unique=True on the column, because that
+    # is what production enforces: scripts/add_conversation_dm_key.py:81 issued
+    # CREATE UNIQUE INDEX uq_conversations_dm_key. Read off the live catalog
+    # 2026-08-28 -- pg_index reports indisunique with NO backing pg_constraint
+    # row, against conversations_pkey in the same query which does have one. Same
+    # guarantee either way (PostgreSQL implements a unique constraint AS a unique
+    # index); the difference was only ever the object kind and the name, which is
+    # why alembic reported it twice, as an add_constraint plus a remove_index.
+    __table_args__ = (
+        Index("uq_conversations_dm_key", "dm_key", unique=True),
+    )
 
     id         = Column(Integer, primary_key=True)
     is_group   = Column(Boolean, nullable=False, default=False)
@@ -296,8 +362,10 @@ class Conversation(Base):
     # concurrent "message X" taps cannot fork a pair into two conversations
     # (M145/BUG-036): the loser's INSERT hits the constraint and returns the
     # winner's conversation. Added to the live DB (plus backfill) by
-    # scripts/add_conversation_dm_key.py.
-    dm_key     = Column(String, nullable=True, unique=True)
+    # scripts/add_conversation_dm_key.py. The uniqueness is declared as an index
+    # in __table_args__ above, not as unique=True here. NULLs stay distinct under
+    # both PostgreSQL and SQLite, so group conversations are unconstrained.
+    dm_key     = Column(String, nullable=True)
     created_by = Column(Integer, ForeignKey("users.id"), nullable=False)
     created_at = Column(DateTime, default=utcnow)
 
@@ -306,6 +374,13 @@ class Conversation(Base):
 
 class ConversationParticipant(Base):
     __tablename__ = "conversation_participants"
+    # PRODUCTION ALSO CARRIES ix_conversation_participants_conversation_id,
+    # UNDECLARED ON PURPOSE. uq_conversation_participant leads with
+    # conversation_id, so it already serves conversation_id-prefixed lookups.
+    # create_all built the standalone index from an index=True flag ada78e5
+    # (2026-07-06) removed as redundant, leaving the live index behind as "a
+    # separate manual op" nobody ran. Pending a DROP INDEX migration, committed
+    # to as the first migration after the stamp; see Follow above.
     __table_args__ = (
         UniqueConstraint("conversation_id", "user_id", name="uq_conversation_participant"),
     )
