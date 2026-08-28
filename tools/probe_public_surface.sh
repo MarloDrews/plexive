@@ -96,8 +96,7 @@ for p in \
   /api/quiz/answered \
   "/api/quiz/state/${POST_ID}" \
   /api/train/leaderboard \
-  /api/chat/conversations \
-  /api/thumbnails/basemap/status ; do
+  /api/chat/conversations ; do
   probe "$API" GET "$p" api
 done
 

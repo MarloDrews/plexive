@@ -2,7 +2,7 @@
 
 Each post carries its own thumbnail: thumbnail_url is the public Supabase
 Storage URL of the finished PNG, thumbnail_spec is the authoring instruction
-that produced it (see app/thumbnails/generators.py). create_all only adds
+that produced it. create_all only adds
 missing TABLES, never missing COLUMNS (see the note in app/models.py), so the
 live Supabase database needs both columns added by hand. Run manually from
 backend/ -- never imported or called by the app:
@@ -10,8 +10,10 @@ backend/ -- never imported or called by the app:
     .venv\\Scripts\\python.exe scripts\\add_thumbnail_columns.py
 
 Idempotent: ADD COLUMN IF NOT EXISTS, so it is safe to re-run. No backfill --
-both columns stay NULL until a thumbnail spec is seeded and
-scripts/generate_thumbnails.py runs.
+both columns stay NULL until a thumbnail spec is seeded and the renderer runs.
+That renderer moved to the private content repository on 2026-08-28; this
+script stays because the COLUMNS stay, and the live database still needs them.
+See app/models.py for the four column names that renderer depends on.
 """
 
 import os

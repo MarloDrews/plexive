@@ -46,6 +46,13 @@ python-jose[cryptography]==3.5.0
 python-dotenv==1.2.2
 email-validator==2.3.0
 python-multipart==0.0.32
+# Pillow is a SECURITY dependency, not an image-features one. app/sanitize.py:6
+# imports it for the SEC-023 pixel cap and EXIF handling on user-uploaded images,
+# which is code on a live request path. That is the reason it stays, and it is
+# written here rather than only in docs/research/dependency-audit-2026-08.md,
+# whose CVE-reachability argument cites app/thumbnails/render.py, concept.py and
+# figures.py -- three files this repository no longer contains as of 2026-08-28.
+# A justification for a kept dependency belongs next to the pin it justifies.
 Pillow==12.3.0
 lxml==6.1.1
 defusedxml==0.7.1
@@ -57,17 +64,6 @@ supabase==2.31.0
 # in on its own.
 google-auth==2.56.2
 requests==2.34.2
-# Typesets the `concept` thumbnail's LaTeX formulas via matplotlib.mathtext,
-# which is a LaTeX maths parser built into matplotlib -- no TeX installation,
-# offline, deterministic. Imported lazily inside app/thumbnails/formula.py:
-# thumbnails are rendered by scripts/generate_thumbnails.py and the make_*
-# CLIs, never in a request, so the API process never loads it.
-#
-# NOT INSTALLED IN PRODUCTION. The Pi's venv contains neither matplotlib nor its
-# subtree, so this version comes from resolution, not from production. The API is
-# unaffected because the import is lazy; the practical consequence is that
-# generate_thumbnails.py and the make_* CLIs cannot run on the Pi.
-matplotlib==3.11.1
 
 # --- Transitive dependencies ---
 # Pinned too, not only the direct ones above. The drift that made this file
@@ -78,9 +74,11 @@ matplotlib==3.11.1
 # Nothing below is imported by our own code. Do not add a line here in order to
 # start using something; add it to the direct block instead.
 #
-# Versions come from the Pi, except the matplotlib subtree (contourpy, cycler,
-# fonttools, kiwisolver, numpy, pyparsing, python-dateutil), which production does
-# not have and which is therefore pinned from a clean resolve.
+# Versions come from the Pi. That used to carry an exception -- the matplotlib
+# subtree (contourpy, cycler, fonttools, kiwisolver, numpy, pyparsing,
+# python-dateutil) was pinned from a clean resolve because production never
+# installed it. Those eight pins left with the thumbnail render subsystem on
+# 2026-08-28, so every version below is once again a version production runs.
 annotated-doc==0.0.4
 annotated-types==0.7.0
 anyio==4.13.0
@@ -88,13 +86,10 @@ certifi==2026.5.20
 cffi==2.0.0
 charset-normalizer==3.4.9
 click==8.4.1
-contourpy==1.3.3
 cryptography==50.0.1
-cycler==0.12.1
 deprecation==2.1.0
 dnspython==2.8.0
 ecdsa==0.19.2
-fonttools==4.63.0
 greenlet==3.5.1
 h11==0.16.0
 h2==4.4.1
@@ -104,9 +99,7 @@ httptools==0.8.0
 httpx==0.28.1
 hyperframe==6.1.0
 idna==3.18
-kiwisolver==1.5.0
 multidict==6.7.1
-numpy==2.5.2
 packaging==26.2
 postgrest==2.31.0
 propcache==0.5.2
@@ -116,8 +109,6 @@ pycparser==3.0
 pydantic==2.13.4
 pydantic_core==2.46.4
 PyJWT==2.13.0
-pyparsing==3.3.2
-python-dateutil==2.9.0.post0
 PyYAML==6.0.3
 realtime==2.31.0
 rsa==4.9.1

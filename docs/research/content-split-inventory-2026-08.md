@@ -814,6 +814,59 @@ stated as fact in the brief.
 
 ## 8b. Batch B pre-flight, measured 2026-08-28
 
+> **BATCH B WAS EXECUTED ON 2026-08-28. THIS SECTION IS NOW A PREDICTION THAT CAN BE SCORED, AND FOUR
+> OF ITS NUMBERS WERE WRONG.** Kept in place rather than rewritten, like the two correction boxes
+> above, because the wrong version is the useful part of the record. What actually happened:
+>
+> | claim here | predicted | measured on the branch | verdict |
+> |---|---:|---:|---|
+> | `find app scripts tests -name '*.py'` after | 75 (B2) | **74** | off by one |
+> | `ruff check --select F --show-files .` after | 77 (B2) | **76** | off by one |
+> | suite files after | 16 | **16** | right |
+> | OpenAPI paths after | 42 | **42** | right |
+> | pins after | "headroom for 8 removals" | **62 against a floor of 70** | **wrong, and it reds the gate** |
+>
+> **1. The pin floor.** This section said the combined figure "has headroom for 8 removals -- but it
+> is close enough that it must be recounted". Recounted with the workflow's own parser: 70 today, 62
+> after. `MIN_PINS = 70` is set at the exact observed value, so it FAILS. Batch B therefore edited
+> THREE floors, not the two this section names.
+>
+> **2. The off-by-one on both file counts** has one cause: `app/kiconnect.py`. This section's B1/B2
+> split considered only `thumbnail_storage.py`, but `kiconnect.py` was orphaned by the same removal --
+> its only importers were `app/thumbnails/suggest.py`, `scripts/suggest_thumbnails.py` and
+> `tests/thumbnails_test.py`, all inside the set. It moved too, so both counts are one lower.
+>
+> **3. The method that found it, since this section's method did not.** An `ast`-based import
+> resolver over all 103 tracked backend `.py` files, resolving 323 intra-backend edges, asking which
+> modules have importers ONLY inside the removal set. Verified in both directions: with `kiconnect.py`
+> excluded from the set it names it, with it included it reports zero. A `git grep` would not have
+> found it, because `from .routers import admin as admin_router` defeats the obvious pattern.
+> **Zero third orphans**, established rather than assumed.
+>
+> **4. Item 4's premise stands but its conclusion needed enlarging.** `thumbnail_storage.py` did move,
+> and the private repository does copy `upload_config`'s few lines rather than importing it. What this
+> section did not see is that the SCRIPTS reach wider than the package: `generate_thumbnails.py`
+> imports `app.database` and `app.models`, which stay public. That is resolved with direct SQL naming
+> four columns, not by importing.
+>
+> **5. The path-hasher worry in item 4 is overstated**, and the reason is worth keeping. It warns
+> against "two divergent copies of a path-hashing function". After the removal nothing public computes
+> a storage path at all -- the URL crosses by value in a database column -- so there is no second
+> computation to diverge from. The real cross-boundary constants are the bucket name and the
+> `thumbnails/` prefix, which are contracts with production storage rather than with code, and no
+> automatic cross-repository check for them is possible.
+>
+> **6. One live probe this section missed.** Item 3 lists `probe_public_surface.sh:100` but not
+> `backend/tests/closed_beta_test.py:99`, which carries `/api/thumbnails/basemap/status` in its
+> `BLOCKED` array. It would NOT have failed -- the gate 401s before routing, so a missing path answers
+> 401 too -- it would have kept passing while asserting nothing, which is worse. Removed; `BLOCKED`
+> is 22 against its floor of 20.
+>
+> **7. Backend suite wall clock**, which this section quotes from the hygiene inventory as 242.6 s ->
+> ~117 s: measured locally on 2026-08-28, **266.0 s -> 135.7 s**. The shape of the prediction was
+> right (roughly halved) and both absolute numbers are higher, because they are a different machine.
+
+
 Added after the owner split the work into Batch A (methodology: `BULK_GENERATION_PROMPTS.md`,
 `HUMAN_TEXTURE_STANDARD.md`, `texture_check.py` -- no consumers, no CI change) and Batch B (the
 thumbnail subsystem, which turns two required gates red on purpose). Keeping them apart is so a red
