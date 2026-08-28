@@ -96,7 +96,6 @@ BLOCKED = [
     "/api/train/leaderboard",
     "/api/chat/conversations",
     "/api/auth/me",
-    "/api/thumbnails/basemap/status",
 ]
 
 _leaked = [p for p in BLOCKED if client.get(p).status_code != 401]

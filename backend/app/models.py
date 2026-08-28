@@ -61,16 +61,28 @@ class Post(Base):
     # Cannot be derived from author_id because seed posts also have an author.
     is_user_content = Column(Boolean, nullable=False, default=False)
 
+    # CROSS-REPOSITORY CONTRACT -- DO NOT RENAME THESE TWO COLUMNS CASUALLY.
+    # The thumbnail render subsystem moved to a separate private repository on
+    # 2026-08-28. Its generate_thumbnails.py no longer imports this model; it
+    # reaches the database directly and names four columns in plain SQL:
+    # posts.id, posts.slug, posts.thumbnail_spec (all read) and
+    # posts.thumbnail_url (written). Renaming or dropping any of the four breaks
+    # that script, and NOTHING HERE WILL CATCH IT -- no test, no gate and no
+    # import references it any more, because that is the point of the split.
+    # The matching warning is in that script's own header.
+
     # Public Supabase Storage URL of this post's own 16:9 thumbnail. NULL until
     # one was generated or uploaded -- the card then falls back to the shared
     # placeholder image. Added to the live DB by scripts/add_thumbnail_columns.py.
+    # Written offline by the private renderer; nothing in this repository sets it.
     thumbnail_url = Column(String, nullable=True)
 
     # How this post's thumbnail is produced, e.g.
     # {"generator": "geography", "place": "Mediterranean Sea", "caption": "...",
-    #  "palette": "blue"}. Authored in the post JSON under "thumbnail" and kept
-    # on the row so scripts/generate_thumbnails.py can re-render from the DB
-    # alone, and so future per-format generators plug in by generator name only.
+    #  "palette": "blue"}. Authored in the post JSON under "thumbnail", stored
+    # here by seed.py as opaque JSON (this backend never validates or renders
+    # it), and read by the private renderer so it can re-render from the DB
+    # alone. The generator names are catalogued in that repository.
     thumbnail_spec = Column(JSON, nullable=True)
 
     interests = relationship("Interest", secondary=post_interests)

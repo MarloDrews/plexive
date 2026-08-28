@@ -145,13 +145,17 @@ Every post shows one 16:9 image at the top of its feed card. The image is **neve
 }
 ```
 
-`generator` selects a renderer from `backend/app/thumbnails/generators.py`; every other key is passed to it. **The generators, their parameters and their rules are listed in [THUMBNAIL_GENERATORS.md](THUMBNAIL_GENERATORS.md)** — that file is generated from the code (`backend/scripts/thumbnail_catalog.py --write-doc`), so it is the one to trust. `geography` is the only generator so far. An unknown key, an unknown value or an out-of-range number is an error, not silently ignored — otherwise a typo would quietly render the wrong card.
+`generator` names a renderer; every other key is passed to it. **The render subsystem, and with it the generator catalogue, moved to the private content repository on 2026-08-28** — see the README in this directory. `geography` is the only generator so far. An unknown key, an unknown value or an out-of-range number is an error there, not silently ignored, so a typo does not quietly render the wrong card.
 
-Some water bodies are not one shape in the map data — the Mediterranean is stored as seven separate basins and still misses the Ligurian Sea, the Sea of Crete and the Gulf of Sidra entirely. Those are fixed once in `backend/app/thumbnails/places.py`, so writing `"place": "Mediterranean Sea"` always renders the same complete sea. Several places can also be combined by hand with `+`, e.g. `"place": "Black Sea + Sea of Azov"`.
+This backend does not validate the object at all: `posts.thumbnail_spec` is opaque JSON (`backend/app/models.py`), so an invalid spec is caught when it is rendered, not when it is seeded.
 
-The object does not have to be written by hand. `backend/scripts/suggest_thumbnails.py` shows a model (RWTH KI:connect) the generated catalog plus a short digest of a post, and writes back the spec it chooses — or nothing, which is the right answer for most posts and leaves the placeholder in place.
+Some water bodies are not one shape in the map data — the Mediterranean is stored as seven separate basins and still misses the Ligurian Sea, the Sea of Crete and the Gulf of Sidra entirely. Those are fixed once in the renderer's place presets, so writing `"place": "Mediterranean Sea"` always renders the same complete sea. Several places can also be combined by hand with `+`, e.g. `"place": "Black Sea + Sea of Azov"`.
 
-`seed.py` stores this object in `posts.thumbnail_spec` and never renders anything. `backend/scripts/generate_thumbnails.py` then renders the pending posts, uploads each PNG to Supabase Storage and writes `posts.thumbnail_url`. Re-seeding a post only drops its image if the spec actually changed.
+The object does not have to be written by hand. A script in the private content repository shows a model the generated catalogue plus a short digest of a post, and writes back the spec it chooses — or nothing, which is the right answer for most posts and leaves the placeholder in place.
+
+`seed.py` stores this object in `posts.thumbnail_spec` and never renders anything. The private renderer then renders the pending posts, uploads each PNG to Supabase Storage and writes `posts.thumbnail_url` back over a direct database connection. Re-seeding a post only drops its image if the spec actually changed.
+
+**Both columns, and this field, stay public and unchanged.** What moved is the code that turns the spec into an image; a fork of this repository still seeds specs, still stores them, and still renders whatever `thumbnail_url` it is given.
 
 Posts with no `thumbnail` (and user posts that upload no image) leave `thumbnail_url` NULL; the card falls back to a single shared placeholder image.
 

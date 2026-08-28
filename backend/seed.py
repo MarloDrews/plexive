@@ -146,7 +146,8 @@ def upsert_post(db, marlo, post_format, data, slug, allow_legacy_adopt):
     tags = data.get("tags", [])
     connections = data.get("connections", [])
     # Optional: how this post's thumbnail is rendered. The image itself is
-    # produced later by scripts/generate_thumbnails.py, never here -- seeding
+    # produced later by the private content repository's renderer, never here
+    # (the render subsystem left this repository on 2026-08-28) -- seeding
     # must stay offline and fast.
     thumbnail_spec = data.get("thumbnail")
     title = _post_title(feed_card)
@@ -174,7 +175,7 @@ def upsert_post(db, marlo, post_format, data, slug, allow_legacy_adopt):
         existing.status = "published"
         # Drop the rendered image ONLY when the spec actually changed, so a
         # routine re-seed never throws away a generated thumbnail. The next
-        # generate_thumbnails.py run then picks the post up again.
+        # run of the private renderer then picks the post up again.
         if existing.thumbnail_spec != thumbnail_spec:
             existing.thumbnail_spec = thumbnail_spec
             existing.thumbnail_url = None

@@ -1,8 +1,9 @@
 # Runs the backend's checks on every pull request, and on main after a merge.
 #
-# The backend was never unchecked, only unenforced: backend/tests/ is 16 suites and about 979
-# assertions, and smoke_test.py had been failing for five weeks before anyone looked. This workflow is
-# the thing that looks.
+# The backend was never unchecked, only unenforced: backend/tests/ is 16 suites, and smoke_test.py had
+# been failing for five weeks before anyone looked. This workflow is the thing that looks. (16 is the
+# count again as of 2026-08-28, having briefly been 17: thumbnails_test.py left with the thumbnail
+# render subsystem. The assertion total is no longer quoted here because it was never re-counted.)
 name: Backend checks
 
 on:
@@ -108,10 +109,15 @@ jobs:
 
           # Anti-vacuity guard. A parser that matches nothing compares nothing and passes green, which
           # is the exact failure class every other step here already guards against; it would be
-          # embarrassing for it to land inside the step built to prevent it. 70 unique pinned names
-          # across both files when this was written. It only moves down by deleting a dependency,
-          # which is worth a deliberate edit here.
-          MIN_PINS = 70
+          # embarrassing for it to land inside the step built to prevent it. 62 unique pinned names
+          # across both files, measured 2026-08-28 after the thumbnail render subsystem left and took
+          # matplotlib plus its seven-package subtree with it (was 70).
+          # THIS IS A DELETION DETECTOR, not a collapse detector, and the two kinds of floor in this
+          # file answer different questions. This one sits EXACTLY on the measured count, so removing
+          # a dependency has to come here and change the number on purpose. The Syntax check and Ruff
+          # floors deliberately sit well below theirs instead, because those exist to catch a collapse
+          # and would otherwise red during ordinary deletion work. Do not make them uniform.
+          MIN_PINS = 62
 
           pinned = {}
           for path in ("requirements.txt", "requirements-dev.txt"):
@@ -164,14 +170,19 @@ jobs:
 
       # --- Cheapest first, so a failure surfaces fast. ---
 
-      # A compileall over a path that does not exist still exits 0, so count the files first. The floor
-      # is a floor, not the exact count: 100 .py files were present when this was written.
+      # A compileall over a path that does not exist still exits 0, so count the files first.
+      #
+      # THIS IS A COLLAPSE DETECTOR. It exists to catch the paths moving or this step checking nothing,
+      # so the floor sits well BELOW the observed count and normal work never reaches it. That is the
+      # opposite of MIN_PINS and the suite-file floor, which sit exactly on their measured values so a
+      # deletion has to be deliberate. Both kinds are correct for what they watch; do not unify them.
+      # 74 .py files measured 2026-08-28, after the thumbnail render subsystem moved out (was 100).
       - name: Syntax check
         run: |
           count=$(find app scripts tests -name '*.py' -not -path '*/__pycache__/*' | wc -l)
           echo "found $count Python files under app/ scripts/ tests/"
-          if [ "$count" -lt 80 ]; then
-            echo "FAIL: only $count Python files found, expected at least 80 (100 when this was written)."
+          if [ "$count" -lt 60 ]; then
+            echo "FAIL: only $count Python files found, expected at least 60 (74 when this was written)."
             echo "Either the paths moved or this step is checking nothing."
             exit 1
           fi
@@ -196,7 +207,7 @@ jobs:
       # count describes how the installed FastAPI happens to represent it internally. Pinning makes
       # the bad measure stable; it does not make it the right measure. Do not switch back.
       #
-      # It is a FLOOR, not the observed 45. Its job is to rule out an app that imported but registered
+      # It is a FLOOR, not the observed 42. Its job is to rule out an app that imported but registered
       # nothing. Asserting the exact count would turn every new endpoint into a red gate during correct
       # work, and the route list grows with the product. WebSocket routes are absent from OpenAPI by
       # design, so the three of them are not counted here.
@@ -209,8 +220,9 @@ jobs:
           import _throwaway_db  # noqa: F401 - must run before any app import
           from app.main import app
 
-          MIN_PATHS = 20  # floor; 45 observed under both 0.136.3 and 0.141.1, and now stable at
-          # the 0.136.3 value because requirements.txt pins fastapi exactly.
+          MIN_PATHS = 20  # floor; 42 observed 2026-08-28, after the three /api/thumbnails/* endpoints
+          # left with the render subsystem (45 before that, under both 0.136.3 and 0.141.1). Stable
+          # because requirements.txt pins fastapi exactly.
           paths = len(app.openapi()["paths"])
           print(f"app.main imported, {paths} OpenAPI paths, {len(app.routes)} route objects")
           if paths < MIN_PATHS:
@@ -227,10 +239,15 @@ jobs:
       - name: Ruff (pyflakes rules)
         run: |
           python -m pip install ruff==0.16.4
+          # COLLAPSE DETECTOR, same kind as the Syntax check floor above and set the same way.
+          # 76 measured 2026-08-28 (was 102). Note this count is deliberately TWO HIGHER than the
+          # Syntax check's: ruff runs over `.` from backend/, so it also sees seed.py and
+          # download_seed_images.py, which `find app scripts tests` does not. Setting one of these
+          # two floors from the other's number leaves this step red by the difference.
           count=$(ruff check --select F --show-files . | wc -l)
           echo "ruff would check $count files"
-          if [ "$count" -lt 80 ]; then
-            echo "FAIL: ruff found only $count files to check, expected at least 80 (102 when this was written)."
+          if [ "$count" -lt 60 ]; then
+            echo "FAIL: ruff found only $count files to check, expected at least 60 (76 when this was written)."
             exit 1
           fi
           ruff check --select F .
@@ -251,13 +268,20 @@ jobs:
       # failing, and that the only way to learn which suite was stuck was to cancel the run.
       - name: Test suites
         run: |
-          # Seconds allowed per suite. Derived from thumbnails_test.py, the slowest healthy suite at
-          # about 130 s (arena_test.py about 29 s, every other suite under 10 s), so this is about 2.3x
-          # the real worst case. The dangerous direction is DOWN: a timeout that fires on a
+          # Seconds allowed per suite. This used to be derived as about 2.3x thumbnails_test.py at
+          # about 130 s, the slowest healthy suite. That suite left with the thumbnail render subsystem
+          # on 2026-08-28, so THE DERIVATION IS RESTATED RATHER THAN LEFT POINTING AT A FILE THAT NO
+          # LONGER EXISTS: the slowest healthy suite is now arena_test.py at about 29 s in CI (32.9 s
+          # measured locally on 2026-08-28), every other suite is under 20 s, and 300 s is therefore
+          # about 10x the real worst case rather than 2.3x.
+          #
+          # IT IS DELIBERATELY NOT LOWERED TO MATCH. This limit exists to bound an UNBOUNDED HANG, not
+          # to bracket a slow run, and against the 19 minutes of silence that put it here 300 s is
+          # already the whole win. A bigger multiple costs nothing and buys margin on a shared runner.
+          # The dangerous direction is DOWN: a timeout that fires on a
           # slow-but-healthy run converts a reliable gate into an unreliable one, which is the fastest
-          # way to get a gate switched off, and hosted runner speed is not ours to control. Against 19
-          # minutes of silence, 300 s is already the whole win; trimming to 240 s would buy one minute
-          # and spend most of the headroom.
+          # way to get a gate switched off, and hosted runner speed is not ours to control. Trimming to
+          # 240 s would buy one minute and spend headroom that costs nothing to keep.
           SUITE_TIMEOUT=300
 
           # No core file. SIGABRT below is otherwise entitled to write one next to the dump.
@@ -265,14 +289,20 @@ jobs:
 
           # Only a SIGKILL at or after this many seconds is read as a timeout. See the KILLED branch.
           # timeout cannot fire before its own limit, so the only slack this needs is for measuring the
-          # elapsed time in the shell; 10% is far more than that, and it stays far above the ~130 s of
-          # the slowest healthy suite, which is the case it has to tell apart.
+          # elapsed time in the shell; 10% is far more than that, and it stays far above the ~29 s of
+          # arena_test.py, now the slowest healthy suite, which is the case it has to tell apart.
           TIMEOUT_FLOOR=$(( SUITE_TIMEOUT * 9 / 10 ))
 
           files=$(ls tests/*_test.py | sort)
           count=$(printf '%s\n' "$files" | grep -c . || true)
           echo "found $count suite files"
           # A loop that globs nothing exits 0 and reports a green check having run no tests.
+          #
+          # DELETION DETECTOR, the same kind as MIN_PINS and the opposite of the two floors above: it
+          # sits exactly on the observed count so a removed suite has to be a deliberate edit here.
+          # THIS FLOOR NOW HAS ZERO MARGIN. There were 17 suites against a floor of 16; thumbnails_test.py
+          # left on 2026-08-28 and there are exactly 16. The next suite deleted for any reason reds this
+          # gate, which is the intended behaviour and is written down so it is not a surprise.
           if [ "$count" -lt 16 ]; then
             echo "FAIL: found $count suite files, expected at least 16."
             echo "Either the glob is wrong or suites were deleted; either way this step proves nothing."
@@ -326,8 +356,10 @@ jobs:
               failed=$((failed + 1))
             elif [ "$rc" -eq 137 ]; then
               # SIGKILL well inside the limit, so timeout did not send it: the kernel OOM killer sends
-              # the same signal, and thumbnails_test.py is image-heavy and the most plausible OOM
-              # candidate on a shared runner. Filing this under TIMEOUT would hide a second cause in
+              # the same signal. The named candidate used to be thumbnails_test.py, which was
+              # image-heavy; it left on 2026-08-28 and no remaining suite is an obvious OOM risk, so
+              # this branch now flags a cause nobody has a suspect for -- which is more reason to keep
+              # it distinct, not less. Filing this under TIMEOUT would hide a second cause in
               # the same bucket, which is the exact reason TIMEOUT is not filed under FAIL.
               status=KILLED
               failed=$((failed + 1))
