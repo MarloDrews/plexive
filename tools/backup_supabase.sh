@@ -5,9 +5,23 @@
 # performs NO automatic backups, so until that changes this script is the only
 # thing standing between a mistake and starting the database again from nothing.
 #
-# A SCRIPT YOU RUN. There is no scheduling, no timer and no automation touching
-# production. It is deliberately manual, and deliberately run from the LAPTOP
-# rather than the Pi: the Pi is one device with one SD card at home and is
+# SCHEDULED SINCE 2026-08-28, and this paragraph used to say the opposite. It
+# said "A SCRIPT YOU RUN. There is no scheduling, no timer and no automation
+# touching production", which was true when it was written and is corrected here
+# rather than deleted, because the reasoning behind it still holds. A weekly
+# Windows Task Scheduler entry now calls tools/backup_scheduled.sh, which sets
+# the URL and the output directory and then runs THIS script unchanged. Running
+# it by hand is still the documented way to take a backup right now, and the
+# numbered Alembic runbook in docs/SERVER.md still does exactly that.
+#
+# MIND THE DEFAULT DIRECTORY BELOW. It is $HOME/plexive-backups, which is NOT
+# where the schedule writes and NOT where tools/check_backup_age.sh looks: those
+# use <OneDrive>/plexive-backups. A bare run of this script therefore produces a
+# real backup that the age check will never see. Pass PLEXIVE_BACKUP_DIR, as
+# every documented invocation does, or run tools/backup_scheduled.sh instead.
+#
+# It is deliberately run from the LAPTOP rather than the Pi, scheduled or not:
+# the Pi is one device with one SD card at home and is
 # already recorded in docs/SERVER.md as a single point of failure, so a dump
 # stored on it moves the risk instead of removing it. Running it on the Pi and
 # copying it off afterwards works, and is the version people stop doing after
@@ -23,7 +37,7 @@
 #
 # Usage:
 #   bash tools/backup_supabase.sh
-#   PLEXIVE_BACKUP_DIR=/d/plexive-backups bash tools/backup_supabase.sh
+#   PLEXIVE_BACKUP_DIR=/c/Users/marlo/OneDrive/plexive-backups bash tools/backup_supabase.sh
 #   PLEXIVE_BACKUP_URL="postgresql://..." bash tools/backup_supabase.sh   # e.g. a throwaway DB
 #
 # Needs the PostgreSQL client tools (pg_dump, pg_restore, psql) on PATH. On

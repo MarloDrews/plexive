@@ -153,6 +153,14 @@ deepscroll-frontend`); damit entfällt auch das RAM-Problem beim Build auf dem P
 Supabase macht auf dem Free-Tier **keine automatischen Backups**. Bis das anders
 ist, ist `tools/backup_supabase.sh` die einzige Kopie, die es gibt.
 
+**Seit dem 28.08.2026 läuft es geplant.** Eine wöchentliche Aufgabe der
+Windows-Aufgabenplanung startet `tools/backup_scheduled.sh`, die Ausgabe landet
+in OneDrive statt auf derselben Platte wie die Repositories, und
+`tools/check_backup_age.sh` beantwortet „läuft das noch". Die drei Abschnitte
+dazu stehen unten: „Wo die Backups liegen", „Wöchentlich, automatisch" und
+„Läuft das noch". Der Rest dieses Abschnitts beschreibt weiterhin den Lauf **von
+Hand**, der unverändert gilt und den die geplante Aufgabe nur aufruft.
+
 **Der Laptop ist der primäre Host, nicht der Pi.** Das ist eine Entscheidung und
 keine Bequemlichkeit: der Pi ist ein Gerät mit einer SD-Karte zu Hause und steht
 unter „Offene Punkte" selbst als Single Point of Failure. Ein Dump, der auf dem
@@ -181,7 +189,7 @@ psql "$DATABASE_URL" -tAc "show server_version"
 Lauf:
 
 ```bash
-PLEXIVE_BACKUP_DIR=/d/plexive-backups bash tools/backup_supabase.sh
+PLEXIVE_BACKUP_DIR=/c/Users/marlo/OneDrive/plexive-backups bash tools/backup_supabase.sh
 ```
 
 Das Skript schreibt drei Dateien und **weigert sich, ins Repository zu
@@ -218,6 +226,231 @@ Konten-Hinweis: Plexive nutzt **kein Supabase Auth**. Die Konten liegen in
 `public.users` mit bcrypt-Hash und selbst ausgestelltem JWT, und Google-Sign-in
 schreibt `public.users.google_sub`. `auth.users` ist hier also erwartbar leer;
 eine niedrige Zahl dort ist kein fehlendes Backup, sondern der Normalzustand.
+
+### Wo die Backups liegen -- und was das heißt
+
+**Verzeichnis:** `C:\Users\marlo\OneDrive\plexive-backups`
+(in Git Bash: `/c/Users/marlo/OneDrive/plexive-backups`)
+
+Vorher lagen sie unter `C:\Users\marlo\GitHub\plexive-backups`, also auf
+derselben Platte wie beide Repositories: eine kaputte SSD hätte die
+Datenbankkopie mitgenommen. OneDrive ist unter Windows ein normaler Ordner, der
+synchronisiert -- die Auslagerung ist also eine Eigenschaft des **Pfades**, kein
+Cloud-API, keine Zugangsdaten, kein zweites Werkzeug.
+
+Der OneDrive-Pfad wurde **gelesen, nicht geraten**: die Umgebungsvariablen
+`OneDrive` und `OneDriveConsumer` stehen beide auf `C:\Users\marlo\OneDrive`
+(ohne Suffix), und zwar dauerhaft in `HKCU:\Environment`, nicht nur in der
+aktuellen Sitzung. Deshalb findet auch eine geplante Aufgabe den Pfad.
+
+**Files On-Demand stört die Altersprüfung nicht.** Gemessen am 28.08.2026 an
+einer ausgelagerten Platzhalterdatei (`OFFLINE|RECALL_ON_DATA_ACCESS`): `stat`
+liefert die echte mtime und die echte Größe, ohne die Datei herunterzuladen.
+Die Altersprüfung liest deshalb ausschließlich Metadaten und **niemals** den
+Inhalt einer Manifestdatei -- Lesen würde den Download auslösen.
+
+**Was in so einem Dump steht, und warum das eine Entscheidung ist.** Der Dump
+enthält jede E-Mail-Adresse und jeden bcrypt-Hash -- am 28.08.2026 waren das 18
+Konten, die meisten davon die zwei Leute, die das hier bauen. OneDrive Personal
+ist Consumer-Speicher: Microsofts Verbraucher-AGB, kein
+Auftragsverarbeitungsvertrag, kein Schlüssel, der hier läge. Für eine
+geschlossene Beta vor dem Start ist das **verhältnismäßig**.
+
+Es hört auf, verhältnismäßig zu sein -- was zuerst eintritt:
+
+- `public.users` überschreitet ~100 Zeilen;
+- die Konten gehören überwiegend nicht mehr den Erbauern selbst;
+- die Beta öffnet sich für Leute, die man nicht persönlich kennt;
+- eine veröffentlichte Datenschutzerklärung sagt etwas Konkretes darüber, wo
+  Daten liegen.
+
+Ab dann: den Dump **vor** dem Verlassen der Maschine verschlüsseln (Schlüssel
+**nicht** in OneDrive), oder auf Speicher mit AVV umziehen. Das steht hier, damit
+es eine Entscheidung bleibt und nicht als Standard durchrutscht.
+
+**Zwei Grenzen, und sie sind nicht dieselbe.**
+
+1. **OneDrive synchronisiert, es archiviert nicht.** Eine Löschung wandert mit.
+   Der Papierkorb hält 30 Tage. Das entfernt das Ein-Platten-Risiko, es ist kein
+   unveränderlicher Speicher.
+2. **Die Altersprüfung beweist, dass ein Backup geschrieben wurde -- nicht, dass
+   es die Maschine verlassen hat.** Sie erkennt zuverlässig den Fall „OneDrive
+   hat die Datei überhaupt nicht angefasst" (Exit 3, siehe unten), und genau
+   dieser Fall lag am 28.08.2026 auf diesem Laptop vor: der Sync-Client lief
+   nicht. Sie kann aber **nicht** bestätigen, dass der Upload fertig ist. Das
+   Placeholder-Attribut wird lokal gesetzt, Sekunden nach dem Schreiben, lange
+   bevor die Bytes verschickt sind -- gemessen über vier Dateigrößen (4 MB, 6 MB,
+   120 MB, 800 MB: 5 s, 5 s, 16 s, 44 s; als Upload gelesen wären das 6,4 bis
+   145 Mbit/s, also mit der Dateigröße *steigend*, was keine feste Leitung tut).
+
+**Die Bestätigung von Hand**, weil es keine automatische gibt:
+
+1. <https://onedrive.com> öffnen, Ordner `plexive-backups`.
+2. **Erwartetes Ergebnis:** die neueste `plexive-<zeitstempel>-manifest.txt`
+   trägt das Datum des letzten Laufs und ist dort sichtbar.
+3. Fehlt sie oder ist sie älter als die lokale Datei, liegt kein
+   Auswärts-Backup vor, egal was die Altersprüfung sagt. Dann OneDrive prüfen:
+   läuft der Client, ist Sync pausiert, ist das Konto abgemeldet, ist das
+   Kontingent voll, gibt es einen Sync-Konflikt.
+
+Nach einem größeren Dump lohnt dieser Blick einmal; täglich braucht ihn niemand.
+
+### Wöchentlich, automatisch (Windows-Aufgabenplanung)
+
+Das Backup lief bis zum 28.08.2026 nur, wenn jemand daran dachte. Der Wrapper
+`tools/backup_scheduled.sh` ist die Fassung, die eine geplante Aufgabe starten
+kann: die Aufgabenplanung kann kein Bash-Skript direkt starten und **keine
+Shell-Pipeline transportieren**, die dokumentierte `grep`/`cut`-Zeile für
+`DATABASE_URL` hat dort also keinen Platz. Der Wrapper ist diese Pipeline, im
+Repository, damit sie nicht nur auf einem Laptop existiert.
+
+**Verzeichnis:** egal, der Befehl trägt absolute Pfade. Normale PowerShell,
+**ohne** Administratorrechte.
+
+```powershell
+$bash    = 'C:\Program Files\Git\bin\bash.exe'
+$script  = '/c/Users/marlo/GitHub/deepscroll/tools/backup_scheduled.sh'
+
+$action    = New-ScheduledTaskAction -Execute $bash -Argument ('"' + $script + '"')
+$trigger   = New-ScheduledTaskTrigger -Weekly -DaysOfWeek Sunday -At 12:00
+$settings  = New-ScheduledTaskSettingsSet -StartWhenAvailable `
+               -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries `
+               -MultipleInstances IgnoreNew -ExecutionTimeLimit (New-TimeSpan -Hours 1)
+$principal = New-ScheduledTaskPrincipal -UserId "$env:USERDOMAIN\$env:USERNAME" `
+               -LogonType Interactive -RunLevel Limited
+
+Register-ScheduledTask -TaskName 'Plexive weekly database backup' `
+  -Action $action -Trigger $trigger -Settings $settings -Principal $principal `
+  -Description 'Weekly off-platform backup of the Supabase database into OneDrive.'
+```
+
+Wozu die einzelnen Einstellungen da sind:
+
+- `-StartWhenAvailable` holt einen **verpassten** Start nach, statt die Woche
+  stillschweigend zu überspringen. Es kann aber nicht auf einer Maschine
+  auslösen, die aus ist -- daher die 16-Tage-Schwelle weiter unten.
+- `-AllowStartIfOnBatteries` **und** `-DontStopIfGoingOnBatteries`: die
+  Aufgabenplanung startet eine Aufgabe im Akkubetrieb standardmäßig **nicht**
+  und bricht sie ab, wenn das Netzteil während des Laufs abgezogen wird. Auf
+  einem Laptop ist das ein geplanter Job, der einfach nie läuft.
+- `-LogonType Interactive`: läuft nur bei angemeldetem Benutzer, **kein
+  gespeichertes Passwort**. Dafür erscheint sonntags für etwa zehn Sekunden ein
+  Konsolenfenster -- das ist der einzige unaufgeforderte Beleg, dass es den
+  Mechanismus noch gibt.
+- `-MultipleInstances IgnoreNew` verhindert zwei gleichzeitige Dumps.
+- `-ExecutionTimeLimit 1h` begrenzt einen Hänger.
+
+**Prüfen, statt dem Häkchen zu glauben.** `StartWhenAvailable` ist die
+Einstellung, auf der die ganze Nachhol-Logik steht, also wird sie ausgelesen:
+
+```powershell
+$t = Get-ScheduledTask -TaskName 'Plexive weekly database backup'
+$t.Settings  | Select-Object StartWhenAvailable, DisallowStartIfOnBatteries, StopIfGoingOnBatteries, MultipleInstances, ExecutionTimeLimit, Enabled
+$t.Principal | Select-Object LogonType, RunLevel
+Get-ScheduledTaskInfo -TaskName 'Plexive weekly database backup' | Select-Object NextRunTime, LastRunTime, LastTaskResult
+```
+
+**Erwartete Ausgabe** (am 28.08.2026 an einer Wegwerf-Aufgabe mit genau diesem
+Befehl gemessen und danach wieder entfernt):
+
+```
+StartWhenAvailable         : True
+DisallowStartIfOnBatteries : False
+StopIfGoingOnBatteries     : False
+MultipleInstances          : IgnoreNew
+ExecutionTimeLimit         : PT1H
+Enabled                    : True
+LogonType                  : Interactive
+RunLevel                   : Limited
+NextRunTime                : 30.08.2026 12:00:00
+```
+
+Steht dort `StartWhenAvailable : False`, wird eine verpasste Woche **nicht**
+nachgeholt und die Schwelle unten ist zu großzügig. Steht
+`DisallowStartIfOnBatteries : True`, läuft die Aufgabe im Akkubetrieb gar nicht.
+Ist `NextRunTime` leer, ist die Aufgabe deaktiviert oder der Trigger fehlt.
+
+**Einmal zur Probe starten**, ohne auf Sonntag zu warten:
+
+```powershell
+Start-ScheduledTask -TaskName 'Plexive weekly database backup'
+```
+
+Ein Fenster geht auf, das Skript meldet Zielverzeichnis und Host, und schließt
+sich nach etwa zehn Sekunden. **Bleibt das Fenster stehen, ist der Lauf
+fehlgeschlagen** -- der Wrapper hält es bei einem Fehler 120 Sekunden offen,
+genau damit sich ein Fehlschlag von einem Erfolg unterscheidet. Daneben liegt
+dann `backup-failed-<zeitstempel>.log` mit der vollständigen Ausgabe.
+
+Jeder Lauf schreibt **eine Zeile** nach
+`C:\Users\marlo\OneDrive\plexive-backups\backup-runs.log`:
+
+```
+2026-08-28T18:42:13Z rc=0 manifest=/c/Users/marlo/OneDrive/plexive-backups/plexive-20260828T184207Z-manifest.txt
+2026-08-28T18:42:17Z rc=1 error="FATAL: could not connect, or could not read server_version." log=backup-failed-20260828T184215Z.log
+```
+
+`rc=0` ohne Manifestpfad kann dort nicht stehen: der Wrapper zählt die
+Manifestzeile in der Ausgabe und wertet „Exit 0, aber kein Manifest" als
+Fehlschlag (`rc=90`). Ein grüner Lauf, der nichts produziert hat, ist genau die
+beruhigende Falschmeldung, gegen die dieses Repository seine Zähler führt.
+
+### Läuft das noch? (Altersprüfung)
+
+**Verzeichnis:** Repository-Wurzel. Read-only, keine Datenbankverbindung.
+
+```bash
+bash tools/check_backup_age.sh
+```
+
+**Erwartete Ausgabe** (gemessen am 28.08.2026):
+
+```
+OK  Last backup: today (2026-08-28)
+
+manifests  : 2 in /c/Users/marlo/OneDrive/plexive-backups
+newest     : /c/Users/marlo/OneDrive/plexive-backups/plexive-20260828T180037Z-manifest.txt
+threshold  : 16 days (weekly 7 + one lost run 7 + a weekend 2)
+sync state : OneDrive has taken the newest manifest over (not proof of upload -- see below)
+run log    : none at .../backup-runs.log (the scheduled wrapper has never written one)
+```
+
+**Vier Situationen, vier Ausgaben, vier Exit-Codes.** Sie sind absichtlich nicht
+zusammengelegt: „es gibt kein Backup", „es ist alt" und „es liegt nur auf dieser
+Platte" verlangen verschiedene Handlungen.
+
+| Exit | Kopfzeile | Was es heißt | Was zu tun ist |
+|---|---|---|---|
+| 0 | `OK  Last backup: ...` | frisch, und OneDrive hat es übernommen | nichts |
+| 1 | `BACKUP IS STALE` | älter als 16 Tage | sofort `bash tools/backup_scheduled.sh`, dann die Aufgabe prüfen |
+| 2 | `NO BACKUPS FOUND` | **0 Manifeste** -- lauteste Meldung, nicht die leiseste | sofort ein Backup ziehen; es gibt gerade keine Kopie der Datenbank |
+| 3 | `BACKUP HAS NOT REACHED ONEDRIVE` | frisch, aber **nur lokal** | OneDrive-Client starten, dann erneut prüfen |
+
+**Woher die 16 Tage kommen** -- eine nackte Zahl lädt sonst zum Kürzen ein:
+
+```
+  7  der Takt selbst: wöchentlich, sonntags 12:00
++ 7  ein komplett verlorener Termin. StartWhenAvailable holt einen verpassten
+     Start nach, kann aber auf einer ausgeschalteten Maschine nicht auslösen
++ 2  ein Wochenende, an dem ohnehin niemand reagieren würde
+= 16
+```
+
+**Die gefährliche Richtung ist nach unten.** Eine Prüfung, die bei einem
+gesunden, nur verspäteten Backup rot wird, ist eine Prüfung, die abgeschaltet
+wird -- derselbe Fehler wie ein CI-Gate, das bei korrekter Arbeit rot wird, nur
+ohne Gate dahinter, das jemanden zwingt hinzusehen. Der Preis der oberen Grenze
+ist klein und messbar: höchstens 16 Tage Inhalt, gegen 66 Posts insgesamt am
+28.08.2026.
+
+Zwischen 7 und 16 Tagen bleibt der Exit-Code 0, die Ausgabe trägt aber ein
+`NOTE:`, dass ein Wochenlauf ausgefallen zu sein scheint. Zweimal
+hintereinander ist das kein Zufall mehr.
+
+Die Zeile `last run` zeigt die letzte Zeile aus `backup-runs.log`. Das ist
+wichtig, weil ein **fehlgeschlagener** Lauf gar kein Manifest hinterlässt: über
+das Alter allein fiele eine Fehlschlagserie erst am 16. Tag auf, in dieser Zeile
+steht sie sofort.
 
 ## Schema-Migrationen (Alembic)
 
@@ -278,7 +511,7 @@ Datenbank, die es nicht ist.
 
 ```bash
 PLEXIVE_BACKUP_URL="$(grep -E '^DATABASE_URL=' backend/.env | cut -d= -f2-)" \
-  PLEXIVE_BACKUP_DIR=/c/Users/marlo/GitHub/plexive-backups \
+  PLEXIVE_BACKUP_DIR=/c/Users/marlo/OneDrive/plexive-backups \
   bash tools/backup_supabase.sh
 ```
 
@@ -305,7 +538,7 @@ größer):
 ```
 Plexive database backup
 -----------------------
-target dir : /c/Users/marlo/GitHub/plexive-backups
+target dir : /c/Users/marlo/OneDrive/plexive-backups
 host       : aws-1-eu-central-2.pooler.supabase.com:5432
 pg_dump    : major 17
 server     : major 17 (17.6)
@@ -657,3 +890,14 @@ Diese Schichtung hat sich bewährt – sie sagt, in welcher Ebene es klemmt:
   Mechanismen dasselbe Schema anfassen.
 - **Single Point of Failure:** Strom- oder Internetausfall zu Hause legt das
   Backend lahm. Für die Testphase akzeptabel.
+- **Backups laufen geplant, seit dem 28.08.2026.** Wöchentlich sonntags 12:00
+  über die Windows-Aufgabenplanung nach
+  `C:\Users\marlo\OneDrive\plexive-backups`; `tools/check_backup_age.sh`
+  meldet das Alter des neuesten Manifests. **Offen bleibt das, was kein Skript
+  beantworten kann:** dass eine Datei wirklich hochgeladen wurde. Die Prüfung
+  erkennt zuverlässig „OneDrive hat die Datei nicht angefasst" (Exit 3) --
+  genau der Zustand, in dem dieser Laptop am 28.08.2026 war, weil der
+  OneDrive-Client nicht lief --, aber nicht „Upload fertig". Bestätigung nur
+  von Hand über onedrive.com, siehe „Wo die Backups liegen".
+  **Ebenfalls offen:** Storage-Objekte sichert weiterhin nichts, und der erste
+  echte Lauf der geplanten Aufgabe steht noch aus.
