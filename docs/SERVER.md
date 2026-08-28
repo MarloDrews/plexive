@@ -75,7 +75,28 @@ SUPABASE_URL=https://<projekt>.supabase.co
 SUPABASE_SERVICE_KEY=...            # ACHTUNG: exakt dieser Name (NICHT ..._SERVICE_ROLE)
 FRONTEND_ORIGIN=https://plexive.org # ACHTUNG: mit https:// und ohne / am Ende
 TRUSTED_PROXY_IPS=127.0.0.1         # cloudflared terminiert TLS und verbindet sich per Loopback
+CLOSED_BETA=1                       # Closed Beta: API nur mit Bearer-Token, Registrierung zu
 ```
+
+> `CLOSED_BETA` wird **beim Import** gelesen, also erst nach
+> `sudo systemctl restart deepscroll-backend` wirksam — wie jede Variable in
+> dieser Datei (`EnvironmentFile=` wird nur beim Start gelesen).
+>
+> Ob das Gate wirklich an ist, beantwortet der Dienst selbst; eine vergessene
+> Variable ist sonst unsichtbar, und „offen" ist genau der Zustand, den das
+> Gate beseitigt:
+>
+> ```
+> journalctl -u deepscroll-backend | grep closed-beta
+> # [closed-beta] gate ON: anonymous requests are refused. Open: ...
+> ```
+>
+> Bewusst **nicht** fail-closed: eine fehlende optionale Variable darf den
+> Server nicht am Starten hindern. Ohne `CLOSED_BETA=1` läuft die API offen
+> weiter und sagt das in derselben Zeile (`gate OFF`).
+>
+> Von außen prüfbar mit `bash tools/probe_public_surface.sh` (HTTP) und
+> `backend/.venv/Scripts/python.exe tools/probe_websocket.py` (Websockets).
 
 > Vollständige Liste der vom Code zwingend erwarteten Variablen jederzeit prüfen mit:
 > `grep -rhno "os.environ\[[^]]*\]" /home/silas/deepscroll/backend/app/ | sort -u`
