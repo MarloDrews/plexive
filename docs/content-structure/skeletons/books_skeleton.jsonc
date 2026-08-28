@@ -73,7 +73,8 @@
 // ideas than other formats, an honest verdict welcome. Avoid back-cover-blurb
 // tone. Full prose rules: STYLE_GUIDE_LONGFORM.md. Reads-like-a-human rules
 // (sentence-length variance, comma and clause density, no over-closure, no
-// reflexive triplets, parallel-field variety): HUMAN_TEXTURE_STANDARD.md.
+// reflexive triplets, parallel-field variety): HUMAN_TEXTURE_STANDARD.md, no
+// longer public (see ../README.md).
 // Schema and rationale: PLEXIVE_CONTENT_STRUCTURE.md. Diagrams:
 // SVG_STANDARD.md. Sourced images (covers, author portraits): IMAGE_STANDARD.md.
 
