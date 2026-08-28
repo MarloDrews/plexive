@@ -93,23 +93,32 @@ never stamped:
     exit code 127
 
 Autogenerate requires the database to be at the head revision, and an unstamped
-database has no revision at all. **The order therefore matters and is not a
-preference:** `alembic stamp head` asserts that the database matches the
-baseline. Running it before the comparison would destroy the only chance to find
-out whether that assertion is true.
+database has no revision at all.
 
-A second measurement, on three identical fresh `create_all` databases of 12
-tables each:
+**And it does not merely fail to answer the question — it changes the thing being
+asked about.** `alembic check` CREATES the `alembic_version` table on an
+unstamped database, as part of failing. Measured on three identical fresh
+`create_all` databases of 12 tables each:
 
 | command | result | tables after |
 |---|---|---|
-| `alembic check` | exit 127, refuses | **13** — it creates `alembic_version` |
+| `alembic check` | exit 127, refuses | **13** — it wrote `alembic_version` |
 | `alembic current` | works | 12 |
 | `scripts/schema_diff.py` | works | 12 |
 
-So the nominally read-only `alembic check` performs DDL on an unstamped
-database. `scripts/schema_diff.py` uses `alembic.autogenerate.compare_metadata`,
-which never consults `alembic_version`, works unstamped, and writes nothing.
+So the one Alembic command whose name says *read* performs DDL, and it performs
+it on precisely the database whose untouched state is the evidence. That is what
+the `PLEXIVE_DB_WRITE` guard in `alembic/env.py` exists for, and it is why
+`check` is documented there as deliberately outside the guarded set with the
+measurement written next to the decision.
+
+**The order is therefore established rather than cautious:** `alembic stamp head`
+asserts that the database matches the baseline. Running it before the comparison
+would destroy the only chance to find out whether that assertion is true, and
+running `alembic check` first writes to the database you have not yet dumped.
+
+`scripts/schema_diff.py` uses `alembic.autogenerate.compare_metadata`, which
+never consults `alembic_version`, works unstamped, and writes nothing.
 
 After a successful stamp, `alembic check` becomes the ongoing drift detector.
 

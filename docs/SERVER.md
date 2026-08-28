@@ -406,7 +406,17 @@ Diese Schichtung hat sich bewährt – sie sagt, in welcher Ebene es klemmt:
   **Die Reihenfolge ist der Punkt, nicht der Baseline:** erst Backup, dann
   `scripts/schema_diff.py` lesen, erst danach `alembic stamp head`. Stempeln
   *behauptet*, dass die Datenbank zum Baseline passt; vorher zu stempeln
-  zerstört die einzige Gelegenheit, das zu prüfen. Vollständig in
+  zerstört die einzige Gelegenheit, das zu prüfen.
+  **`alembic check` ist dafür nicht zu gebrauchen, und zwar aus zwei Gründen.**
+  Es verlangt die Datenbank auf `head`, scheitert an einer ungestempelten also
+  mit Exit 127 (`Target database is not up to date.`) -- und es **legt dabei die
+  Tabelle `alembic_version` an**. Gemessen an drei identischen frischen
+  `create_all`-Datenbanken mit je 12 Tabellen: `alembic check` hinterlässt
+  **13**, `alembic current` 12, `scripts/schema_diff.py` 12. Der einzige
+  Alembic-Befehl, dessen Name „lesen" sagt, schreibt also -- und zwar genau in
+  die Datenbank, deren unveränderter Zustand der Beweis ist. Deshalb ist die
+  Reihenfolge oben nicht Vorsicht, sondern Messung, und deshalb gibt es den
+  `PLEXIVE_DB_WRITE`-Schalter in `alembic/env.py`. Vollständig in
   `docs/research/schema-drift-2026-08.md`.
   Erst danach offen: `RUN_STARTUP_DDL=0` in `/etc/deepscroll/backend.env`, damit
   nicht zwei Mechanismen dasselbe Schema anfassen.
