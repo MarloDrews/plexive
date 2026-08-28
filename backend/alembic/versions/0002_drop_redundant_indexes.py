@@ -35,7 +35,7 @@ the identical LEFT JOIN in the same result DID find the six constraints above
 WHERE THEY CAME FROM. create_all built them from index=True flags that ada78e5
 (2026-07-06) removed as redundant; that commit's "dropping the matching live-DB
 indexes is a separate manual op" never ran, so the indexes outlived their
-declarations. This is that op, four revisions of documentation later. The same
+declarations. This is that op, 53 days later. The same
 commit KEPT ix_quiz_answers_post_id and ix_conversation_participants_user_id,
 and it was right to: post_id is a MIDDLE column of uq_quiz_answer and user_id is
 the TRAILING column of uq_conversation_participant, so neither is covered by a
