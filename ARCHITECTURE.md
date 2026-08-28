@@ -1,5 +1,35 @@
 # Plexive Architecture
 
+## HOW TO READ THIS FILE
+
+This file describes behaviour. Behaviour changes without this file being touched,
+and nothing executes prose, so **a claim here about how the code behaves is a
+lead rather than a fact, and the code is the authority.** Where the two disagree,
+assume this file is the stale one.
+
+That is an observation about the document, not a worry about any one entry. It
+has drifted at least FOUR times, and every one was found BY ACCIDENT while
+looking for something else -- never by anyone checking this file:
+
+- the `auth.py` entry said `get_optional_user_id` supplied "identity for the feed
+  seed + rate-limit key". It supplied neither and had no callers at all;
+  `feed.py` derives both from `get_optional_user`. Found while deleting the
+  function as dead code (2026-08-28).
+- the `mobile/` entry described a frozen app in the present tense.
+- five separate counts had drifted from what the tree actually contained.
+- a CI note blamed the server for the `battle_test.py` hang. The cause was the
+  test harness (`docs/research/battle-hang-diagnosis-2026-08.md`).
+
+Four is enough to stop reading them as coincidences. Nothing caused them: each
+was written true, the code moved underneath it, and no check can notice, because
+the three gates compile, boot and test the CODE and not one of them reads this
+file. The same applies to CLAUDE.md.
+
+So: treat an entry as a statement of intent and a good place to start a grep.
+Verify anything load-bearing against the source before relying on it, and correct
+what you find stale in the same batch rather than leaving it for the next
+accident.
+
 ## FOLDER STRUCTURE
 
 ```
