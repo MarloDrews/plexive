@@ -67,6 +67,13 @@ def verify_password(plain: str, hashed: Optional[str]) -> bool:
     # A NULL hash means the account has no password (Google-only sign-in): treat
     # it as never matching so a password login attempt is a clean "wrong
     # credentials" rather than a 500 on hashed.encode.
+    #
+    # NO TEST EXECUTES THE NEXT TWO LINES, measured 2026-08-28: the union of all
+    # 17 backend suites never reaches them, and a mutation run confirmed what
+    # that costs -- flipping this `return False` to `return True`, which would
+    # accept ANY password for a passwordless account, survives the entire suite.
+    # The guard is correct as written; the gap is that a regression in it would
+    # be silent. See docs/research/mutation-test-2026-08.md, mutant 31.
     if not hashed:
         return False
     # A malformed stored hash (legacy or hand-inserted row) raises ValueError
@@ -170,19 +177,3 @@ def get_optional_user_strict(
             headers={"WWW-Authenticate": "Bearer"},
         )
     return user
-
-
-def get_optional_user_id(
-    credentials: Optional[HTTPAuthorizationCredentials] = Depends(_optional_bearer),
-) -> Optional[int]:
-    """The caller's user id straight from the bearer token, WITHOUT the DB
-    lookup get_optional_user pays. For endpoints that only need an identity
-    (a rate-limit key), never the user row; it does not check is_active or the
-    token version, so it must never gate data access."""
-    if not credentials:
-        return None
-    try:
-        user_id, _token_version = decode_access_token(credentials.credentials)
-        return user_id
-    except HTTPException:
-        return None
