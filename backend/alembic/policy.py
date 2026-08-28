@@ -20,6 +20,15 @@ cannot drift apart.
 # This hides a real object, so scripts/schema_diff.py --include-unmanaged turns
 # the exclusion off: something hidden with no way to look at it is something
 # that gets forgotten.
+#
+# THERE IS DELIBERATELY NO UNMANAGED_INDEXES. Production carries three indexes
+# models.py does not declare (ix_follows_id, ix_quiz_answers_user_id,
+# ix_conversation_participants_conversation_id, each recorded next to its table
+# there). Hiding them here was considered and REJECTED on 2026-08-28: an
+# exception list is where a difference goes to stop being noticed, and unlike
+# user_elo -- a permanent exception -- those three are pending a DROP INDEX
+# migration. Hiding a pending action is how it stops happening. They stay
+# visible as three EXTRA IN THE DATABASE entries until that migration runs.
 UNMANAGED_TABLES = {"user_elo"}
 
 
@@ -35,9 +44,12 @@ def include_everything(object_, name, type_, reflected, compare_to):
     return True
 
 
-# compare_type=True so a drifted column type is reported. This database is
-# expected to have some: scripts/add_graph_columns.py created posts.tags and
-# posts.connections as JSONB while models.py declares generic JSON.
+# compare_type=True so a drifted column type is reported. It found four on
+# 2026-08-28 -- posts.tags, posts.connections and posts.thumbnail_spec typed
+# JSONB by scripts/add_graph_columns.py and add_thumbnail_columns.py against a
+# generic JSON declaration, plus posts.thumbnail_url TEXT against String -- and
+# all four were fixed in models.py rather than in the database. So a modify_type
+# from here on is NEW, not the expected backlog.
 #
 # compare_server_default is OFF by default. models.py uses Python-side default=
 # throughout and never server_default=, while several scripts/add_*.py issued

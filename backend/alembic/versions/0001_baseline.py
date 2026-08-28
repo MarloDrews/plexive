@@ -2,7 +2,20 @@
 
 Revision ID: 0001
 Revises: 
-Create Date: 2026-08-28 13:48:03.091079
+Create Date: 2026-08-28 18:46:39.502186
+
+THIS FILE WAS REGENERATED IN PLACE ON 2026-08-28, KEEPING revision = '0001',
+AND THAT WAS ONLY SAFE BECAUSE NOTHING HAD BEEN STAMPED YET. A revision id is a
+claim about what a stamped database contains. While no database has ever
+recorded '0001', no such claim exists and the id is free to be reused; the
+regeneration was a documentation change, catching the baseline up with the
+models.py reconciliation of the same day (docs/research/schema-drift-2026-08.md
+section 6b).
+
+ONCE `alembic stamp head` HAS RUN ANYWHERE, THAT STOPS BEING TRUE. From then on
+a database asserts that it matches THIS revision id, and editing the file under
+the id makes that assertion false without changing anything that could detect
+it. After the stamp, a schema change is a NEW revision, never an edit here.
 
 REVIEW THIS FILE BY HAND BEFORE RUNNING IT. If it was produced by
 --autogenerate, it is a candidate, not a migration.
@@ -17,10 +30,10 @@ Two more things autogenerate gets wrong in THIS repository specifically:
   - Partial indexes. models.py:144-151 declares uq_events_user_like with a
     postgresql_where predicate. Alembic 1.19.1 DID render that predicate
     correctly when creating the index from the metadata (measured 2026-08-28
-    while generating this file), so this is a check rather than a known defect.
-    Still read it: an index op that has lost its WHERE clause turns a partial
-    unique index into a total one, which rejects rows the application expects to
-    be able to write.
+    while generating this file), so this is a check rather than a known
+    defect. Still read it: an index op that has lost its WHERE clause turns a
+    partial unique index into a total one, which rejects rows the application
+    expects to be able to write.
 
   - Type changes on populated columns. An ALTER TYPE rewrites the table. Never
     apply one you have not read, and never on production without a fresh dump
@@ -29,7 +42,7 @@ Two more things autogenerate gets wrong in THIS repository specifically:
 
 from alembic import op
 import sqlalchemy as sa  # noqa: F401 -- used by most but not all migrations
-
+from sqlalchemy.dialects import postgresql
 
 revision = '0001'
 down_revision = None
@@ -79,9 +92,9 @@ def upgrade() -> None:
     sa.Column('created_by', sa.Integer(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['created_by'], ['users.id'], ),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('dm_key')
+    sa.PrimaryKeyConstraint('id')
     )
+    op.create_index('uq_conversations_dm_key', 'conversations', ['dm_key'], unique=True)
     op.create_table('follows',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('follower_id', sa.Integer(), nullable=False),
@@ -100,8 +113,8 @@ def upgrade() -> None:
     sa.Column('title', sa.String(), nullable=False),
     sa.Column('feed_card', sa.JSON(), nullable=False),
     sa.Column('sections', sa.JSON(), nullable=False),
-    sa.Column('tags', sa.JSON(), nullable=False),
-    sa.Column('connections', sa.JSON(), nullable=False),
+    sa.Column('tags', sa.JSON().with_variant(postgresql.JSONB(astext_type=sa.Text()), 'postgresql'), nullable=False),
+    sa.Column('connections', sa.JSON().with_variant(postgresql.JSONB(astext_type=sa.Text()), 'postgresql'), nullable=False),
     sa.Column('author_id', sa.Integer(), nullable=True),
     sa.Column('status', sa.String(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=True),
@@ -109,8 +122,8 @@ def upgrade() -> None:
     sa.Column('identity_key', sa.String(), nullable=True),
     sa.Column('reading_minutes', sa.Integer(), nullable=True),
     sa.Column('is_user_content', sa.Boolean(), nullable=False),
-    sa.Column('thumbnail_url', sa.String(), nullable=True),
-    sa.Column('thumbnail_spec', sa.JSON(), nullable=True),
+    sa.Column('thumbnail_url', sa.Text(), nullable=True),
+    sa.Column('thumbnail_spec', sa.JSON().with_variant(postgresql.JSONB(astext_type=sa.Text()), 'postgresql'), nullable=True),
     sa.ForeignKeyConstraint(['author_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -244,6 +257,7 @@ def downgrade() -> None:
     op.drop_table('posts')
     op.drop_index('ix_follows_following_id_status', table_name='follows')
     op.drop_table('follows')
+    op.drop_index('uq_conversations_dm_key', table_name='conversations')
     op.drop_table('conversations')
     op.drop_index(op.f('ix_users_google_sub'), table_name='users')
     op.drop_index(op.f('ix_users_email'), table_name='users')
