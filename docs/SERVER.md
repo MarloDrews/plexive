@@ -309,8 +309,23 @@ Es sind **drei** Schalter, und jeder überstimmt die anderen unabhängig:
 2. **Einstellungen → Apps → Autostart** (der Zustand, der hier aus war),
 3. OneDrives eigene Option „OneDrive starten, wenn ich mich bei Windows anmelde".
 
-Deshalb ist die einzige belastbare Prüfung, ob der Prozess **läuft**, nicht ob er
-konfiguriert ist:
+Schalter 2 steht in der Registry an einer **anderen** Stelle als der Run-Eintrag,
+und das ist die Stelle, die den Unterschied gemacht hat:
+
+```powershell
+$b = (Get-ItemProperty 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run').OneDrive
+if ($b[0] -band 1) { 'DISABLED' } else { 'ENABLED' }
+```
+
+**Erwartete Ausgabe:** `ENABLED`. Am 28.08.2026 stand dort der deaktivierte
+Zustand, während `...\CurrentVersion\Run` unverändert korrekt war; nach dem
+Wiedereinschalten gemessen: Bytes `02 00 00 00 ...`, also `ENABLED`. Fehlt der
+Wert ganz, hat Windows nie eine Übersteuerung gespeichert -- auch das ist in
+Ordnung.
+
+Trotzdem ist die einzige belastbare Prüfung, ob der Prozess **läuft**, nicht ob
+er konfiguriert ist -- drei Schalter kann man einzeln prüfen und trotzdem einen
+vierten Grund übersehen:
 
 ```powershell
 Get-Process OneDrive -ErrorAction SilentlyContinue | Select-Object ProcessName, Id
