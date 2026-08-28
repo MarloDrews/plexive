@@ -295,6 +295,45 @@ es eine Entscheidung bleibt und nicht als Standard durchrutscht.
 
 Nach einem größeren Dump lohnt dieser Blick einmal; täglich braucht ihn niemand.
 
+**Der Run-Key allein beweist nicht, dass OneDrive startet.** Am 28.08.2026 lief
+der Sync-Client nicht, obwohl `HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run`
+den Eintrag `"...\OneDrive.exe" /background` enthielt -- korrekt und vollständig.
+Windows führt für Autostart-Einträge einen **separaten Aktivierungszustand**, der
+einen vorhandenen Eintrag abschalten kann, ohne ihn zu entfernen; er lag hier auf
+„deaktiviert". Der Registry-Eintrag las sich also richtig an genau der Stelle, an
+der man nachsieht, und wurde woanders überstimmt.
+
+Es sind **drei** Schalter, und jeder überstimmt die anderen unabhängig:
+
+1. der Run-Eintrag in der Registry (vorhanden -- war er),
+2. **Einstellungen → Apps → Autostart** (der Zustand, der hier aus war),
+3. OneDrives eigene Option „OneDrive starten, wenn ich mich bei Windows anmelde".
+
+Deshalb ist die einzige belastbare Prüfung, ob der Prozess **läuft**, nicht ob er
+konfiguriert ist:
+
+```powershell
+Get-Process OneDrive -ErrorAction SilentlyContinue | Select-Object ProcessName, Id
+```
+
+**Erwartete Ausgabe:** eine Zeile mit `OneDrive`. Kommt nichts zurück, läuft der
+Client nicht -- unabhängig davon, wie die Registry aussieht. Starten:
+
+```powershell
+Start-Process "$env:LOCALAPPDATA\Microsoft\OneDrive\OneDrive.exe" -ArgumentList '/background'
+```
+
+`OneDrive.Sync.Service.exe` allein genügt **nicht**: dieser Dienst lief die ganze
+Zeit, synchronisiert aber nichts. Auf `OneDrive.exe` kommt es an.
+
+**Was das für den Mechanismus heißt.** Ein Backup, das geschrieben wird, während
+der Client nicht läuft, bleibt lokal, bis der Client das nächste Mal startet.
+Startet er nie, verlässt die Datei die Maschine nie. Die Altersprüfung meldet
+dann Exit 3 statt OK, **fängt es also -- aber nur, wenn jemand hinsieht.** Ein
+laufender Sync-Client ist das, was die Kette schließt, und er ist der eine Teil
+davon, den nichts in diesem Repository beobachten kann: keine Prüfung, kein Gate
+und keine geplante Aufgabe sieht ihn, solange sie nicht jemand aufruft.
+
 ### Wöchentlich, automatisch (Windows-Aufgabenplanung)
 
 Das Backup lief bis zum 28.08.2026 nur, wenn jemand daran dachte. Der Wrapper
