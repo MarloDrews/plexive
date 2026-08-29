@@ -11,7 +11,7 @@ from app.graph_edges import on_post_written
 from app.graph_identity import post_identity_key
 from app.models import Interest, Post, User
 from app.reading_time import compute_reading_minutes
-from content_repo import resolve_examples
+from content_repo import resolve_examples, resolve_generated
 
 Base.metadata.create_all(bind=engine)
 
@@ -299,10 +299,18 @@ def _get_or_create_marlo(db) -> User:
     return marlo
 
 
-# Preflight, before any database work and before the admin-password prompt: an
+# Preflight, before any database SESSION and before the admin-password prompt: an
 # unset or misdirected PLEXIVE_CONTENT_REPO stops the run here rather than after
-# 149 interests have already been written.
+# 149 interests have already been written. Measured: both failure paths exit 1
+# with 0 interests and 0 posts. (The create_all at the top of this file runs at
+# import, so an empty schema is still created before this point; that is
+# unchanged by the move and is the only database work ahead of the preflight.)
+# BOTH sources are resolved here, and
+# both assert on a count of files found rather than on a directory existing, so
+# an empty content repository fails instead of reporting a successful seed of
+# nothing.
 examples_dir, example_files = resolve_examples()
+generated_dir, generated_formats = resolve_generated()
 
 db = SessionLocal()
 
@@ -325,8 +333,6 @@ marlo = _get_or_create_marlo(db)
 # tools/run_pipeline.sh uses. resolve_examples() exits 1 naming the variable when
 # it is unset or points somewhere without examples, rather than iterating an empty
 # directory and reporting a successful seed.
-project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 for filename in example_files:
     post_format = filename.replace("_example.json", "")
     with open(os.path.join(examples_dir, filename), encoding="utf-8") as f:
@@ -341,34 +347,29 @@ for filename in example_files:
         allow_legacy_adopt=True,
     )
 
-# Phase 4: seed all generated posts found in docs/content-structure/generated/<format>/
-# These did NOT move: generated posts are published content and stay in THIS
-# repository, so this path is the local one and PLEXIVE_CONTENT_REPO does not apply.
-# The format comes from the folder name (filenames are descriptive slugs). Each
-# post is keyed on its filename slug, so re-running updates it in place. Reuses the
-# same creator, interest, tag and connection handling as the examples.
-generated_dir = os.path.join(project_root, "docs", "content-structure", "generated")
+# Phase 4: seed all generated posts found in the content repository's
+# docs/content-structure/generated/<format>/. These left this repository on
+# 2026-08-29, with the pipeline runners that write them, so they come through the
+# SAME PLEXIVE_CONTENT_REPO bridge as the examples above -- one variable, both
+# sources. The format comes from the folder name (filenames are descriptive
+# slugs). Each post is keyed on its filename slug, so re-running updates it in
+# place. Reuses the same creator, interest, tag and connection handling as the
+# examples. resolve_generated() has already asserted that this list is non-empty,
+# so there is no isdir() branch here that could skip the phase in silence.
+for post_format, filenames in generated_formats:
+    format_dir = os.path.join(generated_dir, post_format)
 
-if os.path.isdir(generated_dir):
-    for post_format in sorted(os.listdir(generated_dir)):
-        format_dir = os.path.join(generated_dir, post_format)
-        if not os.path.isdir(format_dir):
-            continue
+    for filename in filenames:
+        with open(os.path.join(format_dir, filename), encoding="utf-8") as f:
+            generated = json.load(f)
 
-        for filename in sorted(os.listdir(format_dir)):
-            if not filename.endswith(".json"):
-                continue
-
-            with open(os.path.join(format_dir, filename), encoding="utf-8") as f:
-                generated = json.load(f)
-
-            upsert_post(
-                db,
-                marlo,
-                post_format,
-                generated,
-                slug=_slug_from_filename(filename),
-                allow_legacy_adopt=False,
-            )
+        upsert_post(
+            db,
+            marlo,
+            post_format,
+            generated,
+            slug=_slug_from_filename(filename),
+            allow_legacy_adopt=False,
+        )
 
 db.close()
