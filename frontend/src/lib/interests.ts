@@ -44,7 +44,7 @@ export const CATEGORIES: Category[] = [
       "focus", "motivation", "decision-making",
       "emotional-intelligence", "mental-health", "mindfulness",
       "happiness", "relationships", "communication", "learning",
-      "discipline", "confidence", "stoicism-practice",
+      "creativity", "discipline", "confidence", "stoicism-practice",
     ],
   },
   {

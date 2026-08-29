@@ -86,10 +86,12 @@ jobs:
             echo "      the log above and name PLEXIVE_CONTENT_REPO."
           fi
 
-          # A floor, not the exact count. 53 tests across 6 files measured 2026-08-29 -- 45 passing
-          # plus the 8 skipped gold tests -- against 40 across 5 files when this was written. The floor
-          # stays at 40 because 45 still clears it; it only moves down through a deliberate deletion,
-          # which is worth a deliberate edit here.
+          # A floor, not the exact count. 58 tests across 7 files measured 2026-08-29 -- 50 passing
+          # plus the 8 skipped gold tests -- against 53 across 6 files (45 passing) before
+          # taxonomy-drift.test.mjs was added, and 40 across 5 files when this was written. The floor
+          # STAYS AT 40 because 50 still clears it: raising it to each new observed count is how a
+          # floor ends up above what a later legitimate deletion leaves, which reds correct work. It
+          # only moves down through a deliberate deletion, which is worth a deliberate edit here.
           if [ "$pass" -lt 40 ]; then
             echo "FAIL: only $pass tests passed, expected at least 40."
             echo "Either tests were deleted or the runner matched no files and proved nothing."
