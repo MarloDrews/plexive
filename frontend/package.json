@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "test": "node --import tsx --test",
-    "analyze": "node scripts/analyze-routes.mjs"
+    "analyze": "node scripts/analyze-routes.mjs",
+    "taxonomy:spans": "node --import tsx scripts/taxonomy-spans.mjs"
   },
   "overrides": {
     "js-yaml": "^4.1.2",
