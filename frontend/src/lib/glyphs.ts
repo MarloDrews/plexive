@@ -16,7 +16,8 @@
 //
 // Coverage: Sciences (20 slugs), Tech (16 slugs), Business/Economics (14
 // slugs), Psychology (15 slugs), Philosophy (18 slugs), History (15 slugs),
-// Politics/Society (12 slugs), and Arts/Culture (14 slugs), and Health & Body (10 slugs), and Everyday & Culture (12 slugs), and Mental Models (3 slugs). Other categories
+// Politics/Society (12 slugs), and Arts/Culture (14 slugs), and Health & Body (10 slugs), and Everyday & Culture (11 slugs), and Mental Models (3 slugs), and Ways of
+// Thinking (6 slugs, the axis-2 vocabulary). Other categories
 // are added in later passes, each slug with one reviewed glyph.
 
 export const FIELD_GLYPHS: Record<string, string> = {
@@ -190,8 +191,6 @@ export const FIELD_GLYPHS: Record<string, string> = {
 
   "mental-models": `<svg viewBox="0 0 56 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16 23 C20 17 24 25 28 19 C32 13 36 21 40 15" stroke="var(--accent)" stroke-width="2.3" stroke-linecap="round" opacity="0.5"/><rect x="17" y="8" width="22" height="16" rx="1.5" stroke="var(--accent)" stroke-width="2.2"/><path d="M24.3 8 V24 M31.6 8 V24 M17 13.3 H39 M17 18.6 H39" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" opacity="0.55"/></svg>`,
 
-  "critical-thinking": `<svg viewBox="0 0 56 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 16 H21" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round" opacity="0.7"/><path d="M35 16 H46 M42 12 L46 16 L42 20" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/><path d="M24.5 9 A4 4 0 0 1 32 10.2 C32 13.4 28 13.4 28 16.5 M28 20.5 H28.02" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-
   "trade-offs": `<svg viewBox="0 0 56 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="19" y="4" width="18" height="7" rx="3.5" stroke="var(--accent)" stroke-width="2"/><circle cx="33" cy="7.5" r="2.2" fill="var(--accent)"/><rect x="19" y="13" width="18" height="7" rx="3.5" stroke="var(--accent)" stroke-width="2"/><circle cx="33" cy="16.5" r="2.2" fill="var(--accent)"/><rect x="19" y="22" width="18" height="7" rx="3.5" stroke="var(--accent)" stroke-width="2" opacity="0.6"/><circle cx="23" cy="25.5" r="2.2" fill="var(--accent)" opacity="0.6"/></svg>`,
 
   // --- History (15) ---
@@ -306,8 +305,6 @@ export const FIELD_GLYPHS: Record<string, string> = {
 
   // --- Everyday & Culture (12) ---
 
-  "everyday-science": `<svg viewBox="0 0 56 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M28 8 L36.5 22 L19.5 22 Z" stroke="var(--accent)" stroke-width="2.3" stroke-linejoin="round"/><path d="M12 14 L24.5 16.5" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"/><path d="M31 17 L43 13 M31 18.2 L43 18.2 M31 19.4 L43 23" stroke="var(--accent)" stroke-width="1.7" stroke-linecap="round" opacity="0.7"/></svg>`,
-
   games: `<svg viewBox="0 0 56 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16.5 23.5 C13.5 22 13 18 14 15.5 C15 13 17.5 11.5 20 11.5 Q28 10.5 36 11.5 C38.5 11.5 41 13 42 15.5 C43 18 42.5 22 39.5 23.5 C38 24.2 36.5 23.5 35.5 22 C34.5 20.5 33 19.5 31 19.5 H25 C23 19.5 21.5 20.5 20.5 22 C19.5 23.5 18 24.2 16.5 23.5 Z" stroke="var(--accent)" stroke-width="2.2" stroke-linejoin="round"/><path d="M21 14 V18 M19 16 H23" stroke="var(--accent)" stroke-width="2.1" stroke-linecap="round"/><circle cx="35" cy="13.6" r="1.05" fill="var(--accent)"/><circle cx="35" cy="18" r="1.05" fill="var(--accent)"/><circle cx="32.8" cy="15.8" r="1.05" fill="var(--accent)"/><circle cx="37.2" cy="15.8" r="1.05" fill="var(--accent)"/></svg>`,
 
   sports: `<svg viewBox="0 0 56 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22 7 H34 V10 Q34 17 28 18 Q22 17 22 10 Z" stroke="var(--accent)" stroke-width="2.2" stroke-linejoin="round"/><path d="M22 8.5 Q17.5 8.5 18.5 13 Q19.2 15.5 22.2 14.8" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"/><path d="M34 8.5 Q38.5 8.5 37.5 13 Q36.8 15.5 33.8 14.8" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"/><path d="M28 18 V22" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round"/><path d="M23.5 25 H32.5 M25.5 22 H30.5" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round"/></svg>`,
@@ -338,4 +335,25 @@ export const FIELD_GLYPHS: Record<string, string> = {
   patience: `<svg viewBox="0 0 56 32" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="28" cy="23.5" rx="8" ry="2.4" stroke="var(--accent)" stroke-width="2.2"/><ellipse cx="28" cy="18.3" rx="5.6" ry="2.1" stroke="var(--accent)" stroke-width="2.2"/><ellipse cx="28" cy="13.6" rx="3.5" ry="1.9" stroke="var(--accent)" stroke-width="2.1"/></svg>`,
 
   scarcity: `<svg viewBox="0 0 56 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 12 H27 Q30.5 12 30.5 16 V18" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M20 12 V8.5 M17.5 8.5 H22.5" stroke="var(--accent)" stroke-width="2.3" stroke-linecap="round"/><path d="M30.5 22 C30.5 22 28.9 24 28.9 25.2 C28.9 26.3 29.6 27 30.5 27 C31.4 27 32.1 26.3 32.1 25.2 C32.1 24 30.5 22 30.5 22 Z" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round"/></svg>`,
+  // --- Ways of Thinking (6) ---
+  // Axis 2: the kind of post, not the subject. These six are the only keys in
+  // this file that are UNREACHABLE by design -- FieldGlyph resolves from
+  // tags[0] (PostCard.tsx:457) and seed.py's preflight_tags rejects an axis-2
+  // slug at tags[0], so none of them can ever be a post's primary category.
+  // They are kept because frontend/test/taxonomy-drift.test.mjs requires one
+  // glyph per canonical slug in both directions, and because the rule that
+  // makes them unreachable is one edit away from being relaxed.
+
+  "hidden-mechanisms": `<svg viewBox="0 0 56 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 10 H49" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round"/><circle cx="28" cy="20" r="6.4" stroke="var(--accent)" stroke-width="2.4"/><path d="M28 10.4 V13.6 M28 26.4 V29.6 M20.6 20 H17.4 M38.6 20 H35.4" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" opacity="0.6"/></svg>`,
+
+  "reasoning-traps": `<svg viewBox="0 0 56 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 16 H21" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round" opacity="0.7"/><path d="M35 16 H46 M42 12 L46 16 L42 20" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/><path d="M24.5 9 A4 4 0 0 1 32 10.2 C32 13.4 28 13.4 28 16.5 M28 20.5 H28.02" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+
+  "corrected-beliefs": `<svg viewBox="0 0 56 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 14 H25" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round" opacity="0.45"/><path d="M10 18.5 L24 9.5" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round" opacity="0.7"/><path d="M31 17.5 L36.5 23 L48 9" stroke="var(--accent)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+
+  "scale-shock": `<svg viewBox="0 0 56 32" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="16" r="1.9" fill="var(--accent)"/><circle cx="35" cy="16" r="11" stroke="var(--accent)" stroke-width="2.6"/><path d="M17 16 H21.5" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" opacity="0.5"/></svg>`,
+
+  "overlooked-evidence": `<svg viewBox="0 0 56 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11 6 V26" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round"/><path d="M11 7.5 H23 L19.4 12 L23 16.5 H11 Z" stroke="var(--accent)" stroke-width="2.3" stroke-linejoin="round"/><path d="M27 16 H30.5 M34 16 H37.5" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" opacity="0.5"/><path d="M45 9 V23" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round"/></svg>`,
+
+  "everyday-science": `<svg viewBox="0 0 56 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M28 8 L36.5 22 L19.5 22 Z" stroke="var(--accent)" stroke-width="2.3" stroke-linejoin="round"/><path d="M12 14 L24.5 16.5" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"/><path d="M31 17 L43 13 M31 18.2 L43 18.2 M31 19.4 L43 23" stroke="var(--accent)" stroke-width="1.7" stroke-linecap="round" opacity="0.7"/></svg>`,
+
 };

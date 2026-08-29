@@ -47,13 +47,51 @@ SLUGS = [
     "public-health", "sports-science", "everyday-science", "food-science",
     "games", "sports", "travel", "nature-phenomena", "curiosities", "future",
     "internet-culture", "crime", "money-everyday", "history", "anthropology",
-    "exponential-growth", "patience", "critical-thinking", "trade-offs",
-    "scarcity",
+    "exponential-growth", "patience", "reasoning-traps", "trade-offs",
+    "scarcity", "hidden-mechanisms", "corrected-beliefs", "scale-shock",
+    "overlooked-evidence",
 ]
 
 # The canonical vocabulary as a set, for membership tests. SLUGS stays a list
 # because Phase 1 creates the Interest rows in its order.
 CANONICAL_SLUGS = set(SLUGS)
+
+# WHICH AXIS A SLUG IS ON, marked here rather than remembered. Axis 1 is the
+# SUBJECT -- what a post is about (physics, medicine, ancient-rome). Axis 2 is
+# the KIND OF POST -- a pattern that recurs across subjects, so a reader picking
+# one gets a feed weighted toward that shape rather than that topic.
+#
+# This is a marking ON the vocabulary, not a second vocabulary: every slug below
+# is also in SLUGS, and SLUGS stays the one canonical list. A slug absent from
+# here is axis 1, which is the overwhelming majority (149 of the 153).
+#
+# Two things are enforced against it rather than left to convention:
+#   - preflight_tags() rejects an axis-2 slug at tags[0]. tags[0] is the post's
+#     primary category and drives the card eyebrow and the glyph, and a kind of
+#     post is not a category.
+#   - the "Ways of Thinking" group in frontend/src/lib/interests.ts carries the
+#     same marking as `axis: 2`, and frontend/test/taxonomy-drift.test.mjs
+#     asserts the two agree in both directions, so the code's marking and the
+#     reader's screen cannot drift apart.
+#
+# Decided 2026-08-29 on 61 posts of ONE format (facts). See the content
+# repository's docs/content-structure/TAXONOMY_AXES_BASE.md for what that rests
+# on and what would revisit it.
+AXIS2_SLUGS = [
+    "hidden-mechanisms", "reasoning-traps", "corrected-beliefs",
+    "scale-shock", "overlooked-evidence", "everyday-science",
+]
+
+AXIS2 = set(AXIS2_SLUGS)
+
+# Floor for the axis-2 half of the tag preflight below, and a COLLAPSE DETECTOR
+# in the same sense as MIN_TAG_REFERENCES: 60 axis-2 references were measured
+# across the 61 posts on 2026-08-29, and this sits well under that. It exists so
+# that a preflight which reads no axis-2 tag at all -- a renamed AXIS2_SLUGS, a
+# retag reverted -- cannot report "none at tags[0]" and pass having checked
+# nothing. It is NOT a floor on how much axis-2 tagging the corpus carries;
+# ordinary content work moves the real number and must not red this.
+MIN_AXIS2_REFERENCES = 25
 
 # Floor for the tag preflight below. A COLLAPSE DETECTOR, deliberately well
 # under the 189 references measured across the 61 posts on 2026-08-29: it is
@@ -78,8 +116,8 @@ FORMAT_INTEREST_SLUGS = {
     "books": ["psychology", "behavioral-economics", "decision-making", "neuroscience"],
     "facts": ["biology", "animals", "everyday-science"],
     "people": ["physics", "history-of-science", "world-wars"],
-    "concepts": ["mental-models", "critical-thinking", "epistemology"],
-    "questions": ["philosophy", "ethics", "critical-thinking", "epistemology"],
+    "concepts": ["mental-models", "reasoning-traps", "epistemology"],
+    "questions": ["philosophy", "ethics", "reasoning-traps", "epistemology"],
     "stories": ["history", "crime", "forgotten-history"],
     "academy": ["neuroscience", "philosophy-of-mind", "mathematics", "artificial-intelligence"],
 }
@@ -436,7 +474,7 @@ def _get_or_create_marlo(db) -> User:
 
 # Preflight, before any database SESSION and before the admin-password prompt: an
 # unset or misdirected PLEXIVE_CONTENT_REPO stops the run here rather than after
-# 149 interests have already been written. Measured: both failure paths exit 1
+# 153 interests have already been written. Measured: both failure paths exit 1
 # with 0 interests and 0 posts. (The create_all at the top of this file runs at
 # import, so an empty schema is still created before this point; that is
 # unchanged by the move and is the only database work ahead of the preflight.)

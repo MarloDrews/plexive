@@ -1,10 +1,24 @@
 // Interest taxonomy grouping shared by the onboarding picker and the create
-// wizard. Both group the flat /api/interests list into these 10 display
+// wizard. Both group the flat /api/interests list into these 11 display
 // categories, so the grouping lives in one place.
+//
+// Ten of the eleven groups are SUBJECTS (axis 1): what a post is about. The
+// eleventh, "Ways of Thinking", is the KIND OF POST (axis 2): a pattern that
+// recurs across subjects, so a reader picking one gets a feed weighted toward
+// that shape rather than that topic. The feed only ever weights, never filters
+// (feed.py:70-71), so an axis-2 pick narrows nothing.
+//
+// The axis is marked on the group rather than left to the label, because the
+// distinction has to be machine-readable on both sides: backend/seed.py carries
+// the same marking as AXIS2_SLUGS and uses it to reject an axis-2 slug at
+// tags[0], and frontend/test/taxonomy-drift.test.mjs asserts the two agree in
+// both directions.
 
 export interface Category {
   label: string
   slugs: string[]
+  // Absent means axis 1, a subject. Only the kind-of-post group sets this.
+  axis?: 2
 }
 
 export const CATEGORIES: Category[] = [
@@ -93,11 +107,23 @@ export const CATEGORIES: Category[] = [
   {
     label: "Curiosity & Everyday",
     slugs: [
-      "everyday-science", "food-science", "games", "sports",
+      "food-science", "games", "sports",
       "travel", "nature-phenomena", "curiosities", "future",
       "internet-culture", "crime", "money-everyday",
-      "exponential-growth", "patience", "critical-thinking",
+      "exponential-growth", "patience",
       "trade-offs", "scarcity",
+    ],
+  },
+  // Axis 2. Not a subject: every slug here names a shape a post has, and its
+  // posts' primary categories span several of the ten groups above. Kept in the
+  // same flat deepscroll_interests array as every other pick (storage.ts:23,29)
+  // -- splitting the storage in two would orphan every pick already made.
+  {
+    label: "Ways of Thinking",
+    axis: 2,
+    slugs: [
+      "hidden-mechanisms", "reasoning-traps", "corrected-beliefs",
+      "scale-shock", "overlooked-evidence", "everyday-science",
     ],
   },
 ]
