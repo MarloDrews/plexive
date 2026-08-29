@@ -176,7 +176,8 @@ jobs:
       # so the floor sits well BELOW the observed count and normal work never reaches it. That is the
       # opposite of MIN_PINS and the suite-file floor, which sit exactly on their measured values so a
       # deletion has to be deliberate. Both kinds are correct for what they watch; do not unify them.
-      # 78 .py files measured 2026-08-28. Was 74 until alembic/ joined the search: env.py, policy.py
+      # 79 .py files measured 2026-08-29 (78 on 2026-08-28, before alembic/versions/0002 landed).
+      # Was 74 until alembic/ joined the search: env.py, policy.py
       # and the baseline migration are backend Python that no gate compiled, and a syntax error in
       # env.py would have surfaced as a failed live migration rather than as a red check.
       - name: Syntax check
@@ -184,7 +185,7 @@ jobs:
           count=$(find app scripts tests alembic -name '*.py' -not -path '*/__pycache__/*' | wc -l)
           echo "found $count Python files under app/ scripts/ tests/ alembic/"
           if [ "$count" -lt 60 ]; then
-            echo "FAIL: only $count Python files found, expected at least 60 (78 when this was written)."
+            echo "FAIL: only $count Python files found, expected at least 60 (79 when this was written)."
             echo "Either the paths moved or this step is checking nothing."
             exit 1
           fi
@@ -242,14 +243,15 @@ jobs:
         run: |
           python -m pip install ruff==0.16.4
           # COLLAPSE DETECTOR, same kind as the Syntax check floor above and set the same way.
-          # 80 measured 2026-08-28 (was 76, and 102 before that). Note this count is deliberately TWO HIGHER than the
-          # Syntax check's: ruff runs over `.` from backend/, so it also sees seed.py and
-          # download_seed_images.py, which the Syntax check's find does not. Setting one of these
-          # two floors from the other's number leaves this step red by the difference.
+          # 82 measured 2026-08-29 (was 80, then 81 when alembic/versions/0002 landed). Note this count
+          # is deliberately THREE HIGHER than the Syntax check's: ruff runs over `.` from backend/, so
+          # it also sees seed.py, download_seed_images.py and content_repo.py, which the Syntax check's
+          # find does not. It was TWO higher until content_repo.py was added on 2026-08-29. Setting one
+          # of these two floors from the other's number leaves this step red by the difference.
           count=$(ruff check --select F --show-files . | wc -l)
           echo "ruff would check $count files"
           if [ "$count" -lt 60 ]; then
-            echo "FAIL: ruff found only $count files to check, expected at least 60 (80 when this was written)."
+            echo "FAIL: ruff found only $count files to check, expected at least 60 (82 when this was written)."
             exit 1
           fi
           ruff check --select F .

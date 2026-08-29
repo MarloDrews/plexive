@@ -11,6 +11,7 @@ from app.graph_edges import on_post_written
 from app.graph_identity import post_identity_key
 from app.models import Interest, Post, User
 from app.reading_time import compute_reading_minutes
+from content_repo import resolve_examples
 
 Base.metadata.create_all(bind=engine)
 
@@ -298,6 +299,11 @@ def _get_or_create_marlo(db) -> User:
     return marlo
 
 
+# Preflight, before any database work and before the admin-password prompt: an
+# unset or misdirected PLEXIVE_CONTENT_REPO stops the run here rather than after
+# 149 interests have already been written.
+examples_dir, example_files = resolve_examples()
+
 db = SessionLocal()
 
 # Phase 1: get-or-create interests (idempotent)
@@ -312,15 +318,16 @@ print(f"Interests: {created_count} created (rest already existed)")
 # Phase 2: ensure Marlo exists and is verified
 marlo = _get_or_create_marlo(db)
 
-# Phase 3: seed all example posts found in docs/content-structure/examples/
-# Any file named <format>_example.json is picked up automatically.
+# Phase 3: seed all example posts found in the content repository's
+# docs/content-structure/examples/. Any file named <format>_example.json is picked
+# up automatically. The examples left this repository on 2026-08-29, so the
+# directory is resolved through PLEXIVE_CONTENT_REPO -- the same bridge
+# tools/run_pipeline.sh uses. resolve_examples() exits 1 naming the variable when
+# it is unset or points somewhere without examples, rather than iterating an empty
+# directory and reporting a successful seed.
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-examples_dir = os.path.join(project_root, "docs", "content-structure", "examples")
 
-for filename in sorted(os.listdir(examples_dir)):
-    if not filename.endswith("_example.json"):
-        continue
-
+for filename in example_files:
     post_format = filename.replace("_example.json", "")
     with open(os.path.join(examples_dir, filename), encoding="utf-8") as f:
         example = json.load(f)
@@ -335,6 +342,8 @@ for filename in sorted(os.listdir(examples_dir)):
     )
 
 # Phase 4: seed all generated posts found in docs/content-structure/generated/<format>/
+# These did NOT move: generated posts are published content and stay in THIS
+# repository, so this path is the local one and PLEXIVE_CONTENT_REPO does not apply.
 # The format comes from the folder name (filenames are descriptive slugs). Each
 # post is keyed on its filename slug, so re-running updates it in place. Reuses the
 # same creator, interest, tag and connection handling as the examples.

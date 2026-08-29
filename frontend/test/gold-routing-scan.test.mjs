@@ -1,6 +1,6 @@
 import { test } from "node:test"
 import assert from "node:assert/strict"
-import { readFileSync } from "node:fs"
+import { existsSync, readFileSync } from "node:fs"
 import { fileURLToPath } from "node:url"
 import { dirname, join } from "node:path"
 
@@ -13,9 +13,24 @@ import { dirname, join } from "node:path"
 // A bare "$" or an unbalanced "*" would silently change a locked post, so these
 // tests fail loudly (listing format/section/field) as a content decision.
 // Academy is excluded: it already routed through MathText.
+//
+// THE GOLDS THEMSELVES ARE NO LONGER IN THIS REPOSITORY (moved 2026-08-29), so
+// the 8 gold tests SKIP unless PLEXIVE_CONTENT_REPO points at a clone that has
+// them. A skip is deliberately not silent: the count and the reason are printed
+// before any test runs, the skip reason on each test names the variable, and
+// "gold availability is all-or-nothing" below always runs and fails on a partial
+// set. The three checker self-tests at the foot of this file never skip, so this
+// file always asserts something. What CI no longer covers is the CONTENT: with
+// the variable unset, nothing here reads a gold.
 
 const here = dirname(fileURLToPath(import.meta.url))
-const examplesDir = join(here, "..", "..", "docs", "content-structure", "examples")
+
+// The gold examples left this repository on 2026-08-29 for the private content
+// repository, so the directory is resolved through PLEXIVE_CONTENT_REPO -- the
+// same bridge tools/run_pipeline.sh and backend/content_repo.py use. Unset, the
+// path resolves inside this checkout, where the examples are no longer present.
+const CONTENT_REPO = (process.env.PLEXIVE_CONTENT_REPO || "").trim()
+const examplesDir = join(CONTENT_REPO || join(here, "..", ".."), "docs", "content-structure", "examples")
 
 function loadGold(format) {
   return JSON.parse(readFileSync(join(examplesDir, `${format}_example.json`), "utf8"))
@@ -111,8 +126,46 @@ function routedFields(format) {
 
 const FORMATS = Object.keys(ROUTED)
 
+// How many of the four routed golds are actually on disk. This is a COUNT, not a
+// boolean, because the two states that matter are "all four" and "none": a
+// partial set means the content repository is half there, which would silently
+// shrink the scan rather than skip it, and that is the failure this file must
+// not be able to report as a pass.
+const goldsPresent = FORMATS.filter((f) => existsSync(join(examplesDir, `${f}_example.json`)))
+const GOLD_TESTS_PER_FORMAT = 2
+const skippedGoldTests = goldsPresent.length === FORMATS.length ? 0 : FORMATS.length * GOLD_TESTS_PER_FORMAT
+
+const skipReason =
+  `${skippedGoldTests} gold tests SKIPPED: PLEXIVE_CONTENT_REPO ` +
+  (CONTENT_REPO ? `is set to '${CONTENT_REPO}', which does not hold all four routed examples` : "is unset") +
+  `, so ${examplesDir} holds ${goldsPresent.length} of ${FORMATS.length} routed golds. ` +
+  "Set PLEXIVE_CONTENT_REPO to the root of a plexive-content clone to run them."
+
+// Printed unconditionally, before any test runs, so a skipped run cannot be
+// mistaken for a passing one by anyone reading the log rather than the counts.
+if (skippedGoldTests > 0) {
+  console.log(`[gold-routing-scan] ${skipReason}`)
+} else {
+  console.log(
+    `[gold-routing-scan] ${FORMATS.length} of ${FORMATS.length} routed golds found in ${examplesDir}; ` +
+      `0 gold tests skipped, ${FORMATS.length * GOLD_TESTS_PER_FORMAT} running.`,
+  )
+}
+
+// Always runs, in both states, and can fail in both. It is what stops a skip
+// from being silent: a half-present content repository is neither a clean run
+// nor a clean skip, and is reported as a failure rather than as fewer tests.
+test("gold availability is all-or-nothing", () => {
+  assert.ok(
+    goldsPresent.length === FORMATS.length || goldsPresent.length === 0,
+    `${goldsPresent.length} of ${FORMATS.length} routed golds found in ${examplesDir} ` +
+      `(${goldsPresent.join(", ")}). Expected all ${FORMATS.length} or none; a partial set would ` +
+      "silently scan fewer golds. Check PLEXIVE_CONTENT_REPO.",
+  )
+})
+
 for (const format of FORMATS) {
-  test(`${format} gold: no bare unescaped $ in routed fields`, () => {
+  test(`${format} gold: no bare unescaped $ in routed fields`, { skip: skippedGoldTests > 0 ? skipReason : false }, () => {
     const offenders = routedFields(format)
       .filter(([, value]) => typeof value === "string" && hasBareDollar(value))
       .map(([label]) => `${format}/${label}`)
@@ -123,7 +176,7 @@ for (const format of FORMATS) {
     )
   })
 
-  test(`${format} gold: only well-formed * pairs in routed fields`, () => {
+  test(`${format} gold: only well-formed * pairs in routed fields`, { skip: skippedGoldTests > 0 ? skipReason : false }, () => {
     const offenders = routedFields(format)
       .filter(([, value]) => typeof value === "string" && hasUnbalancedAsterisk(value))
       .map(([label]) => `${format}/${label}`)

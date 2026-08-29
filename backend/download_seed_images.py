@@ -1,8 +1,16 @@
 """
-Download all image_url values from docs/content-structure/examples/*.json
-and store them in frontend/public/seed-images/.
+Download all image_url values from the content repository's
+docs/content-structure/examples/*.json and store them in
+frontend/public/seed-images/.
 Replaces the original URLs in the JSON files with /seed-images/<filename>.
 Run once after adding a new example file that uses external image URLs.
+
+The examples left this repository on 2026-08-29, so their directory is resolved
+through PLEXIVE_CONTENT_REPO -- the same bridge tools/run_pipeline.sh uses, via
+content_repo.resolve_examples(), which exits 1 naming the variable rather than
+walking an empty directory and reporting a successful run. This script WRITES the
+files back, so with the variable set it edits the private clone, not this one.
+The download destination is unaffected: frontend/public/seed-images/ stayed here.
 """
 
 import json
@@ -11,11 +19,11 @@ import re
 import sys
 import urllib.request
 
+from content_repo import resolve_examples
+
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-EXAMPLES_DIR = os.path.join(PROJECT_ROOT, "docs", "content-structure", "examples")
 DEST_DIR = os.path.join(PROJECT_ROOT, "frontend", "public", "seed-images")
 
-os.makedirs(DEST_DIR, exist_ok=True)
 
 def _filename_from_url(url: str) -> str:
     """Derive a filesystem-safe filename from a URL."""
@@ -69,10 +77,11 @@ def download_image(url: str, dest_dir: str) -> str:
     return f"/seed-images/{filename}"
 
 
-for filename in sorted(os.listdir(EXAMPLES_DIR)):
-    if not filename.endswith("_example.json"):
-        continue
+EXAMPLES_DIR, EXAMPLE_FILES = resolve_examples()
 
+os.makedirs(DEST_DIR, exist_ok=True)
+
+for filename in EXAMPLE_FILES:
     filepath = os.path.join(EXAMPLES_DIR, filename)
     with open(filepath, encoding="utf-8") as f:
         data = json.load(f)
