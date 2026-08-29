@@ -251,3 +251,25 @@ The submission run costs about 94 s and is a separate workflow, so `android-buil
 
 The remaining `ecdsa` PYSEC-2026-1325 advisory will not produce a Dependabot pull request. It has no fix version, and Dependabot opens a pull request only when there is a version to move to. Its silence on that one is not a sign that it is not working.
 
+## Deleted from CLAUDE.md, 2026-08-29
+
+Two blocks left `CLAUDE.md` in the rule audit that gave all 42 of its rules a verdict. Neither
+carried an instruction: both stated facts that a file the code executes already states, so a session
+reading them was reading a second copy that could go stale without anything noticing. They are kept
+here verbatim, which is the whole point of deleting them from a file that is loaded into every
+session.
+
+The four bullets of `## Tech Stack`, removed together with that heading:
+
+- Backend: Python FastAPI
+- Frontend: Next.js
+- Database: Supabase PostgreSQL (connection via `DATABASE_URL` in `backend/.env`)
+- License: AGPL v3
+
+Removed because each of the four is recoverable from a file the build reads: `backend/requirements.txt`, `frontend/package.json`, `backend/app/database.py` with `backend/.env.example`, and `LICENSE`.
+
+The opening paragraph of `## Content Model`:
+
+Posts use a `sections` JSON array and a `feed_card` JSON object. The old per-format fields (`hook`, `key_points`, `details`, `body`, etc.) are removed.
+
+Removed because the section already names `backend/app/models.py` and `frontend/src/types/post.ts` as the fact rather than the intent, and both columns are declared there.
