@@ -71,10 +71,25 @@ jobs:
           # lines. Matching on the second-to-last field ignores the leading unicode info glyph.
           pass=$(awk 'NF >= 2 && $(NF-1) == "pass" { p = $NF } END { print p + 0 }' "$RUNNER_TEMP/test.log")
           fail=$(awk 'NF >= 2 && $(NF-1) == "fail" { f = $NF } END { print f + 0 }' "$RUNNER_TEMP/test.log")
-          echo "parsed: pass=$pass fail=$fail"
+          skipped=$(awk 'NF >= 2 && $(NF-1) == "skipped" { s = $NF } END { print s + 0 }' "$RUNNER_TEMP/test.log")
+          echo "parsed: pass=$pass fail=$fail skipped=$skipped"
 
-          # A floor, not the exact count. 40 passing tests across 5 files when this was written; the
-          # count only moves down through a deliberate deletion, which is worth a deliberate edit here.
+          # A skip is not a pass, and this job would otherwise report only the pass count, which is
+          # exactly how a shrinking suite stays green. The 8 gold tests in gold-routing-scan.test.mjs
+          # read content that left this repository on 2026-08-29, so they SKIP here and run only where
+          # PLEXIVE_CONTENT_REPO points at a clone that has it. That is a known, deliberate gap, and
+          # this line is what keeps it visible instead of silent. It does not fail the job: the gap is
+          # a decision, not a regression.
+          if [ "$skipped" -gt 0 ]; then
+            echo "NOTE: $skipped tests were SKIPPED, not run. Expected 8 here (the gold-routing scan;"
+            echo "      its golds live in the private content repository). Their skip reasons are in"
+            echo "      the log above and name PLEXIVE_CONTENT_REPO."
+          fi
+
+          # A floor, not the exact count. 53 tests across 6 files measured 2026-08-29 -- 45 passing
+          # plus the 8 skipped gold tests -- against 40 across 5 files when this was written. The floor
+          # stays at 40 because 45 still clears it; it only moves down through a deliberate deletion,
+          # which is worth a deliberate edit here.
           if [ "$pass" -lt 40 ]; then
             echo "FAIL: only $pass tests passed, expected at least 40."
             echo "Either tests were deleted or the runner matched no files and proved nothing."

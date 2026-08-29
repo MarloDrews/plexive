@@ -2,8 +2,9 @@
 
 Posts are nodes; connections are natural-identity strings one post declares to
 others ("Title by Author", "Name (birth_year)", or a bare title -- never a slug
-or UUID; the generation methodology that sets this convention is no longer public,
-see docs/content-structure/README.md). To resolve those
+or UUID; the generation methodology that sets this convention is no longer public
+and its pointer left with it on 2026-08-29 -- see the Content Methodology section
+of CLAUDE.md). To resolve those
 declared links to real posts (Block 2), every post gets a normalized identity_key
 computed from its own format-specific parts.
 
