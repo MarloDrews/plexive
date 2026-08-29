@@ -29,6 +29,10 @@ node_modules/
 !.vscode/extensions.json
 .idea/
 
+# The generated posts left this repository on 2026-08-29 (batch D), so nothing
+# writes here any more. This line STAYS: an earlier run's batch artefacts are
+# still on disk under generated/facts/_batches/, and removing the rule would
+# un-ignore them and leave git status permanently dirty.
 docs/content-structure/generated/*/_batches/
 
 # User-uploaded content (runtime data, not source)

@@ -27,8 +27,10 @@ const here = dirname(fileURLToPath(import.meta.url))
 
 // The gold examples left this repository on 2026-08-29 for the private content
 // repository, so the directory is resolved through PLEXIVE_CONTENT_REPO -- the
-// same bridge tools/run_pipeline.sh and backend/content_repo.py use. Unset, the
-// path resolves inside this checkout, where the examples are no longer present.
+// same bridge backend/content_repo.py uses for both the examples and the
+// generated posts. Unset, the path resolves inside this checkout, where the
+// examples are no longer present. (This used to name tools/run_pipeline.sh too;
+// the pipeline runners left with the generated posts and are not here now.)
 const CONTENT_REPO = (process.env.PLEXIVE_CONTENT_REPO || "").trim()
 const examplesDir = join(CONTENT_REPO || join(here, "..", ".."), "docs", "content-structure", "examples")
 

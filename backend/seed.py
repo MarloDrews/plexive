@@ -329,10 +329,10 @@ marlo = _get_or_create_marlo(db)
 # Phase 3: seed all example posts found in the content repository's
 # docs/content-structure/examples/. Any file named <format>_example.json is picked
 # up automatically. The examples left this repository on 2026-08-29, so the
-# directory is resolved through PLEXIVE_CONTENT_REPO -- the same bridge
-# tools/run_pipeline.sh uses. resolve_examples() exits 1 naming the variable when
-# it is unset or points somewhere without examples, rather than iterating an empty
-# directory and reporting a successful seed.
+# directory is resolved through PLEXIVE_CONTENT_REPO -- the same variable Phase 4
+# below uses for the generated posts. resolve_examples() exits 1 naming the
+# variable when it is unset or points somewhere without examples, rather than
+# iterating an empty directory and reporting a successful seed.
 for filename in example_files:
     post_format = filename.replace("_example.json", "")
     with open(os.path.join(examples_dir, filename), encoding="utf-8") as f:

@@ -6,9 +6,11 @@ Replaces the original URLs in the JSON files with /seed-images/<filename>.
 Run once after adding a new example file that uses external image URLs.
 
 The examples left this repository on 2026-08-29, so their directory is resolved
-through PLEXIVE_CONTENT_REPO -- the same bridge tools/run_pipeline.sh uses, via
+through PLEXIVE_CONTENT_REPO -- the same bridge backend/seed.py uses, via
 content_repo.resolve_examples(), which exits 1 naming the variable rather than
-walking an empty directory and reporting a successful run. This script WRITES the
+walking an empty directory and reporting a successful run. (This used to name
+tools/run_pipeline.sh; the pipeline runners left this repository with the
+generated posts on 2026-08-29 and no longer exist here.) This script WRITES the
 files back, so with the variable set it edits the private clone, not this one.
 The download destination is unaffected: frontend/public/seed-images/ stayed here.
 """
