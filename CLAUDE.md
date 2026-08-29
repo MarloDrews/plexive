@@ -27,7 +27,7 @@ ALL FOUR OF THE FILES THIS SECTION USED TO NAME ARE GONE FROM THIS REPOSITORY as
 
 The authoritative description of the shape a post takes is therefore `backend/app/models.py` plus `frontend/src/types/post.ts` and `SectionRenderer.tsx`, which are here and which the code actually executes. The spec is the intent; those are the fact.
 
-SVG security: `is_user_content=false` (seed/official) uses `dangerouslySetInnerHTML`; `is_user_content=true` (user submissions) uses a base64 `<img>` data URL. This applies in `SectionRenderer` (CoreIdeasSection, TakeawaySection) and `PostCard`.
+SVG security: `is_user_content=false` (seed/official) uses `dangerouslySetInnerHTML`; `is_user_content=true` (user submissions) uses a base64 `<img>` data URL.
 
 ## Git Workflow
 
@@ -79,7 +79,7 @@ Code scanning uses the ADVANCED setup, meaning `.github/workflows/codeql.yml`, a
 
 ## Closed Beta
 
-THE TWO HALVES ARE NOT EQUAL PARTNERS, and this is the thing to understand before touching either. The frontend holds NO application content. Every `page.tsx` is a client component, there are zero server-side API calls, no service token and no forwarded token; `plexive.org` ships a prerendered empty shell and the browser fetches everything from `api.plexive.org` directly. So **the backend gate is what closed the product**. The web gate covers a shell. Anyone reasoning about "is it closed" should reason about the API.
+THE TWO HALVES ARE NOT EQUAL PARTNERS, and this is the thing to understand before touching either. The frontend holds NO application content. A `page.tsx` here is either a client component or a thin server wrapper that renders one, so no page makes a server-side API call, and there is no service token and no forwarded token; `plexive.org` ships a prerendered empty shell and the browser fetches everything from `api.plexive.org` directly. So **the backend gate is what closed the product**. The web gate covers a shell. Anyone reasoning about "is it closed" should reason about the API.
 
 Two file-name traps, both of which produce a gate that silently does not exist. The Next 16 convention is `proxy.ts`, NOT `middleware.ts`, which was deprecated and renamed in v16.0.0. And `proxy.ts` exports NO `config.matcher`: without one it runs on every request including `/_next/static`, `/_next/image` and `public/`, whereas the negative-lookahead matcher everyone copies excludes exactly those and leaves the shell, its JS and its CSS readable. Both were verified from outside, not reasoned about.
 
@@ -89,7 +89,7 @@ Deliberately still open: `GET /health`, `POST /api/auth/login`, `POST /api/auth/
 
 ## Content Methodology
 
-Moved OUT of this repository on 2026-08-28, into the private content repository, which holds them at the SAME paths relative to its root -- the convention the Content Model section above already uses: `docs/content-structure/BULK_GENERATION_PROMPTS.md`, `docs/content-structure/HUMAN_TEXTURE_STANDARD.md`, `tools/texture_check.py`, `tools/pipeline_prompts/` and `tools/_dump_prose.py`. THE POINTER FILE ITSELF IS GONE: it was `docs/content-structure/README.md`, which left in batch C, and the whole directory was removed on 2026-08-29, so this paragraph is now the only pointer here. It still names no URL, deliberately. Nothing in `backend/`, `frontend/`, `mobile-kmp/` or `.github/workflows/` ever read any of them, so no gate, build or fork is affected; the file-count and ruff floors are scoped to `backend/` and never saw `tools/` at all.
+Moved OUT of this repository on 2026-08-28, into the private content repository, which holds them at the SAME paths relative to its root -- the convention the Content Model section above already uses: `docs/content-structure/BULK_GENERATION_PROMPTS.md`, `docs/content-structure/HUMAN_TEXTURE_STANDARD.md`, `tools/texture_check.py`, `tools/pipeline_prompts/` and `tools/_dump_prose.py`. THE POINTER FILE ITSELF IS GONE: it was `docs/content-structure/README.md`, which left in batch C, and no tracked file has remained under `docs/content-structure/` since batch D, so this paragraph is now the only pointer here. The directory itself is still on disk, holding gitignored batch artefacts that `git status` does not report. It still names no URL, deliberately. Nothing in `backend/`, `frontend/`, `mobile-kmp/` or `.github/workflows/` ever read any of them, so no gate, build or fork is affected; the file-count and ruff floors are scoped to `backend/` and never saw `tools/` at all.
 
 THE RUNNERS LEFT TOO, so nothing here produces or publishes content any more: a batch stops at `integration/<format>-all` in the content repository, and reaching readers is SEEDING -- `PLEXIVE_CONTENT_REPO=<content repo> python backend/seed.py` from a checkout of this repository. `backend/content_repo.py` is the only thing here that reads that variable; it ASSERTS ON A COUNT of the files it resolves rather than on a directory existing, because an empty directory makes `seed.py` report a successful seed having written nothing. The 8 frontend gold tests SKIP when the variable is unset, which is the state CI is in, and that lost coverage is a decision rather than an oversight. The four batches, with their measurements: `docs/RULE_HISTORY.md` under "## Rule: content methodology is private, the release runners went with it".
 
