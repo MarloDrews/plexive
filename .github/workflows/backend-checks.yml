@@ -379,7 +379,7 @@ jobs:
               if [ "$status" = TIMEOUT ]; then
                 echo "----- $f TIMED OUT after ${SUITE_TIMEOUT}s (rc $rc) -----"
                 echo "It did not finish, so its output below is whatever it managed to print."
-                echo "See the CI notes in CLAUDE.md for the 2026-08-27 battle_test.py hangs."
+                echo "See docs/CI_NOTES.md for the 2026-08-27 battle_test.py hangs."
                 echo "It was aborted under -X faulthandler, so the output should END with an"
                 echo "all-thread stack dump naming where every thread was standing. If there"
                 echo "is no dump, THAT is the finding: report it rather than re-running."
