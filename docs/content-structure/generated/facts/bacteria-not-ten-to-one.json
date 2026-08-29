@@ -46,7 +46,7 @@
     {
       "type": "surprises",
       "order": 3,
-      "content": "The figure sounds like it came from a microscope. It came from arithmetic. In 1972 a researcher multiplied a rough count of bacteria per gram by a rough gut volume, reached about a hundred trillion microbes, set that beside the standard guess of ten trillion body cells, and wrote 10 to 1. Nobody had counted either number. The line spread from that single paper into reviews, textbooks, and popular science, picking up authority it was never given. A team finally tallied both totals in 2016, and the chasm closed: roughly 38 trillion bacteria against 30 trillion human cells, about 1.3 to 1."
+      "content": "The figure sounds like it came from a microscope. It came from arithmetic. In 1972 a researcher multiplied a rough count of bacteria per gram by a rough gut volume, reached about a hundred trillion microbes, set that beside the standard guess of ten trillion body cells, and wrote 10 to 1, though nobody had counted either number. The line spread from that single paper into reviews, textbooks, and popular science, picking up authority it was never given. A team finally tallied both totals in 2016, and the chasm closed: roughly 38 trillion bacteria against 30 trillion human cells, about 1.3 to 1."
     },
     {
       "type": "tangible",
@@ -68,7 +68,7 @@
       "type": "story",
       "order": 7,
       "content": {
-        "body": "In 1972 Thomas Luckey, a nutritionist who had spent years raising germ-free animals, needed a number for how many microbes live in a human gut. He took a plausible figure for bacteria per gram and multiplied it by the gut's rough capacity, landing on about a hundred trillion. It was a back-of-an-envelope guess, and he offered it as one. Five years later a widely cited review by Dwayne Savage repeated the figure, and from there it set. Each paper leaned on the one before, the hedges fell away, and a rough estimate turned into common knowledge. Not until 2016 did Ron Sender, Shai Fuchs, and Ron Milo add both sides up carefully, and when they did, the ratio came out near one to one.",
+        "body": "Thomas Luckey needed a number for how many microbes live in a human gut. In 1972 the nutritionist, who had spent years raising germ-free animals, took a plausible figure for bacteria per gram and multiplied it by the gut's rough capacity, landing on about a hundred trillion. It was a back-of-an-envelope guess, and he offered it as one. Five years later a widely cited review by Dwayne Savage repeated the figure, and from there it set. Each paper leaned on the one before, the hedges fell away, and a rough estimate turned into common knowledge. Not until 2016 did Ron Sender, Shai Fuchs, and Ron Milo add both sides up carefully, and when they did, the ratio came out near one to one.",
         "key_figures": [
           {
             "name": "Thomas Luckey",
@@ -93,20 +93,20 @@
       "order": 8,
       "content": [
         {
-          "title": "The count is a flow, not a fixed number",
+          "title": "The count swings by trillions across a day",
           "body": "Nearly all of those bacteria sit in the colon, and the colon empties. The 2016 paper notes that each bowel movement clears out a quarter to a third of its contents, so the bacterial total swings by trillions across a single day. The number is a moving average of a population that is constantly being flushed and regrown. Treating it as a fixed constant was part of what made the old ratio feel more solid than it was.",
           "visual_svg": "<svg viewBox='0 0 400 300' xmlns='http://www.w3.org/2000/svg' fill='none'><text x='200' y='46' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='14' font-weight='600' opacity='0.75' text-anchor='middle'>Gut bacteria, one adult</text><rect x='150' y='72' width='100' height='178' rx='12' stroke='currentColor' stroke-width='2' opacity='0.55'/><rect x='150' y='72' width='100' height='55' rx='12' fill='var(--accent)' opacity='0.22' stroke='var(--accent)' stroke-width='2.5'/><text x='200' y='100' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>1/4 to 1/3</text><text x='200' y='117' fill='var(--accent)' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' font-weight='700' text-anchor='middle'>cleared daily</text><text x='200' y='198' fill='currentColor' font-family='var(--font-mono), ui-monospace, monospace' font-size='15' font-weight='700' text-anchor='middle' opacity='0.8'>~38 trillion</text><text x='200' y='272' fill='currentColor' font-family='var(--font-sans), system-ui, sans-serif' font-size='13' opacity='0.65' text-anchor='middle'>almost all in the colon</text></svg>"
         },
         {
           "title": "The old number survived because nobody reran it",
-          "body": "A rough estimate is not a mistake; offering one is normal science. The failure came after. For four decades the figure was passed from paper to paper by citation, not by measurement, and each pass stripped away the hedges the original carried. By the time it reached the general public it had the ring of a settled fact, and settled facts do not get rechecked. The recount was overdue by the day it was published."
+          "body": "A rough estimate is not a mistake; offering one is normal science. The failure came after. For four decades the figure was passed from paper to paper by citation, not by measurement, and each pass stripped away the hedges the original carried. By the time it reached the general public it had the ring of a settled fact, and settled facts do not get rechecked."
         }
       ]
     },
     {
       "type": "bigger_picture",
       "order": 9,
-      "content": "The microbiome still matters. Those bacteria train the immune system, digest what we cannot, and help build the gut lining, and none of that depends on the exact ratio. The recount did not shrink any of it. What it corrected was a slogan: the claim that we are more microbe than human, only 10% ourselves, built on a figure nobody had measured. The bacteria are still there in their tens of trillions, doing that work. They just about match your own cells while they do it."
+      "content": "The microbiome still matters. Those bacteria train the immune system, digest what we cannot, and help build the gut lining, and none of that depends on the exact ratio; the recount did not shrink any of it. What it corrected was a slogan: the claim that we are more microbe than human, only 10% ourselves, built on a figure nobody had measured. The bacteria are still there in their tens of trillions, doing that work. They just about match your own cells while they do it."
     },
     {
       "type": "quiz",
@@ -186,11 +186,11 @@
       "content": [
         {
           "myth": "If the ratio is not 10 to 1, the whole microbiome idea was hype.",
-          "reality": "The bacteria still number in the tens of trillions and do real work. The recount changed the comparison, not the biology."
+          "reality": "The bacteria still number in the tens of trillions and do real work. The recount changed the comparison. The biology is untouched."
         },
         {
           "myth": "The true ratio is exactly one to one.",
-          "reality": "The best figure is about 1.3 to 1 for a standard adult, and it runs higher in a small child. Roughly even is the honest claim; a clean 1 to 1 is not."
+          "reality": "The best figure is about 1.3 to 1 for a standard adult, and it runs higher in a small child. Roughly even is the honest claim; a clean 1 to 1 overstates it."
         },
         {
           "myth": "A better count later could push it back toward 10 to 1.",
