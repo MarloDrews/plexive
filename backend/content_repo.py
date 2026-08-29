@@ -14,7 +14,8 @@ the preflight explains the boundary instead of failing bare.
 
 Each resolver asserts on a COUNT, not on the directory existing. A directory
 that exists and holds no posts makes every caller here iterate nothing and
-report success, which is the failure mode the CI notes in CLAUDE.md describe:
+report success, which is the failure mode the ## Rules entry in CLAUDE.md
+states and docs/CI_NOTES.md explains under "## Conventions every job follows":
 a step that watches for a condition reporting its own failure as a pass.
 """
 

@@ -1,9 +1,11 @@
 # CI Notes
 
-Moved out of `CLAUDE.md` on 2026-08-29, unchanged. `CLAUDE.md` keeps a pointer to this file
-under its `## CI` section. Read on demand; nothing here loads at session start.
+Moved out of `CLAUDE.md` on 2026-08-29. Every paragraph is the paragraph that left, wording
+unchanged; the nine `##` headings are new and were added so `CLAUDE.md` can point at a heading
+rather than at the file. `CLAUDE.md` keeps those pointers under its `## CI` section. Read on
+demand; nothing here loads at session start.
 
-## CI Notes
+## Workflows, triggers and which three are gates
 
 The workflow uses `distribution: corretto` because `mobile-kmp/gradle/gradle-daemon-jvm.properties` pins `toolchainVendor=AMAZON`. Any other vendor makes Gradle ignore the installed JDK and download Corretto from foojay on every run. Changing that line means changing `.github/workflows/android-build.yml` too.
 
@@ -12,6 +14,8 @@ The `push` trigger is scoped to `branches: [main]` on purpose. Unscoped, it also
 There are five workflow files. Three are gates, one per codebase, one job each: `android-build.yml`, `backend-checks.yml`, `frontend-checks.yml`. One job per codebase on purpose. The number of check names a person has to interpret on a pull request is the real budget, and three is what it will bear.
 
 `codeql.yml` and `dependency-submission.yml` are the other two, and neither is a gate. Both are deliberately absent from the ruleset, so the required checks are still exactly those three, and they are the reason the sentence above says "three gates" rather than "three workflows".
+
+## CodeQL and dependency submission
 
 `codeql.yml` breaks one of the patterns below on purpose: it runs a matrix, so it contributes two check names, `codeql (python)` and `codeql (javascript-typescript)`, neither of which is required. Its languages are `python` and `javascript-typescript`; `java-kotlin` is excluded because CodeQL cannot analyse Kotlin without a build -- `build-mode: none` is supported for Java and explicitly not for Kotlin, where it skips the code and emits a warning -- so covering `mobile-kmp/` would mean a second real Gradle build alongside `android-build.yml`. That is a separate decision, not an oversight.
 
@@ -31,11 +35,15 @@ Worth recording because it is the argument for the push trigger, made by the tri
 
 First run, 2026-08-27, on the pull request that added the file: 87 rules and 0 results for `javascript-typescript`, 43 rules and 0 results for `python`. Zero is the real number and not a vacuous pass -- GitHub's own `code-scanning/analyses` API reports the same two rule counts the in-workflow SARIF assertion did, and CodeQL hard-fails rather than passing quietly when it finds no code of a language it was asked for, so both databases finalized over real source. The default query suite is the high-precision security one, so this says nothing about the 88 ESLint errors, which are a different tool asking a different question.
 
+## Conventions every job follows
+
 No workflow has a `paths:` filter. A workflow skipped by a top-level `paths:` filter reports no status at all, and a required check that never reports blocks the pull request permanently. Actions minutes are unmetered here, so the saving would buy nothing anyway.
 
 Every job sets `shell: bash` explicitly. The Linux default is `bash -e {0}`, without `pipefail`, which is how a piped failure becomes a green check; `shell: bash` is `bash --noprofile --norc -eo pipefail {0}`. This already bit the Android workflow once.
 
 Every check asserts on a count, not only on an exit code, because all of them can pass having checked nothing: a loop that globs no files exits 0, `compileall` over a wrong path exits 0, `npm test` with no matching files exits 0 reporting `pass 0`. The counts are floors well below what was observed, not exact numbers: a route count or a test count moves with normal feature work, and a gate that reds during correct work is a gate that gets switched off. The floors that sit at their observed value (16 suite files, 40 frontend tests) only move down through a deliberate deletion, which is worth a deliberate edit here.
+
+## The backend suite loop and the `battle_test.py` hangs
 
 The backend suites run as a per-file subprocess loop, not `pytest tests`. 12 of the 16 suites execute their whole body at import and share one app instance, one in-memory rate limiter and the first module's temp SQLite file, so in one process they collide: pytest collects 92 of about 979 assertions and interrupts on 4 collection errors. The loop also runs every suite after one fails, so a second failure is not hidden behind the first.
 
@@ -73,6 +81,8 @@ Starlette moved 1.2.1 -> 1.3.1 between the first two occurrences, and it is now 
 
 The re-run policy is inverted by the fix, so it is restated here rather than deleted. Re-running a red `battle_test.py` unchanged was the CORRECT response while the cause was unknown, unreproducible and believed to be in the server: the suite genuinely passed on the retry, and a merge could not wait on a fault nobody could reproduce. It is the WRONG response now. The known cause is gone, so a fresh hang or a red `battle_test.py` is a new fact and must be read, not retried -- and retrying actively destroys the evidence, since re-running a job overwrites the run's conclusion, which is exactly why the second and third occurrences are invisible in the Actions run list. Read the log of the first attempt: the suite now carries its own watchdog and prints a stack before it dies.
 
+## Timeouts, watchdogs and where their numbers come from
+
 Each suite therefore runs under `timeout 300s`, and the job carries `timeout-minutes: 20`. THE DERIVATION OF THAT 300 s CHANGED ON 2026-08-28 AND IS RESTATED RATHER THAN LEFT DANGLING, because a constant whose stated reasoning names a deleted file is how the next person talks themselves into changing it. It was about 2.3x `thumbnails_test.py`'s 130 s, the slowest healthy suite; that suite left with the thumbnail render subsystem, the slowest healthy suite is now `arena_test.py` at about 29 s in CI, and 300 s is therefore about 10x rather than 2.3x. The 180 s watchdog below went from about 1.4x to about 6x the same figure. NEITHER IS LOWERED. Both exist to bound an unbounded hang rather than to bracket a slow run, so a larger multiple costs nothing and buys margin on a shared runner. The dangerous direction is down: a per-suite timeout that fires on a slow-but-healthy run converts a reliable gate into an unreliable one, which is the fastest way to get a gate switched off, and hosted runner speed is not ours to control. `timeout-minutes: 20` is the backstop for a hang outside the loop, in `pip install` or the boot check. It is about 5x the observed job duration, and it is deliberately loose enough that a suite can burn its full 300 s and the summary table still prints, because a job killed by `timeout-minutes` prints nothing and that table is the only thing that names the suite that hung.
 
 The summary reports four statuses, not two, and the loop runs every remaining suite after any of them. `TIMEOUT` counts as a failure but is not reported as `FAIL`, because the two mean different things and the distinction is the only thing that makes a second occurrence recognisable as a pattern. `KILLED` splits the same way again: `timeout --kill-after` sends SIGKILL, but so does the kernel OOM killer, and both arrive as exit 137. Exit 137 is therefore read as a timeout only when the elapsed time is at least 90 percent of the limit, since `timeout` cannot fire before its own limit; below that it is `KILLED`, cause unknown, with OOM the likely one. The named candidate used to be `thumbnails_test.py`, which was image-heavy; it left on 2026-08-28 and no remaining suite is an obvious OOM risk, so this branch now flags a cause nobody has a suspect for, which is more reason to keep it distinct rather than less. Each suite's name is also printed before it is invoked, because its output is redirected to a file and dumped only on failure: without that line a hang leaves the live log completely silent, which is why the first 2026-08-27 hang could only be attributed to a suite by cancelling the run. The second one was attributed from the summary table without touching the run, so this part is load-bearing and is doing its job.
@@ -87,11 +97,15 @@ Every suite runs as `python -X faulthandler` and is aborted with `timeout --sign
 
 The rejected alternative was `faulthandler.register(SIGTERM)` from a `sitecustomize.py` on `PYTHONPATH`, which needs no signal change and touches no test file. It dumps, but `register()` does not terminate, so the suite outlived its own dump and `--kill-after` SIGKILLed it: exit 137, landing in the `KILLED` branch that exists to flag a suspected OOM. Buying a traceback by making a timeout indistinguishable from an OOM is a bad trade. One cosmetic side effect remains: `timeout` prints `the monitored command dumped core`, and because `/proc/sys/kernel/core_pattern` pipes to `systemd-coredump` the kernel ignores `RLIMIT_CORE`, so a core is handed to systemd. Nothing is written into the workspace and the runner is ephemeral, so this costs nothing; `ulimit -c 0` is set anyway.
 
+## Taking a before-number
+
 A BEFORE-NUMBER IS TAKEN BEFORE THE TREE IS TOUCHED, AND THE TREE MUST BE UNCHANGED FOR THE WHOLE TIME IT IS BEING MEASURED. This is a measurement rule, not a CI rule, and it sits here with the others because it is the same failure class. It was learned on 2026-08-28, during the thumbnail-removal batch: the backend suite loop was started to capture the before wall clock, and an edit deleting two classes from `app/schemas.py` landed while `thumbnails_test.py` was still running. That suite imports one of them, so it exited 1 after 131.3 s, and the total would have been reported as 267 s. Re-measured on a restored tree it was 130.3 s and exit 0, for a true baseline of 266.0 s.
 
 What makes it worth a rule rather than a note is the SHAPE. The measurement did not error, the loop did not stop, and the number it produced was a plausible one -- 131.3 s against a true 130.3 s, well inside the noise anyone would accept. It was only caught because the exit code was checked as well as the duration, and the suite that changed was the one being timed. Had the edit hit a suite whose import it did not break, or had only the total been recorded, the wrong number would have been carried into the report and into the CI notes as fact. A measurement taken against a tree that is being edited is a checker that watches for a condition and reports its own failure as a result, which is the `## Rules` entry in a form the other thirteen instances do not cover: the tool was fine, the question was right, and the SUBJECT changed underneath it.
 
 So: take every before-number first, in one pass, and do not begin editing until it has finished. Where that is impractical, record what the tree was at (`git rev-parse HEAD` plus a clean `git status --porcelain`) at both ends of the measurement and say so next to the number.
+
+## Route counts, pinning and mirroring production
 
 The backend boot check counts `app.openapi()["paths"]`, not `len(app.routes)`. The route count is not a property of this codebase, it is a property of the installed FastAPI version: on the same commit it was 57 on the dev laptop (0.136.3, one flattened `APIRoute` per endpoint) and 23 in CI (0.141.1, where `include_router` leaves one `_IncludedRouter` per router). While `requirements.txt` pinned nothing, both were "correct" on the same day. The OpenAPI path count was 45 on both, so that is what the guard asserts. IT IS 42 NOW, NOT 45: the three `/api/thumbnails/*` endpoints left with the render subsystem on 2026-08-28, and this paragraph went on claiming 45 afterwards. Measured again 2026-08-28 during the schema reconciliation: 42. The guard is a FLOOR of 20 rather than an equality, which is why the drift never reddened anything -- and why nothing caught the sentence either. Pinning fastapi has since made the route count stable too, and that is not a reason to switch back: the path count describes the API, the route count describes how the installed FastAPI represents it internally. Pinning made the bad measure stable, not correct.
 
@@ -101,6 +115,8 @@ CI mirrors production, not this laptop. `backend/requirements.txt` pins all 64 p
 
 Pinning every transitive package means none of them receives a security update on its own any more. Dependabot security updates were switched on for exactly this cost, and they are the automatic half now: an advisory against a pinned package raises an alert and Dependabot opens the bump as a pull request, which then goes through the same three checks as anything else. `pip-audit` is still in `requirements-dev.txt` with a comment saying to run it before a release, and nothing runs it. That was already true; pinning is what makes it matter. It was finally run by hand on 2026-08-27 and reported 23 distinct advisories across 6 packages, against a comment in `requirements-dev.txt` asserting there was one. The 2026-08 security batch cleared 22 of them; the remaining one is `ecdsa` PYSEC-2026-1325, which has no fix version. Nothing runs `pip-audit` automatically even now, so the next reading of this paragraph should assume the number has drifted again.
 
+## The four count floors in `backend-checks.yml`
+
 `backend-checks` asserts that pip installed exactly what the requirements files say, rather than trusting that pinning worked. The step has its own floor on the number of pins it parsed, because a parser that matches nothing compares nothing and reports green. That floor is 65 as of 2026-08-28, up from 62 when alembic arrived and down from 70 before that.
 
 THE FOUR COUNT FLOORS IN `backend-checks.yml` ARE OF TWO KINDS, and the file now says which is which next to each, because the distinction is invisible from the numbers and the obvious instinct is to make them uniform. COLLAPSE DETECTORS sit well below the observed count and exist to catch the paths moving or the tool checking nothing: the Python file count (60 against 78 observed) and ruff (60 against 80). DELETION DETECTORS sit exactly on the observed count so a removal has to be a deliberate edit here: the pin count (65) and the suite-file count (16). Note also that the ruff count is deliberately TWO HIGHER than the file count, because ruff runs over `.` from `backend/` and also sees `seed.py` and `download_seed_images.py`; setting one of those floors from the other's number leaves ruff red by two.
@@ -108,6 +124,8 @@ THE FOUR COUNT FLOORS IN `backend-checks.yml` ARE OF TWO KINDS, and the file now
 The Python file count went 74 -> 78 on 2026-08-28 because `backend/alembic/` was ADDED TO THE SEARCH, not only because files appeared. `find app scripts tests` did not descend into it, so `env.py`, `policy.py` and the baseline migration were backend Python that no gate compiled -- and a syntax error in `env.py` would have surfaced as a failed live migration rather than as a red check. The find and the `compileall` both name `alembic` now. Ruff already saw them, since it runs over `.`, which is why its observed count moved by the same four.
 
 The suite floor now has ZERO MARGIN: there are exactly 16 suite files against a floor of 16. The next suite deleted for any reason reds the gate. That is the intended behaviour of a deletion detector, and it is written down so the redness is recognised rather than debugged.
+
+## Known non-gates and a deferred upgrade
 
 ESLint is deliberately not in `frontend-checks`. It reports 88 errors and 13 warnings on tracked files, so it cannot gate anything until those are cleared, and a check that reports without ever failing is noise.
 
