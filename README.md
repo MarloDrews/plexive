@@ -103,8 +103,12 @@ Plexive is licensed under the GNU Affero General Public License v3.0. See [LICEN
 ## Documentation
 
 - [ARCHITECTURE.md](ARCHITECTURE.md) map of every module and component.
-- [Content structure](docs/content-structure/PLEXIVE_CONTENT_STRUCTURE.md) the post and section schema.
-- [docs/content-structure/STYLE_GUIDE_LONGFORM.md](docs/content-structure/STYLE_GUIDE_LONGFORM.md) writing style for long-form content.
-- [docs/content-structure/LAYOUT_STANDARD.md](docs/content-structure/LAYOUT_STANDARD.md) how posts are laid out and rendered.
-- [docs/content-structure/IMAGE_STANDARD.md](docs/content-structure/IMAGE_STANDARD.md) and [SVG_STANDARD.md](docs/content-structure/SVG_STANDARD.md) image and SVG rules.
-- [docs/content-structure/ROADMAP.md](docs/content-structure/ROADMAP.md) what is planned next.
+- [docs/DESIGN.md](docs/DESIGN.md) the "Stage" design identity.
+- [docs/SERVER.md](docs/SERVER.md) how a deployment is put together.
+
+The content authoring documents -- the post and section schema, the writing style
+guide, and the layout, image and SVG standards -- are not in this repository. They
+live in a private content repository, because the application is open source and
+the editorial method is not. Nothing here needs them to build, run or be forked:
+the schema the code enforces is `backend/app/models.py` and
+`frontend/src/types/post.ts`.
