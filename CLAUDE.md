@@ -16,15 +16,7 @@ values and the money. He does not evaluate technical choices and is not asked to
 settled from evidence in the session, or routed to a named specialist, and the report says which of the two
 happened.
 
-## Tech Stack
-- Backend: Python FastAPI
-- Frontend: Next.js
-- Database: Supabase PostgreSQL (connection via `DATABASE_URL` in `backend/.env`)
-- License: AGPL v3
-
 ## Content Model
-
-Posts use a `sections` JSON array and a `feed_card` JSON object. The old per-format fields (`hook`, `key_points`, `details`, `body`, etc.) are removed.
 
 ALL FOUR OF THE FILES THIS SECTION USED TO NAME ARE GONE FROM THIS REPOSITORY as of 2026-08-29 (batch C, see Content Methodology below). Do not search for them here; they are in the private content repository, at the SAME paths relative to its root:
 
