@@ -46,7 +46,7 @@
     {
       "type": "surprises",
       "order": 3,
-      "content": "Start with the density. The lightest silica aerogel weighs about 3 milligrams per cubic centimetre. Water weighs 1,000, and even the air in the room comes in near 1.2. So the material is only a few times heavier than air, and to the eye it is a faint blue haze you can see straight through. Here is the part that does not follow. That same wisp is stiff enough to bridge a gap and carry a brick, and it blocks heat so well that a flame held underneath barely warms the top. So little material should be fragile and should leak heat, yet it does neither."
+      "content": "Start with the density. The lightest silica aerogel weighs about 3 milligrams per cubic centimetre. Water weighs 1,000, and even the air in the room comes in near 1.2. So the material is only a few times heavier than air, and to the eye it is a faint blue haze you can see straight through. Here is the part that does not follow. That same wisp is stiff enough to bridge a gap and carry a brick, and it blocks heat so well that a flame held underneath barely warms the top."
     },
     {
       "type": "tangible",
@@ -83,14 +83,14 @@
       "content": [
         {
           "title": "Heat can barely find a way across it",
-          "body": "The same emptiness that makes aerogel light makes it a superb insulator. Heat crosses a solid by rattling from atom to atom, and aerogel is mostly the space between atoms, threaded by a thin silica web with little to rattle through. Its pores are so small that even the trapped air struggles to carry heat, since a gas molecule hits a pore wall before it hits another molecule. NASA measured a silica aerogel at about 39 times the insulating power of the best fiberglass. Hold a flame beneath a thin slab and the top stays cool enough to touch.",
+          "body": "The same emptiness that makes aerogel light makes it a superb insulator. Heat crosses a solid by rattling from atom to atom, and aerogel is mostly the space between atoms, threaded by a thin silica web with little to rattle through. Its pores are so small that even the trapped air struggles to carry heat, since a gas molecule hits a pore wall before it hits another molecule. NASA measured a silica aerogel at about 39 times the insulating power of the best fibreglass. Hold a flame beneath a thin slab and the top stays cool enough to touch.",
           "image_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Aerogel_matches.jpg",
           "image_caption": "Matches rest unlit on a slab of aerogel held over a flame; the heat barely reaches them.",
           "image_attribution": "NASA/JPL-Caltech, “Aerogel matches”, Public domain (Wikimedia Commons)"
         },
         {
           "title": "It caught comet dust at 6 kilometres a second without burning it",
-          "body": "In 2004 NASA's Stardust probe swept through the coma of comet Wild 2 carrying a rack of aerogel tiles. Grains of comet dust struck at about 6 kilometres a second, fast enough to melt or vaporize on any ordinary surface. The aerogel let them bury themselves instead, braking each grain gently along a slender carrot-shaped track. The capsule parachuted into the Utah desert in 2006 with more than 10,000 captured particles, the first pieces of a comet ever brought to Earth."
+          "body": "In 2004 NASA's Stardust probe swept through the coma, the cloud of gas and dust around comet Wild 2, carrying a rack of aerogel tiles. Grains of comet dust struck at about 6 kilometres a second, fast enough to melt or vaporize on any ordinary surface. The aerogel let them bury themselves instead, braking each grain gently along a slender carrot-shaped track. The capsule parachuted into the Utah desert in 2006 with more than 10,000 captured particles, the first pieces of a comet ever brought to Earth."
         },
         {
           "title": "The lightest-solid crown has moved to carbon",
@@ -101,7 +101,7 @@
     {
       "type": "bigger_picture",
       "order": 9,
-      "content": "Kistler's real result was a proof that a solid does not have to be mostly solid. Take away nearly all the mass, leave a scaffold a few nanometres thick, and the shape and stiffness survive while new properties appear. That idea outgrew silica. Aerogels now come in carbon, metal oxides, and cellulose, and they insulate pipelines and jackets, shield spacecraft, and soak up oil spills. Often the useful part of a solid is the emptiness built into it."
+      "content": "Kistler's real result was a proof that a solid does not have to be mostly solid. Take away nearly all the mass, leave a scaffold a few nanometres thick, and the shape and stiffness survive while new properties appear. That idea outgrew silica. Aerogels now come in carbon, metal oxides, and cellulose, and their uses run from insulating pipelines and jackets to shielding spacecraft and soaking up oil spills."
     },
     {
       "type": "quiz",
