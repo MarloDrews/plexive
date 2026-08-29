@@ -1,9 +1,11 @@
 # Rule History
 
 The incidents, measurements and dates that sit behind the rules in `CLAUDE.md`. Moved out of that
-file on 2026-08-29 so the rules stop competing with their own backstories. Every line here is the
-line that left `CLAUDE.md`, wording unchanged; the headings are new and name the rule each block
-backs. Read on demand. Nothing here loads at session start.
+file on 2026-08-29 so the rules stop competing with their own backstories. Most lines here are the
+line that left `CLAUDE.md`, wording unchanged; the headings and the connective text between
+blocks are new. Where a moved line has since been corrected or rewritten in place it is
+because leaving known-false text standing is worse than losing the original wording, and the
+block says what changed. Read on demand. Nothing here loads at session start.
 
 A rule in `CLAUDE.md` is the instruction. The block under its heading here is why it exists, which
 is what you need when deciding whether the rule still applies, and not before.
@@ -165,13 +167,15 @@ this file. The original, before that edit:
 ## Rule: a step that watches for a condition reports its own failure
 
 The rule as it stood in `CLAUDE.md` before this file existed, pointing at the section that used to
-hold the occurrences:
+hold the occurrences. It is quoted rather than corrected, so its ordinal and its arithmetic are
+HISTORICAL: neither this file nor `CLAUDE.md` states a total any more, for the reason set out
+below the quotation.
 
 - A step that watches for a condition reports its own failure. A broken checker and a checker that found nothing produce identical output, and the identical output is the reassuring one, which is why every gate here asserts on a count. The INVERSE is a separate defect and is not the same rule: a check that reds on correct work teaches people to ignore red. See the nineteenth occurrence under Local Tooling, kept distinct from the other eighteen for exactly that reason.
 
-The nineteen occurrences follow.
+THE ENUMERATED LIST BELOW IS THE RECORD, AND IT IS NOT EXHAUSTIVE. The earliest occurrences were folded into a running tally as they happened and were never written out individually, so they exist here only as a gap in the ordinal labels. What follows is the ones worth telling apart: some kept without an ordinal because they are the least alike, the rest labelled from the thirteenth on. The ordinals are LABELS and not a count -- they are what the cross-references elsewhere resolve against, so they stay as they are.
 
-THE OCCURRENCES BEHIND THE `## Rules` ENTRY that a step watching for a condition reports its own failure. Nineteen have appeared in these notes now, and THEY ARE NOT ALL THE SAME SHAPE: eighteen are the recurring one, a checker that PASSES WHEN IT SHOULD FAIL, and the NINETEENTH is its INVERSE. It is set out at the end and kept distinct on purpose, because filing it under the other eighteen would lose the only thing that makes it worth recording. The eighteen are why it is written down as a rule rather than as another incident, and it applies just as much to a loop run by hand for five minutes as to a workflow -- it is already why every CI guard here asserts on a COUNT rather than on an exit code. Four of them are kept here, picked because they are the least alike. The THIRTEENTH is the most dangerous and is set out under Content Methodology above: a search whose glob could not see the file types that referenced its target, where no gate existed to be vacuous in the first place, so all three required checks would have stayed green over a dead pipeline.
+THE OCCURRENCES BEHIND THE `## Rules` ENTRY that a step watching for a condition reports its own failure. HOW MANY THERE HAVE BEEN IS NOT A QUESTION THIS LIST CAN ANSWER, and the honest form of that is to give no total: the entries below are the record, and the ones that came before them were counted at the time and never described. THEY ARE ALSO NOT ALL THE SAME SHAPE: nearly every one is the recurring defect, a checker that PASSES WHEN IT SHOULD FAIL, and the LAST is its INVERSE. It is set out at the end and kept distinct on purpose, because filing it with the rest would lose the only thing that makes it worth recording. The recurring shape is why it is written down as a rule rather than as another incident, and it applies just as much to a loop run by hand for five minutes as to a workflow -- it is already why every CI guard here asserts on a COUNT rather than on an exit code. Four of them are kept here, picked because they are the least alike. The THIRTEENTH is the most dangerous and is set out under Content Methodology above: a search whose glob could not see the file types that referenced its target, where no gate existed to be vacuous in the first place, so all three required checks would have stayed green over a dead pipeline.
 
 The one that earned it, where the tool was broken: a monitor polling the three required checks piped `gh pr checks` through the external `jq`, `jq` was absent, every iteration produced empty output, and the loop reported "not green yet" for five minutes while all three checks had already passed. Nothing errored anywhere a person could see.
 
