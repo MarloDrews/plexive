@@ -62,7 +62,7 @@ updates:
 # turn produce pull requests is an observation still to be made. What did arrive within the hour is
 # the alerts: mobile-kmp/ went from 0 to 50 (1 critical, 21 high, 26 medium, 2 low), all filed against
 # mobile-kmp/settings.gradle.kts and dominated by build-tooling coordinates (io.netty:*,
-# kotlin-gradle-plugin, bouncycastle). None triaged; see CLAUDE.md before reading the number as 50
+# kotlin-gradle-plugin, bouncycastle). None triaged; see docs/RULE_HISTORY.md before reading the number as 50
 # things shipping in the app.
 # (The React Native app at mobile/ was deleted on 2026-08-27, so the npm block that used to be
 # described here as deliberately absent is now moot in both directions. Its three open alerts --
