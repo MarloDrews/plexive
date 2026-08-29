@@ -51,6 +51,17 @@ SLUGS = [
     "scarcity",
 ]
 
+# The canonical vocabulary as a set, for membership tests. SLUGS stays a list
+# because Phase 1 creates the Interest rows in its order.
+CANONICAL_SLUGS = set(SLUGS)
+
+# Floor for the tag preflight below. A COLLAPSE DETECTOR, deliberately well
+# under the 189 references measured across the 61 posts on 2026-08-29: it is
+# here to catch the checker reading nothing at all (a renamed JSON key, a
+# resolver returning an empty list), not to pin the content's size. Ordinary
+# content work moves the real number and must not red this.
+MIN_TAG_REFERENCES = 50
+
 _SMALL_WORDS = {"of", "and", "the", "in", "to", "a", "for", "on", "at", "by", "with", "or", "as", "vs"}
 
 NAME_EXCEPTIONS = {
@@ -74,6 +85,121 @@ FORMAT_INTEREST_SLUGS = {
 }
 
 
+def _post_paths(examples_dir, example_files, generated_dir, generated_formats):
+    """Every post file this run will seed, as (label, full path).
+
+    The label is what a reader can act on -- the path relative to the content
+    repository -- rather than the absolute path, which is different on every
+    machine.
+    """
+    for filename in example_files:
+        yield (
+            os.path.join("examples", filename),
+            os.path.join(examples_dir, filename),
+        )
+    for post_format, filenames in generated_formats:
+        for filename in filenames:
+            yield (
+                os.path.join("generated", post_format, filename),
+                os.path.join(generated_dir, post_format, filename),
+            )
+
+
+def preflight_tags(examples_dir, example_files, generated_dir, generated_formats):
+    """Reject any tag outside the canonical vocabulary, BEFORE anything is written.
+
+    Why this stops the run rather than warning. A tag that is not in SLUGS maps
+    to no Interest row, and _resolve_interests used to skip it in silence: the
+    post was seeded, the run printed "Seeded ... post" and exited 0, and the
+    only visible effect was the wrong interest chips -- plus, when the bad tag
+    was tags[0], a blank category eyebrow on the card, because
+    post_counts.primary_category_name returns None for a tag that maps to none
+    of the post's interests. This runs unattended, so a warning in a log that
+    ends in "success" is not a report at all.
+
+    It runs over EVERY post before the first one is written, so a bad tag never
+    leaves a half-seeded database, and it collects every offender rather than
+    the first: fixing tags one run at a time is how a five-minute fix becomes
+    five runs.
+
+    Membership is tested against SLUGS, not against the Interest table. The
+    table is get-or-create and never deletes, so it can still hold rows from an
+    earlier vocabulary; SLUGS is the canonical list and the table is derived
+    from it.
+
+    ASSERTS ON A COUNT, per the ## Rules entry in CLAUDE.md: a checker that
+    reads no tags at all -- a renamed JSON key, a resolver that returned
+    nothing -- would otherwise find no offenders and report a clean pass, which
+    is the reassuring output. The floor is a collapse detector (see
+    MIN_TAG_REFERENCES); it is deliberately NOT a per-post "must have tags"
+    rule, because _resolve_interests documents tag-less legacy posts as
+    tolerated and a check that reds on correct work is its own defect.
+    """
+    offenders = []
+    posts = 0
+    references = 0
+
+    for label, path in _post_paths(
+        examples_dir, example_files, generated_dir, generated_formats
+    ):
+        with open(path, encoding="utf-8") as f:
+            data = json.load(f)
+        posts += 1
+
+        tags = data.get("tags", [])
+        if not isinstance(tags, list):
+            offenders.append((label, repr(tags), "tags is not a list"))
+            continue
+
+        for tag in tags:
+            references += 1
+            if not isinstance(tag, str):
+                offenders.append((label, repr(tag), "tag is not a string"))
+            elif tag not in CANONICAL_SLUGS:
+                offenders.append((label, tag, "not in the canonical vocabulary"))
+
+    print(
+        f"tags: {references} references across {posts} posts, "
+        f"checked against {len(CANONICAL_SLUGS)} canonical slugs"
+    )
+
+    if references < MIN_TAG_REFERENCES:
+        print(
+            f"FATAL: only {references} tag references were found across {posts} posts, "
+            f"below the floor of {MIN_TAG_REFERENCES}.",
+            file=sys.stderr,
+        )
+        print(
+            "       This check found nothing to check, so its silence proves nothing.\n"
+            "       Either the posts no longer carry a 'tags' key under that name, or\n"
+            "       the content repository resolved to the wrong tree.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    if offenders:
+        print(
+            f"FATAL: {len(offenders)} tag(s) outside the canonical vocabulary "
+            f"({len(CANONICAL_SLUGS)} slugs in SLUGS, backend/seed.py):",
+            file=sys.stderr,
+        )
+        for label, tag, reason in offenders:
+            print(f"       {label}: {tag} -- {reason}", file=sys.stderr)
+        print(
+            "\n"
+            "Nothing has been seeded. A tag outside the vocabulary maps to no\n"
+            "Interest row, so the post would carry the wrong interest chips, and a\n"
+            "bad tags[0] would leave the card's category eyebrow blank -- with the\n"
+            "run still reporting success.\n"
+            "Fix the tag in the content repository, or add the slug to SLUGS in\n"
+            "backend/seed.py if it is genuinely new (it needs a glyph in\n"
+            "frontend/src/lib/glyphs.ts and a group in frontend/src/lib/interests.ts\n"
+            "as well; frontend/test/taxonomy-drift.test.mjs enforces both).",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+
 def _resolve_interests(db, tags, post_format):
     """Interests for a post, derived from its own taxonomy tags.
 
@@ -84,6 +210,15 @@ def _resolve_interests(db, tags, post_format):
     """
     interests = []
     for tag in tags:
+        # preflight_tags() has already rejected everything outside SLUGS, so
+        # this cannot fire in a normal run. It is here so that a caller which
+        # bypasses the preflight fails loudly instead of silently dropping the
+        # tag, which is the defect this function used to have.
+        if tag not in CANONICAL_SLUGS:
+            raise ValueError(
+                f"tag {tag!r} is not in the canonical vocabulary (SLUGS); "
+                "refusing to seed a post with an unmapped tag"
+            )
         interest = db.query(Interest).filter_by(slug=tag).first()
         if interest:
             interests.append(interest)
@@ -311,6 +446,12 @@ def _get_or_create_marlo(db) -> User:
 # nothing.
 examples_dir, example_files = resolve_examples()
 generated_dir, generated_formats = resolve_generated()
+
+# Second preflight, still before any post is written: every tag on every post
+# must be in the canonical vocabulary. Same principle as the two resolvers
+# above -- fail before the work, not part-way through it -- and it asserts on a
+# count for the same reason they do. See preflight_tags().
+preflight_tags(examples_dir, example_files, generated_dir, generated_formats)
 
 db = SessionLocal()
 
