@@ -12,12 +12,12 @@ See CROSS_POST_VARIANCE.md for the format.
 - longer-sentence reversal (belief carried into a long sentence) - 6
 - mid-scene concrete open (lead on the fact, no flat belief-then-punch) - 15
 - flat declarative on the headline fact/number (gold-style, no reversal or imperative) - 8
-- staccato reversal punch (flat belief, then a 3-6 word negation) - 3
+- staccato reversal punch (flat belief, then a 3-6 word negation) - 4
 - number-first mismatch (lead on the number gap) - 2
 - concrete-test / behavioral-mirror open - 5
 - flat "X does Y fast" declarative, then prose pivot - 1
 - object-in-hand imperative - 4
-- accounting "start with" reframe - 2
+- accounting "start with" reframe - 3
 - threshold-fact / boundary-value opener - 3
 - flat paradox / two-true-claims statement - 4
 - concede-then-pivot ("[X] is not, by itself, [Y]") - 2
@@ -30,7 +30,7 @@ See CROSS_POST_VARIANCE.md for the format.
 ### Closing line
 - deep-time / long-duration aphorism - 4
 - spatial / elemental image - 5
-- identity / boundary reflection - 4
+- identity / boundary reflection - 5
 - quiet-utility, present-day consequence - 7
 - elevated "written across/into [X]" aphorism - 1
 - concrete callback to the opening object - 1
@@ -45,7 +45,7 @@ See CROSS_POST_VARIANCE.md for the format.
 - flat mechanism restatement (de-landed, no aphorism) - 1
 - earned antithesis / symmetry landing (real opposition) - 3
 - flat unsolved-status close (de-landed) - 4
-- flattened / de-landed close (ends plain, no landing) - 10
+- flattened / de-landed close (ends plain, no landing) - 11
 - reframe-turn landing (the fact's flip kept at surprises/story) - 6
 
 ### Story pivot
@@ -59,15 +59,31 @@ See CROSS_POST_VARIANCE.md for the format.
 - old prediction, dated confirmation ("the case broke open on [date]") - 5
 - process/recovery narrative (get the sample, then read it) - 2
 - heresy then vindication (defended for years, then proof) - 8
-- eureka scene, discoverer's reaction, no vindication arc - 4
+- eureka scene, discoverer's reaction, no vindication arc - 5
 - found, then lost, then re-established - 2
 - finding resisted / ignored after proof (inverse vindication) - 1
-- untested/invented claim -> century of repetition -> modern debunk - 3
+- untested/invented claim -> century of repetition -> modern debunk - 4
 - view hardens into lore, then modern overturn (correct-for-its-time science overreaches) - 2
 - worry investigated, then dismissed (analyst finds no effect) - 1
 - naming chain, delayed understanding (no lone hero, no vindication) - 1
 
 ## Recent batches
+
+### 2026-08-28-verify
+Batch coordination (2 posts): split the shared close and the shared story-opener mold. bigger_picture close -
+bacteria keeps the one crafted landing ("They just about match your own cells while they do it."), aerogel
+de-lands (dropped "Often the useful part of a solid is the emptiness built into it."). Story-opener mold "In
+[year] [Full Name], a [role], [verb]" (shared with GOLD) - aerogel keeps it (Kistler), bacteria breaks it
+(opens on the act, "Thomas Luckey needed a number..."). Broke the three-verb comma list before the close on the
+de-landed post (aerogel: recast to a "from X to Y" range); kept it on bacteria. De-landed surplus landings:
+aerogel surprises (dropped "yet it does neither"), bacteria angles[1] (dropped "overdue by the day it was
+published"). Thinned bacteria's reflex antithesis (angle title off "a flow, not a fixed number"; misconceptions
+1 and 2 recast to plain), kept one earned ("by citation, not by measurement"). Thinned bacteria's short-punch
+cadence from ~5 to 3 (folded "Nobody had counted either number." and "The recount did not shrink any of it.").
+Glossed aerogel's "coma" in stride; "fiberglass" -> "fibreglass" for British consistency. Left "Nature" plain
+(matches the sources rendering), noted for step 6. No fact, number, name, quote, or source changed.
+- aerogel: opener accounting "start with" reframe ("Start with the density.") / close flattened / de-landed at bigger_picture (aphorism dropped, three-verb list recast to a from/to range; one earned landing kept at angles[1], comet historical-first) / pivot eureka scene, invention won on a wager, keeps the "In [year] [Name], a [role]" opener mold (Kistler 1931, College of the Pacific) [scale-number]
+- bacteria: opener staccato reversal punch ("The figure sounds like it came from a microscope. It came from arithmetic.") / close identity / boundary reflection kept at bigger_picture ("They just about match your own cells while they do it."); angles[1] de-landed, angle title + 2 misconceptions off "X, not Y", short punches thinned to 3 / pivot untested claim -> decades of citation -> 2016 recount, story opener broken off the "In [year] [Name], a [role]" mold (Luckey 1972, Savage 1977, Sender/Fuchs/Milo 2016) [myth-corrected]
 
 ### 2026-07-10-c
 Batch coordination: kept one earned landing per post and de-landed the rest positionally (ended units
@@ -183,10 +199,3 @@ theory*; split the loss one_line semicolon.
 - mirror-image: opener object-in-hand imperative (batch keeper) / close flat callback to opener motif ("stopped being a footnote") / pivot eureka scene, discoverer's reaction (Pasteur to Biot)
 - oxygen: opener mid-scene concrete (scene-first, frame lands after) / close quiet-utility present-day ("cannot go a few minutes without it") / pivot none (no story section)
 - mycorrhizal: opener flat declarative on the headline fact ("a teaspoon of soil can hold...") / close present-day, mildly urgent (loss outpacing knowledge) / pivot heresy then vindication + later confirmer (Frank dismissed, right; Simard confirms)
-
-### 2026-07-04-a
-- quantum: opener number-first mismatch / close elevated "written across" aphorism (batch keeper) / pivot relay across several actors
-- sleep: opener concrete-test / behavioral mirror / close blunt present-day ("feeling of being fine goes first") / pivot discoverer + confirmer, replication holds
-- gold: opener object-in-hand imperative / close concrete callback to the ring / pivot old prediction, dated confirmation
-- antarctica: opener discovery-scene + date (mid-scene concrete) / close measured causal present-day / pivot process/recovery narrative
-- fossil: opener accounting "start with" reframe / close identity-boundary reflection / pivot heresy then vindication
