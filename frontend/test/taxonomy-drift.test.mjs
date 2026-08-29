@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs"
 import { fileURLToPath } from "node:url"
 import { dirname, join } from "node:path"
 import { CATEGORIES } from "../src/lib/interests.ts"
+import { FIELD_GLYPHS } from "../src/lib/glyphs.ts"
 
 // Drift guard for the taxonomy vocabulary, which exists in THREE independent
 // copies with nothing keeping them in sync:
@@ -12,17 +13,20 @@ import { CATEGORIES } from "../src/lib/interests.ts"
 //   2. frontend/src/lib/interests.ts    -- CATEGORIES, the display grouping
 //   3. frontend/src/lib/glyphs.ts       -- FIELD_GLYPHS, one SVG per slug
 //
-// This file covers 1 against 2; the glyph half is asserted alongside it.
-//
 // Renaming or removing a slug means editing all three (plus the tags in every
 // post JSON, which backend/seed.py's preflight_tags() now covers). Missing one
 // of the three failed SILENTLY in every case. A slug absent from CATEGORIES
 // drops out of the create wizard entirely, because create/page.tsx builds its
 // sections from CATEGORIES alone and has no fallback for an uncategorised slug
 // (onboarding does have one, an "Other" bucket at InterestPicker.tsx:95-96, so
-// the two pages disagreed about the same slug). Measured 2026-08-29 before this
-// file existed: SLUGS 149, CATEGORIES 148, the one difference being
-// `creativity`.
+// the two pages disagreed about the same slug). A slug absent from FIELD_GLYPHS
+// renders NO GLYPH AT ALL: FieldGlyph.tsx does `if (!svg) return null`, with no
+// error, no warning and, until this file, no test. That null is also the
+// module's lazy-loading state, so on screen "this slug has no glyph" and "the
+// 88 KB glyph chunk has not landed yet" are indistinguishable -- which is why
+// the glyph half is asserted here rather than left to be noticed. Measured
+// 2026-08-29 before this file existed: SLUGS 149, FIELD_GLYPHS 149,
+// CATEGORIES 148, the one difference being `creativity`.
 //
 // The assertions are of two deliberately different kinds:
 //   - a PARSE FLOOR on each source, well below the 149 observed. It is a
@@ -59,9 +63,12 @@ const categorySlugs = CATEGORIES.flatMap((c) => c.slugs)
 
 // Printed unconditionally, the way gold-routing-scan.test.mjs prints its count:
 // a reader of a green log can see the check had something to work with.
+const glyphSlugs = Object.keys(FIELD_GLYPHS)
+
 console.log(
   `taxonomy: SLUGS ${seedSlugs.length}, ` +
-    `CATEGORIES ${categorySlugs.length} in ${CATEGORIES.length} groups`,
+    `CATEGORIES ${categorySlugs.length} in ${CATEGORIES.length} groups, ` +
+    `FIELD_GLYPHS ${glyphSlugs.length}`,
 )
 
 const seedSet = new Set(seedSlugs)
@@ -76,6 +83,10 @@ test("the three slug sources parsed something (floor, not a deletion detector)",
   assert.ok(
     categorySlugs.length >= MIN_SLUGS,
     `CATEGORIES holds only ${categorySlugs.length} slugs, below the floor of ${MIN_SLUGS}.`,
+  )
+  assert.ok(
+    glyphSlugs.length >= MIN_SLUGS,
+    `FIELD_GLYPHS holds only ${glyphSlugs.length} keys, below the floor of ${MIN_SLUGS}.`,
   )
 })
 
@@ -118,5 +129,29 @@ test("every grouped slug is in the canonical vocabulary", () => {
     `these slugs are grouped in frontend/src/lib/interests.ts but are not in ` +
       `backend/seed.py SLUGS, so no Interest row is ever created for them and ` +
       `the pill silently never renders: ${strays.join(", ")}`,
+  )
+})
+
+test("every canonical slug has a glyph", () => {
+  const withGlyph = new Set(glyphSlugs)
+  const missing = seedSlugs.filter((s) => !withGlyph.has(s))
+  assert.deepEqual(
+    missing,
+    [],
+    `these slugs are in backend/seed.py SLUGS but have no entry in ` +
+      `frontend/src/lib/glyphs.ts, so a post whose tags[0] is one of them ` +
+      `renders no glyph at all on the card and the detail header -- silently, ` +
+      `because FieldGlyph.tsx returns null: ${missing.join(", ")}`,
+  )
+})
+
+test("every glyph key is in the canonical vocabulary", () => {
+  const strays = glyphSlugs.filter((s) => !seedSet.has(s))
+  assert.deepEqual(
+    strays,
+    [],
+    `these keys are in frontend/src/lib/glyphs.ts but are not in ` +
+      `backend/seed.py SLUGS, so they are dead weight in a chunk that ships ` +
+      `to every reader: ${strays.join(", ")}`,
   )
 })
