@@ -47,13 +47,51 @@ SLUGS = [
     "public-health", "sports-science", "everyday-science", "food-science",
     "games", "sports", "travel", "nature-phenomena", "curiosities", "future",
     "internet-culture", "crime", "money-everyday", "history", "anthropology",
-    "exponential-growth", "patience", "critical-thinking", "trade-offs",
-    "scarcity",
+    "exponential-growth", "patience", "reasoning-traps", "trade-offs",
+    "scarcity", "hidden-mechanisms", "corrected-beliefs", "scale-shock",
+    "overlooked-evidence",
 ]
 
 # The canonical vocabulary as a set, for membership tests. SLUGS stays a list
 # because Phase 1 creates the Interest rows in its order.
 CANONICAL_SLUGS = set(SLUGS)
+
+# WHICH AXIS A SLUG IS ON, marked here rather than remembered. Axis 1 is the
+# SUBJECT -- what a post is about (physics, medicine, ancient-rome). Axis 2 is
+# the KIND OF POST -- a pattern that recurs across subjects, so a reader picking
+# one gets a feed weighted toward that shape rather than that topic.
+#
+# This is a marking ON the vocabulary, not a second vocabulary: every slug below
+# is also in SLUGS, and SLUGS stays the one canonical list. A slug absent from
+# here is axis 1, which is the overwhelming majority (149 of the 153).
+#
+# Two things are enforced against it rather than left to convention:
+#   - preflight_tags() rejects an axis-2 slug at tags[0]. tags[0] is the post's
+#     primary category and drives the card eyebrow and the glyph, and a kind of
+#     post is not a category.
+#   - the "Ways of Thinking" group in frontend/src/lib/interests.ts carries the
+#     same marking as `axis: 2`, and frontend/test/taxonomy-drift.test.mjs
+#     asserts the two agree in both directions, so the code's marking and the
+#     reader's screen cannot drift apart.
+#
+# Decided 2026-08-29 on 61 posts of ONE format (facts). See the content
+# repository's docs/content-structure/TAXONOMY_AXES_BASE.md for what that rests
+# on and what would revisit it.
+AXIS2_SLUGS = [
+    "hidden-mechanisms", "reasoning-traps", "corrected-beliefs",
+    "scale-shock", "overlooked-evidence", "everyday-science",
+]
+
+AXIS2 = set(AXIS2_SLUGS)
+
+# Floor for the axis-2 half of the tag preflight below, and a COLLAPSE DETECTOR
+# in the same sense as MIN_TAG_REFERENCES: 60 axis-2 references were measured
+# across the 61 posts on 2026-08-29, and this sits well under that. It exists so
+# that a preflight which reads no axis-2 tag at all -- a renamed AXIS2_SLUGS, a
+# retag reverted -- cannot report "none at tags[0]" and pass having checked
+# nothing. It is NOT a floor on how much axis-2 tagging the corpus carries;
+# ordinary content work moves the real number and must not red this.
+MIN_AXIS2_REFERENCES = 25
 
 # Floor for the tag preflight below. A COLLAPSE DETECTOR, deliberately well
 # under the 189 references measured across the 61 posts on 2026-08-29: it is
@@ -78,8 +116,8 @@ FORMAT_INTEREST_SLUGS = {
     "books": ["psychology", "behavioral-economics", "decision-making", "neuroscience"],
     "facts": ["biology", "animals", "everyday-science"],
     "people": ["physics", "history-of-science", "world-wars"],
-    "concepts": ["mental-models", "critical-thinking", "epistemology"],
-    "questions": ["philosophy", "ethics", "critical-thinking", "epistemology"],
+    "concepts": ["mental-models", "reasoning-traps", "epistemology"],
+    "questions": ["philosophy", "ethics", "reasoning-traps", "epistemology"],
     "stories": ["history", "crime", "forgotten-history"],
     "academy": ["neuroscience", "philosophy-of-mind", "mathematics", "artificial-intelligence"],
 }
@@ -106,7 +144,27 @@ def _post_paths(examples_dir, example_files, generated_dir, generated_formats):
 
 
 def preflight_tags(examples_dir, example_files, generated_dir, generated_formats):
-    """Reject any tag outside the canonical vocabulary, BEFORE anything is written.
+    """Reject a tag outside the vocabulary, or an axis-2 slug at tags[0], BEFORE anything is written.
+
+    TWO RULES, one membership and one POSITION.
+
+    The position rule: a slug in AXIS2_SLUGS may appear on a post but never as
+    tags[0]. tags[0] is the primary category. It is the only tag the card eyebrow
+    reads (post_counts.primary_category_name) and the only tag the field glyph
+    resolves from (FieldGlyph, PostCard.tsx:457), and an axis-2 slug names a KIND
+    of post -- a reasoning trap, a corrected belief -- which is not a category a
+    post can be filed under. Nothing enforced this until 2026-08-29; it held by
+    convention, and the convention held (measured: across the 61 posts an axis-2
+    slug had never once been tags[0], 0 of 6 uses). A convention that has never
+    been broken is not the same as a rule, and the axis-2 retag adds 48 more
+    chances to break it.
+
+    It is checked HERE rather than in the content repository's texture_check.py
+    because that checker is shape-only by design (it verifies tags[0] is
+    slug-shaped and says membership "is enforced where the slug list lives") and
+    because it never fails a post: it exits 0 unconditionally. This is the place
+    that already stops the run on a bad tag, so the position rule fails the same
+    loud way, in the same list of offenders, with nothing seeded.
 
     Why this stops the run rather than warning. A tag that is not in SLUGS maps
     to no Interest row, and _resolve_interests used to skip it in silence: the
@@ -138,6 +196,7 @@ def preflight_tags(examples_dir, example_files, generated_dir, generated_formats
     offenders = []
     posts = 0
     references = 0
+    axis2_references = 0
 
     for label, path in _post_paths(
         examples_dir, example_files, generated_dir, generated_formats
@@ -151,17 +210,44 @@ def preflight_tags(examples_dir, example_files, generated_dir, generated_formats
             offenders.append((label, repr(tags), "tags is not a list"))
             continue
 
-        for tag in tags:
+        for index, tag in enumerate(tags):
             references += 1
             if not isinstance(tag, str):
                 offenders.append((label, repr(tag), "tag is not a string"))
             elif tag not in CANONICAL_SLUGS:
                 offenders.append((label, tag, "not in the canonical vocabulary"))
+            elif tag in AXIS2:
+                axis2_references += 1
+                if index == 0:
+                    offenders.append(
+                        (label, tag, "axis-2 slug at tags[0]: it names a KIND of post, "
+                                     "not a subject, so it cannot be the primary category")
+                    )
 
     print(
         f"tags: {references} references across {posts} posts, "
         f"checked against {len(CANONICAL_SLUGS)} canonical slugs"
     )
+    print(
+        f"axis 2: {axis2_references} references to {len(AXIS2)} kind-of-post slugs, "
+        f"{sum(1 for _, _, r in offenders if r.startswith('axis-2 slug at tags[0]'))} "
+        f"of them at tags[0]"
+    )
+
+    if axis2_references < MIN_AXIS2_REFERENCES:
+        print(
+            f"FATAL: only {axis2_references} axis-2 tag references were found across "
+            f"{posts} posts, below the floor of {MIN_AXIS2_REFERENCES}.",
+            file=sys.stderr,
+        )
+        print(
+            "       The tags[0] rule just above therefore had almost nothing to\n"
+            "       check, so its silence proves nothing. Either AXIS2_SLUGS no\n"
+            "       longer names the slugs the posts actually carry, or the axis-2\n"
+            "       retag was reverted.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
 
     if references < MIN_TAG_REFERENCES:
         print(
@@ -178,9 +264,12 @@ def preflight_tags(examples_dir, example_files, generated_dir, generated_formats
         sys.exit(1)
 
     if offenders:
+        misplaced = sum(1 for _, _, r in offenders if r.startswith("axis-2 slug at tags[0]"))
         print(
-            f"FATAL: {len(offenders)} tag(s) outside the canonical vocabulary "
-            f"({len(CANONICAL_SLUGS)} slugs in SLUGS, backend/seed.py):",
+            f"FATAL: {len(offenders)} bad tag(s) "
+            f"({len(offenders) - misplaced} outside the canonical vocabulary of "
+            f"{len(CANONICAL_SLUGS)} slugs, {misplaced} an axis-2 slug at tags[0]; "
+            f"both in SLUGS/AXIS2_SLUGS, backend/seed.py):",
             file=sys.stderr,
         )
         for label, tag, reason in offenders:
@@ -194,7 +283,16 @@ def preflight_tags(examples_dir, example_files, generated_dir, generated_formats
             "Fix the tag in the content repository, or add the slug to SLUGS in\n"
             "backend/seed.py if it is genuinely new (it needs a glyph in\n"
             "frontend/src/lib/glyphs.ts and a group in frontend/src/lib/interests.ts\n"
-            "as well; frontend/test/taxonomy-drift.test.mjs enforces both).",
+            "as well; frontend/test/taxonomy-drift.test.mjs enforces both).\n"
+            "\n"
+            "An 'axis-2 slug at tags[0]' offender is a DIFFERENT fix: the slug is\n"
+            "canonical and the post may keep it, but it cannot sit first. tags[0] is\n"
+            "the PRIMARY CATEGORY -- it sets the card eyebrow\n"
+            "(post_counts.primary_category_name) and the field glyph (FieldGlyph,\n"
+            "resolved from tags[0]) -- and a kind of post is not a category. Put a\n"
+            "subject slug first and leave the axis-2 slug at tags[1] or later, where\n"
+            "the feed still weights on it: the scorer iterates every slug on a post,\n"
+            "not tags[0] (scoring.py:116-126).",
             file=sys.stderr,
         )
         sys.exit(1)
@@ -436,7 +534,7 @@ def _get_or_create_marlo(db) -> User:
 
 # Preflight, before any database SESSION and before the admin-password prompt: an
 # unset or misdirected PLEXIVE_CONTENT_REPO stops the run here rather than after
-# 149 interests have already been written. Measured: both failure paths exit 1
+# 153 interests have already been written. Measured: both failure paths exit 1
 # with 0 interests and 0 posts. (The create_all at the top of this file runs at
 # import, so an empty schema is still created before this point; that is
 # unchanged by the move and is the only database work ahead of the preflight.)
