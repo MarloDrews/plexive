@@ -16,8 +16,12 @@ plexive-docs/research/settings-enforcement-verification-2026-08-30.md. `F20`,
 `F21` and `F22` are numbered in
 plexive-docs/research/settings-enforcement-final-verification-2026-08-30.md,
 which is a DIFFERENT file, and all three are false blocks on correct commands
-rather than misses. So a case that later goes red says which measured defect has
-come back and which report describes it.
+rather than misses. `F23` and `F24` are numbered in a THIRD file,
+plexive-docs/research/settings-enforcement-fixes-round-three-2026-08-30.md, and
+both run the other way again: they are MISSES, a shell keyword and a
+`find -exec` hiding the command word from every check that resolves one. So a
+case that later goes red says which measured defect has come back and which
+report describes it.
 
 TWO LITERALS ARE BUILT BY CONCATENATION ON PURPOSE, the emoji and the deprecated
 utcnow call. Spelled out, they would make this file trip the very checks it
@@ -567,6 +571,110 @@ def build_cases(fx):
              payload=bash_payload("alembic upgrade head && git commit -m x"),
              stdout_one_json=True,
              stdout_must_contain_all=["BACKUP WARNING", "conventional commits"]),
+
+        # === F23: a shell keyword is not a command word ======================
+        # command_word read `do` as the command word of `do alembic upgrade
+        # head`, so a schema operation inside a loop or a conditional reached
+        # the database with the backup gate never running. Measured 2026-08-30
+        # at exit 0 against an empty backup directory by the session BEFORE the
+        # one that fixed it, and numbered F23 in
+        # plexive-docs/research/settings-enforcement-fixes-round-three-2026-08-30.md.
+        # The four blocking cases are the four commands that report names.
+        dict(name="F23 gate: alembic inside a for loop", script=BASH_HOOK,
+             expect=2,
+             payload=bash_payload("for f in a b; do alembic upgrade head; done"),
+             env=empty_env),
+        dict(name="F23 gate: alembic inside an if block", script=BASH_HOOK,
+             expect=2,
+             payload=bash_payload("if true; then alembic upgrade head; fi"),
+             env=empty_env),
+        dict(name="F23 psql-f: psql inside a while loop", script=BASH_HOOK,
+             expect=2,
+             payload=bash_payload('while read f; do psql -f "$f"; done')),
+        dict(name="F23 jq: bare jq inside a for loop", script=BASH_HOOK,
+             expect=2,
+             payload=bash_payload("for f in *.json; do jq . $f; done")),
+
+        # The keyword skip must reach through a wrapper and an assignment, and
+        # back: `do sudo alembic` and `do PGPASSWORD=x pg_dump` are the two
+        # orders these interleave in.
+        dict(name="F23 gate: keyword then wrapper", script=BASH_HOOK, expect=2,
+             payload=bash_payload("do sudo alembic upgrade head"),
+             env=empty_env),
+        dict(name="F23 gate: keyword then assignment", script=BASH_HOOK,
+             expect=2,
+             payload=bash_payload(
+                 "for f in a b; do PGPASSWORD=x pg_dump -Fc db; done"),
+             env=empty_env),
+
+        # === F23: a keyword in front of CORRECT work must not block ==========
+        # Skipping a keyword makes the word after it a command word, and every
+        # one of those is a fresh chance to fire on correct work. These four are
+        # the ones the brief names; the boundary cases below are the ones the
+        # change itself made suspicious.
+        dict(name="F23 clean: for loop over an echo", script=BASH_HOOK, expect=0,
+             payload=bash_payload('for f in *.py; do echo "$f"; done')),
+        dict(name="F23 clean: if block over an echo", script=BASH_HOOK, expect=0,
+             payload=bash_payload("if true; then echo ok; fi")),
+        dict(name="F23 clean: for loop over a cat", script=BASH_HOOK, expect=0,
+             payload=bash_payload('for f in *.json; do cat "$f"; done')),
+        dict(name="F23 clean: a quoted keyword is data, not a keyword",
+             script=BASH_HOOK, expect=0,
+             payload=bash_payload('echo "do jq"')),
+        # base_name() strips a path, so it would read `./do` as the keyword and
+        # resolve the word after it. The keyword is compared against the EXACT
+        # text for this reason, and this case is what says so.
+        # `./do build` would pass with or without the narrowing and would
+        # therefore assert nothing. The operand has to be a word some check
+        # keys on, so that reading `./do` as the keyword resolves `psql` and
+        # blocks. Measured 2026-08-30 in both directions: exit 0 as written,
+        # exit 2 with the comparison put back on base_name().
+        dict(name="F23 clean: a program whose basename spells a keyword",
+             script=BASH_HOOK, expect=0,
+             payload=bash_payload("./do psql -f x.sql")),
+        dict(name="F23 clean: alembic as an echo argument inside a loop",
+             script=BASH_HOOK, expect=0,
+             payload=bash_payload("for f in a b; do echo alembic; done"),
+             env=empty_env),
+        # `for` is a reserved word and is deliberately NOT in KEYWORDS, because
+        # the word after it is a variable NAME. This is the case that asserts
+        # that decision: add `for` to the set and the loop variable becomes the
+        # command word, and the gate refuses an echo. Measured 2026-08-30 at
+        # exit 2 with `for` added, exit 0 as shipped.
+        dict(name="F23 clean: a loop variable is not a command word",
+             script=BASH_HOOK, expect=0,
+             payload=bash_payload("for alembic in a b; do echo x; done"),
+             env=empty_env),
+
+        # === F24: the token after find's -exec is a command ==================
+        # The whole find was one segment whose command word was `find`, so the
+        # command it runs was resolved by nothing. Measured 2026-08-30 at exit 0.
+        dict(name="F24 psql-f: psql under find -exec", script=BASH_HOOK,
+             expect=2,
+             payload=bash_payload(
+                 "find . -name '*.sql' -exec psql -f {} \\;")),
+        dict(name="F24 jq: bare jq under find -exec", script=BASH_HOOK, expect=2,
+             payload=bash_payload(
+                 "find . -name '*.json' -exec jq '.x' {} \\;")),
+        dict(name="F24 clean: ls under find -exec", script=BASH_HOOK, expect=0,
+             payload=bash_payload(
+                 "find . -name '*.md' -exec ls -la {} \\;")),
+        # The correct restore form, inside the shape that used to hide it.
+        dict(name="F24 clean: psql with ON_ERROR_STOP under find -exec",
+             script=BASH_HOOK, expect=0,
+             payload=bash_payload(
+                 "find . -name '*.sql' -exec psql -v ON_ERROR_STOP=1 -f {} \\;")),
+        # The named narrowing: -exec is resolved ONLY under find. Unrestricted,
+        # this command would block, and it is correct work.
+        dict(name="F24 clean: -exec as an ordinary argument to echo",
+             script=BASH_HOOK, expect=0,
+             payload=bash_payload("echo -exec jq")),
+        # The sub-segment carries no path, so it cannot be what blocks
+        # `find <backups> -exec rm {} ;`. That case still blocks through find's
+        # own branch, which is the reason it blocked before this change.
+        dict(name="F24 clean: the -exec body alone names no backups path",
+             script=BASH_HOOK, expect=0,
+             payload=bash_payload("rm {}")),
     ]
 
     # === criterion 8: the six added emoji suffixes, both directions ===========

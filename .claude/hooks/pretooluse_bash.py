@@ -58,6 +58,33 @@ WRAPPERS = {"sudo", "env", "time", "timeout", "nice", "nohup", "stdbuf", "xargs"
 DURATION_WRAPPERS = {"timeout", "nice"}
 DURATION = re.compile(r"^[0-9]+(?:\.[0-9]+)?[smh]?$")
 
+# Shell keywords a segment can BEGIN with, where the next word is the command.
+# The gate used to read `do` as the command word of `do alembic upgrade head`,
+# so a schema operation inside a loop or a conditional reached the database
+# without the gate running. Measured 2026-08-30 at exit 0 against an empty
+# backup directory, recorded in docs/RULE_HISTORY.md.
+#
+# THE LINE IS BASH'S OWN RESERVED-WORD LIST, FILTERED TO THE ONES A COMMAND
+# FOLLOWS, and it is drawn there rather than by taste. `for`, `select` and
+# `case` are reserved words too and are deliberately ABSENT: the word after them
+# is a variable name or a pattern, never a command, so skipping them would
+# resolve `for f in *.json` to a command named `f`. The closers `done`, `fi`,
+# `esac` and `}` are absent for the same reason from the other end. `time` is
+# already in WRAPPERS. `(` is NOT a reserved word and is not here, so
+# `( alembic upgrade head )` stays open; it is reported rather than papered over.
+KEYWORDS = {"!", "{", "do", "elif", "else", "if", "then", "until", "while"}
+
+# `find -exec` and `-execdir` run a real command that stands in find's own
+# ARGUMENT LIST rather than in a string, so nothing resolved it before.
+# RESTRICTED to a segment whose command word is `find`, deliberately: an
+# unquoted `-exec` is an ordinary argument to anything else, and resolving the
+# word after it everywhere would block `echo -exec jq`, which is correct work.
+EXEC_FLAGS = {"-exec", "-execdir"}
+
+# find ends the command with `;`, usually written `\;`, or with `+`. Either may
+# be quoted, so `quoted` is not consulted here; it is consulted on the flag.
+EXEC_TERMINATORS = {";", "+"}
+
 SHELLS = {"bash", "sh", "zsh"}
 PYTHONS = {"python", "python3", "py"}
 
@@ -357,20 +384,39 @@ def base_name(token):
 def command_word(segment):
     """The segment's real command word and its index, or (None, -1).
 
-    Leading environment assignments are skipped, then any wrapper in WRAPPERS
-    together with its own flags, assignments and, for `timeout` and `nice`, one
-    duration argument. Claude Code strips the same wrapper for its own
-    permission matching, so `timeout 8 python ...` resolving to `python` here is
-    the same reading the client already takes.
+    Environment assignments, shell keywords in KEYWORDS and any wrapper in
+    WRAPPERS are skipped, a wrapper together with its own flags, assignments
+    and, for `timeout` and `nice`, one duration argument. Claude Code strips the
+    same wrapper for its own permission matching, so `timeout 8 python ...`
+    resolving to `python` here is the same reading the client already takes.
+
+    THE THREE ARE SKIPPED IN ONE LOOP because they interleave in real commands:
+    `do PGPASSWORD=x psql ...` needs the keyword and then the assignment, and
+    `then sudo alembic ...` needs the keyword and then the wrapper. A QUOTED word
+    is never treated as a keyword or an assignment, which is the narrow
+    direction: `"do" x` asks for a program named do.
     """
     words = segment.words()
     i = 0
-    while i < len(words) and ASSIGNMENT.match(words[i].text) and not words[i].quoted:
-        i += 1
-
     guard = 0
-    while i < len(words) and guard < 8:
-        name = base_name(words[i].text)
+    while i < len(words) and guard < 16:
+        word = words[i]
+        if ASSIGNMENT.match(word.text) and not word.quoted:
+            i += 1
+            guard += 1
+            continue
+
+        # THE KEYWORD IS COMPARED AGAINST THE EXACT TEXT, not against
+        # base_name(), which is what every other resolution here uses. A shell
+        # keyword has one spelling and never carries a path, while base_name()
+        # would read `./do` and `/usr/bin/if` as keywords and resolve the word
+        # after them as the command. That is the narrow direction on purpose.
+        if word.text in KEYWORDS and not word.quoted:
+            i += 1
+            guard += 1
+            continue
+
+        name = base_name(word.text)
         if name not in WRAPPERS:
             break
         guard += 1
@@ -435,13 +481,60 @@ def nested_command(segment, index):
     return None
 
 
+def segment_from_words(words):
+    """A Segment built from tokens that were already scanned.
+
+    For a command standing inside another command's ARGUMENT LIST, where there
+    is no substring left to re-scan. `raw` is the words joined by single spaces;
+    `masked` is the same string with every QUOTED word replaced by mask
+    characters, so the two stay the same length and a quoted word remains data
+    to every content check, exactly as in a scanned segment.
+    """
+    raw = " ".join(w.text for w in words)
+    masked = " ".join(MASK * len(w.text) if w.quoted else w.text for w in words)
+    return Segment(raw, masked, list(words))
+
+
+def exec_commands(segment, name):
+    """Each `find -exec` / `-execdir` command in the segment, as its own Segment.
+
+    Before this the whole find was ONE segment whose command word was `find`, so
+    `find . -name '*.sql' -exec psql -f {} \\;` reached the database with
+    neither the ON_ERROR_STOP check nor the backup gate having seen a psql, and
+    `find . -name '*.json' -exec jq '.x' {} \\;` invoked the missing binary.
+    Both measured 2026-08-30 at exit 0.
+
+    `-ok` and `-okdir` are the interactive spellings of the same thing and are
+    NOT covered. That is a named gap, not an oversight.
+    """
+    if name != "find":
+        return []
+    out = []
+    words = segment.words()
+    i = 0
+    while i < len(words):
+        if words[i].text not in EXEC_FLAGS or words[i].quoted:
+            i += 1
+            continue
+        j = i + 1
+        body = []
+        while j < len(words) and words[j].text not in EXEC_TERMINATORS:
+            body.append(words[j])
+            j += 1
+        if body:
+            out.append(segment_from_words(body))
+        i = j + 1
+    return out
+
+
 def analyse(command):
     """Every segment the checks run over: top level, plus one level of nesting.
 
     A nested segment is a real command, so EVERY content check sees it. The
     checks are about what runs, not about how it was spelled, and
     `bash -c 'cat out.json | jq'` runs a bare jq exactly as the unwrapped form
-    does.
+    does. A `find -exec` command is nested in the same sense and is added the
+    same way, at the top level and inside one `bash -c`.
     """
     scanned = scan(command)
     if scanned is None:
@@ -449,12 +542,17 @@ def analyse(command):
 
     out = []
     for segment in scanned:
+        name, index = command_word(segment)
         out.append(segment)
-        _, index = command_word(segment)
+        out.extend(exec_commands(segment, name))
         inner = nested_command(segment, index)
         if inner:
             sub = scan(inner)
-            out.extend(sub if sub is not None else [unresolved_segment(inner)])
+            for nested in (sub if sub is not None
+                           else [unresolved_segment(inner)]):
+                nested_name, _ = command_word(nested)
+                out.append(nested)
+                out.extend(exec_commands(nested, nested_name))
     return out
 
 
