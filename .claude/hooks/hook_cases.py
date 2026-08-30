@@ -19,9 +19,13 @@ which is a DIFFERENT file, and all three are false blocks on correct commands
 rather than misses. `F23` and `F24` are numbered in a THIRD file,
 plexive-docs/research/settings-enforcement-fixes-round-three-2026-08-30.md, and
 both run the other way again: they are MISSES, a shell keyword and a
-`find -exec` hiding the command word from every check that resolves one. So a
-case that later goes red says which measured defect has come back and which
-report describes it.
+`find -exec` hiding the command word from every check that resolves one. `F25`
+is numbered here rather than in its report, a FOURTH file,
+plexive-docs/research/settings-enforcement-merge-2026-08-30.md, which records it
+as six blocked commands of one shape. It is a false block again, and it sits in
+the backups needle rather than in command-word resolution, which is why none of
+the three earlier rounds moved it. So a case that later goes red says which
+measured defect has come back and which report describes it.
 
 TWO LITERALS ARE BUILT BY CONCATENATION ON PURPOSE, the emoji and the deprecated
 utcnow call. Spelled out, they would make this file trip the very checks it
@@ -195,6 +199,64 @@ def build_cases(fx):
              env={"PLEXIVE_BACKUP_DIR": backups}),
         dict(name="backup-rm: rm of an unrelated file", script=BASH_HOOK, expect=0,
              payload=bash_payload("rm -f /tmp/scratch.json")),
+        # --- F25: the backups needle tests location, not substring ------------
+        # Six correct commands, all one shape, that the sweep in
+        # plexive-docs/research/settings-enforcement-merge-2026-08-30.md found
+        # blocked: a path whose name merely CONTAINS the literal was treated as
+        # a manifest wherever it lived. A false block, like F20 to F22 and
+        # unlike F23 and F24.
+        dict(name="F25 backups: a scratch log named after the literal",
+             script=BASH_HOOK, expect=0,
+             payload=bash_payload("rm -f /tmp/plexive-backups-scratch.log")),
+        dict(name="F25 backups: a temporary directory named after it",
+             script=BASH_HOOK, expect=0,
+             payload=bash_payload("rm -rf /tmp/plexive-backups-test")),
+        dict(name="F25 backups: a document whose filename contains it",
+             script=BASH_HOOK, expect=0,
+             payload=bash_payload(
+                 "rm -f docs/research/plexive-backups-notes.md")),
+        dict(name="F25 backups: an mv that destroys nothing at all",
+             script=BASH_HOOK, expect=0,
+             payload=bash_payload("mv notes/plexive-backups-design.md docs/")),
+        dict(name="F25 backups: a redirect into a dir that merely spells it",
+             script=BASH_HOOK, expect=0,
+             payload=bash_payload(
+                 "echo done > /tmp/plexive-backups-test/out.txt")),
+        dict(name="F25 backups: find -delete under such a directory",
+             script=BASH_HOOK, expect=0,
+             payload=bash_payload(
+                 "find /tmp/plexive-backups-test -name '*.tmp' -delete")),
+
+        # The narrowing has to be shown still to catch its own case, or it is a
+        # check that was removed rather than one that was corrected. The rm is
+        # already asserted twice above; these are the other four shapes, plus
+        # the unquoted Windows spelling of the override, which is the one the
+        # segment test cannot see and which squash_path carries instead.
+        dict(name="F25 backups: find -delete inside the directory blocks",
+             script=BASH_HOOK, expect=2,
+             payload=bash_payload(
+                 "find /c/Users/marlo/OneDrive/plexive-backups "
+                 "-name '*-manifest.txt' -delete")),
+        dict(name="F25 backups: find -exec rm inside the directory blocks",
+             script=BASH_HOOK, expect=2,
+             payload=bash_payload(
+                 "find /c/Users/marlo/OneDrive/plexive-backups "
+                 "-name '*-manifest.txt' -exec rm {} \\;")),
+        dict(name="F25 backups: mv out of the directory blocks",
+             script=BASH_HOOK, expect=2,
+             payload=bash_payload(
+                 "mv /c/Users/marlo/OneDrive/plexive-backups/"
+                 "plexive-2026-08-01-manifest.txt /tmp/")),
+        dict(name="F25 backups: a redirect into the directory blocks",
+             script=BASH_HOOK, expect=2,
+             payload=bash_payload(
+                 "echo replaced > /c/Users/marlo/OneDrive/plexive-backups/"
+                 "plexive-2026-08-01-manifest.txt")),
+        dict(name="F25 backups: the unquoted Windows override spelling blocks",
+             script=BASH_HOOK, expect=2,
+             payload=bash_payload(
+                 "rm -f " + backups + "\\plexive-2026-08-30-manifest.txt"),
+             env={"PLEXIVE_BACKUP_DIR": backups}),
 
         # --- gh api ----------------------------------------------------------
         dict(name="gh-api: no --paginate", script=BASH_HOOK, expect=2,

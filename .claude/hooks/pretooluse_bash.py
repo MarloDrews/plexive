@@ -707,19 +707,47 @@ def squash_path(text):
     return SEPARATORS_AND_DRIVE.sub("", text).lower()
 
 
+BACKUP_LITERAL = "plexive-backups"
+
+# A path segment ends at a separator, at the drive colon, or at whitespace.
+# Whitespace counts because the operand handed to names_backups is often a whole
+# command joined by spaces, where a space is a real operand boundary.
+PATH_SEGMENT = re.compile(r"[\\/:\s]+")
+
+
 def backup_needles():
-    needles = ["plexive-backups"]
+    """The two needles, returned APART because they are matched differently.
+
+    The literal is tested as a whole path segment. The override is a full path
+    and keeps the squashed test, which is what makes the three spellings of the
+    same directory compare equal.
+    """
     override = backup_dir_value()
-    if override:
-        needles.append(override)
-    return [squash_path(n) for n in needles if n]
+    return BACKUP_LITERAL, (squash_path(override) if override else "")
 
 
 def names_backups(text, needles):
+    """Whether `text` names something under a backup directory.
+
+    THIS IS A LOCATION TEST AND NOT A SUBSTRING ONE. It was a substring one
+    until 2026-08-30: it asked only whether the literal appeared anywhere in the
+    operand, so `rm -f /tmp/plexive-backups-scratch.log` was refused with a
+    message saying it destroys a file under the backup directory, which was true
+    of neither it nor of the five other shapes an independent 47-command sweep
+    found. A filename that merely contains the literal is not a manifest.
+
+    The literal therefore counts only as a WHOLE PATH SEGMENT, delimited by a
+    separator or by the start or end of the operand. The override keeps the
+    squashed substring test, because an unquoted Windows path reaches this hook
+    with its backslashes already eaten by the scanner and has no separators left
+    to split on; that spelling is asserted by a named case in hook_cases.py.
+    """
     if not text:
         return False
-    candidate = squash_path(text)
-    return any(needle in candidate for needle in needles)
+    literal, override = needles
+    if override and override in squash_path(text):
+        return True
+    return any(part.lower() == literal for part in PATH_SEGMENT.split(text))
 
 
 BACKUP_BLOCK = (
