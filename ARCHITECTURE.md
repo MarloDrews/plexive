@@ -401,26 +401,6 @@ docs/research/content-split-inventory-2026-08.md  read-only inventory of the con
 .claude/hooks/hook_cases.py     the both-directions harness for the two hooks above: 160 cases as of 2026-08-30, up from 149, from 130, from 104 and from 33 before that, every check with at least one must-block and one must-allow, the allow case always a real correct command or file. CASE NAMES CARRY THE FINDING THEY CLOSE, from FOUR reports: F5, F7, F8, F9, F10, F11, F13 from the verification report, F20, F21, F22 from the FINAL verification report, which is a different file and whose three findings are all false blocks on correct commands rather than misses, F23, F24 from the round-three fixes report, a THIRD file, whose two are misses again, and F25 from the independent merge report, a FOURTH file, which records it as six blocked correct commands of one shape rather than under a number and which is a false block again. So a case that goes red says which measured defect has come back and which report describes it. Prints expected and actual exit code per case, ends `N cases, M matched`, exits non-zero when M < N -- and has been SEEN TO FAIL, 160/159 with one expectation inverted, because a harness never observed red is not evidence. Beyond the exit code it asserts stdout content, an empty stdout, stderr content, and that stdout parses as exactly ONE JSON document. The backup gate is driven by pointing PLEXIVE_BACKUP_DIR at temp directories it creates (empty -> exit 2, fresh manifest -> exit 0, both measured); THE REAL BACKUP DIRECTORY IS NEVER READ. FOUR TEMP TREES, all COPIES, so no real file is moved and no override is added: a hook with no commit.md (fails open), a hook whose check_backup_age.sh exits 3 (the warning and the commit rules from one invocation, which is what proves the single JSON document), and one hook of each kind with a raising check spliced into its registry. THE SPLICE IS ASSERTED: a hook that stops carrying the sentinel raises when the fixture is built, rather than yielding a copy that quietly cannot block. Its emoji and utcnow literals are built by concatenation so the file does not trip the checks it exercises
 ```
 
-## ELO KNOWLEDGE SCORE
-
-A user has ONE unified knowledge score (users.knowledge_rating) — the profile "Knowledge score",
-the Arena rating and the mobile Train tab Elo are all the same number. Standard Elo: R' = R + K * (S - E),
-E = 1 / (1 + 10^((Q - R) / 400)). Each question is an opponent rated by difficulty
-(1→800, 2→1000, 3→1200; default 1000). Correct answers gain points, wrong answers always lose
-points so guessing has a cost. K=32 for the first 30 scored answers (fast convergence), K=16
-after (stable). Rating starts at 1000 (NULL until the first answer), floored at 100. Three writers,
-none of which trusts a client-reported score:
-POST /api/quiz/answer (post quizzes; each question scores once per user via DB unique constraint,
-own posts never move the rating; answer_index/explanation stripped from payloads, correctness
-decided server-side), POST /api/train/answer (mobile Train marathon; adds a speed bonus on correct
-answers; graded from app/train_bank.py since M120/SEC-007) and WS /api/arena/ws (ranked 1v1v1v1,
-routers/arena.py — the only writer that scores PLAYERS rather than questions: a finished match is
-treated as a round-robin against the other three, deltas averaged, applied via elo.apply_match). The averaging and the 1/0.5/0 tie rule are true of the code and are asserted by no test (mutation run 2026-08-28, docs/research/mutation-test-2026-08.md): the Arena assertions check a delta's sign, not its magnitude.
-Arena is also the only surface where the rating decides matchmaking, which is why it is graded
-server-side end to end. The legacy
-per-format user_elo table is deprecated; backfilled into users.knowledge_rating as the average of
-each user's per-format ratings.
-
 ## CHAT / WEBSOCKET DESIGN
 
 One socket per client at WS /api/chat/ws serves all of that user's conversations; the server
