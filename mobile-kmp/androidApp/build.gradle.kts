@@ -77,4 +77,15 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    lint {
+        // Both of these ask Maven Central for newer versions on every run, which puts a network
+        // call to a third party inside the android-build required check, where it can go red or go
+        // slow on a day nobody touched this repository. What they report is already reported by
+        // Dependabot, which is enabled here, so the duplicate costs availability and buys nothing.
+        // Disabling them is also what lets the MAX_LINT_FINDINGS ratchet in android-build.yml cover
+        // every finding lint reports instead of carrying an exception set: their counts move with
+        // upstream releases rather than with this tree. They found 20 of the 21 warnings measured
+        // on 2026-08-30 (18 NewerVersionAvailable, 2 AndroidGradlePluginVersion).
+        disable += setOf("NewerVersionAvailable", "AndroidGradlePluginVersion")
+    }
 }

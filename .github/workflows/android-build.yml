@@ -47,10 +47,11 @@ jobs:
       # is disabled on the Gradle invocation below, so no task result is ever reused or written.
       - uses: gradle/actions/setup-gradle@v4
 
-      # ONE Gradle invocation for both tasks, not two invocations. One configuration phase, one
-      # daemon, and a single --console=plain log, which is what the assertion steps below parse
-      # and what the comment in dependency-submission.yml means when it says this job parses only
-      # its own log.
+      # ONE Gradle invocation for all three tasks, not three invocations. One configuration phase,
+      # one daemon, and lint analyses the classes assembleDebug has just produced instead of
+      # rebuilding them. It also keeps this job on a single --console=plain log, which is what the
+      # three assertion steps below parse and what the comment in dependency-submission.yml means
+      # when it says this job parses only its own log.
       #
       # WHICH TEST TASK, because Kotlin Multiplatform registers several and running the wrong one is
       # a task that passes having done nothing. :shared:allTests aggregates iosSimulatorArm64Test,
@@ -59,9 +60,15 @@ jobs:
       # tests require macOS". :shared:testAndroidHostTest is the JVM host test task and is the only
       # one that runs on this runner. :androidApp:testDebugUnitTest exists but androidApp/src has no
       # test directory at all.
-      - name: Build the debug APK and run the Kotlin host tests
+      #
+      # lintDebug rather than lint: "lint" means "the default variant", so it moves if the default
+      # ever does, while lintDebug names the variant this job already builds.
+      #
+      # Without --continue Gradle stops at the first failing task, so a failing test never reaches
+      # lint. That is deliberate: the cheaper signal is the one worth reading first.
+      - name: Build the debug APK, run the Kotlin host tests, run lint
         run: |
-          ./gradlew :androidApp:assembleDebug :shared:testAndroidHostTest \
+          ./gradlew :androidApp:assembleDebug :shared:testAndroidHostTest :androidApp:lintDebug \
             --no-build-cache \
             --no-configuration-cache \
             --console=plain 2>&1 | tee "$RUNNER_TEMP/gradle.log"
@@ -239,4 +246,132 @@ jobs:
               raise SystemExit(1)
 
           print("OK: %d tests executed from %d test files, 0 failures." % (tests, files))
+          PY
+
+      # AGP registers a full lint task set on :androidApp and nothing here ever called it. This step
+      # calls it and ratchets the findings, the way the ESLint step in frontend-checks.yml does.
+      #
+      # WHAT LINT COVERS HERE IS NARROWER THAN IT LOOKS, and the number below has to be read with
+      # that in mind. :shared uses the AGP Kotlin Multiplatform library plugin, which registers
+      # exactly ONE lint task -- lintAnalyzeAndroidHostTest -- and no lint, no lintReport and no
+      # lintAnalyzeAndroidMain. Read out of :shared:tasks --all, not guessed. So the 32 Kotlin files
+      # under shared/src, which are where the application actually lives, are NOT lint analysed as
+      # source; they reach lint only as the dependency AAR that bundleAndroidMainLocalLintAar builds.
+      # What this step really covers is androidApp's 2 Kotlin files, its manifest and its resources.
+      # Widening it needs an AGP that registers a main-source lint component for the KMP library
+      # plugin, which 9.0.1 does not.
+      #
+      # THE FLOOR FIRES ONLY UPWARD, the same bargain as MAX_ERRORS in frontend-checks.yml. There is
+      # deliberately no lower bound: a gate that reds because somebody fixed ObsoleteSdkInt is a gate
+      # firing on correct work, which is the inverse defect the "## Rules" entry in CLAUDE.md keeps
+      # apart from the rest. MAX_LINT_FINDINGS comes down by hand, in the same commit as the batch
+      # that fixes findings, and never on its own.
+      - name: Assert AGP lint ran, and ratchet its findings
+        run: |
+          log="$RUNNER_TEMP/gradle.log"
+          report=androidApp/build/reports/lint-results-debug.xml
+
+          # The ratchet. 1 measured 2026-08-30 on a clean tree, after the two version-currency
+          # detectors were disabled in androidApp/build.gradle.kts: one ObsoleteSdkInt warning on
+          # androidApp/src/main/res/drawable-v24 against minSdk 24. Before disabling them it was 21.
+          MAX_LINT_FINDINGS=1
+
+          # Pinned by assertion, the way eslint@9.39.4 is in frontend-checks.yml and ruff==0.16.4 is
+          # in backend-checks.yml. Lint ships inside AGP, so libs.versions.toml's agp = "9.0.1" is
+          # the real pin and this line is what turns an AGP bump into a red check rather than a
+          # count that quietly moved because the rule set did.
+          LINT_PIN="lint 9.0.1"
+
+          if [ ! -s "$log" ]; then
+            echo "FAIL: $log is missing or empty, so nothing can be asserted about lint."
+            exit 1
+          fi
+
+          # lintDebug is a lifecycle task with no actions of its own, so these two are what is
+          # asserted: the analysis and the report. Same outcome-suffix idiom as the compile step.
+          status=0
+          for task in :androidApp:lintAnalyzeDebug :androidApp:lintReportDebug; do
+            lines=$(grep -E "^> Task ${task}([[:space:]]|$)" "$log" || true)
+            if [ -z "$lines" ]; then
+              echo "FAIL: ${task} never appeared in the build output, so lint did not run."
+              status=1
+              continue
+            fi
+            while IFS= read -r line; do
+              outcome=$(printf '%s' "${line#"> Task ${task}"}" | tr -d '[:space:]')
+              if [ -n "$outcome" ]; then
+                echo "FAIL: ${task} did not execute (${outcome}), so its findings are stale."
+                status=1
+              else
+                echo "OK: ${task} executed."
+              fi
+            done <<< "$lines"
+          done
+          if [ "$status" -ne 0 ]; then
+            exit 1
+          fi
+
+          if [ ! -s "$report" ]; then
+            echo "FAIL: $report is missing or empty, so there is nothing to count."
+            echo "lintReportDebug executed, so this means the report moved rather than that the"
+            echo "tree is clean. A clean tree still writes the file, with zero issue elements."
+            exit 1
+          fi
+
+          MAX_LINT_FINDINGS="$MAX_LINT_FINDINGS" LINT_PIN="$LINT_PIN" REPORT="$report" \
+          python3 - <<'PY'
+          import os
+          import xml.etree.ElementTree as ET
+          from collections import Counter
+
+          max_findings = int(os.environ["MAX_LINT_FINDINGS"])
+          pin = os.environ["LINT_PIN"]
+          report = os.environ["REPORT"]
+
+          root = ET.parse(report).getroot()
+          if root.tag != "issues":
+              raise SystemExit(
+                  "FAIL: %s has root <%s>, expected <issues>. That is not a lint report."
+                  % (report, root.tag)
+              )
+
+          by = root.get("by") or ""
+          print("report written by: %s (pinned %s)" % (by or "(unstated)", pin))
+          if by != pin:
+              print(
+                  "FAIL: lint reports itself as %r, expected %r.\n"
+                  "      The rule set moved, so the count below is not comparable to\n"
+                  "      MAX_LINT_FINDINGS=%d. Re-measure and set the ratchet in the same commit\n"
+                  "      as the AGP bump." % (by, pin, max_findings)
+              )
+              raise SystemExit(1)
+
+          issues = root.findall("issue")
+          by_id = Counter(issue.get("id") for issue in issues)
+          by_severity = Counter(issue.get("severity") for issue in issues)
+
+          print("LINT_FINDINGS=%d" % len(issues))
+          print("by severity: %s" % (dict(by_severity) or "{}"))
+          print("--- findings by id ---")
+          for issue_id, count in by_id.most_common():
+              print("  %d  %s" % (count, issue_id))
+          for issue in issues:
+              location = issue.find("location")
+              where = location.get("file") if location is not None else "(no location)"
+              line = location.get("line") if location is not None else None
+              if line:
+                  where = "%s:%s" % (where, line)
+              print("  %s  %s  %s" % (issue.get("severity"), issue.get("id"), where))
+
+          if len(issues) > max_findings:
+              print(
+                  "FAIL: %d lint findings, above the ratchet of %d.\n"
+                  "      This job refuses NEW findings and accepts the %d already here.\n"
+                  "      Fix the ones this branch added, or lower MAX_LINT_FINDINGS in the same\n"
+                  "      commit as the batch that fixes findings. It never comes down on its own."
+                  % (len(issues), max_findings, max_findings)
+              )
+              raise SystemExit(1)
+
+          print("OK: %d lint findings, at or under the ratchet of %d." % (len(issues), max_findings))
           PY
