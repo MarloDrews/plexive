@@ -271,10 +271,18 @@ jobs:
           log="$RUNNER_TEMP/gradle.log"
           report=androidApp/build/reports/lint-results-debug.xml
 
-          # The ratchet. 1 measured 2026-08-30 on a clean tree, after the two version-currency
-          # detectors were disabled in androidApp/build.gradle.kts: one ObsoleteSdkInt warning on
-          # androidApp/src/main/res/drawable-v24 against minSdk 24. Before disabling them it was 21.
-          MAX_LINT_FINDINGS=1
+          # The ratchet. 3, measured HERE on 2026-08-30 and deliberately not the number the dev
+          # laptop gives, which is 1. Same command, two answers, and the CI one governs because CI
+          # is what gates. The three:
+          #   1 ObsoleteSdkInt   androidApp/src/main/res/drawable-v24 against minSdk 24
+          #   2 OldTargetApi     androidApp/build.gradle.kts:62 and gradle/libs.versions.toml:5
+          # OldTargetApi fires only where a platform newer than targetSdk is installed. The laptop
+          # has android-36 and android-36.1 and nothing above, so lint has nothing to compare
+          # against and reports neither; the runner image ships a newer platform and reports both.
+          # Both are pre-existing and identical on main -- line 62 is the targetSdk declaration and
+          # is untouched by the branch that added this step. Before the two version-currency
+          # detectors were disabled in androidApp/build.gradle.kts the laptop count was 21.
+          MAX_LINT_FINDINGS=3
 
           # Pinned by assertion, the way eslint@9.39.4 is in frontend-checks.yml and ruff==0.16.4 is
           # in backend-checks.yml. Lint ships inside AGP, so libs.versions.toml's agp = "9.0.1" is
