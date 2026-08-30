@@ -10,10 +10,14 @@ Ends with `N cases, M matched` and exits non-zero when M is below N, because a
 harness whose failure looks like its success is the failure this repository keeps
 recording.
 
-CASE NAMES CARRY THE FINDING THEY CLOSE. `F5`, `F7`, `F8`, `F9`, `F10`, `F11`
-and `F13` are the numbered findings in
-plexive-docs/research/settings-enforcement-verification-2026-08-30.md, so a case
-that later goes red says which measured defect has come back.
+CASE NAMES CARRY THE FINDING THEY CLOSE, and they now come from TWO reports.
+`F5`, `F7`, `F8`, `F9`, `F10`, `F11` and `F13` are numbered in
+plexive-docs/research/settings-enforcement-verification-2026-08-30.md. `F20`,
+`F21` and `F22` are numbered in
+plexive-docs/research/settings-enforcement-final-verification-2026-08-30.md,
+which is a DIFFERENT file, and all three are false blocks on correct commands
+rather than misses. So a case that later goes red says which measured defect has
+come back and which report describes it.
 
 TWO LITERALS ARE BUILT BY CONCATENATION ON PURPOSE, the emoji and the deprecated
 utcnow call. Spelled out, they would make this file trip the very checks it
@@ -114,6 +118,49 @@ def build_cases(fx):
              payload=bash_payload("gh pr checks --watch --required --jq '.[]'")),
         dict(name="jq: a path ending in jq", script=BASH_HOOK, expect=0,
              payload=bash_payload("cat filters/report.jq")),
+
+        # --- F20: the question is command position, not presence -------------
+        # The two lists the brief names. Three of their thirteen commands are
+        # already above verbatim and are not duplicated here: `cat out.json |
+        # jq` as "jq: bare at end of a pipe", `cat filters/report.jq` as "jq: a
+        # path ending in jq", and `bash -c 'cat out.json | jq'` as
+        # "nested F7: bash -c with a bare jq". The other ten are below.
+        dict(name="jq F20: grep -rn for the token in the workflows",
+             script=BASH_HOOK, expect=0,
+             payload=bash_payload("grep -rn jq .github/workflows/")),
+        dict(name="jq F20: rg for the token in the docs", script=BASH_HOOK,
+             expect=0, payload=bash_payload("rg jq docs/")),
+        dict(name="jq F20: the token as a git log grep pattern",
+             script=BASH_HOOK, expect=0,
+             payload=bash_payload("git log --grep=jq")),
+        dict(name="jq F20: the token as a package name", script=BASH_HOOK,
+             expect=0, payload=bash_payload("pip install jq")),
+        dict(name="jq F20: the token inside an ordinary sentence",
+             script=BASH_HOOK, expect=0,
+             payload=bash_payload("echo jq is not installed here")),
+        dict(name="jq F20: a .jq filter as an ls argument", script=BASH_HOOK,
+             expect=0, payload=bash_payload("ls tools/report.jq")),
+        dict(name="jq F20: gh pr list with the built-in --jq", script=BASH_HOOK,
+             expect=0, payload=bash_payload("gh pr list --jq '.[]'")),
+        dict(name="jq F20: the token inside a commit message", script=BASH_HOOK,
+             expect=0,
+             payload=bash_payload(
+                 'git commit -m "chore: mention jq in the docs"')),
+        dict(name="jq F20: command position in the first segment",
+             script=BASH_HOOK, expect=2,
+             payload=bash_payload("jq '.x' f.json")),
+        dict(name="jq F20: command position after a paginated gh api",
+             script=BASH_HOOK, expect=2,
+             payload=bash_payload(
+                 "gh api repos/:owner/:repo/pulls --paginate | "
+                 "jq -r '.[].number'")),
+        # The named cost of the narrowing, asserted rather than left to be
+        # re-found: an invocation written by path was allowed by the old regex
+        # and blocks now, because base_name() strips the path. It is a real
+        # invocation of the missing binary.
+        dict(name="jq F20: an invocation written by path blocks",
+             script=BASH_HOOK, expect=2,
+             payload=bash_payload("/usr/bin/jq '.x' f.json")),
 
         # --- grep -c with a carriage return ---------------------------------
         dict(name="grep-cr: grep -c on a CR pattern", script=BASH_HOOK, expect=2,
@@ -222,6 +269,52 @@ def build_cases(fx):
                  "backend/scripts/scratch.py",
                  "    id = Column(Integer, primary_key=True, index=True)\n")),
 
+        # === F22: a full-line comment is never executable Python ==============
+        # The two SEMANTIC checks skip it; the emoji check does NOT, and that
+        # last case is the boundary rather than an oversight. CLAUDE.md bans
+        # emoji in code AND comments, so a comment is where it should fire.
+        dict(name="write F22: a comment naming the deprecated call",
+             script=WRITE_HOOK, expect=0,
+             payload=write_payload("backend/app/lint_rules.py",
+                                   "# never write " + UTCNOW + " here\n")),
+        dict(name="write F22: an indented comment naming it", script=WRITE_HOOK,
+             expect=0,
+             payload=write_payload("backend/app/lint_rules.py",
+                                   "    # see " + UTCNOW + " above\n")),
+        dict(name="write F22: a TRAILING comment on a code line still blocks",
+             script=WRITE_HOOK, expect=2,
+             payload=write_payload("backend/app/routes.py",
+                                   "created = " + UTCNOW + "  # bad\n")),
+        dict(name="write F22: a comment in models.py on the removed flags",
+             script=WRITE_HOOK, expect=0,
+             payload=write_payload(
+                 "backend/app/models.py",
+                 "# primary_key=True with index=True went in ada78e5\n")),
+        dict(name="write F22: emoji in a comment still blocks, rule names them",
+             script=WRITE_HOOK, expect=2,
+             payload=write_payload("backend/app/routes.py",
+                                   "# ship it " + FIRE + "\n")),
+        dict(name="write F22: the test file beside time_utils.py",
+             script=WRITE_HOOK, expect=0,
+             payload=write_payload(
+                 "backend/tests/test_time_utils.py",
+                 "def test_absent():\n"
+                 "    assert '" + UTCNOW + "' not in SRC\n")),
+        dict(name="write F22: an unrelated test file is NOT exempt",
+             script=WRITE_HOOK, expect=2,
+             payload=write_payload("backend/tests/test_routes.py",
+                                   "x = " + UTCNOW + "\n")),
+
+        # === criterion 6: git with a global flag that takes a value ===========
+        dict(name="commit F: git -C <dir> commit draws the rules",
+             script=BASH_HOOK, expect=0,
+             payload=bash_payload("git -C ../plexive-docs commit -m x"),
+             stdout_must_contain="conventional commits"),
+        dict(name="commit F: git -C <dir> status draws no rules",
+             script=BASH_HOOK, expect=0,
+             payload=bash_payload("git -C ../plexive-docs status"),
+             stdout_must_be_empty=True),
+
         # === criterion 2: no check fires on a quoted string ==================
         # Every allow case below runs against the EMPTY backup directory, so the
         # gate is in its blocking state and an exit 0 means the check did not
@@ -270,9 +363,19 @@ def build_cases(fx):
              script=BASH_HOOK, expect=0,
              payload=bash_payload("echo \"unterminated && alembic upgrade"),
              env=empty_env),
+        # The literal check used here is the carriage-return one, NOT jq. Since
+        # F20 the jq check asks for a command word, so it no longer demonstrates
+        # anything about masking; grep -c is now the only content check left and
+        # is what these two cases moved onto. The balanced counterpart below is
+        # the half that proves the fallback rather than the check: quoted and
+        # resolved it is allowed, unresolved it fires.
         dict(name="fallback: an unbalanced quote still runs the literal checks",
              script=BASH_HOOK, expect=2,
-             payload=bash_payload("echo \"unterminated jq"),
+             payload=bash_payload("echo \"unterminated grep -c \\r"),
+             env=empty_env),
+        dict(name="fallback: the same string balanced is masked and allowed",
+             script=BASH_HOOK, expect=0,
+             payload=bash_payload("echo \"grep -c \\r\""),
              env=empty_env),
         dict(name="fallback: an unbalanced quote still resolves the first word",
              script=BASH_HOOK, expect=2,
@@ -313,6 +416,22 @@ def build_cases(fx):
         dict(name="gh-api F8: an explicit -X GET still needs --paginate",
              script=BASH_HOOK, expect=2,
              payload=bash_payload("gh api -X GET repos/:owner/:repo/branches")),
+
+        # === F21: --help issues no request ====================================
+        # The two allowed spellings, then the boundary. The blocked pair is the
+        # point: the exemption is about the command not being a request at all,
+        # NOT about which endpoints paginate. rate_limit and a plain list call
+        # both stay blocked, because adding the flag to either is a valid fix.
+        dict(name="gh-api F21: --help issues no request", script=BASH_HOOK,
+             expect=0, payload=bash_payload("gh api --help")),
+        dict(name="gh-api F21: -h is the same flag", script=BASH_HOOK, expect=0,
+             payload=bash_payload("gh api -h")),
+        dict(name="gh-api F21: a plain list call still needs --paginate",
+             script=BASH_HOOK, expect=2,
+             payload=bash_payload("gh api repos/:owner/:repo/pulls")),
+        dict(name="gh-api F21: rate_limit still needs it, not an endpoint list",
+             script=BASH_HOOK, expect=2,
+             payload=bash_payload("gh api rate_limit")),
 
         # === criterion 5: the gate against wrappers a session writes ==========
         dict(name="gate F9: python -m alembic, empty backup dir", script=BASH_HOOK,
@@ -400,8 +519,15 @@ def build_cases(fx):
         # than left to be re-found: a content check CAN still fire on a word
         # inside it. Widening the exception would switch the carriage-return
         # check off, which is worth more than this edge.
-        dict(name="ansi-c: a known residue, jq inside $'...' still blocks",
+        # The residue is now shown with grep -c rather than with jq. The jq
+        # check stopped being a content check in F20, so `echo $'install jq
+        # first'` is allowed and proves nothing; the COST of the exception is
+        # unchanged and is asserted here against the check that still pays it.
+        dict(name="ansi-c: a known residue, grep -c inside $'...' blocks",
              script=BASH_HOOK, expect=2,
+             payload=bash_payload("echo $'grep -c \\r here'")),
+        dict(name="ansi-c F20: a jq mention inside $'...' is now allowed",
+             script=BASH_HOOK, expect=0,
              payload=bash_payload("echo $'install jq first'")),
         dict(name="ansi-c: a separator inside $'...' does not split",
              script=BASH_HOOK, expect=0,

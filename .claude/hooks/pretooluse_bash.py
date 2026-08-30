@@ -477,15 +477,33 @@ def block(reason):
 
 
 # --- check: a bare jq ---------------------------------------------------------
-# `jq` not preceded by `-`, `/`, `.` or an alphanumeric, and followed by
-# whitespace or the end of the segment. The trailing half is the part the
-# earliest spelling missed: `cat f | jq` ends the command on the token.
-BARE_JQ = re.compile(r"(?<![-/.\w])jq(?=\s|$)")
-
-
+# THE QUESTION IS COMMAND POSITION, NOT PRESENCE ANYWHERE IN THE SEGMENT. The
+# earlier spelling was a regex over the masked text, so the token blocked
+# wherever it stood: as a grep pattern, as a package name, as a filename, inside
+# an ordinary sentence. Measured 2026-08-30, all five at exit 2:
+# `grep -rn jq .github/workflows/`, `rg jq docs/`, `git log --grep=jq`,
+# `pip install jq`, `echo jq is not installed here`. Recorded as F20 in
+# plexive-docs/research/settings-enforcement-final-verification-2026-08-30.md.
+#
+# The worst part was not the count. The block message below names two allowed
+# calls in .github/workflows/codeql.yml, and a reader who wanted to check that
+# sentence could not grep for them: the rule refused the audit of its own stated
+# exception. It also refused installing the tool whose absence is its premise.
+#
+# EVERY GENUINE BARE JQ IS A COMMAND WORD, so the check asks command_word()
+# instead, which is the same resolution the backup gate already uses and which
+# already sees through wrappers, environment assignments and one level of
+# `bash -c`. `cat out.json | jq` puts jq in command position of the second
+# segment; `jq '.x' f.json` puts it in the first.
+#
+# The cost, named rather than left to be re-found: an invocation written by path,
+# `/usr/bin/jq f.json`, now blocks where the regex let it through, because
+# base_name() strips the path. That is a real invocation of the missing binary,
+# so blocking it is the direction to be wrong in.
 def check_bare_jq(segments):
     for segment in segments:
-        if BARE_JQ.search(segment.masked):
+        name, _ = command_word(segment)
+        if name == "jq":
             block(
                 "BLOCKED: bare `jq`.\n"
                 "jq is NOT installed on this machine and is not on PATH, so this "
@@ -654,6 +672,10 @@ def check_backup_deletion(segments):
 # --- check: gh api without --paginate -----------------------------------------
 METHOD_FLAGS = ("-X", "--method")
 
+# `-h` is gh's help shorthand. `-H` is the header flag and is a different thing,
+# which is why this is compared case-sensitively against the exact token.
+HELP_FLAGS = {"--help", "-h"}
+
 
 def gh_method(operands):
     """The HTTP method a `gh api` call carries, or None."""
@@ -682,6 +704,20 @@ def check_gh_paginate(segments):
         # graphql does not paginate the way a REST list does, and its cursors are
         # written into the query itself.
         if operands and operands[0] == "graphql":
+            continue
+
+        # `--help` issues no request at all. There is no first page, no cursor
+        # and nothing to truncate, so the rule's stated rationale does not reach
+        # it, and the remedy the message offers changes nothing about what the
+        # command does. Measured 2026-08-30 at exit 2, recorded as F21.
+        #
+        # THIS IS NOT AN ENDPOINT EXEMPTION LIST, deliberately. A call still
+        # blocks wherever adding the flag would be a valid fix, so
+        # `gh api rate_limit` and a single-object endpoint stay blocked even
+        # though neither paginates: adding --paginate there is harmless and
+        # works. An enumerated list of correct inputs is incomplete by
+        # construction, and that shape is what produced these findings twice.
+        if any(operand in HELP_FLAGS for operand in operands):
             continue
 
         # A write is a single request. Refusing a POST for lacking a pagination
@@ -804,13 +840,28 @@ def run_checks(segments):
 # --- the commit rules ---------------------------------------------------------
 GIT_SUBCOMMANDS = {"commit", "merge"}
 
+# Global flags whose value is a SEPARATE word, so that word is not the
+# subcommand. `git -C ../plexive-docs commit -m x` drew no rules before this:
+# the loop skipped `-C`, read the directory as the first non-flag word and
+# stopped. Measured 2026-08-30, rules drawn: false. A MISS rather than a false
+# block, and in scope only because it is one line in the same place.
+GIT_VALUE_FLAGS = {"-C", "-c", "--git-dir", "--work-tree", "--namespace",
+                   "--exec-path", "--super-prefix"}
+
 
 def is_commit_or_merge(segments):
     for segment in segments:
         name, index = command_word(segment)
         if name != "git":
             continue
+        skip = False
         for token in segment.words()[index + 1:]:
+            if skip:
+                skip = False
+                continue
+            if token.text in GIT_VALUE_FLAGS:
+                skip = True
+                continue
             if token.text.startswith("-"):
                 continue
             if token.text.lower() in GIT_SUBCOMMANDS:

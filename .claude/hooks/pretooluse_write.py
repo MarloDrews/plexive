@@ -53,8 +53,13 @@ UTCNOW_CALL = "datetime." + "utcnow()"
 
 # The project's own replacement helper. It names the deprecated call in its
 # docstring (time_utils.py:1 and :4), so it is the one .py file where the
-# literal is correct.
-UTCNOW_EXEMPT = ("backend/app/time_utils.py",)
+# literal is correct in RUNNING code. The test file beside it joins it: a test
+# asserting the string is absent has to spell the string. Measured 2026-08-30,
+# blocked at exit 2, recorded as F22.
+UTCNOW_EXEMPT = (
+    "backend/app/time_utils.py",
+    "backend/tests/test_time_utils.py",
+)
 
 PK_INDEX = re.compile(r"primary_key\s*=\s*True.*index\s*=\s*True")
 
@@ -70,6 +75,24 @@ def block(reason):
 def normalise(path):
     """Repository-relative, forward slashes, so a check can name a real file."""
     return str(path).replace("\\", "/")
+
+
+def is_full_line_comment(line):
+    """True when the line's first non-whitespace character is `#`.
+
+    SUCH A LINE IS NEVER EXECUTABLE PYTHON, so exempting it from the two
+    SEMANTIC checks is exact rather than approximate. It is the class the module
+    docstring above already records about this file: a check whose subject
+    cannot be discussed in the language it guards. Measured 2026-08-30: a
+    comment naming the deprecated call, and a comment in models.py explaining
+    the decision check_pk_index enforces, both blocked at exit 2 (F22).
+
+    A TRAILING comment is deliberately NOT covered, because the code before it
+    on the same line does run. The emoji check is not covered either, and that
+    is not an oversight: the rule it enforces names comments, so a comment is
+    exactly where it is supposed to fire.
+    """
+    return line.lstrip().startswith("#")
 
 
 def gather_content(tool_input):
@@ -119,21 +142,30 @@ def check_utcnow(path, content):
         return
     if any(rel.endswith(exempt) for exempt in UTCNOW_EXEMPT):
         return
-    if UTCNOW_CALL in content:
-        block(
-            "BLOCKED: " + UTCNOW_CALL + " in a .py file.\n"
-            "It is deprecated since Python 3.12 and returns a NAIVE datetime, "
-            "which compares wrongly against an aware one instead of raising.\n"
-            "File: " + rel + "\n"
-            "Use backend/app/time_utils.py, which is the project's single "
-            "replacement for exactly this."
-        )
+    # Line by line, so a full-line comment can be skipped. Reading the whole
+    # blob at once is what made a comment about the ban unwritable.
+    for number, line in enumerate(content.splitlines(), start=1):
+        if is_full_line_comment(line):
+            continue
+        if UTCNOW_CALL in line:
+            block(
+                "BLOCKED: " + UTCNOW_CALL + " in a .py file.\n"
+                "It is deprecated since Python 3.12 and returns a NAIVE "
+                "datetime, which compares wrongly against an aware one instead "
+                "of raising.\n"
+                "File: " + rel + "\n"
+                "Line " + str(number) + ": " + line.strip() + "\n"
+                "Use backend/app/time_utils.py, which is the project's single "
+                "replacement for exactly this."
+            )
 
 
 def check_pk_index(path, content):
     if not normalise(path).endswith("backend/app/models.py"):
         return
     for number, line in enumerate(content.splitlines(), start=1):
+        if is_full_line_comment(line):
+            continue
         if PK_INDEX.search(line):
             block(
                 "BLOCKED: primary_key=True with index=True on one line in "
