@@ -30,6 +30,31 @@ Verify anything load-bearing against the source before relying on it, and correc
 what you find stale in the same batch rather than leaving it for the next
 accident.
 
+WHAT IS LEFT HERE, because it is deliberately not everything it once was. Six
+sections: this one; ## FOLDER STRUCTURE, the one-line-per-item map, which is by
+size almost the whole file; then ## CHAT / WEBSOCKET DESIGN, ## DEPLOYMENT
+INVARIANT (M138), ## SECURITY and ## FRONTEND COMPONENTS. Those last four earn
+their place on what they RULE OUT rather than on what they describe. A deliberate
+omission, a constraint, a ban and a two-consumer contract are none of them
+visible in any one file, and each is a thing a session would otherwise build,
+break or trim in good faith.
+
+FOUR SECTIONS LEFT ON 2026-08-30, in pull request 86, for one reason in all four
+cases: each duplicated a file that is executable, authoritative and easier to
+read than the duplicate, and a duplicate that nothing can check against is
+exactly the thing that drifts. Read the source instead.
+
+- ## DATABASE -- `backend/app/models.py`
+- ## API ENDPOINTS -- `backend/app/routers/*.py`, mounted in `backend/app/main.py`
+- ## ELO KNOWLEDGE SCORE -- `backend/app/elo.py`, whose own docstring states the
+  same constants at the point of use; the `elo.py` entry under ## FOLDER
+  STRUCTURE keeps the summary
+- ## CURRENT STATUS -- nothing. It was a changelog, and `git log` is the changelog
+
+None of that text is lost. It is in this repository's history, in the four
+commits on that pull request, one section each, and each is a rollback unit on
+its own.
+
 ## FOLDER STRUCTURE
 
 ```
