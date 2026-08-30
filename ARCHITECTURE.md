@@ -52,8 +52,11 @@ exactly the thing that drifts. Read the source instead.
 - ## CURRENT STATUS -- nothing. It was a changelog, and `git log` is the changelog
 
 None of that text is lost. It is in this repository's history, in the four
-commits on that pull request, one section each, and each is a rollback unit on
-its own.
+commits on that pull request, one section each, and each section's full text
+sits in its commit's parent blob, recoverable with `git show <commit>^:ARCHITECTURE.md`.
+`git revert` is NOT the way to recover one: three of the four conflict when
+reverted onto a later head, because each removed section sat next to a region
+this branch changed again.
 
 ## FOLDER STRUCTURE
 
