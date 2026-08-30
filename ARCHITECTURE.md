@@ -30,6 +30,34 @@ Verify anything load-bearing against the source before relying on it, and correc
 what you find stale in the same batch rather than leaving it for the next
 accident.
 
+WHAT IS LEFT HERE, because it is deliberately not everything it once was. Six
+sections: this one; ## FOLDER STRUCTURE, the one-line-per-item map, which is by
+size almost the whole file; then ## CHAT / WEBSOCKET DESIGN, ## DEPLOYMENT
+INVARIANT (M138), ## SECURITY and ## FRONTEND COMPONENTS. Those last four earn
+their place on what they RULE OUT rather than on what they describe. A deliberate
+omission, a constraint, a ban and a two-consumer contract are none of them
+visible in any one file, and each is a thing a session would otherwise build,
+break or trim in good faith.
+
+FOUR SECTIONS LEFT ON 2026-08-30, in pull request 86, for one reason in all four
+cases: each duplicated a file that is executable, authoritative and easier to
+read than the duplicate, and a duplicate that nothing can check against is
+exactly the thing that drifts. Read the source instead.
+
+- ## DATABASE -- `backend/app/models.py`
+- ## API ENDPOINTS -- `backend/app/routers/*.py`, mounted in `backend/app/main.py`
+- ## ELO KNOWLEDGE SCORE -- `backend/app/elo.py`, whose own docstring states the
+  same constants at the point of use; the `elo.py` entry under ## FOLDER
+  STRUCTURE keeps the summary
+- ## CURRENT STATUS -- nothing. It was a changelog, and `git log` is the changelog
+
+None of that text is lost. It is in this repository's history, in the four
+commits on that pull request, one section each, and each section's full text
+sits in its commit's parent blob, recoverable with `git show <commit>^:ARCHITECTURE.md`.
+`git revert` is NOT the way to recover one: three of the four conflict when
+reverted onto a later head, because each removed section sat next to a region
+this branch changed again.
+
 ## FOLDER STRUCTURE
 
 ```
@@ -401,190 +429,6 @@ docs/research/content-split-inventory-2026-08.md  read-only inventory of the con
 .claude/hooks/hook_cases.py     the both-directions harness for the two hooks above: 160 cases as of 2026-08-30, up from 149, from 130, from 104 and from 33 before that, every check with at least one must-block and one must-allow, the allow case always a real correct command or file. CASE NAMES CARRY THE FINDING THEY CLOSE, from FOUR reports: F5, F7, F8, F9, F10, F11, F13 from the verification report, F20, F21, F22 from the FINAL verification report, which is a different file and whose three findings are all false blocks on correct commands rather than misses, F23, F24 from the round-three fixes report, a THIRD file, whose two are misses again, and F25 from the independent merge report, a FOURTH file, which records it as six blocked correct commands of one shape rather than under a number and which is a false block again. So a case that goes red says which measured defect has come back and which report describes it. Prints expected and actual exit code per case, ends `N cases, M matched`, exits non-zero when M < N -- and has been SEEN TO FAIL, 160/159 with one expectation inverted, because a harness never observed red is not evidence. Beyond the exit code it asserts stdout content, an empty stdout, stderr content, and that stdout parses as exactly ONE JSON document. The backup gate is driven by pointing PLEXIVE_BACKUP_DIR at temp directories it creates (empty -> exit 2, fresh manifest -> exit 0, both measured); THE REAL BACKUP DIRECTORY IS NEVER READ. FOUR TEMP TREES, all COPIES, so no real file is moved and no override is added: a hook with no commit.md (fails open), a hook whose check_backup_age.sh exits 3 (the warning and the commit rules from one invocation, which is what proves the single JSON document), and one hook of each kind with a raising check spliced into its registry. THE SPLICE IS ASSERTED: a hook that stops carrying the sentinel raises when the fixture is built, rather than yielding a copy that quietly cannot block. Its emoji and utcnow literals are built by concatenation so the file does not trip the checks it exercises
 ```
 
-## DATABASE
-
-### interests
-| column | type   | description                     |
-|--------|--------|---------------------------------|
-| name   | String | display label e.g. "Politics"   |
-| slug   | String | filter key e.g. "politics"      |
-
-### posts
-| column          | type    | description                                                             |
-|-----------------|---------|-------------------------------------------------------------------------|
-| id              | Integer | primary key                                                             |
-| format          | String  | one of: books, facts, people, concepts, questions, stories, academy     |
-| title           | String  | book/post title                                                         |
-| feed_card       | JSON    | format-specific card data (BooksFeedCard: cover_url, title, author, essence, teasers, post_difficulty, year, genre) |
-| sections        | JSON    | ordered array of {type, order, content} objects; 15 types for Books    |
-| is_user_content | Boolean | False for seed/official posts; True for user submissions (controls SVG rendering) |
-| author_id       | Int FK? | FK→users.id; set for all posts including seeds                         |
-| status          | String  | "published" (default, seed) or "pending" (unverified user submission)  |
-| created_at      | DateTime| indexed                                                                 |
-
-### post_interests
-Join table linking posts ↔ interests (many-to-many).
-
-### comments
-| column     | type      | description                              |
-|------------|-----------|------------------------------------------|
-| id         | Integer   | primary key                              |
-| post_id    | FK→posts  |                                          |
-| user_id    | FK→users  |                                          |
-| body       | Text      | plain text; max 2000 chars enforced by API |
-| created_at | DateTime  | default now                              |
-
-### events
-| column      | type     | description                              |
-|-------------|----------|------------------------------------------|
-| post_id     | FK→posts |                                          |
-| event_type  | String   | "view" or "like"                         |
-| duration_ms | Integer? | ms card was on screen; null for likes    |
-| user_id     | FK→users, nullable | set when auth token present; used by GET /likes to determine liked state |
-
-### users
-| column        | type     | description                               |
-|---------------|----------|-------------------------------------------|
-| id            | Integer  | primary key                               |
-| email         | String   | unique, indexed, not null                 |
-| username      | String   | unique, not null                          |
-| password_hash | String?  | bcrypt hash; plaintext never stored; NULL for Google-only accounts |
-| google_sub    | String?  | unique, indexed; Google account "sub" id for Google sign-in; NULL for password accounts; User.has_google property (google_sub is not None) surfaces as UserOut.has_google |
-| created_at    | DateTime | default now                               |
-| is_active     | Boolean  | default true; false = soft-deleted        |
-| is_verified   | Integer  | default 0; 1=basic, 2=premium, 3+=elite; >0 bypasses review queue; rights tiers reserved for future use |
-| is_private    | Boolean  | default false; true = follow requests require approval |
-| bio           | String?  | up to 160 chars; shown on public profile  |
-| avatar_url    | String?  | Supabase Storage public URL set by POST /api/auth/me/avatar |
-| knowledge_rating         | Float? | unified knowledge score (= Train Elo); NULL until first scored answer, then 1000-start Elo, floor 100 |
-| knowledge_answered_count | Integer | scored answers (quizzes + Train) driving the K-factor; default 0 |
-
-### follows
-| column       | type              | description                                         |
-|--------------|-------------------|-----------------------------------------------------|
-| id           | Integer           | primary key                                         |
-| follower_id  | FK→users          | the user who is following                           |
-| following_id | FK→users          | the user being followed                             |
-| status       | String            | "pending" (awaiting approval) or "accepted" (active)|
-| created_at   | DateTime          | default now                                         |
-Unique constraint: (follower_id, following_id)
-
-### conversations
-| column     | type     | description                                    |
-|------------|----------|------------------------------------------------|
-| id         | Integer  | primary key                                    |
-| is_group   | Boolean  | false = DM (always exactly 2 participants)     |
-| name       | String?  | group display name; NULL for DMs               |
-| created_by | FK→users | conversation creator                           |
-| created_at | DateTime | default now                                    |
-
-### conversation_participants
-| column          | type             | description            |
-|-----------------|------------------|------------------------|
-| id              | Integer          | primary key            |
-| conversation_id | FK→conversations | indexed                |
-| user_id         | FK→users         | indexed                |
-| joined_at       | DateTime         | default now            |
-Unique constraint: (conversation_id, user_id)
-
-### messages
-| column          | type             | description                          |
-|-----------------|------------------|--------------------------------------|
-| id              | Integer          | primary key                          |
-| conversation_id | FK→conversations | indexed                              |
-| sender_id       | FK→users         |                                      |
-| body            | Text             | plain text; 1-2000 chars enforced    |
-| created_at      | DateTime         | default now, indexed                 |
-
-### user_elo (DEPRECATED)
-Legacy per-format Elo table, replaced by the single users.knowledge_rating column.
-No longer read or written by app code; left in the live DB (non-destructive) and
-backfilled into users.knowledge_rating by scripts/add_knowledge_columns.py. Safe to
-drop manually once confirmed.
-
-### quiz_answers
-| column         | type     | description                                  |
-|----------------|----------|----------------------------------------------|
-| user_id        | FK→users |                                              |
-| post_id        | FK→posts |                                              |
-| question_index | Integer  | index into the post's quiz section           |
-| chosen_index   | Integer  | option the user picked                       |
-| is_correct     | Boolean  | decided server-side against answer_index     |
-| rating_delta   | Float    | Elo change applied (0 for own posts)         |
-Unique constraint: (user_id, post_id, question_index) — each question scores once
-
-## API ENDPOINTS
-
-```
-GET  /api/interests                                    → [{id, name, slug}]
-GET  /api/feed  ?interests=slug1,slug2  ?format=books  ?limit=50  ?seed=<session-salt>  ?cursor=<last-post-id>  → [PostListOut]  seed = session-stable order; cursor = keyset next page under that seed; 60/min  PostListOut = PostOut with sections always []; PostOut: {id, format, title, feed_card, sections, tags[], read_next[], author_id, author_username, author_is_verified, author_avatar_url, status, created_at, is_user_content, like_count, comment_count, reading_minutes, primary_category_name, interests[]}
-GET  /api/posts/{id}                                   → PostOut  404 if not found
-GET  /api/search  ?q=...  ?format=books  ?limit=50     → [{...PostOut}]  limit clamp 1-50, title matches ranked first; empty list if q is blank
-POST /api/events  body: [{post_id, event_type, duration_ms?}]  → {stored: N}
-GET  /health                                           → {status: "ok"}
-POST /api/auth/register  body: {email, username, password}  → {access_token, token_type, user: {id, email, username, created_at}}  400 on duplicate email/username; every new account gets a random cosmetic badge_id from {4,5,7,8} (_random_signup_badge, also applied to auto-created Google accounts)
-POST /api/auth/login     body: {email, password}            → {access_token, token_type, user: {id, email, username, created_at}}  401 on bad credentials (same msg for unknown email or wrong password)
-POST /api/auth/google    body: {credential}  (Google ID token)  → same TokenResponse; verifies token against Google (audience = GOOGLE_CLIENT_ID), then matches google_sub / links same verified email / auto-creates a new user (username derived from email); 401 on unverifiable token, 503 when GOOGLE_CLIENT_ID unset; 30/5min per IP
-POST /api/auth/google/link  Authorization: Bearer <token>  body: {credential}  → UserOut; connects a Google account to the CURRENT logged-in account regardless of email match (how a password user adds Google when the addresses differ); 409 if this account already has a different Google or the Google identity belongs to another account; 401 unverifiable, 503 unconfigured; 10/hr per user
-GET  /api/auth/me        Authorization: Bearer <token>      → {id, email, username, created_at}  401 if invalid/missing token
-PATCH /api/auth/me      Authorization: Bearer <token>      body: {username?, new_password?, current_password?}  → updated UserOut  400 on bad current_password or duplicate username
-DELETE /api/auth/me     Authorization: Bearer <token>      body: {current_password}  → 204  400 on bad current_password  (soft delete: is_active=False)
-GET  /api/posts/{id}/comments  ?before_id&limit            → [{id, post_id, username, is_verified, avatar_url, body, created_at}]  newest first, keyset on id (limit default 50, clamp 1-100)  404 if post not found
-GET  /api/posts/{id}/comments?count=true                   → {count: N}  404 if post not found
-POST /api/posts/{id}/comments  Authorization: Bearer <token>  body: {body}  → CommentOut  201  404 if post not found  422 if body empty or >2000 chars
-DELETE /api/comments/{id}      Authorization: Bearer <token>  → 204  403 if not the comment's author  404 if not found
-GET  /api/posts/{id}/likes                                 → {count: N, liked: bool}  auth optional; liked=true only when token present and user has a like event for this post
-POST /api/upload/image  Authorization: Bearer <token>      multipart file field "file"  → {url: "https://<project>.supabase.co/storage/v1/object/public/uploads/images/{uuid}.ext"}  10/hr rate limit  validates magic bytes + Pillow re-encode; uploads to Supabase bucket "uploads"
-POST /api/upload/svg    Authorization: Bearer <token>      multipart file field "file"  → {svg_content: "<sanitized SVG>"}  10/hr rate limit  defusedxml+lxml whitelist sanitization
-POST /api/posts         Authorization: Bearer <token>      body: {format, title, feed_card, sections, interests}  → PostOut 201  status="pending"  20/day rate limit  Books requires 9 sections; image_url must use Supabase storage URL prefix; unknown interest slug → 400
-GET  /api/posts/mine    ?before_id&limit  Authorization: Bearer <token>                 → [PostListOut]  sections []  all statuses  newest first, keyset on id (limit default 50, clamp 1-100)
-PATCH /api/admin/users/{user_id}/verify  Authorization: Bearer <token>                 → UserOut  sets is_verified=1  403 if caller.is_verified<1  404 if user not found
-GET  /api/stats/global                                                                  → GlobalStats JSON (no auth)
-GET  /api/stats/me      Authorization: Bearer <token>                                   → MyStats JSON  401 if unauthenticated
-POST /api/users/{username}/follow   Authorization: Bearer <token>                       → {status: "accepted"|"pending"}  400 if already following or self-follow
-DELETE /api/users/{username}/follow  Authorization: Bearer <token>                      → 204  404 if not following
-POST /api/users/{username}/follow/accept  Authorization: Bearer <token>                 → {status: "accepted"}  current_user must be the target  404 if no pending request
-DELETE /api/users/{username}/follow/reject  Authorization: Bearer <token>               → 204  current_user must be the target  404 if no pending request
-GET  /api/users/{username}/followers  ?before_id&limit                                  → [{follow_id, username, is_verified, is_private, avatar_url}]  newest first, keyset on follow_id (limit default 50, clamp 1-100)  empty if private+not-following
-GET  /api/users/{username}/following  ?before_id&limit                                  → [{follow_id, username, is_verified, is_private, avatar_url}]  same privacy rule + pagination
-GET  /api/users/{username}/follow-requests  ?before_id&limit  Authorization: Bearer     → [{follow_id, username, is_verified, avatar_url, created_at}]  same pagination  403 if not own account
-GET  /api/users/{username}/profile                                                      → {username, is_verified, is_private, bio, avatar_url, avatar_frame_id, badge_id, follower_count, following_count, post_count, follow_status}
-GET  /api/feed/following  ?before_id&limit  Authorization: Bearer <token>               → [PostOut]  newest first, keyset on id (limit default 50, clamp 1-100)  empty if following nobody
-GET  /api/feed/user/{username}  ?before_id&limit                                        → [PostOut]  published posts by user, same pagination  404 if user not found
-POST /api/auth/me/avatar  Authorization: Bearer <token>  multipart file field "file"    → UserOut with new avatar_url  10/hr  same validate_image pipeline as post images
-GET  /api/search/users  ?q=...  ?limit=20   auth optional                               → [{username, is_verified, is_private, bio, avatar_url, is_self, follow_status}]  limit clamp 1-50  prefix matches first  follow_status only when authed
-POST /api/quiz/answer   auth optional  body: {post_id, question_index, chosen_index}    → {correct, correct_index, explanation, already_answered, scored, elo: {format, rating, delta, global_rating} | null}  rating==global_rating (unified score)  Elo only for authed first-time answers on others' posts  60/min  400 bad index  404 missing post
-GET  /api/quiz/state/{post_id}  Authorization: Bearer <token>                           → {answers: [{question_index, chosen_index, correct, correct_index, explanation}]}  restores answered quiz UI
-GET  /api/users/{username}/elo                                                          → {global_rating: int|null}  unified score, no per-format dict  404 if user not found
-POST /api/train/answer  Authorization: Bearer <token>  body: {difficulty, correct, answer_ms} → {rating, delta, global_rating}  applies one Train answer to the same users.knowledge_rating (with time bonus)  120/min  mock phase trusts client correctness
-WS   /api/arena/ws       first frame {type:"auth",token}                       ranked 1v1v1v1: queue/cancel -> queued{rating,needed,waiting} + queue_update{waiting,players:[{username,avatar_url,avatar_frame_id,badge_id}]} (the waiting-room roster, capped at QUEUE_ROSTER_MAX, re-broadcast whole to everyone queued on join/cancel/disconnect/reconnect/match-formed) -> matchmaker pairs 4 players in a similar knowledge_rating range (window widens 100 -> unbounded over 60s, full lobby only) -> match_start{match_id,seed,count,players} -> answer{index,chosen_index|chosen_value} GRADED SERVER-SIDE -> answer_result{correct,score} -> match_result{standings:[{username,score,placement,delta,rating,is_me}]}; placement moves users.knowledge_rating  queue 30/min
-GET  /api/train/leaderboard?scope=global|friends  auth optional                         → {scope, entries:[{rank:int|null, username, is_verified, rating:int|null, is_me}], me:{rank,rating,username}|null, total, truncated}  ranks by knowledge_rating; global guest-ok + 30s cached (top 50 + your rank line); friends auth-only (401 for guests, 60/min) ranks you + accepted-follows, unscored last
-GET  /api/chat/conversations  Authorization: Bearer <token>                             → [{id, is_group, name, participants[{username, avatar_url, is_verified}], last_message|null, created_at}]  sorted by last activity
-POST /api/chat/conversations  Authorization: Bearer <token>  body: {usernames[], name?} → conversation 201  DM deduped per pair  403 if a target has no accepted follow either direction  20/hr
-GET  /api/chat/conversations/{id}/messages  ?before_id&limit  Authorization: Bearer     → [{id, conversation_id, sender_id, sender_username, body, created_at}] ascending  404 for non-participants
-WS   /api/chat/ws             first frame {type:"auth", token}  → {type:"auth_ok"}; then {type:"send", conversation_id, body} → broadcast {type:"message", message} to all connected participants; {type:"ping"}→pong; errors as {type:"error", detail}; closes 4401 unauthorized / 4403 insecure scheme
-```
-
-## ELO KNOWLEDGE SCORE
-
-A user has ONE unified knowledge score (users.knowledge_rating) — the profile "Knowledge score",
-the Arena rating and the mobile Train tab Elo are all the same number. Standard Elo: R' = R + K * (S - E),
-E = 1 / (1 + 10^((Q - R) / 400)). Each question is an opponent rated by difficulty
-(1→800, 2→1000, 3→1200; default 1000). Correct answers gain points, wrong answers always lose
-points so guessing has a cost. K=32 for the first 30 scored answers (fast convergence), K=16
-after (stable). Rating starts at 1000 (NULL until the first answer), floored at 100. Three writers,
-none of which trusts a client-reported score:
-POST /api/quiz/answer (post quizzes; each question scores once per user via DB unique constraint,
-own posts never move the rating; answer_index/explanation stripped from payloads, correctness
-decided server-side), POST /api/train/answer (mobile Train marathon; adds a speed bonus on correct
-answers; graded from app/train_bank.py since M120/SEC-007) and WS /api/arena/ws (ranked 1v1v1v1,
-routers/arena.py — the only writer that scores PLAYERS rather than questions: a finished match is
-treated as a round-robin against the other three, deltas averaged, applied via elo.apply_match). The averaging and the 1/0.5/0 tie rule are true of the code and are asserted by no test (mutation run 2026-08-28, docs/research/mutation-test-2026-08.md): the Arena assertions check a delta's sign, not its magnitude.
-Arena is also the only surface where the rating decides matchmaking, which is why it is graded
-server-side end to end. The legacy
-per-format user_elo table is deprecated; backfilled into users.knowledge_rating as the average of
-each user's per-format ratings.
-
 ## CHAT / WEBSOCKET DESIGN
 
 One socket per client at WS /api/chat/ws serves all of that user's conversations; the server
@@ -642,98 +486,10 @@ attributes. Never use `dangerouslySetInnerHTML` to render comment text.
 
 ## FRONTEND COMPONENTS
 
-Form labelling (M156/A11Y-003): every visible label carries htmlFor and its control an id; memoized and repeated blocks derive the id from useId() so instances never collide; controls the design leaves unlabelled (search fields, comment and chat composers, per-row editor inputs) carry aria-label instead of relying on placeholder.
+The file listing that filled this section was removed on 2026-08-30. The per-file entries under `frontend/` in ## FOLDER STRUCTURE cover the same files and are the maintained copy; this listing was a second one, and it had drifted -- its SectionType count said 34 against the 81 members the union in frontend/src/types/post.ts actually declares, it described EmptyState.tsx, deleted in e11b9f9, as merely unused, and it left AT LEAST 147 of the 214 tracked .ts/.tsx files under frontend/src/ unnamed. 147 is a floor, not a count: it comes from the most generous matcher, one that credits a bare basename, and under a matcher that ignores basenames shared by several files the figure is 161. The post detail page had no row of its own under either -- the listing named it only inside other rows' prose. What stays is the three rules it carried that no single file can show.
 
-| file                   | responsibility                                                              |
-|------------------------|-----------------------------------------------------------------------------|
-| page.tsx               | 5-tab feed (Following, For You, Net, Arena, Battle); Arena is the ranked 1v1v1v1 and replaced the web Train marathon (format tabs removed; format filtering lives in search); For You/Following are lazy-fetched vertical snap feeds, Train/Battle host their own components; floating capsule tab strip + frosted search circle (FeedHeader); Following tab shows login prompt or find-people empty slab; BottomNav (feed active), hidden while the Arena waiting room is showing (Arena's onWaitingRoomChange) |
-| PostCard.tsx           | full-screen Stage card; exports SlabGlow (static format-accent radial halo behind the slab, color-mix 8% fading to transparent at 70%, per-card DOM so the color hard-switches with the snapped post, clipped by the card's overflow-hidden away from chrome; also used by the detail header); per-format slab content (books: title/author + cover; facts: typographic card — a field line (field label left + large FieldGlyph from FIELD_GLYPHS[tags[0]], ~28px h-7/w-auto via SvgBlock, filling the top right) then the full-width serif headline below; people: portrait + role/name/lifespan; concepts: typographic card — field line (field label left + large FieldGlyph from FIELD_GLYPHS[tags[0]] filling the top right, same as facts) then name + one_line dek; questions: field + question + framing; stories: era_label/category kickers + headline; academy: title + authors/venue + key finding; fallback: title + essence); all share bullet Teasers + CardFooter (avatar byline + uniform meta line: reading time + difficulty only for every format — year/era/lifespan/genre/venue etc. are display-trimmed from the card but stay in the JSON for the detail page); re-exports Post type from @/types/post; format styles from lib/formats.ts; the action-rail counts are folded into each button's aria-label and the count spans are aria-hidden, so the number is no longer detached from its action (M163/A11Y-027) |
-| types/post.ts          | TypeScript interfaces: Post (feed_card: Record<string,unknown>), BooksFeedCard, FactsFeedCard, PeopleFeedCard, Section, SectionType (34 types), VoiceItem, AtAGlanceBooksContent, AtAGlancePeopleContent, CoreIdeaItem, TakeawayContent, QuizItem, ReadNextItem {target_post_id|null, format, title, latent} (server read-next, replaces RelatedPostItem), SourceItem, AuthorContextContent, SeeItContent, CardVisual {image_url?, image_attribution?, svg?} (facts feed-card anchor; FactsFeedCard.card_visual replaces mini_visual_svg), KeyNumberItem, TangibleContent {items, visual_svg?}, AngleItem (+ image_caption?, image_attribution?), KeyFigure (+ birth_year?, featured?, image_attribution?), StoryContent (+ image_caption?, image_attribution?), MisconceptionItem; Post has optional tags[] + read_next[] (server-resolved, detail endpoint only; ConnectionItem/ConnectionRef removed — the raw connections array is no longer serialized) + thumbnail_url (the post's own card image, null when it has none yet) + primary_category_name (tags[0] display name from the backend, the card eyebrow source); fcStr/fcNum typed feed_card accessors |
-| SectionRenderer.tsx    | dispatch component; sorts sections by order; switches on type to render named sub-component; passes isUserContent down to SVG-rendering sections and postId to QuizSection; console.warn on unknown type; handles 83 section types (83, from SectionRenderer.tsx case arms; no longer split by format); section bodies use .prose-post (17px/1.7 serif) with px-6 py-8 wrappers |
-| sections/EssenceSection.tsx | large centered text, min-height 140px |
-| sections/VoicesSection.tsx | blockquotes with serif font, attribution footer; optional per-format heading (people "In Their Own Words", books "Voices from the Book") |
-| sections/AtAGlanceSection.tsx | 2-column grid; detects people vs books by presence of "born" field; people: born/died/nationality/field/known_for/read-time/difficulty; books: genre/year/country/pages/reading_ease/read-time/difficulty/best_for; read-time comes from the readingMinutes prop (post.reading_minutes), not a stored field; a non-numeric reading time yields an empty read-time value that visible() drops instead of rendering "null min", and the books branch also runs through visible() |
-| sections/WhyEnduresSection.tsx | prose with left amber border |
-| sections/HeartSection.tsx | standard prose |
-| sections/StructureSection.tsx | "How It Is Built" heading + numbered list with amber numbers |
-| sections/CoreIdeasSection.tsx | "The Core Ideas" heading + per-idea: amber title h2, body, SVG block (w-full max-w-[360px] wrapper so flex context doesn't collapse it; dangerouslySetInnerHTML if !isUserContent, base64 img if isUserContent; color #e4e4e7 for currentColor), image + caption + credit, pull-quote, in_practice as labeled accent-wash block ("In practice" accent caps label above the sentence, faint wash, no full border; mirrored in mobile) |
-| sections/TakeawaySection.tsx | "What Stays With You" heading + plain prose body + optional SVG (no filled card / bold / border; framing no longer changes rendering) |
-| sections/QuizSection.tsx | client component; one-question-at-a-time horizontal pager (translateX slide), tappable options POST /api/quiz/answer; green/red correctness + explanation reveal; Next appears only after answering (no auto-advance) + swipe between questions (native touch listeners stopPropagation so detail-page back-swipe never fires); restores answered state from GET /api/quiz/state; final summary slide shows score (Elo placeholder, no rating math); off-screen slides carry inert so a keyboard user cannot answer ahead of the visual gating (M154/A11Y-013); log-in hint for anonymous users; the verdict sits in an always-mounted polite live region, the error paragraph is role=alert, and answered options carry a check/cross glyph plus a spoken suffix so the state is not color-only (M160/A11Y-016/A11Y-018) |
-| Avatar.tsx (src/components) | shared avatar: Supabase URLs used as-is; legacy /uploads/ paths get API_URL prepended; initial-letter fallback (also used when the image URL 404s via onError, instead of a broken-image glyph); size prop; verified: number prop adds boxShadow ring (1=slate-blue, 2=gold, 3+=purple); frameId: number prop overlays a cosmetic circle (lib/accessories) and REPLACES the verified ring rather than stacking on it — framed, the picture is wrapped and the wrapper takes the caller's className, unframed the markup is unchanged; the frame img is absolute + FRAME_SCALE-sized (max-w-none defeats the preflight clamp) so it overhangs without changing layout size; renders through AppImage (next/image on allowlisted hosts, sized to the slot) |
-| sections/RelatedPostsSection.tsx | horizontal scroll row; renders the server read-next set (ReadNextItem[], used only by the detail page's Read Next block); resolved cards navigate via next/link (client-side, keeps the SWR cache); target_post_id null (latent) → non-clickable with "Coming soon" label |
-| sections/WorldContextSection.tsx | secondary text with heading |
-| sections/AuthorContextSection.tsx | "About the Author" heading + portrait + text + Wikipedia external link |
-| sections/CritiqueSection.tsx | secondary text with heading |
-| sections/SourcesSection.tsx | type badge (W/P/B/A/D) + label + external link icon |
-| sections/HeadlineSection.tsx | large left-aligned serif headline (font-medium tracking-tight leading-snug, max-w-[24ch] measure) matching the feed card headline voice (LAYOUT_STANDARD s.6, shares left axis with field line/meta/body); digit runs + optional scale words highlighted in the accent via regex when accentNumbers (default true); academy passes accentNumbers={false} since a paper title's number is incidental, not a designated accent unit; `as` prop ("h1"|"p", default "p"): the four detail-page title sites pass as="h1", a body headline section stays a p so there is never a second h1 (M161) |
-| sections/SeeItSection.tsx | "See It" label; SVG (dangerouslySetInnerHTML/base64 per isUserContent) or image (ContentImage with caption + credit) |
-| sections/KeyNumbersSection.tsx | 2-column grid; value in cyan-400, optional unit in cyan-700, label in zinc-400 |
-| sections/TangibleSection.tsx | "Make It Tangible" label; content {items, visual_svg?}; bullet list with cyan dots + optional inline SVG (SvgBlock, isUserContent) |
-| sections/HowWeKnowSection.tsx | "How We Know" label; prose block |
-| sections/SurprisesSection.tsx | "Why It Surprises Us" label; the single key-section for facts, marked with an accent left-border (border-l-2 border-(--accent) + faint bg-(--accent)/[0.06], LAYOUT_STANDARD s7); prose in zinc-200 |
-| sections/AnglesSection.tsx | "Multiple Angles" label; list of titled angles with cyan-400 titles, prose, optional SVG or image (ContentImage with caption + credit); passes isUserContent |
-| sections/StorySection.tsx | "The Story Behind It" label; body prose; optional SVG or image (ContentImage with caption + credit); key_figures cards (name, lifespan, role in cyan-600, one_line, optional portrait credit); passes isUserContent |
-| sections/ContentImage.tsx | shared in-post image per IMAGE_STANDARD: rounded-2xl img (lazy/decoding, object-cover, onError hides figure) + optional caption then smaller muted attribution credit |
-| sections/BiggerPictureSection.tsx | "The Bigger Picture" label; heavier prose in zinc-200 font-medium |
-| sections/MisconceptionsSection.tsx | "Common Misconceptions" label; per-item: myth (line-through, zinc-500) with red ✕, reality (zinc-300) with green ✓ |
-| sections/OpenQuestionsSection.tsx | "Open Questions" label; content {body, items?}; prose body + optional list with accent "?" markers (items phrased as questions, LAYOUT_STANDARD s7); no visual |
-| sections/IdentitySection.tsx | People: large lead paragraph (xl, font-semibold) |
-| sections/PortraitSection.tsx | People: full-width image (max-h-420px) with caption + attribution |
-| sections/WhyTheyMatterSection.tsx | People: "Why They Matter" heading + body prose |
-| sections/LifeArcSection.tsx | People: "Life Arc" heading + SVG timeline (dangerouslySetInnerHTML/base64 per isUserContent; btoa uses encodeURIComponent for non-ASCII SVG text) + milestone list (year in rose-400 mono) |
-| sections/DefiningMomentsSection.tsx | People: "Defining Moments" heading + chronological episodes with year (rose-400 mono), location, title (h4), body, optional SVG, optional image+caption |
-| sections/GreatestWorkSection.tsx | People: "Greatest Work" heading + rose-400 title + body + optional SVG/image; passes isUserContent |
-| sections/WhatDroveThemSection.tsx | People: "What Drove Them" heading + body prose |
-| sections/LegacySection.tsx | People: "Legacy" heading + body prose + optional present_day_impact in rose-400/10 callout box |
-| sections/TheirWorldSection.tsx | People: "The World They Lived In" heading + secondary prose |
-| EmptyState.tsx         | format-aware inline SVG icon + "coming soon" message; currently unused (was the per-format feed empty state before format tabs were removed) |
-| BottomNav.tsx          | Solid bottom bar flush to the edge (full width, bg-surface-1, top hairline border-edge): Chat / Stats / Feed (flame) / Create (plus-circle) / Profile; 5 buttons; active item = neutral filled circle; safe-area-inset-bottom aware; Profile tab navigates to /profile/{username} (public view) when logged in, /login otherwise |
-| saved-posts/page.tsx   | bookmarked posts feed: reads IDs from localStorage, fetches each via GET /api/posts/{id}, snap-scroll PostCards; skips missing posts; empty state; BottomNav (profile active) |
-| search/page.tsx        | pill search field + frosted back circle; one debounced (300ms) search fetches posts and accounts in parallel; Posts/Accounts SegmentedTabs switcher (post-search filter, tap or swipe) + format chips (All + 7 formats from lib/formats.ts; active = neutral fill with accent text) + frosted slab result cards (hover brightens fill); loading = stage-pulse slabs; links to post detail; shows inline verified badge next to author_username if author_is_verified; BottomNav (search active) |
-| InterestPicker.tsx     | onboarding pill grid; 10 category sections + Other; fetches own data; gates entry to feed via localStorage |
-| eventQueue.ts          | batches view/like events and POSTs them in groups rather than one-by-one    |
-| auth.tsx               | AuthContext/Provider: JWT in localStorage, session restore via /me, login/register/googleLogin/linkGoogle/logout/loading; AuthUser includes is_private, bio and has_google; linkGoogle POSTs the Google token to /auth/google/link via apiFetch and updates the current user (no account switch) |
-| GoogleSignInButton.tsx | renders Google Identity Services "Sign in with Google" button (loads gsi/client script once); default: auth.googleLogin(credential) then route home (login/register pages); with onCredential prop it runs that instead (profile page passes linkGoogle to connect Google to the current account); props: onError/onCredential/onSuccess/showDivider/text; renders nothing when NEXT_PUBLIC_GOOGLE_CLIENT_ID unset |
-| api.ts                 | apiFetch: adds Authorization header when token present                      |
-| Providers.tsx          | client boundary so layout.tsx (Server Component) can mount AuthProvider     |
-| profile/page.tsx       | account settings: avatar, identity display (inline verified badge if is_verified), Posts/Followers/Following stats row (counts from /api/users/{me}/profile; tapping Followers or Following opens bottom-sheet user list), change username/password, connect Google account (GoogleSignInButton + linkGoogle; shows "Connected" when user.has_google), sign out, delete account; BottomNav (profile active) |
-| CommentsSection.tsx    | detail-page comments list; serif "Comments" heading + mono count (hidden while loading); renders CommentRow bubbles inside a ul; receives comments (Comment[]|null, null = pulsing loading rows)/error/currentUsername/onDelete/deletingId as props; plain-text only (no dangerouslySetInnerHTML); exports Comment interface (includes is_verified) |
-| CommentRow.tsx         | Stage chat-bubble comment row shared by sheet and detail list: Avatar (28px, real picture via comment avatar_url, initial fallback) + bg-surface-2 rounded-2xl bubble with username/VerifiedBadge/relative time/own-delete inline; renders an <li> (both call sites wrap their rows in a ul, M161); the delete button names the comment's author (M163/A11Y-021) |
-| CommentsBottomSheet.tsx | Stage floating comments sheet for feed cards: card detached inset-x-3 bottom-3 rounded-3xl bg-surface-1/95 blur with stage-sheet-in spring; wrapped in Dialog (role/focus trap/Escape/inert background, M155), so the drag zone binds through a callback ref in state (its markup now mounts one commit later, inside the portal); comment state via useComments; drag handle: swipe up expands to 75 vh, swipe down collapses to 50 vh or closes, live translateY feedback, and the pill is also a labeled aria-expanded button so non-touch users can reach the expanded height (M154/A11Y-029); pill input + circular arrow-up submit, safe-area padded; rendered via createPortal into document.body |
-| Toast.tsx              | fixed bottom-center frosted pill notification (bg-white/10% blur); visible prop controls opacity via CSS transition; pointer-events-none; the spoken copy is a separate sr-only role=status region holding the message only while visible, so a faded-out toast leaves no stale text in the accessibility tree, and the visual pill is aria-hidden (M160/A11Y-017) |
-| chat/page.tsx          | conversation list + New chat overlay (multi-select user picker, optional group name); BottomNav (chat active) |
-| chat/[id]/page.tsx     | conversation view: REST history + live websocket messages, bubble layout, plain-text rendering only |
-| chatSocket.ts          | useChatSocket hook: first-frame JWT auth, auto-reconnect, send(); ChatMessage/Conversation types |
-| stats/page.tsx         | Global, Personal, and Friends tabs in a swipeable horizontal pager (useSwipeTabs + SegmentedTabs capsule, indicator tracks the swipe; pages lazy-mount via activatedIndices so the Friends fan-out fetch waits for first visit, and the Friends fan-out is cached in SWR (keyed on username) via loadFriendsStats so returning to the tab in-session does not refire the ~27 requests; each page scrolls vertically on its own; inner overflow-x-auto tables/heatmaps/pill-rows add overscroll-x-contain so they never chain into the pager); every category section floats as its own frosted slab (CategorySection = card mx-3 mb-3); chart-type selector = neutral pills (active bg-white/12%); loading = stage-pulse slabs, errors/login prompts = slab messages; global + personal stats via useSWR (revisits render cached data instantly, refresh silently in background); personal stats prefetched in parallel with global on mount (key null until session restored); WaffleChart (10×10 grid), CalendarHeatmap (12-month squares), ActivityHeatmap (7×24 grid), GaugeChart (SVG arc + needle) as custom components; recharts for all other chart types; Stage chart theme: TT tooltip (frosted dark rgba(20,20,20,.96), no border, radius 16), AXIS #8a8a8a, GRID/PolarGrid rgba(200,200,200,.07), heatmap/matrix empty cells #1a1a1a, gauge track white/8%, heatmap ramps lamp rgba(124,111,255,…), series colors = FORMAT_COLORS accents + lamp; Friends tab fetches /following + /elo + /profile per participant (capped at 12, cached in SWR; "Friends Following" shows the true following_count and a caption labels the "Comparing 12 of N" truncation) and renders 3 CategorySection blocks: Knowledge Leaderboard, Content Created, Social (Per-format Elo, Quiz Activity, Efficiency and Breadth removed with the per-format elo contract; Personal-tab knowledge block is cards + explainer only) |
+Form labelling (M156/A11Y-003): every visible label carries htmlFor and its control an id, with one exception at 53 labels -- app/create/BooksFeedCardBlock.tsx:84, a wrapping-label file picker where the input is nested inside the label and carries aria-label, so the association is implicit and no htmlFor applies; memoized and repeated blocks derive the id from useId() so instances never collide; controls the design leaves unlabelled (search fields, comment and chat composers, per-row editor inputs) carry aria-label instead of relying on placeholder.
 
-## CURRENT STATUS
+Display trimming: the feed card's meta line carries reading time and difficulty ONLY, for every format. Year, era, lifespan, genre, venue and the rest are trimmed from THAT META LINE but STAY IN THE JSON, because the detail page consumes them -- in its At-a-Glance section (sections/AtAGlanceSection.tsx: books genre/year/country/pages, people born/died/nationality/field) and in each format's own header branch (app/post/[id]/page.tsx: venue :423, lifespan :480, genre :513), so At-a-Glance is a consumer rather than the consumer. Trimmed from the meta line is not trimmed from the card: three of the named fields render elsewhere on it (components/PostCard.tsx: lifespan :521, era_label :600, venue :626). A field absent from the card is not a field nobody reads, and no one file shows both halves -- which is how a session asked to trim unused feed_card fields deletes what the detail page renders.
 
-**Built**
-- FastAPI backend with PostgreSQL (Supabase), CORS, full API
-- Section-based post schema: feed_card JSON + sections JSON array; old per-format fields removed
-- 13 section types for Books format (13, from the type: Literal[...] discriminators in backend/app/schemas.py, which validate the Books set only)
-- Seed script: 153 interests (153, from len(SLUGS) in backend/seed.py) + auto-discovers all *_example.json files (currently Books + Facts + People); persists top-level tags + connections (default []) from each example; FORMAT_INTEREST_SLUGS maps format → interests; _post_title falls back to feed_card.name for People
-- Legacy DB preserved as backend/deepscroll.db.legacy_*
-- Renamed Deepscroll → Plexive across code, docs and UI; deliberately kept: the deepscroll_* client storage keys (legacy namespace, no migration, so no user is logged out), backend/deepscroll.db* filenames, and the deepscroll-backend systemd unit + /etc/deepscroll + /home/silas/deepscroll paths in docs/SERVER.md. Also kept at the time: mobile/app.json's slug + scheme, for EAS identity and deep links; that file went with the React Native app on 2026-08-27
-- Onboarding: interest picker → slugs saved to localStorage → gates feed
-- Feed: 9-tab horizontal swipe (For You + Following + 7 formats) + vertical snap scroll per tab
-- Quiz + Elo: interactive quizzes, server-validated answers, per-format + global knowledge score (see ELO KNOWLEDGE SCORE)
-- Profiles: avatar upload, knowledge score, follower/following lists, account search, follow UI end-to-end
-- EmptyState component for format tabs with no posts yet
-- Books feed card: cover, title, author, essence, 3 teasers, difficulty DotScale, year/genre
-- Detail page: SectionRenderer renders 83 section types (83, from SectionRenderer.tsx case arms) in order (SVG security: dangerouslySetInnerHTML for seed, base64 img for user)
-- Create page: 3-step Books wizard with Feed Card block + interest picker (1–5) + 15 section accordions
-- My-posts page: cover thumbnail + title + author + status from feed_card
-- User accounts: JWT auth, register/login, follow system, public profiles, comments, likes, saves
-- Stats page, verification system, saved posts
-- Real-time chat: DMs + group chats over WebSocket (see CHAT / WEBSOCKET DESIGN), conversation list + chat view, chat in bottom nav (search moved top-right)
-- Security hardening pass (June 2026, see SECURITY_REVIEW.md)
-- "Stage" visual identity (June 2026, see docs/DESIGN.md): single design consolidated from the three-way exploration; Circuit neutral tokens in globals.css unchanged, component vocabulary redefined as borderless frosted slabs + detached pill chrome + springy press feedback; accents only on small post-owned elements (format dot, teaser bullets, tab dot, in-body --accent), hard accent switch on snap-settle in mixed feeds; per-post --accent CSS variable replaces hardcoded section colors; seed SVGs re-paletted at render time in SvgBlock (content JSON untouched); shared component vocabulary (.card/.btn/.btn-icon/.field/.chip/.label-caps)
-- Read-aloud (June 2026): card speaker button opens the detail page reading aloud with sentence accent highlight + pause/resume/stop transport; voice = Piper neural TTS in-browser (vits-web, ~60 MB one-time model download, loading = pulsing transport button) with speechSynthesis fallback (natural-voice pick + word highlight); speaks title + prose only, chrome and metadata skipped via data-no-read (src/lib/readAloud/); RN app will need a different engine later (expo-speech), the sentence-queue/extraction layer is engine-agnostic
-
-- Mobile app (mobile/, REMOVED 2026-08-27): the Expo/React Native client reached phases 1-5 (feed, auth, detail with the section ports, Stage restyle, profiles/follows/search/stats/chat); development stopped when the Kotlin Multiplatform rewrite was chosen and it was deleted rather than kept as an abandoned tree. mobile-kmp/ is the mobile client; the web frontend is the reference for what it should become. Code recoverable from git history.
-
-**Next**
-- Content for academy format
-- Recommendation algorithm improvements
-- Pagination / infinite scroll
+One h1 per page (M161): HeadlineSection takes an `as` prop ("h1" | "p"), defaulting to "p". Exactly four call sites pass as="h1", all in app/post/[id]/page.tsx (:384, :418, :520, :579); a headline rendered as a body section stays a p, so HEADLINESECTION never adds a second h1 to a page. That is the guarantee, and it is narrower than the heading: it is about HeadlineSection, not about pages. The detail page has six title sites, not four -- the other two are raw h1 (:477 people, :601 slab fallback) -- and they are mutually exclusive branches, so one h1 renders per view there. On the feed page they are not exclusive: app/page.tsx:323 renders an sr-only h1 and Arena and Battle each render their own once mounted, so / carries two.

@@ -129,7 +129,9 @@ function CardHero({ src }: { src?: string | null }) {
 // right. The meta line is deliberately uniform across all seven formats —
 // reading time + difficulty only. Format-specific fields (year, era,
 // lifespan, genre, venue, ...) stay in the post JSON and render on the
-// detail page, never on the card.
+// detail page. Three of them also render on the card, outside this footer:
+// lifespan at :521, era_label at :600, venue at :626. What no card shows is
+// any of them in the meta line.
 function CardFooter({ post, fc, actions }: { post: Post; fc: Post["feed_card"]; actions?: React.ReactNode }) {
   const difficulty = fcNum(fc, "post_difficulty")
   // Reading time is computed on the server from the post's text (post.reading_minutes).
