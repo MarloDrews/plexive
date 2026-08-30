@@ -522,34 +522,3 @@ Form labelling (M156/A11Y-003): every visible label carries htmlFor and its cont
 | chatSocket.ts          | useChatSocket hook: first-frame JWT auth, auto-reconnect, send(); ChatMessage/Conversation types |
 | stats/page.tsx         | Global, Personal, and Friends tabs in a swipeable horizontal pager (useSwipeTabs + SegmentedTabs capsule, indicator tracks the swipe; pages lazy-mount via activatedIndices so the Friends fan-out fetch waits for first visit, and the Friends fan-out is cached in SWR (keyed on username) via loadFriendsStats so returning to the tab in-session does not refire the ~27 requests; each page scrolls vertically on its own; inner overflow-x-auto tables/heatmaps/pill-rows add overscroll-x-contain so they never chain into the pager); every category section floats as its own frosted slab (CategorySection = card mx-3 mb-3); chart-type selector = neutral pills (active bg-white/12%); loading = stage-pulse slabs, errors/login prompts = slab messages; global + personal stats via useSWR (revisits render cached data instantly, refresh silently in background); personal stats prefetched in parallel with global on mount (key null until session restored); WaffleChart (10×10 grid), CalendarHeatmap (12-month squares), ActivityHeatmap (7×24 grid), GaugeChart (SVG arc + needle) as custom components; recharts for all other chart types; Stage chart theme: TT tooltip (frosted dark rgba(20,20,20,.96), no border, radius 16), AXIS #8a8a8a, GRID/PolarGrid rgba(200,200,200,.07), heatmap/matrix empty cells #1a1a1a, gauge track white/8%, heatmap ramps lamp rgba(124,111,255,…), series colors = FORMAT_COLORS accents + lamp; Friends tab fetches /following + /elo + /profile per participant (capped at 12, cached in SWR; "Friends Following" shows the true following_count and a caption labels the "Comparing 12 of N" truncation) and renders 3 CategorySection blocks: Knowledge Leaderboard, Content Created, Social (Per-format Elo, Quiz Activity, Efficiency and Breadth removed with the per-format elo contract; Personal-tab knowledge block is cards + explainer only) |
 
-## CURRENT STATUS
-
-**Built**
-- FastAPI backend with PostgreSQL (Supabase), CORS, full API
-- Section-based post schema: feed_card JSON + sections JSON array; old per-format fields removed
-- 13 section types for Books format (13, from the type: Literal[...] discriminators in backend/app/schemas.py, which validate the Books set only)
-- Seed script: 153 interests (153, from len(SLUGS) in backend/seed.py) + auto-discovers all *_example.json files (currently Books + Facts + People); persists top-level tags + connections (default []) from each example; FORMAT_INTEREST_SLUGS maps format → interests; _post_title falls back to feed_card.name for People
-- Legacy DB preserved as backend/deepscroll.db.legacy_*
-- Renamed Deepscroll → Plexive across code, docs and UI; deliberately kept: the deepscroll_* client storage keys (legacy namespace, no migration, so no user is logged out), backend/deepscroll.db* filenames, and the deepscroll-backend systemd unit + /etc/deepscroll + /home/silas/deepscroll paths in docs/SERVER.md. Also kept at the time: mobile/app.json's slug + scheme, for EAS identity and deep links; that file went with the React Native app on 2026-08-27
-- Onboarding: interest picker → slugs saved to localStorage → gates feed
-- Feed: 9-tab horizontal swipe (For You + Following + 7 formats) + vertical snap scroll per tab
-- Quiz + Elo: interactive quizzes, server-validated answers, per-format + global knowledge score (see ELO KNOWLEDGE SCORE)
-- Profiles: avatar upload, knowledge score, follower/following lists, account search, follow UI end-to-end
-- EmptyState component for format tabs with no posts yet
-- Books feed card: cover, title, author, essence, 3 teasers, difficulty DotScale, year/genre
-- Detail page: SectionRenderer renders 83 section types (83, from SectionRenderer.tsx case arms) in order (SVG security: dangerouslySetInnerHTML for seed, base64 img for user)
-- Create page: 3-step Books wizard with Feed Card block + interest picker (1–5) + 15 section accordions
-- My-posts page: cover thumbnail + title + author + status from feed_card
-- User accounts: JWT auth, register/login, follow system, public profiles, comments, likes, saves
-- Stats page, verification system, saved posts
-- Real-time chat: DMs + group chats over WebSocket (see CHAT / WEBSOCKET DESIGN), conversation list + chat view, chat in bottom nav (search moved top-right)
-- Security hardening pass (June 2026, see SECURITY_REVIEW.md)
-- "Stage" visual identity (June 2026, see docs/DESIGN.md): single design consolidated from the three-way exploration; Circuit neutral tokens in globals.css unchanged, component vocabulary redefined as borderless frosted slabs + detached pill chrome + springy press feedback; accents only on small post-owned elements (format dot, teaser bullets, tab dot, in-body --accent), hard accent switch on snap-settle in mixed feeds; per-post --accent CSS variable replaces hardcoded section colors; seed SVGs re-paletted at render time in SvgBlock (content JSON untouched); shared component vocabulary (.card/.btn/.btn-icon/.field/.chip/.label-caps)
-- Read-aloud (June 2026): card speaker button opens the detail page reading aloud with sentence accent highlight + pause/resume/stop transport; voice = Piper neural TTS in-browser (vits-web, ~60 MB one-time model download, loading = pulsing transport button) with speechSynthesis fallback (natural-voice pick + word highlight); speaks title + prose only, chrome and metadata skipped via data-no-read (src/lib/readAloud/); RN app will need a different engine later (expo-speech), the sentence-queue/extraction layer is engine-agnostic
-
-- Mobile app (mobile/, REMOVED 2026-08-27): the Expo/React Native client reached phases 1-5 (feed, auth, detail with the section ports, Stage restyle, profiles/follows/search/stats/chat); development stopped when the Kotlin Multiplatform rewrite was chosen and it was deleted rather than kept as an abandoned tree. mobile-kmp/ is the mobile client; the web frontend is the reference for what it should become. Code recoverable from git history.
-
-**Next**
-- Content for academy format
-- Recommendation algorithm improvements
-- Pagination / infinite scroll
