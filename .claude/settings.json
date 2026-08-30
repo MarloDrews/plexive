@@ -5,6 +5,16 @@
       "PowerShell(Get-ChildItem c:\\\\Users\\\\marlo\\\\GitHub\\\\deepscroll\\\\frontend\\\\public\\\\seed-images\\\\ | Select-Object Name, @{N='KB';E={[math]::Round\\($_.Length/1KB\\)}})",
       "Skill(code-review)",
       "Skill(code-review:*)"
+    ],
+    "deny": [
+      "Read(**/.env)",
+      "Read(**/.env.local)",
+      "Bash(git push origin main)",
+      "Bash(git push origin main *)",
+      "Bash(git push --force*)",
+      "Bash(git push --force-with-lease*)",
+      "Bash(git push -f *)",
+      "Bash(git push * --force*)"
     ]
   },
   "hooks": {
@@ -14,15 +24,16 @@
         "hooks": [
           {
             "type": "command",
-            "if": "Bash(git commit *)",
-            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"COMMIT RULES (.claude/skills/commit.md): type(scope): description — types: feat/fix/docs/style/refactor/chore. English only. Short and clear. NO co-author lines.\"}}'",
-            "shell": "bash"
-          },
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/pretooluse_bash.py\""
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
           {
             "type": "command",
-            "if": "Bash(git merge *)",
-            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"COMMIT RULES (.claude/skills/commit.md): Any merge commit must follow conventional commits format. English only. NO co-author lines.\"}}'",
-            "shell": "bash"
+            "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/pretooluse_write.py\""
           }
         ]
       }
