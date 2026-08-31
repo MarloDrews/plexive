@@ -34,13 +34,37 @@ export function clearApiCache(): void {
 // see app/page.tsx), but a revisit still renders the cached list first, so
 // in-session mutations remain the cache's responsibility:
 
-// Patch one post inside every cached feed list (all /api/feed* keys).
+// The For You feed pages with useSWRInfinite, which writes TWO kinds of entry:
+// each page under its own "/api/feed?..." key, and the array of pages under
+// "$inf$" + the first page's key. The rendered list is the $inf$ entry, so a
+// filter matching only keys that START WITH /api/feed patches the per-page
+// copies while the feed on screen keeps the stale one -- a write-through that
+// silently stops writing through. Both shapes are matched here, and the
+// patcher below handles both Post[] and Post[][].
+const INFINITE_PREFIX = "$inf$"
+
+function isFeedKey(key: unknown): boolean {
+  return (
+    typeof key === "string" &&
+    (key.startsWith("/api/feed") || key.startsWith(`${INFINITE_PREFIX}/api/feed`))
+  )
+}
+
+// Patch one post inside every cached feed list (all /api/feed* keys, and the
+// paged $inf$ entry behind them).
 // Used to keep comment counts on feed cards in sync after commenting.
 export function updatePostInFeedCaches(postId: number, patch: Partial<Post>): void {
-  mutate<Post[]>(
-    (key) => typeof key === "string" && key.startsWith("/api/feed"),
-    (data) =>
-      Array.isArray(data) ? data.map((p) => (p.id === postId ? { ...p, ...patch } : p)) : data,
+  const patchPage = (page: Post[]): Post[] =>
+    page.map((p) => (p.id === postId ? { ...p, ...patch } : p))
+  mutate<Post[] | Post[][]>(
+    isFeedKey,
+    (data) => {
+      if (!Array.isArray(data)) return data
+      // A page array (Post[][]) vs a single page (Post[]): only the first tells
+      // them apart, and an empty array patches to an empty array either way.
+      if (Array.isArray(data[0])) return (data as Post[][]).map(patchPage)
+      return patchPage(data as Post[])
+    },
     { revalidate: false }
   )
 }
@@ -48,7 +72,7 @@ export function updatePostInFeedCaches(postId: number, patch: Partial<Post>): vo
 // Drop all cached feed lists so the next feed visit fetches fresh.
 // Called after creating a post, which can add a new entry to the feed.
 export function invalidateFeedCaches(): void {
-  mutate((key) => typeof key === "string" && key.startsWith("/api/feed"), undefined, {
+  mutate(isFeedKey, undefined, {
     revalidate: false,
   })
 }
@@ -59,10 +83,13 @@ export function invalidateFeedCaches(): void {
 // and the full GET /api/posts/{id} still runs. Pass useSWRConfig().cache.
 export function findPostInFeedCaches(cache: Cache, postId: number): Post | undefined {
   for (const key of cache.keys()) {
-    if (typeof key !== "string" || !key.startsWith("/api/feed")) continue
+    if (!isFeedKey(key)) continue
     const data = cache.get(key)?.data
-    if (Array.isArray(data)) {
-      const post = (data as Post[]).find((p) => p.id === postId)
+    if (!Array.isArray(data)) continue
+    // Same two shapes as updatePostInFeedCaches: one page, or an array of pages.
+    const pages: Post[][] = Array.isArray(data[0]) ? (data as Post[][]) : [data as Post[]]
+    for (const page of pages) {
+      const post = page.find((p) => p.id === postId)
       if (post) return post
     }
   }

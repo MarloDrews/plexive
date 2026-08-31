@@ -86,12 +86,13 @@ jobs:
             echo "      the log above and name PLEXIVE_CONTENT_REPO."
           fi
 
-          # A floor, not the exact count. 78 tests across 8 files measured 2026-08-31 -- 70 passing
-          # plus the 8 skipped gold tests -- when gate-coverage.test.mjs landed; 64 across 7 files
+          # A floor, not the exact count. 97 tests across 9 files measured 2026-08-31 -- 89 passing
+          # plus the 8 skipped gold tests -- when feedPaging.test.mjs landed; 78 across 8 files
+          # (70 passing) earlier the same day, when gate-coverage.test.mjs landed; 64 across 7 files
           # (56 passing) on 2026-08-29, against 60 (52 passing) earlier the same day, before
           # taxonomy-drift.test.mjs gained the four axis-2 and FORMAT_INTEREST_SLUGS assertions;
           # 53 across 6 files (45 passing) before that file existed at all, and 40 across 5 files
-          # when this was written. The floor STAYS AT 40 because 70 still clears it: raising it to each new observed count is how a
+          # when this was written. The floor STAYS AT 40 because 89 still clears it: raising it to each new observed count is how a
           # floor ends up above what a later legitimate deletion leaves, which reds correct work. It
           # only moves down through a deliberate deletion, which is worth a deliberate edit here.
           if [ "$pass" -lt 40 ]; then

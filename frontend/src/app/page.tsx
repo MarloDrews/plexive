@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import useSWR from "swr"
+import useSWRInfinite from "swr/infinite"
 import dynamic from "next/dynamic"
 import PostCard from "@/components/PostCard"
 import BottomNav from "@/components/BottomNav"
@@ -16,6 +16,7 @@ import { scrollBehavior } from "@/lib/motion"
 import { tabPanelProps } from "@/lib/tablist"
 import { useSwipeTabs } from "@/lib/useSwipeTabs"
 import { useWindowedFeed } from "@/lib/useWindowedFeed"
+import { feedPageKey, feedReachedEnd, shouldLoadNextPage } from "@/lib/feedPaging"
 
 // Arena and Battle ship as their own lazy chunks: their whole import graphs
 // (stage kit, sockets, question pools) otherwise sit in the entry chunk of the
@@ -65,6 +66,10 @@ const useIsomorphicLayoutEffect = typeof window !== "undefined" ? useLayoutEffec
 // fixed seed, so pinning one seed makes the order stable across refetches --
 // which is what lets feed revalidation be turned back on without the feed
 // visibly reshuffling under the user.
+// It is also what makes cursor paging safe: the backend resolves a cursor by
+// finding that id in the ranking it just recomputed, so a page fetched under a
+// different seed is positioned against a different ranking and the pages
+// duplicate and skip. Every page of one session sends this same value.
 function getFeedSeed(): string {
   if (typeof window === "undefined") return "0"
   try {
@@ -126,12 +131,20 @@ function TabPage({
       key = `/api/feed?${params}`
     }
   }
-  const { data, error, mutate } = useSWR<Post[]>(key)
+  // Paged with SWR's infinite loader. The page key, the end test and the
+  // decision to ask for the next page all live in lib/feedPaging so they can be
+  // tested without mounting this component; nothing about paging is decided
+  // here. Pages are fetched in order, so page N's cursor is the last id of the
+  // page before it.
+  const { data, error, mutate, size, setSize, isValidating } = useSWRInfinite<Post[]>(
+    (pageIndex, previousPage) => feedPageKey(key, pageIndex, previousPage, !isFollowingTab)
+  )
   // The following tab still treats a failure as an empty feed (its empty and
   // error states read the same). The other tabs used to leave posts at null on
   // error, which is indistinguishable from loading, so they now branch on error
   // below and offer a retry.
-  const posts: Post[] | null = isFollowingTab ? (error ? [] : data ?? null) : data ?? null
+  const loaded: Post[] | null = data ? data.flat() : null
+  const posts: Post[] | null = isFollowingTab ? (error ? [] : loaded) : loaded
 
   // Read the saved scroll target for this tab once, up front (without consuming
   // it), so the window below can mount the target card on the very first paint.
@@ -153,7 +166,30 @@ function TabPage({
   // mounted; the rest collapse into dvh spacers so DOM size no longer grows
   // with the corpus. Seeded with restoreIndex so the target card is mounted
   // before the scroll position is restored below.
-  const { start, end } = useWindowedFeed(scrollRef, posts?.length ?? 0, restoreIndex)
+  const { start, end, activeIndex } = useWindowedFeed(scrollRef, posts?.length ?? 0, restoreIndex)
+
+  // Ask for the next page while the reader still has cards left. size is how
+  // many pages have been requested and data.length how many have resolved, so
+  // size > data.length is exactly "a page request is in flight" -- without it
+  // every scroll event inside the trigger zone would fire another setSize.
+  const requestInFlight = size > (data?.length ?? 0) || isValidating
+  const reachedEnd = feedReachedEnd(data)
+  useEffect(() => {
+    if (
+      shouldLoadNextPage({
+        activeIndex,
+        loadedCount: posts?.length ?? 0,
+        requestInFlight,
+        reachedEnd,
+        // A failed page request is a failure, not the end of the feed. Stop
+        // asking so the failure cannot become a retry loop; SWR's own error
+        // retry brings the page back.
+        failed: error !== undefined,
+      })
+    ) {
+      setSize((s) => s + 1)
+    }
+  }, [activeIndex, posts?.length, requestInFlight, reachedEnd, error, setSize])
 
   // Layout effect (runs before paint) so the scroll lands on the target card
   // without a visible snap-to-top flash. Uses the saved index: every card is
@@ -203,7 +239,11 @@ function TabPage({
             </Link>
           </div>
         </div>
-      ) : !isFollowingTab && error ? (
+      ) : !isFollowingTab && error && (posts === null || posts.length === 0) ? (
+        // Only a failed FIRST page replaces the feed with this card. A later
+        // page failing must not wipe out the cards already on screen, and must
+        // not read as "nothing more" either -- the feed simply stays where it
+        // is while SWR retries.
         <div className="h-full flex items-center justify-center bg-surface-0 px-6">
           <div className="card px-8 py-10 text-center max-w-xs flex flex-col items-center gap-3">
             <p className="font-serif text-xl text-ink leading-snug">Could not load your feed</p>
