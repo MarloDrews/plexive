@@ -135,7 +135,17 @@ jobs:
 
           unscoped = []
           for path in sys.argv[1:]:
-              with open(path, encoding="utf-8") as fh:
+              # utf-8-sig, NOT utf-8. A UTF-8 BOM lands on lines[0] otherwise, the first line is
+              # no longer exactly --- , the frontmatter block is never entered, and a file with a
+              # perfectly good top-level paths: key is refused and TOLD IT HAS NO paths: KEY --
+              # a message naming a defect the file does not have. Measured 2026-08-31. This is
+              # not a hypothetical shape here: CLAUDE.md records that PowerShell -- the primary
+              # shell on the machine these files are written on -- defaults its >, >> and
+              # Out-File redirections to UTF-8 WITH BOM. The sibling hazard, CRLF, is already
+              # handled by .gitattributes pinning these files to eol=lf and by splitlines()
+              # below; only the BOM was untested. Stored as cw-11. utf-8-sig strips a BOM when
+              # there is one and changes nothing when there is not.
+              with open(path, encoding="utf-8-sig") as fh:
                   # splitlines() handles CRLF and LF alike, which matters because
                   # core.autocrlf is on for the machine these files are written on.
                   lines = fh.read().splitlines()
@@ -166,6 +176,372 @@ jobs:
               for path in unscoped:
                   print("  " + path)
               sys.exit(1)
+          PY
+
+      # THE GOVERNANCE SURFACE HAS A CEILING, AND THIS IS THE ONLY THING THAT WATCHES IT.
+      # Four topics in a row worked on the surface that instructs the agent. The first shrank
+      # CLAUDE.md by 93,987 bytes and it refilled to within 7,664 bytes of where it had been,
+      # because nothing noticed until an audit ran three weeks later. Every batch measured its
+      # own corner; nothing measured the whole.
+      #
+      # A CEILING IS THE FOURTH KIND OF COUNT IN THIS REPOSITORY and it is deliberately not
+      # called a ratchet. A ratchet tracks a defect count that ought to reach zero; driving
+      # MAX_RUFF_FINDINGS to 0 is the goal. A ceiling tracks a structural size that must not
+      # reach zero; driving workflow_files to 0 would delete CI. The floors under these same
+      # containers live elsewhere -- MIN_RULES_FILES above is the floor for one of them -- so a
+      # container fenced on both sides is fenced by two different steps on purpose.
+      #
+      # EVERY NUMBER IN tools/surface-budget.json WAS SET BY A REPLAY, not by judgement: 754
+      # first-parent commits were measured, every increase in every container was classified as
+      # one that should or should not have been blocked, and each budget sits at or above the
+      # largest legitimate one. The commit that set each number is named in that file's "why"
+      # field. Raising a budget is a normal thing to do; doing it in the same commit as the
+      # growth, where a reader sees both, is the whole point.
+      - name: "Surface budget: every governance container at or under its ceiling"
+        working-directory: ${{ github.workspace }}
+        run: |
+          # ANTI-VACUITY, AND THE GUARD IS THE SET-EQUALITY ASSERTION FURTHER DOWN, not a
+          # count. This step reads one file, and a step that reads a file which is not there is
+          # the exact shape this repository keeps recording: the file sits in the tree looking
+          # authoritative and governing nothing, while the check goes green having compared no
+          # budgets. So the file is never defaulted when missing, the path actually read is
+          # printed before anything else, and the METRICS list below -- 23 names, written out --
+          # is compared against the file keys in BOTH directions, which refuses a file holding
+          # anything other than exactly those 23 entries.
+          #
+          # There WAS a MIN_BUDGET_ENTRIES=23 floor here as well, and it could never fire: set
+          # equality runs first, so any file reaching a count check has already been proved to
+          # hold exactly those 23 names. Demonstrated 2026-08-31 -- a budget file cut to one
+          # container failed at NO BUDGET and never reached the floor (stored as cw-13). A
+          # threshold that cannot fire is the shape this repository central rule is about, so it
+          # was taken out rather than moved above the assertion that was already doing its job,
+          # and doing it better.
+          python3 - <<'PY'
+          import json
+          import os
+          import re
+          import subprocess
+
+          BUDGET_PATH = "tools/surface-budget.json"
+
+          # Print the path that governed BEFORE reading it, so a log from a job that failed on
+          # the read still says which file it was looking for.
+          print("budget file: %s" % os.path.abspath(BUDGET_PATH))
+
+          # No try/except around the existence check and no dict.get() with a default anywhere
+          # on the budget side. A default is how a check keeps passing after its input is gone.
+          if not os.path.isfile(BUDGET_PATH):
+              print("FAIL: %s does not exist." % BUDGET_PATH)
+              print("This step exists to compare the surface against that file. With the file")
+              print("gone there is nothing to compare, and a green tick here would mean only")
+              print("that the check had stopped working.")
+              raise SystemExit(1)
+          with open(BUDGET_PATH, encoding="utf-8") as fh:
+              raw = fh.read()
+          if not raw.strip():
+              print("FAIL: %s is empty." % BUDGET_PATH)
+              raise SystemExit(1)
+          try:
+              document = json.loads(raw)
+          except json.JSONDecodeError as exc:
+              print("FAIL: %s is not valid JSON: %s" % (BUDGET_PATH, exc))
+              print("Refusing to continue rather than falling back to no budget.")
+              raise SystemExit(1)
+          for key in ("containers", "not_gated"):
+              if key not in document:
+                  print("FAIL: %s has no top-level '%s' key." % (BUDGET_PATH, key))
+                  raise SystemExit(1)
+          containers = document["containers"]
+
+          # ---- the measurement -------------------------------------------------------------
+          # Stdlib only, no PyYAML, because this step runs BEFORE the dependency install so a
+          # malformed budget file is reported in seconds rather than after a four-minute suite.
+
+          METRICS = [
+              "claude_md_bytes", "claude_md_lines", "claude_md_sections", "claude_md_rules",
+              "claude_md_unconditional_rules", "claude_rules_files", "settings_hook_events",
+              "settings_hook_matchers", "settings_hook_commands", "settings_permissions_allow",
+              "settings_permissions_deny", "settings_permissions_ask", "hook_scripts",
+              "project_skills", "project_commands", "project_subagents", "project_plugins",
+              "project_mcp_servers", "workflow_files", "workflow_jobs", "workflow_steps",
+              "workflow_named_thresholds", "correct_work_cases",
+          ]
+
+          # WHAT THE REPOSITORY SHIPS, NOT WHAT THIS MACHINE HAPPENS TO HOLD, AND THE INDEX
+          # IS WHAT SAYS SO. Membership comes from git ls-files: the paths the next commit would
+          # carry. The first version walked the filesystem and subtracted only what
+          # git check-ignore called IGNORED, which is a different set -- an untracked file that is
+          # not gitignored counted in full. Measured 2026-08-31: .claude/agents/scratch-reviewer.md,
+          # written by a session using Claude Code's own /agents flow and never committed, made
+          # project_subagents 1 here and 0 on the runner FOR THE SAME COMMIT, and two files from a
+          # plugin install did the same to project_plugins. A ceiling that answers differently on
+          # two machines cannot gate a merge. Stored as cw-10a and cw-10b.
+          #
+          # -z AND BYTES, BOTH DELIBERATE, both measured on 2026-08-31 against the earlier
+          # check-ignore version. Without -z git quotes any path it considers unusual and the
+          # quoted form matches nothing on the way back, so the filter passes everything through:
+          # correct on the runner, wrong on the laptop, which is the direction found late.
+          #
+          # CONTENT IS STILL READ FROM THE WORKING TREE, and the split is deliberate. Membership is
+          # what a commit decides; content is what the file says right now. That is what lets cw-8
+          # measure an uncommitted correction to CLAUDE.md, and what makes a new member cost a
+          # git add before it spends a ceiling everyone shares.
+          def shipped(root, suffix=None):
+              proc = subprocess.run(["git", "ls-files", "-z", "--", root], capture_output=True)
+              # A non-zero exit is git failing, and a failure here must not be read as "the
+              # repository ships nothing", which is under every ceiling.
+              if proc.returncode != 0:
+                  print("FAIL: git ls-files exited %d for %s." % (proc.returncode, root))
+                  print(proc.stderr.decode("utf-8", errors="replace").strip())
+                  print("This step has to know which files the repository actually ships. With no")
+                  print("answer it would count whatever this machine happens to hold against a")
+                  print("ceiling everyone shares, so it refuses rather than guessing.")
+                  raise SystemExit(1)
+              paths = [p for p in proc.stdout.decode("utf-8").split("\0") if p]
+              return sorted(p for p in paths if suffix is None or p.endswith(suffix))
+
+          def read_lf(path):
+              # CRLF IS NORMALISED AWAY BEFORE ANY BYTE IS COUNTED. core.autocrlf=true on the
+              # machine these files are written on, so CLAUDE.md is 141 bytes larger in a
+              # Windows working tree than in the index and than on this runner. A budget set
+              # against one and checked against the other would be wrong by exactly that much,
+              # and the correct-work harness runs this same body on Windows.
+              with open(path, "rb") as fh:
+                  return fh.read().replace(b"\r\n", b"\n")
+
+          m = {}
+
+          blob = read_lf("CLAUDE.md")
+          m["claude_md_bytes"] = len(blob)
+          lines = blob.decode("utf-8", errors="replace").splitlines()
+          m["claude_md_lines"] = len(lines)
+          # FENCES ARE TRACKED, AND A "## " LINE INSIDE ONE IS A QUOTATION RATHER THAN A
+          # SECTION. The documents in this repository quote each other constantly, and CLAUDE.md
+          # is one edit away from showing a heading it is describing. Measured 2026-08-31: a
+          # ```markdown fence holding one "## Some Heading" took claude_md_sections to 11 against
+          # a pin of 10, which is F1's defect in its smallest form -- a metric counting a textual
+          # shape rather than the thing it is named for. Stored as cw-14. An indented code block
+          # was already safe, and CLAUDE.md uses those today, which is why nobody had seen it.
+          #
+          # The same filtered view feeds the "## Rules" scan below, so both metrics agree about
+          # where a section starts and ends. A fence opened and never closed swallows the rest of
+          # the file, which would show up as claude_md_sections collapsing rather than growing --
+          # visible in the printed row, and the reason the row prints on every run.
+          def outside_fences(all_lines):
+              fenced = False
+              for ln in all_lines:
+                  bare = ln.lstrip()
+                  if bare.startswith("```") or bare.startswith("~~~"):
+                      fenced = not fenced
+                      continue
+                  if not fenced:
+                      yield ln
+
+          prose = list(outside_fences(lines))
+          m["claude_md_sections"] = sum(1 for ln in prose if ln.startswith("## "))
+
+          # WHAT COUNTS AS A RULE, IN THE WORDS A PERSON WOULD USE: A RULE IS AN OPENING LINE.
+          # A top-level "- " bullet at column 0 opens one, and so does the first line of a
+          # blank-line-separated paragraph at column 0. Continuation lines of a wrapped bullet or
+          # paragraph, and sub-bullets indented under a rule, belong to the rule above them and
+          # are not rules of their own. The "## Rules" section only: a rule under any other
+          # heading is conditional on that heading's subject, while these apply to every session
+          # with no condition at all, which is what makes them the counts that detect a refill
+          # rather than a rewording.
+          #
+          # THE FIRST VERSION COUNTED BULLETS PLUS PARAGRAPHS, where a paragraph was any run of
+          # non-blank non-bullet lines, so REFLOWING A BULLET ADDED A RULE. Measured 2026-08-31:
+          # wrapping two of the six bullets at 98 columns took this metric from 7 to 9 against a
+          # ceiling of 8, with no text added, no text removed and no rule added; wrapping all six
+          # took it to 11; a clarification indented under an existing rule took it to 8. The
+          # accompanying line the author could write -- raise the ceiling by one -- would have
+          # recorded a rule that does not exist, in the file whose whole purpose is that its
+          # numbers mean something. Stored as cw-9a through cw-9d.
+          #
+          # ONE SHAPE IS STILL COUNTED WRONG, AND IT IS BOUNDED AND STORED RATHER THAN ARGUED
+          # AWAY: a continuation line that itself begins "- " cannot be told from a bullet, here
+          # or by a markdown parser, which reads it as a new list item too. cw-9e pins that
+          # behaviour so a later change to this definition flips a case instead of passing
+          # unnoticed. Not one of the six bullets in "## Rules" contains a standalone hyphen
+          # token today (measured 2026-08-31), so no wrap width can produce the shape from the
+          # text that is there, and a definition that handled every wrapping style would be a
+          # parser nobody can read.
+          body = []
+          inside = False
+          for ln in prose:
+              if ln.startswith("## "):
+                  inside = ln.strip() == "## Rules"
+                  continue
+              if inside:
+                  body.append(ln)
+          bullets = 0
+          openers = 0
+          prev_blank = True
+          for ln in body:
+              if not ln.strip():
+                  prev_blank = True
+                  continue
+              if ln.startswith("- "):
+                  bullets += 1
+              elif prev_blank and not ln[:1].isspace():
+                  openers += 1
+              prev_blank = False
+          m["claude_md_rules"] = bullets
+          m["claude_md_unconditional_rules"] = bullets + openers
+
+          m["claude_rules_files"] = len(shipped(".claude/rules", ".md"))
+          m["hook_scripts"] = len(shipped(".claude/hooks", ".py"))
+
+          # A skill is .claude/skills/<name>.md or .claude/skills/<name>/SKILL.md. Both forms
+          # are in use here, which is why neither shape on its own is the test.
+          m["project_skills"] = len([p for p in shipped(".claude/skills", ".md")
+                                     if p.count("/") == 2 or p.endswith("/SKILL.md")])
+          m["project_commands"] = len(shipped(".claude/commands", ".md"))
+          m["project_subagents"] = len(shipped(".claude/agents", ".md"))
+          m["project_plugins"] = len(shipped(".claude/plugins"))
+
+          # THE SAME REFUSAL AS THE BUDGET FILE, AND FOR THE SAME REASON. Reading a missing
+          # .claude/settings.json as an empty dict made DELETING it pass every ceiling green:
+          # measured 2026-08-31, the file gone took 8 deny rules, 4 allow rules and both
+          # PreToolUse hooks with it, six containers floored at zero, and the step printed
+          # "OK: all 23 containers at or under their ceilings" (stored as cw-12a). A ceiling
+          # fires upward, so the whole governance surface disappearing read as compliance --
+          # inside the step written to watch that surface as a whole.
+          #
+          # This is the step's own rule applied to its second input, not a new check: no
+          # dict.get() with a default anywhere on the budget side, because a default is how a
+          # check keeps passing after its input is gone.
+          SETTINGS_PATH = ".claude/settings.json"
+          if not os.path.isfile(SETTINGS_PATH):
+              print("FAIL: %s does not exist." % SETTINGS_PATH)
+              print("Six of the containers below are measured from that file. With it gone they")
+              print("would all read zero and pass, so the surface emptying would look exactly")
+              print("like the surface being in order.")
+              print("If the file is meant to be gone, delete its six entries from %s AND from"
+                    % BUDGET_PATH)
+              print("the METRICS list in this step, in the same commit, so a reader sees a")
+              print("decision rather than a number that quietly stopped being measured.")
+              raise SystemExit(1)
+          settings = json.loads(read_lf(SETTINGS_PATH).decode("utf-8"))
+          perms = settings.get("permissions", {})
+          m["settings_permissions_allow"] = len(perms.get("allow", []))
+          m["settings_permissions_deny"] = len(perms.get("deny", []))
+          m["settings_permissions_ask"] = len(perms.get("ask", []))
+          hooks = settings.get("hooks", {})
+          m["settings_hook_events"] = len(hooks)
+          matchers = [entry for group in hooks.values() for entry in group]
+          m["settings_hook_matchers"] = len(matchers)
+          m["settings_hook_commands"] = sum(len(entry.get("hooks", [])) for entry in matchers)
+
+          mcp = len(settings.get("mcpServers", {}))
+          if os.path.isfile(".mcp.json"):
+              mcp += len(json.loads(read_lf(".mcp.json").decode("utf-8")).get("mcpServers", {}))
+          m["project_mcp_servers"] = mcp
+
+          workflows = [p for p in shipped(".github/workflows") if p.endswith((".yml", ".yaml"))]
+          m["workflow_files"] = len(workflows)
+          # Jobs and steps are counted by shape rather than parsed, because PyYAML is not
+          # installed yet at this point in the job. Both regexes are anchored to the exact
+          # indentation these files use; the workflow_steps and workflow_jobs budgets are what
+          # notice if that changes.
+          job_re = re.compile(r"^  [A-Za-z0-9_-]+:\s*$")
+          step_re = re.compile(r"^      - (name|uses):")
+          # NAMED THRESHOLDS ARE COUNTED BY NAME, PER FILE, AND NOT BY ASSIGNMENT. The regex
+          # matched a shape, so the ordinary idiom in these files -- NAME=value on one line and
+          # NAME="$NAME" python3 - on the next, which is how a threshold reaches a heredoc --
+          # counted the same threshold twice. Measured 2026-08-31: ten matching lines in
+          # backend-checks.yml, seven distinct thresholds. The container is called
+          # workflow_named_thresholds and now counts what it is named for; two units of headroom
+          # meant one new threshold in this file own idiom, not two, which is the kind of
+          # difference nobody notices until the ceiling reds a commit early. Stored as cw-15a,
+          # cw-15b and cw-15c.
+          #
+          # Per file, not repository-wide: MIN_FILES in two different workflows is two different
+          # thresholds and both should cost.
+          thr_re = re.compile(r"^\s*((?:MIN|MAX)_[A-Z0-9_]+|[A-Z0-9_]+_PIN)=")
+          jobs = 0
+          steps = 0
+          thresholds = 0
+          for path in workflows:
+              in_jobs = False
+              named = set()
+              for ln in read_lf(path).decode("utf-8", errors="replace").splitlines():
+                  if ln.rstrip() == "jobs:":
+                      in_jobs = True
+                      continue
+                  if in_jobs and job_re.match(ln):
+                      jobs += 1
+                  if step_re.match(ln):
+                      steps += 1
+                  hit = thr_re.match(ln)
+                  if hit:
+                      named.add(hit.group(1))
+              thresholds += len(named)
+          m["workflow_jobs"] = jobs
+          m["workflow_steps"] = steps
+          m["workflow_named_thresholds"] = thresholds
+
+          m["correct_work_cases"] = len(shipped("tools/correct-work/cases", ".sh"))
+
+          # ---- the file and the step must agree, in BOTH directions ------------------------
+          # A metric with no budget is ungoverned. An entry naming a metric nothing measures is
+          # a budget for a container that no longer exists, which is the file-looking-
+          # authoritative case again. Either is refused, and the same both-directions
+          # principle is why EXPECT_RC in tools/correct-work/ fails on a case that starts
+          # passing as loudly as on one that starts failing.
+          if set(m) != set(METRICS):
+              print("FAIL: the measurement and METRICS disagree inside this step.")
+              print("  measured but not listed: %s" % sorted(set(m) - set(METRICS)))
+              print("  listed but not measured: %s" % sorted(set(METRICS) - set(m)))
+              raise SystemExit(1)
+          if set(containers) != set(m):
+              print("FAIL: %s and this step do not describe the same containers." % BUDGET_PATH)
+              for key in sorted(set(m) - set(containers)):
+                  print("  NO BUDGET: %s is measured here and has no entry in the file." % key)
+              for key in sorted(set(containers) - set(m)):
+                  print("  ORPHAN:    %s has a budget and is measured by nothing." % key)
+              print("A container with no budget is ungoverned; a budget with no container is a")
+              print("number that looks authoritative and governs nothing. Both are refused.")
+              raise SystemExit(1)
+
+          # ---- the comparison ---------------------------------------------------------------
+          print("--- containers, measured against their ceilings ---")
+          over = []
+          for key in METRICS:
+              entry = containers[key]
+              budget = entry["budget"]
+              value = m[key]
+              print("  %-4s %-30s %6d / %-6d  %s"
+                    % ("OVER" if value > budget else "ok", key, value, budget, entry["kind"]))
+              if value > budget:
+                  over.append((key, value, budget, entry["why"]))
+
+          print("SURFACE_CONTAINERS=%d SURFACE_OVER_BUDGET=%d" % (len(METRICS), len(over)))
+
+          # ---- what this step cannot see, said out loud on every run ------------------------
+          # Three containers are outside the tree, so no step running here can measure them.
+          # Leaving them out silently would make this step look like a complete account of the
+          # surface, which is the failure the whole file exists to prevent. They are printed
+          # instead, each with the command that answers it by hand.
+          print("--- NOT GATED: outside the tree, recorded values, re-check by hand ---")
+          for key in sorted(document["not_gated"]):
+              entry = document["not_gated"][key]
+              print("  %-34s recorded %-8s %s" % (key, entry["recorded"], entry["recheck"]))
+
+          if over:
+              print("")
+              for key, value, budget, why in over:
+                  print("FAIL: %s is %d, above its ceiling of %d." % (key, value, budget))
+                  print("      the ceiling is there because: %s" % why)
+              print("")
+              print("%d container(s) over budget. THIS IS NOT A REFUSAL TO GROW THE SURFACE."
+                    % len(over))
+              print("Raise the number in %s in the SAME commit as the growth, with the reason"
+                    % BUDGET_PATH)
+              print("in its 'why' field, so the next reader sees the decision and not just the size.")
+              raise SystemExit(1)
+
+          print("OK: all %d containers at or under their ceilings." % len(METRICS))
           PY
 
       # Both files are now pinned to the exact versions production runs (see requirements.txt).

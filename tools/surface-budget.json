@@ -1,0 +1,165 @@
+{
+  "_what_this_is": "One ceiling per governance container. A CEILING IS THE FOURTH KIND OF COUNT IN THIS REPOSITORY and is NOT a ratchet: a ratchet tracks a defect count that ought to reach zero, a ceiling tracks a structural size that must not. Read by the surface budget step in .github/workflows/backend-checks.yml, which fails rather than defaulting when this file is missing, empty or unparseable, and which asserts set equality between these keys and the metrics it measures IN BOTH DIRECTIONS -- a container with no budget is ungoverned, and a budget with no container is a number that looks authoritative and governs nothing.",
+  "_how_the_numbers_were_set": "By replaying 754 first-parent commits (2026-05-30 to 2026-08-31) and measuring every container at each one. Every increase was classified as one that should or should not have been blocked, and each ceiling sits at or above the largest legitimate one, with the commit that set it named in its why field. NO NUMBER HERE CAME FROM A JUDGEMENT ABOUT WHAT LOOKED RIGHT. Two kinds came out of that. Where a standing rule makes growth RECUR -- the rule that a batch corrects what it makes false adds lines to CLAUDE.md without adding a rule -- the ceiling carries headroom the size of the largest legitimate single commit. Where growth is a discrete deliberate act, the ceiling is pinned, and the why field says the replay supports the pin rather than merely that a pin looked prudent.",
+  "_what_a_ceiling_cannot_see": "A CEILING FIRES UPWARD ONLY, SO EMPTYING A CONTAINER IS INVISIBLE TO IT BY CONSTRUCTION, AND THAT IS TRUE OF ALL 23. Nothing here notices a rule deleted from CLAUDE.md, a deny rule or a hook removed from .claude/settings.json, a skill or a workflow step deleted, or a correct-work case dropped -- every one of those makes a number go DOWN and every one passes. Floors are a different check and live elsewhere: MIN_RULES_FILES=1 in the step above this one is the only floor under any of these 23 containers, and the other 22 have none. THE ONE SHRINK THAT IS REFUSED is .claude/settings.json going missing altogether, because the step reads that file and refuses a missing input rather than defaulting to an empty one; the same file kept in place with every list emptied still passes, and cw-12b stores exactly that so the gap is visible in something that runs. This paragraph is not a check and does not pretend to be one. It says which half of the range these numbers cover, for the same reason not_gated below names what is outside the tree instead of omitting it and looking complete.",
+  "_raising_one": "Raising a ceiling is normal and expected. Do it in the SAME COMMIT as the growth and rewrite the why field to name what set the new number. The container this file exists for refilled one defensible paragraph at a time, and every one of those paragraphs would have been approved on its own; what was missing was a place where the total was visible.",
+  "_measured_at": "2026-08-31, branch ci/surface-budget, by the step that reads this file, and RE-MEASURED after the eight fixes from plexive-docs/research/surface-budget-verification-2026-08-31.md. Three numbers moved for a reason other than growth and each is a CORRECTED MEASUREMENT rather than a container shrinking: claude_md_unconditional_rules stayed 7 but stopped counting continuation lines, workflow_named_thresholds went 18 -> 12 because it now counts distinct names rather than assignments and because MIN_BUDGET_ENTRIES was removed, and every container measured from a directory now counts what git ls-files reports rather than what this filesystem holds.",
+  "containers": {
+    "claude_md_bytes": {
+      "budget": 30464,
+      "measured": 27655,
+      "kind": "headroom",
+      "why": "SET BY f2f49f95 (2026-08-31, +2809 bytes) AND CARRIED FORWARD AT THAT WIDTH: the ceiling is the measured size plus 2809, re-set whenever the measured size moves, so exactly one correction of that shape always fits and the one after it must come here. The increase that set the width is the largest the replay classifies as one that should not have been blocked: it recorded the exact commands the three required checks run, which the same-batch documentation rule required. Headroom is exactly that commit's size, so the next correction of that shape passes and the one after it must raise this number. Every larger increase in the replay is from the 2026-08-27..29 run that took CLAUDE.md to 135770 bytes, and the shrink at ed645fcf removed 93987 of them, which is the project's own verdict on those. THIS IS A BACKSTOP AGAINST SILENT DOUBLING, NOT A FENCE: it does not stop a drip of defensible paragraphs, which is exactly how the container refilled. The fence is claude_md_sections, claude_md_rules and claude_md_unconditional_rules, which prose cannot move."
+    },
+    "claude_md_lines": {
+      "budget": 179,
+      "measured": 143,
+      "kind": "headroom",
+      "why": "SET BY f2f49f95 (2026-08-31, +36 lines), the same commit and the same reasoning as claude_md_bytes. Seven of the twelve post-shrink commits to CLAUDE.md changed ZERO lines, because a correction rewords a paragraph in place, so this number moves only when a paragraph is added. cw-8 stores a 36-line correction sitting exactly on this ceiling; tightening this to a pin turns that case red, which is why it is stored."
+    },
+    "claude_md_sections": {
+      "budget": 10,
+      "measured": 10,
+      "kind": "pinned",
+      "why": "WHAT IT COUNTS, IN THE WORDS A PERSON WOULD USE: lines beginning \"## \" that are OUTSIDE fenced code blocks. A heading quoted inside a fence is a quotation, not a section, and counting one took this to 11 against the pin on 2026-08-31 (stored as cw-14). PINNED, AND THE REPLAY SUPPORTS THE PIN. Only two commits ever took this above 10: 4c585a79 (9->11) and 066c4b38 (11->14), and the shrink removed exactly those sections again. Every section standing today was added at or below 10, so this pin would have blocked nothing that should not have been blocked. A new '## ' heading is a deliberate act, and the pin costs one line in this file in the same commit, where a reader sees the decision."
+    },
+    "claude_md_rules": {
+      "budget": 7,
+      "measured": 6,
+      "kind": "headroom",
+      "why": "WHAT IT COUNTS, IN THE WORDS A PERSON WOULD USE: the top-level \"- \" bullets at column 0 under \"## Rules\". A line indented under a bullet is part of that bullet, not a rule of its own. SET BY b98b8209 (2026-08-28, 6->7), which added the execution-discipline bullet that is still in CLAUDE.md today, so a pin at the measured 6 would have blocked work that stood. Margin is one rule. The count returned to 6 only because 38d3ef68 moved the emoji rule out to .claude/rules/, which is the question reaching 7 again should trigger rather than a number to raise quietly."
+    },
+    "claude_md_unconditional_rules": {
+      "budget": 8,
+      "measured": 7,
+      "kind": "headroom",
+      "why": "WHAT IT COUNTS, IN THE WORDS A PERSON WOULD USE: RULES, WHERE A RULE IS AN OPENING LINE. Under \"## Rules\", a top-level \"- \" bullet at column 0 opens a rule, and so does the first line of a blank-line-separated paragraph at column 0. Continuation lines of a wrapped bullet or paragraph, and sub-bullets indented under a rule, belong to the rule above them. Six bullets and one paragraph is 7. REFORMATTING MUST NOT MOVE THIS NUMBER, and until 2026-08-31 it did: the metric was bullets plus paragraph-runs, so wrapping two bullets at 98 columns read 9 and wrapping all six read 11, with no rule added and no text changed. cw-9a..cw-9d store those inputs. THE ONE SHAPE STILL COUNTED WRONG is a continuation line that itself begins \"- \", which no parser can tell from a bullet; cw-9e pins it, no bullet here contains a standalone hyphen token, and it is left alone deliberately. THE CEILING WAS SET BY 42df1f56 (2026-08-29, 7->8), the shrink merge, which added the rule that a step watching for a condition reports its own failure -- the central rule of this repository, and still present. A pin at the measured 7 would have blocked it. Margin is one rule."
+    },
+    "claude_rules_files": {
+      "budget": 2,
+      "measured": 1,
+      "kind": "headroom",
+      "why": "SET BY tools/correct-work/cases/cw-7-second-scoped-rules-file.sh, not by a commit. That case exists to prove a SECOND correctly scoped rules file is correct work, so a pin at the measured 1 would red on a stored correct-work input, which is the inverse defect CLAUDE.md keeps apart from the rest. The floor under this same container is MIN_RULES_FILES=1 in the step above it, so the container is fenced at both ends by two different assertions on purpose."
+    },
+    "settings_hook_events": {
+      "budget": 1,
+      "measured": 1,
+      "kind": "pinned",
+      "why": "PINNED, AND THE REPLAY SUPPORTS THE PIN. One increase in 754 commits, 06c30115 (2026-06-11), and it created the container from nothing rather than growing one. PreToolUse is the only event ever configured. A PostToolUse or Stop hook is a new class of interception, and adding a hook was considered in this topic and declined."
+    },
+    "settings_hook_matchers": {
+      "budget": 2,
+      "measured": 2,
+      "kind": "pinned",
+      "why": "PINNED, AND THE REPLAY SUPPORTS THE PIN. Two increases: 06c30115 created the container, f0b957d7 (2026-08-30) added the Write|Edit matcher. Neither ever took the count above 2, so this pin would have blocked neither. A third matcher intercepts another tool."
+    },
+    "settings_hook_commands": {
+      "budget": 2,
+      "measured": 2,
+      "kind": "pinned",
+      "why": "PINNED, AND THE REPLAY SUPPORTS THE PIN. One increase, 06c30115, which created the container. The count has been 2 ever since."
+    },
+    "settings_permissions_allow": {
+      "budget": 4,
+      "measured": 4,
+      "kind": "pinned",
+      "why": "PINNED, AND THE REPLAY SUPPORTS THE PIN. One increase, 204d0a1a (2026-06-10), which created the container. An allow rule WIDENS what runs without asking, the one permission direction where growth is a loosening. Per-machine additions land in .claude/settings.local.json, which is gitignored and which no step here can see, so this pin costs nothing in day-to-day use -- see not_gated below."
+    },
+    "settings_permissions_deny": {
+      "budget": 8,
+      "measured": 8,
+      "kind": "pinned",
+      "why": "PINNED, AND THE REPLAY SUPPORTS THE PIN. One increase, f0b957d7 (2026-08-30), which created the container with all 8 at once; six of the eight are git push variants. The direction here is protective, so raising this is cheap and should be routine -- but it should be VISIBLE, which is the only thing the pin costs."
+    },
+    "settings_permissions_ask": {
+      "budget": 0,
+      "measured": 0,
+      "kind": "pinned",
+      "why": "PINNED AT ZERO. Never non-zero in 754 commits, in any settings file on this machine. An ask rule is a third permission mode this project has never used; the absence arrived as a default rather than as a decision, and this pin is what turns it into one."
+    },
+    "hook_scripts": {
+      "budget": 3,
+      "measured": 3,
+      "kind": "pinned",
+      "why": "PINNED, AND THE REPLAY SUPPORTS THE PIN. One increase, f0b957d7 (2026-08-30), which created the container with all three at once: two wired hooks and hook_cases.py, their both-directions test harness. Adding a hook was considered in this topic and declined."
+    },
+    "project_skills": {
+      "budget": 2,
+      "measured": 2,
+      "kind": "pinned",
+      "why": "PINNED, AND THE REPLAY SUPPORTS THE PIN. Two increases, 76d3ed94 (2026-05-30, commit.md) and b98b8209 (2026-08-28, execution-discipline), neither above the measured 2. This counts what the repository SHIPS, which is the index: .claude/skills/ui-ux-pro-max is present on one laptop, gitignored and untracked, and git ls-files never lists it, so a per-machine skill cannot spend a shared ceiling. Adding a skill was considered in this topic and declined."
+    },
+    "project_commands": {
+      "budget": 0,
+      "measured": 0,
+      "kind": "pinned",
+      "why": "PINNED AT ZERO. The directory has never existed in 754 commits. Adding a slash command was considered in this topic and declined, so this pin records a decision rather than anticipating one. A first slash command is the kind of second member somebody should have to add deliberately."
+    },
+    "project_subagents": {
+      "budget": 0,
+      "measured": 0,
+      "kind": "pinned",
+      "why": "PINNED AT ZERO. The directory has never existed in 754 commits. Adding a subagent was considered in this topic and declined, so this pin records a decision rather than anticipating one. A first subagent is the kind of second member somebody should have to add deliberately."
+    },
+    "project_plugins": {
+      "budget": 0,
+      "measured": 0,
+      "kind": "pinned",
+      "why": "PINNED AT ZERO. The directory has never existed in 754 commits. Adding a plugin was considered in this topic and declined, so this pin records a decision rather than anticipating one. A first plugin is the kind of second member somebody should have to add deliberately."
+    },
+    "project_mcp_servers": {
+      "budget": 0,
+      "measured": 0,
+      "kind": "pinned",
+      "why": "PINNED AT ZERO. No .mcp.json has ever existed and no settings file on this machine declares an mcpServers entry. Adding an MCP server was considered in this topic and declined. An MCP server is a whole tool surface arriving at once, which is why zero is the number that should cost a deliberate edit to change."
+    },
+    "workflow_files": {
+      "budget": 5,
+      "measured": 5,
+      "kind": "pinned",
+      "why": "PINNED, AND THE REPLAY SUPPORTS THE PIN. Four increases, all on 2026-08-27, all part of building CI from nothing; the count has been 5 since f5dc3f1e and has never been higher. Three of the five are the required gates and two, codeql.yml and dependency-submission.yml, deliberately are not. A sixth workflow file is a decision."
+    },
+    "workflow_jobs": {
+      "budget": 5,
+      "measured": 5,
+      "kind": "pinned",
+      "why": "PINNED, AND THE REPLAY SUPPORTS THE PIN. The same four increases as workflow_files, never above 5, one job per file today. A second job inside an existing file would add a status check name without adding a file, which is the shape this number and not workflow_files would catch."
+    },
+    "workflow_steps": {
+      "budget": 38,
+      "measured": 33,
+      "kind": "headroom",
+      "why": "SET BY 7d2a0c0c (2026-08-31, +5 steps), the gate-integration merge, whose five assertion steps are all still in place. Headroom is that commit's size. A batch that adds an assertion step to a gate is ordinary work here -- THIS batch is one, at +1 -- so a pin would red on the standing practice. The two larger 2026-08-27 increases created the workflows from nothing and are not growth of an existing container."
+    },
+    "workflow_named_thresholds": {
+      "budget": 13,
+      "measured": 12,
+      "kind": "headroom",
+      "why": "WHAT IT COUNTS, IN THE WORDS A PERSON WOULD USE: distinct MIN_*, MAX_* and *_PIN threshold NAMES, per workflow file. The same name written twice in one file -- an assignment and the env-prefixed use that carries it into a heredoc, which is the idiom these files use -- is one threshold. The same name in two files is two. RE-DERIVED 2026-08-31 AND THE NUMBER CAME DOWN: the metric counted assignments BY SHAPE until then, so backend-checks.yml's ten matching lines were seven thresholds, and the 18 that was measured was 13. The old why field claimed a +2 for the batch that added this file; that never happened, the batch added ONE threshold and the shape regex counted it twice. Replaying the by-name count over the first-parent history gives three changes: 0 -> 11 at 7d2a0c0c, the merge that created every gate assertion at once, then +1 at 8261e3a (MIN_RULES_FILES) and +1 at 06d1803 (MIN_BUDGET_ENTRIES). The largest legitimate single-commit increase that is not the creation is therefore ONE, and the ceiling is measured + 1. MEASURED 12 RATHER THAN 13 because MIN_BUDGET_ENTRIES was removed in the commit before this one for being unable to fire. Two new thresholds in one commit now cost a line here, and that line is honest: it records thresholds that exist. cw-15a, cw-15b and cw-15c store all three directions. The four bare-literal thresholds in backend-checks.yml are NOT counted and are named in docs/CI_NOTES.md instead, so this number is a floor under the naming convention as much as a ceiling over the count."
+    },
+    "correct_work_cases": {
+      "budget": 37,
+      "measured": 27,
+      "kind": "headroom",
+      "why": "SET BY 7d2a0c0c (2026-08-31, +10 cases), and the width is carried forward: the ceiling is the measured count plus 10, re-set when the count moves. Measured 12 until 2026-08-31, when the fifteen inputs from the surface-budget verification landed at once -- itself an increase of 15, larger than the 10 this width was derived from, and raised here in the same commit as the growth exactly as _raising_one prescribes. THIS CEILING GOVERNS ALMOST NOTHING AND THAT IS SAID RATHER THAN HIDDEN: 10 of headroom on a container of 27 stops a generator dumping cases and stops nothing else. It is kept because growth here is the one kind that is unambiguously good -- every case is evidence that a gate does not red on correct work -- and because a container that is measured is one somebody can see move."
+    }
+  },
+  "not_gated": {
+    "github_ruleset_rules": {
+      "recorded": "4",
+      "recheck": "gh api --paginate repos/:owner/:repo/rulesets/21607944 --jq '.rules[].type'"
+    },
+    "github_ruleset_required_contexts": {
+      "recorded": "3",
+      "recheck": "gh api --paginate repos/:owner/:repo/rulesets/21607944 --jq '.rules[]|select(.type==\"required_status_checks\").parameters.required_status_checks[].context'"
+    },
+    "settings_local_json_permission_rules": {
+      "recorded": "3",
+      "recheck": "python -c \"import json;print({k:len(v) for k,v in json.load(open('.claude/settings.local.json'))['permissions'].items()})\""
+    },
+    "user_settings_json_permission_rules": {
+      "recorded": "0",
+      "recheck": "python -c \"import json;print(json.load(open(r'C:/Users/marlo/.claude/settings.json')).get('permissions',{}))\""
+    }
+  }
+}
