@@ -388,20 +388,27 @@ jobs:
       # rather than only in a report. Somebody who has to change MAX_MYPY_ERRORS needs to know what it
       # counted.
       #
-      #   Paths: app scripts tests alembic *.py
-      #   -- NOTHING IS EXCLUDED. That set is every tracked .py file under backend/, and mypy reports
-      #   "checked 82 source files", which is the same 82 the ruff floor above counts. alembic/ is in
-      #   it, versions/ included: mypy 2.3.1 accepts 0001_baseline.py and 0002_drop_redundant_indexes.py
-      #   despite the leading digits (measured -- "Success: no issues found in 4 source files"), so the
-      #   exclusion that was expected to be necessary is not.
+      #   Path: `.` -- THE SAME ARGUMENT RUFF GETS, and that is the whole point of it being one
+      #   character. NOTHING IS EXCLUDED. mypy reports "checked 82 source files", which is the same 82
+      #   the ruff floor above counts, and .venv/ and __pycache__/ are skipped by mypy itself rather
+      #   than by a flag here (measured 2026-08-31 on a tree that has a .venv). alembic/ is in it,
+      #   versions/ included: mypy 2.3.1 accepts 0001_baseline.py and 0002_drop_redundant_indexes.py
+      #   despite the leading digits, so the exclusion that was expected to be necessary is not.
       #
-      #   THE TRAILING GLOB IS NOT SHORTHAND. It was seed.py content_repo.py download_seed_images.py,
-      #   named one by one, and that was wrong in a way only the failure demonstration found: a NEW
-      #   top-level backend/*.py would have been checked by ruff, which runs over `.`, and silently
-      #   not checked by mypy, which takes an explicit list. A type error in it would have been
-      #   invisible while both steps reported green. `*.py` expands to the same three today and
-      #   extends itself to the fourth. If the glob ever matches nothing, bash leaves it literal, mypy
-      #   fails on a path that does not exist, and the step goes red -- which is the correct direction.
+      #   IT USED TO BE `app scripts tests alembic *.py`, AND THAT NAME LIST FIRED ON CORRECT WORK IN
+      #   ONE DIRECTION AND WENT BLIND IN THE OTHER. Both were reproduced on 2026-08-31, not argued:
+      #     -- Consolidating the three top-level scripts into a package leaves the glob unmatched,
+      #        bash leaves it literal, mypy exits 2 on a path that does not exist, and the step
+      #        printed "mypy exited 2, which is mypy failing rather than mypy finding something",
+      #        which is FALSE. mypy was fine; the argument list was empty. An ordinary refactor red a
+      #        required check with a message that blamed the tool.
+      #     -- A new top-level PACKAGE -- backend/services/ -- was checked by ruff, which runs over
+      #        `.`, and not by mypy, which took a list of four names. Measured: ruff 83 files, mypy
+      #        82, and a plain type error in it was invisible while both steps reported green. The
+      #        earlier fix closed that hole for top-level FILES and left it open for directories.
+      #   `.` closes both and it moves no number: measured 2026-08-31, `mypy .` and
+      #   `mypy app scripts tests alembic *.py` both report "Found 201 errors in 34 files (checked 82
+      #   source files)" on this tree. The stored inputs that prove it are in tools/correct-work/.
       #
       #   Flags: none beyond --cache-dir. In particular NOT --ignore-missing-imports. CI installs the
       #   full pinned dependency set, so mypy sees real dependency types, and suppressing the
@@ -437,13 +444,15 @@ jobs:
           # COLLAPSE DETECTOR, the same kind as the two file-count floors above. A mypy that resolves
           # none of its arguments prints "checked 0 source files" and exits 0, which is the reassuring
           # output. 82 observed; the floor sits well below it so ordinary deletion work never reaches
-          # it.
+          # it. It is now the collapse detector for the SCOPE as well: with `.` as the argument, a
+          # directory that stops being reachable shows up here as a falling file count rather than
+          # as silence.
           MIN_MYPY_FILES=60
 
           # 0 = clean, 1 = errors found, 2 = mypy itself failed. Only the third is a broken checker.
           rc=0
           python -m mypy --cache-dir "$RUNNER_TEMP/mypy-cache" \
-            app scripts tests alembic *.py \
+            . \
             > "$RUNNER_TEMP/mypy.log" 2>&1 || rc=$?
           cat "$RUNNER_TEMP/mypy.log"
           if [ "$rc" -gt 1 ]; then
