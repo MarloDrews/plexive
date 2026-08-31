@@ -9,3 +9,7 @@
 # .claude/skills/ui-ux-pro-max/SKILL.md never hit this is .gitignore:24 excluding it, so the
 # next tracked skill would inherit the problem.
 .claude/skills/**/SKILL.md text eol=lf
+
+# Rules files are frontmatter-parsed exactly as SKILL.md is, and the 2026-08-28
+# observation above applies unchanged: a CRLF frontmatter block does not resolve.
+.claude/rules/**/*.md text eol=lf

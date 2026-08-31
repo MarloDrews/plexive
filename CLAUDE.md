@@ -4,7 +4,6 @@ Open source social media app that replaces doomscrolling with valuable content.
 
 ## Rules
 - All code comments in English
-- No emojis in code or comments
 - I am a beginner, briefly explain what you are doing and why
 - `.claude/skills/execution-discipline/SKILL.md` carries the execution discipline for this repository and applies to every task that changes a file, including the rule on staying inside the current task's scope
 - After every change, update ARCHITECTURE.md. One line per new or changed item. No explanations beyond what is already there — just add or update the relevant entry. Never let it grow into prose.
