@@ -285,7 +285,7 @@ def build_cases(fx):
              payload=bash_payload("git status")),
 
         # --- the injected commit rules ----------------------------------------
-        dict(name="commit: rules injected from commit.md", script=BASH_HOOK,
+        dict(name="commit: rules injected from commit/SKILL.md", script=BASH_HOOK,
              expect=0, payload=bash_payload('git commit -m "x"'),
              stdout_must_contain="conventional commits", show_stdout=True),
         dict(name="commit: merge gets the rules too", script=BASH_HOOK, expect=0,
@@ -758,8 +758,9 @@ def build_cases(fx):
 def make_fixtures(tmp):
     """Every fixture, all of them COPIES in temporary trees.
 
-    The real commit.md is never moved, the real check_backup_age.sh is never
-    replaced, and the real backup directory is never read.
+    The real .claude/skills/commit/SKILL.md is never moved, the real
+    check_backup_age.sh is never replaced, and the real backup directory is
+    never read.
 
     Four trees:
       orphan      a copy of the Bash hook with no .claude/skills/commit/SKILL.md,
