@@ -381,9 +381,29 @@ jobs:
           m["project_subagents"] = len(shipped(".claude/agents", ".md"))
           m["project_plugins"] = len(shipped(".claude/plugins"))
 
-          settings = {}
-          if os.path.isfile(".claude/settings.json"):
-              settings = json.loads(read_lf(".claude/settings.json").decode("utf-8"))
+          # THE SAME REFUSAL AS THE BUDGET FILE, AND FOR THE SAME REASON. Reading a missing
+          # .claude/settings.json as an empty dict made DELETING it pass every ceiling green:
+          # measured 2026-08-31, the file gone took 8 deny rules, 4 allow rules and both
+          # PreToolUse hooks with it, six containers floored at zero, and the step printed
+          # "OK: all 23 containers at or under their ceilings" (stored as cw-12a). A ceiling
+          # fires upward, so the whole governance surface disappearing read as compliance --
+          # inside the step written to watch that surface as a whole.
+          #
+          # This is the step's own rule applied to its second input, not a new check: no
+          # dict.get() with a default anywhere on the budget side, because a default is how a
+          # check keeps passing after its input is gone.
+          SETTINGS_PATH = ".claude/settings.json"
+          if not os.path.isfile(SETTINGS_PATH):
+              print("FAIL: %s does not exist." % SETTINGS_PATH)
+              print("Six of the containers below are measured from that file. With it gone they")
+              print("would all read zero and pass, so the surface emptying would look exactly")
+              print("like the surface being in order.")
+              print("If the file is meant to be gone, delete its six entries from %s AND from"
+                    % BUDGET_PATH)
+              print("the METRICS list in this step, in the same commit, so a reader sees a")
+              print("decision rather than a number that quietly stopped being measured.")
+              raise SystemExit(1)
+          settings = json.loads(read_lf(SETTINGS_PATH).decode("utf-8"))
           perms = settings.get("permissions", {})
           m["settings_permissions_allow"] = len(perms.get("allow", []))
           m["settings_permissions_deny"] = len(perms.get("deny", []))
