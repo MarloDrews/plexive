@@ -48,6 +48,42 @@ CONFIRM CHECK RESULTS AGAINST THE HEAD SHA, NOT AGAINST WHATEVER `watch` RETURNS
 
 Three required checks, one per codebase, one job each: `android-build`, `backend-checks`, `frontend-checks`. There are five workflow files; those three are the gates, and `codeql.yml` and `dependency-submission.yml` are deliberately not. `android-build.yml` sets `distribution: corretto` because `mobile-kmp/gradle/gradle-daemon-jvm.properties` pins `toolchainVendor=AMAZON`, so changing either one means changing the other. Everything else is in `docs/CI_NOTES.md`: why each trigger is scoped as it is, under "## Workflows, triggers and which three are gates"; why every check asserts on a count and what the three kinds of count are, under "## Conventions every job follows"; the `battle_test.py` hangs and their diagnosis, under "## The backend suite loop and the `battle_test.py` hangs"; the derivation of the 300 s and 180 s timeouts, under "## Timeouts, watchdogs and where their numbers come from"; the standing requirement to take a before-number against an untouched tree, under "## Taking a before-number"; the pinning policy, and why `pip-audit` was removed on 2026-08-31 rather than wired into a gate, under "## Route counts, pinning and mirroring production"; and where each file's own floors sit, under "## The count floors and the two ratchets in `backend-checks.yml`", "## The three count floors in `frontend-checks.yml`" and "## The floors in `android-build.yml`". THE FLOORS ARE OF THREE KINDS AND MAKING THEM UNIFORM IS THE MISTAKE: collapse detectors sit well below the observed count, deletion detectors sit exactly on it, and RATCHETS fail when a number goes UP, have no lower bound and no equality check at all, and never come down except by hand in the same commit as the batch that fixes findings. THERE ARE FOUR RATCHETS AND THEY ARE LISTED HERE ONCE, because three separate batches each wrote a paragraph calling its own the first or the only one: `MAX_ERRORS=88` (ESLint) in `frontend-checks.yml`, `MAX_LINT_FINDINGS=3` (AGP lint) in `android-build.yml`, and `MAX_RUFF_FINDINGS=37` and `MAX_MYPY_ERRORS=201` in `backend-checks.yml`. A gate that reds because somebody fixed three findings is the inverse defect the "## Rules" entry above keeps apart from the rest.
 
+WHAT THE THREE CHECKS ACTUALLY RUN, read from the workflow files at `7d2a0c0` rather than from any earlier description of them, because they are not what anyone would guess and all three changed in the week to 2026-08-31. Each job sets a `working-directory`, so every command below is relative to it.
+
+`backend-checks`, `working-directory: backend`, `timeout-minutes: 20`, with a `postgres:17` service container that exists for the schema ledger step alone:
+
+    python -m pip install --upgrade pip
+    time python -m pip install -r requirements.txt -r requirements-dev.txt
+    python -m compileall -q "${PYFILES[@]}"          # over find . -name '*.py', floor 60
+    python - <<'PY' ... from app.main import app     # App boots, floor MIN_PATHS=20
+    python -m pip install ruff==0.16.4
+    ruff check --select E4,E7,E9,F --output-format=json . > "$RUNNER_TEMP/ruff.json"
+    ruff check --select F .
+    python -m pip install mypy==2.3.1
+    python -m mypy --cache-dir "$RUNNER_TEMP/mypy-cache" .
+    PLEXIVE_DB_WRITE=1 alembic upgrade head
+    alembic current | tee "$RUNNER_TEMP/alembic-current.txt"
+    alembic check
+    timeout --signal=ABRT --kill-after=10s "${SUITE_TIMEOUT}s" python -X faulthandler "$f"
+
+The last line runs once per file in `ls tests/*_test.py`; there is no pytest anywhere in this repository's CI. Ruff runs TWICE with different selections and different meanings: the first is the `MAX_RUFF_FINDINGS=37` ratchet, the second is `F` at an absolute zero.
+
+`frontend-checks`, `working-directory: frontend`:
+
+    npm ci
+    npm test                                          # package.json: node --import tsx --test
+    npx --no-install eslint --format json -o "$RUNNER_TEMP/eslint.json"
+    npx --no-install eslint --print-config "$A11Y_PROBE"
+    npm run build                                     # package.json: next build
+
+`android-build`, `working-directory: mobile-kmp`, one Gradle invocation for all three tasks:
+
+    ./gradlew :androidApp:assembleDebug :shared:testAndroidHostTest :androidApp:lintDebug       --no-build-cache       --no-configuration-cache       --console=plain 2>&1 | tee "$RUNNER_TEMP/gradle.log"
+
+Every step after these parses the output and asserts on a count; the assertions are the larger half of all three files and are described in `docs/CI_NOTES.md`, not here.
+
+`.claude/rules/` IS GATED BY `backend-checks`. A rules file carrying no `paths:` key loads globally at CLAUDE.md priority, which makes the container the thing it replaces; measured 2026-08-31 on Claude Code 2.1.251, an unscoped file loaded into a session that touched no file at all. The step counts files under `.claude/rules/` with no `paths:` key and fails above zero. It sits in `backend-checks` because that is the only one of the three jobs with a Python interpreter on PATH by design.
+
 ## Schema Migrations
 
 Alembic landed 2026-08-28 (`backend/alembic/`, `backend/alembic.ini`). It is CONFIGURED, RECONCILED AND STAMPED. `alembic stamp head` ran against production on 2026-08-28; `public.alembic_version` holds one row, `0001`, measured read-only the same day. The gap this paragraph used to describe -- configured but deliberately unstamped -- is closed, and the ledger is live.
