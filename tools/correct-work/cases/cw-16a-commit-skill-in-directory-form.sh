@@ -22,9 +22,12 @@ test -f .claude/skills/commit/SKILL.md || {
   echo "FAIL: .claude/skills/commit/SKILL.md is not there, so this case no longer stores"
   echo "the layout it was written for."; exit 2; }
 
+# THE SAME CAPTURE AS CW-16b, AND FOR THE SAME REASON. A bare RC=$? under `set -e` printed
+# `hook rc=0` unconditionally and was evidence of nothing, since 0 was the only value it
+# could reach. This form reports what the hook actually returned.
+RC=0
 OUT=$(printf '%s' '{"tool_name":"Bash","tool_input":{"command":"git commit -m \"x\""}}' \
-      | python .claude/hooks/pretooluse_bash.py)
-RC=$?
+      | python .claude/hooks/pretooluse_bash.py) || RC=$?
 echo "hook rc=$RC, ${#OUT} bytes of stdout"
 
 printf '%s' "$OUT" | grep -qF 'Use conventional commits' || {

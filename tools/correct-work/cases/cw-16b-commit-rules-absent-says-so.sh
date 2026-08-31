@@ -30,9 +30,17 @@ cp tools/check_backup_age.sh "$T/tools/"
 test -z "$(ls -A "$T/.claude/skills")" || { echo "FAIL: the copy is not empty of skills."; exit 2; }
 echo "built a tree with the hook and no rules file at all"
 
+# RC=0 FIRST, THEN `|| RC=$?`, AND NOT A BARE `RC=$?` ON THE NEXT LINE. Under `set -e` a
+# bare RC=$? after a command substitution can only ever read 0: a non-zero hook aborts the
+# script AT THE ASSIGNMENT so the next line is never reached, and a zero hook leaves $? as
+# the status of a successful assignment. The guard below could therefore not execute and
+# its message could not print -- demonstrated 2026-08-31 with the hook stubbed to exit 2,
+# which produced a bare rc=2 and not one line of this case's own output. The `||` handles
+# the failure, so `set -e` does not abort, and RC holds what the hook actually returned;
+# `pipefail` is what makes that the hook's status rather than printf's.
+RC=0
 OUT=$(printf '%s' '{"tool_name":"Bash","tool_input":{"command":"git commit -m \"x\""}}' \
-      | python "$T/.claude/hooks/pretooluse_bash.py")
-RC=$?
+      | python "$T/.claude/hooks/pretooluse_bash.py") || RC=$?
 echo "hook rc=$RC, ${#OUT} bytes of stdout"
 
 # Both halves, and the second is the one that was missing.
