@@ -168,6 +168,298 @@ jobs:
               sys.exit(1)
           PY
 
+      # THE GOVERNANCE SURFACE HAS A CEILING, AND THIS IS THE ONLY THING THAT WATCHES IT.
+      # Four topics in a row worked on the surface that instructs the agent. The first shrank
+      # CLAUDE.md by 93,987 bytes and it refilled to within 7,664 bytes of where it had been,
+      # because nothing noticed until an audit ran three weeks later. Every batch measured its
+      # own corner; nothing measured the whole.
+      #
+      # A CEILING IS THE FOURTH KIND OF COUNT IN THIS REPOSITORY and it is deliberately not
+      # called a ratchet. A ratchet tracks a defect count that ought to reach zero; driving
+      # MAX_RUFF_FINDINGS to 0 is the goal. A ceiling tracks a structural size that must not
+      # reach zero; driving workflow_files to 0 would delete CI. The floors under these same
+      # containers live elsewhere -- MIN_RULES_FILES above is the floor for one of them -- so a
+      # container fenced on both sides is fenced by two different steps on purpose.
+      #
+      # EVERY NUMBER IN tools/surface-budget.json WAS SET BY A REPLAY, not by judgement: 754
+      # first-parent commits were measured, every increase in every container was classified as
+      # one that should or should not have been blocked, and each budget sits at or above the
+      # largest legitimate one. The commit that set each number is named in that file's "why"
+      # field. Raising a budget is a normal thing to do; doing it in the same commit as the
+      # growth, where a reader sees both, is the whole point.
+      - name: "Surface budget: every governance container at or under its ceiling"
+        working-directory: ${{ github.workspace }}
+        run: |
+          # ANTI-VACUITY. This step reads one file, and a step that reads a file which is not
+          # there is the exact shape this repository keeps recording: the file sits in the tree
+          # looking authoritative and governing nothing, while the check goes green having
+          # compared no budgets. So the entry count has a floor of its own, the file is never
+          # defaulted when missing, and the path actually read is printed before anything else.
+          MIN_BUDGET_ENTRIES=23
+
+          MIN_BUDGET_ENTRIES="$MIN_BUDGET_ENTRIES" python3 - <<'PY'
+          import json
+          import os
+          import re
+          import subprocess
+
+          BUDGET_PATH = "tools/surface-budget.json"
+
+          # Print the path that governed BEFORE reading it, so a log from a job that failed on
+          # the read still says which file it was looking for.
+          print("budget file: %s" % os.path.abspath(BUDGET_PATH))
+
+          # No try/except around the existence check and no dict.get() with a default anywhere
+          # on the budget side. A default is how a check keeps passing after its input is gone.
+          if not os.path.isfile(BUDGET_PATH):
+              print("FAIL: %s does not exist." % BUDGET_PATH)
+              print("This step exists to compare the surface against that file. With the file")
+              print("gone there is nothing to compare, and a green tick here would mean only")
+              print("that the check had stopped working.")
+              raise SystemExit(1)
+          with open(BUDGET_PATH, encoding="utf-8") as fh:
+              raw = fh.read()
+          if not raw.strip():
+              print("FAIL: %s is empty." % BUDGET_PATH)
+              raise SystemExit(1)
+          try:
+              document = json.loads(raw)
+          except json.JSONDecodeError as exc:
+              print("FAIL: %s is not valid JSON: %s" % (BUDGET_PATH, exc))
+              print("Refusing to continue rather than falling back to no budget.")
+              raise SystemExit(1)
+          for key in ("containers", "not_gated"):
+              if key not in document:
+                  print("FAIL: %s has no top-level '%s' key." % (BUDGET_PATH, key))
+                  raise SystemExit(1)
+          containers = document["containers"]
+
+          # ---- the measurement -------------------------------------------------------------
+          # Stdlib only, no PyYAML, because this step runs BEFORE the dependency install so a
+          # malformed budget file is reported in seconds rather than after a four-minute suite.
+
+          METRICS = [
+              "claude_md_bytes", "claude_md_lines", "claude_md_sections", "claude_md_rules",
+              "claude_md_unconditional_rules", "claude_rules_files", "settings_hook_events",
+              "settings_hook_matchers", "settings_hook_commands", "settings_permissions_allow",
+              "settings_permissions_deny", "settings_permissions_ask", "hook_scripts",
+              "project_skills", "project_commands", "project_subagents", "project_plugins",
+              "project_mcp_servers", "workflow_files", "workflow_jobs", "workflow_steps",
+              "workflow_named_thresholds", "correct_work_cases",
+          ]
+
+          # WHAT THE REPOSITORY SHIPS, NOT WHAT THIS MACHINE HAPPENS TO HOLD. A gitignored
+          # per-machine file must not count against a ceiling everyone shares: measured
+          # 2026-08-31, .claude/skills/ui-ux-pro-max is gitignored and present on the laptop, so
+          # a filesystem walk reports 3 project skills here and the runner reports 2 from a
+          # fresh checkout. A budget set against one and checked against the other is wrong by
+          # exactly that file. git decides, and the replay that set these numbers read git trees
+          # for the same reason, so the two agree by construction rather than by luck.
+          def ignored(paths):
+              if not paths:
+                  return set()
+              # -z AND BYTES, BOTH DELIBERATE, both measured on 2026-08-31. With text=True
+              # Python translates the "\n" separators to "\r\n" on the way into the pipe on
+              # Windows, git then sees paths ending in a carriage return, decides they need
+              # quoting, and answers with '".claude/.../SKILL.md\r"' -- which matches nothing
+              # on the way back, so the filter silently passes everything through. It works on
+              # the runner and is wrong on the laptop, which is the direction that gets found
+              # late. -z separates with NUL on input and output and disables the quoting.
+              proc = subprocess.run(
+                  ["git", "check-ignore", "-z", "--stdin"],
+                  input=b"\0".join(p.encode("utf-8") for p in paths), capture_output=True,
+              )
+              # 0 = some path is ignored, 1 = none is. Anything else is git failing, and a
+              # failure here must not be read as "nothing is ignored".
+              if proc.returncode not in (0, 1):
+                  print("FAIL: git check-ignore exited %d." % proc.returncode)
+                  print(proc.stderr.decode("utf-8", errors="replace").strip())
+                  print("This step has to know which files the repository actually ships. With")
+                  print("no answer it would count a gitignored per-machine file against a shared")
+                  print("ceiling, so it refuses rather than guessing that nothing is ignored.")
+                  raise SystemExit(1)
+              return set(proc.stdout.decode("utf-8").split("\0")) - {""}
+
+          def walk(root, suffix=None):
+              found = []
+              for base, dirs, names in os.walk(root):
+                  dirs[:] = [d for d in dirs if d != "__pycache__"]
+                  for name in names:
+                      path = os.path.join(base, name).replace(os.sep, "/")
+                      if suffix is None or path.endswith(suffix):
+                          found.append(path)
+              return sorted(set(found) - ignored(found))
+
+          def read_lf(path):
+              # CRLF IS NORMALISED AWAY BEFORE ANY BYTE IS COUNTED. core.autocrlf=true on the
+              # machine these files are written on, so CLAUDE.md is 141 bytes larger in a
+              # Windows working tree than in the index and than on this runner. A budget set
+              # against one and checked against the other would be wrong by exactly that much,
+              # and the correct-work harness runs this same body on Windows.
+              with open(path, "rb") as fh:
+                  return fh.read().replace(b"\r\n", b"\n")
+
+          m = {}
+
+          blob = read_lf("CLAUDE.md")
+          m["claude_md_bytes"] = len(blob)
+          lines = blob.decode("utf-8", errors="replace").splitlines()
+          m["claude_md_lines"] = len(lines)
+          m["claude_md_sections"] = sum(1 for ln in lines if ln.startswith("## "))
+
+          # The "## Rules" section only. A rule under any other heading is conditional on that
+          # heading's subject; these apply to every session with no condition at all, which is
+          # what makes them the counts that detect a refill rather than a rewording.
+          body = []
+          inside = False
+          for ln in lines:
+              if ln.startswith("## "):
+                  inside = ln.strip() == "## Rules"
+                  continue
+              if inside:
+                  body.append(ln)
+          bullets = sum(1 for ln in body if ln.startswith("- "))
+          # A paragraph is a run of non-blank, non-bullet lines. The bullets are contiguous and
+          # would otherwise collapse into a single block, so they are counted separately above.
+          paragraphs = 0
+          in_para = False
+          for ln in body:
+              if not ln.strip() or ln.startswith("- "):
+                  in_para = False
+                  continue
+              if not in_para:
+                  paragraphs += 1
+                  in_para = True
+          m["claude_md_rules"] = bullets
+          m["claude_md_unconditional_rules"] = bullets + paragraphs
+
+          m["claude_rules_files"] = len(walk(".claude/rules", ".md"))
+          m["hook_scripts"] = len(walk(".claude/hooks", ".py"))
+
+          # A skill is .claude/skills/<name>.md or .claude/skills/<name>/SKILL.md. Both forms
+          # are in use here, which is why neither shape on its own is the test.
+          m["project_skills"] = len([p for p in walk(".claude/skills", ".md")
+                                     if p.count("/") == 2 or p.endswith("/SKILL.md")])
+          m["project_commands"] = len(walk(".claude/commands", ".md"))
+          m["project_subagents"] = len(walk(".claude/agents", ".md"))
+          m["project_plugins"] = len(walk(".claude/plugins"))
+
+          settings = {}
+          if os.path.isfile(".claude/settings.json"):
+              settings = json.loads(read_lf(".claude/settings.json").decode("utf-8"))
+          perms = settings.get("permissions", {})
+          m["settings_permissions_allow"] = len(perms.get("allow", []))
+          m["settings_permissions_deny"] = len(perms.get("deny", []))
+          m["settings_permissions_ask"] = len(perms.get("ask", []))
+          hooks = settings.get("hooks", {})
+          m["settings_hook_events"] = len(hooks)
+          matchers = [entry for group in hooks.values() for entry in group]
+          m["settings_hook_matchers"] = len(matchers)
+          m["settings_hook_commands"] = sum(len(entry.get("hooks", [])) for entry in matchers)
+
+          mcp = len(settings.get("mcpServers", {}))
+          if os.path.isfile(".mcp.json"):
+              mcp += len(json.loads(read_lf(".mcp.json").decode("utf-8")).get("mcpServers", {}))
+          m["project_mcp_servers"] = mcp
+
+          workflows = [p for p in walk(".github/workflows") if p.endswith((".yml", ".yaml"))]
+          m["workflow_files"] = len(workflows)
+          # Counted by shape rather than parsed, because PyYAML is not installed yet at this
+          # point in the job. Both regexes are anchored to the exact indentation these files
+          # use; the workflow_steps and workflow_jobs budgets are what notice if that changes.
+          job_re = re.compile(r"^  [A-Za-z0-9_-]+:\s*$")
+          step_re = re.compile(r"^      - (name|uses):")
+          thr_re = re.compile(r"^\s*(?:MIN|MAX)_[A-Z0-9_]+=|^\s*[A-Z0-9_]+_PIN=")
+          jobs = 0
+          steps = 0
+          thresholds = 0
+          for path in workflows:
+              in_jobs = False
+              for ln in read_lf(path).decode("utf-8", errors="replace").splitlines():
+                  if ln.rstrip() == "jobs:":
+                      in_jobs = True
+                      continue
+                  if in_jobs and job_re.match(ln):
+                      jobs += 1
+                  if step_re.match(ln):
+                      steps += 1
+                  if thr_re.match(ln):
+                      thresholds += 1
+          m["workflow_jobs"] = jobs
+          m["workflow_steps"] = steps
+          m["workflow_named_thresholds"] = thresholds
+
+          m["correct_work_cases"] = len(walk("tools/correct-work/cases", ".sh"))
+
+          # ---- the file and the step must agree, in BOTH directions ------------------------
+          # A metric with no budget is ungoverned. An entry naming a metric nothing measures is
+          # a budget for a container that no longer exists, which is the file-looking-
+          # authoritative case again. Either is refused, and the same both-directions
+          # principle is why EXPECT_RC in tools/correct-work/ fails on a case that starts
+          # passing as loudly as on one that starts failing.
+          if set(m) != set(METRICS):
+              print("FAIL: the measurement and METRICS disagree inside this step.")
+              print("  measured but not listed: %s" % sorted(set(m) - set(METRICS)))
+              print("  listed but not measured: %s" % sorted(set(METRICS) - set(m)))
+              raise SystemExit(1)
+          if set(containers) != set(m):
+              print("FAIL: %s and this step do not describe the same containers." % BUDGET_PATH)
+              for key in sorted(set(m) - set(containers)):
+                  print("  NO BUDGET: %s is measured here and has no entry in the file." % key)
+              for key in sorted(set(containers) - set(m)):
+                  print("  ORPHAN:    %s has a budget and is measured by nothing." % key)
+              print("A container with no budget is ungoverned; a budget with no container is a")
+              print("number that looks authoritative and governs nothing. Both are refused.")
+              raise SystemExit(1)
+
+          min_entries = int(os.environ["MIN_BUDGET_ENTRIES"])
+          if len(containers) < min_entries:
+              print("FAIL: %s holds %d container budgets, expected at least %d."
+                    % (BUDGET_PATH, len(containers), min_entries))
+              print("A reader that found no budgets and a reader that found no violations print")
+              print("the same green tick. This refuses the first one.")
+              raise SystemExit(1)
+
+          # ---- the comparison ---------------------------------------------------------------
+          print("--- containers, measured against their ceilings ---")
+          over = []
+          for key in METRICS:
+              entry = containers[key]
+              budget = entry["budget"]
+              value = m[key]
+              print("  %-4s %-30s %6d / %-6d  %s"
+                    % ("OVER" if value > budget else "ok", key, value, budget, entry["kind"]))
+              if value > budget:
+                  over.append((key, value, budget, entry["why"]))
+
+          print("SURFACE_CONTAINERS=%d SURFACE_OVER_BUDGET=%d" % (len(METRICS), len(over)))
+
+          # ---- what this step cannot see, said out loud on every run ------------------------
+          # Three containers are outside the tree, so no step running here can measure them.
+          # Leaving them out silently would make this step look like a complete account of the
+          # surface, which is the failure the whole file exists to prevent. They are printed
+          # instead, each with the command that answers it by hand.
+          print("--- NOT GATED: outside the tree, recorded values, re-check by hand ---")
+          for key in sorted(document["not_gated"]):
+              entry = document["not_gated"][key]
+              print("  %-34s recorded %-8s %s" % (key, entry["recorded"], entry["recheck"]))
+
+          if over:
+              print("")
+              for key, value, budget, why in over:
+                  print("FAIL: %s is %d, above its ceiling of %d." % (key, value, budget))
+                  print("      the ceiling is there because: %s" % why)
+              print("")
+              print("%d container(s) over budget. THIS IS NOT A REFUSAL TO GROW THE SURFACE."
+                    % len(over))
+              print("Raise the number in %s in the SAME commit as the growth, with the reason"
+                    % BUDGET_PATH)
+              print("in its 'why' field, so the next reader sees the decision and not just the size.")
+              raise SystemExit(1)
+
+          print("OK: all %d containers at or under their ceilings." % len(METRICS))
+          PY
+
       # Both files are now pinned to the exact versions production runs (see requirements.txt).
       # requirements-dev.txt carries httpx, which FastAPI's TestClient imports at runtime; its httpx
       # pin must equal the one in requirements.txt, and pip enforces that by failing with

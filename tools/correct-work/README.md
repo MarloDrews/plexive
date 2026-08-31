@@ -17,10 +17,15 @@ files themselves: CW-1 gains a `mkdir -p` that `git mv` requires, and CW-3b was 
 integration batch after CW-3 was measured and found to be an incomplete refactor.
 
 CW-7 has a DIFFERENT provenance and is not from that report: it was written on 2026-08-31
-with the check it exercises, in the same batch. It is therefore the one case here that does
-agree with its fix by construction, which is the weakness the paragraph above describes. It
+with the check it exercises, in the same batch. It is therefore one of the two cases here that
+agree with their fix by construction, which is the weakness the paragraph above describes. It
 is kept anyway because the input it stores -- the rules directory growing by one correctly
-scoped file -- is the one CI cannot produce on its own.
+scoped file -- is one CI cannot produce on its own.
+
+CW-8 has the same provenance and the same weakness, declared in its own header: it was written
+on 2026-08-31 with the surface budget step it exercises. It stores a 36-line correction to
+CLAUDE.md, the shape the same-batch documentation rule makes recur, sitting exactly on the
+claude_md_lines ceiling so that tightening that ceiling to a pin turns the case red.
 
 ## Running them
 
@@ -71,6 +76,7 @@ them on PATH and this machine does not.
 | `cw-6c-android-passing-tests` | `android-build` | test assertion | the allow direction | 0 |
 | `cw-6d-android-findings-fixed` | `android-build` | lint ratchet | the allow direction | 0 |
 | `cw-7-second-scoped-rules-file` | `backend-checks` | rules `paths:` scope | the allow direction | 0 |
+| `cw-8-claude-md-correction-within-ceiling` | `backend-checks` | surface budget | the allow direction | 0 |
 
 ## The declared exit code, and why the comparison is not against zero
 
