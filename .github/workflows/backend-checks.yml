@@ -296,7 +296,30 @@ jobs:
           m["claude_md_bytes"] = len(blob)
           lines = blob.decode("utf-8", errors="replace").splitlines()
           m["claude_md_lines"] = len(lines)
-          m["claude_md_sections"] = sum(1 for ln in lines if ln.startswith("## "))
+          # FENCES ARE TRACKED, AND A "## " LINE INSIDE ONE IS A QUOTATION RATHER THAN A
+          # SECTION. The documents in this repository quote each other constantly, and CLAUDE.md
+          # is one edit away from showing a heading it is describing. Measured 2026-08-31: a
+          # ```markdown fence holding one "## Some Heading" took claude_md_sections to 11 against
+          # a pin of 10, which is F1's defect in its smallest form -- a metric counting a textual
+          # shape rather than the thing it is named for. Stored as cw-14. An indented code block
+          # was already safe, and CLAUDE.md uses those today, which is why nobody had seen it.
+          #
+          # The same filtered view feeds the "## Rules" scan below, so both metrics agree about
+          # where a section starts and ends. A fence opened and never closed swallows the rest of
+          # the file, which would show up as claude_md_sections collapsing rather than growing --
+          # visible in the printed row, and the reason the row prints on every run.
+          def outside_fences(all_lines):
+              fenced = False
+              for ln in all_lines:
+                  bare = ln.lstrip()
+                  if bare.startswith("```") or bare.startswith("~~~"):
+                      fenced = not fenced
+                      continue
+                  if not fenced:
+                      yield ln
+
+          prose = list(outside_fences(lines))
+          m["claude_md_sections"] = sum(1 for ln in prose if ln.startswith("## "))
 
           # WHAT COUNTS AS A RULE, IN THE WORDS A PERSON WOULD USE: A RULE IS AN OPENING LINE.
           # A top-level "- " bullet at column 0 opens one, and so does the first line of a
@@ -326,7 +349,7 @@ jobs:
           # parser nobody can read.
           body = []
           inside = False
-          for ln in lines:
+          for ln in prose:
               if ln.startswith("## "):
                   inside = ln.strip() == "## Rules"
                   continue

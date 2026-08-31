@@ -20,7 +20,7 @@
       "budget": 10,
       "measured": 10,
       "kind": "pinned",
-      "why": "PINNED, AND THE REPLAY SUPPORTS THE PIN. Only two commits ever took this above 10: 4c585a79 (9->11) and 066c4b38 (11->14), and the shrink removed exactly those sections again. Every section standing today was added at or below 10, so this pin would have blocked nothing that should not have been blocked. A new '## ' heading is a deliberate act, and the pin costs one line in this file in the same commit, where a reader sees the decision."
+      "why": "WHAT IT COUNTS, IN THE WORDS A PERSON WOULD USE: lines beginning \"## \" that are OUTSIDE fenced code blocks. A heading quoted inside a fence is a quotation, not a section, and counting one took this to 11 against the pin on 2026-08-31 (stored as cw-14). PINNED, AND THE REPLAY SUPPORTS THE PIN. Only two commits ever took this above 10: 4c585a79 (9->11) and 066c4b38 (11->14), and the shrink removed exactly those sections again. Every section standing today was added at or below 10, so this pin would have blocked nothing that should not have been blocked. A new '## ' heading is a deliberate act, and the pin costs one line in this file in the same commit, where a reader sees the decision."
     },
     "claude_md_rules": {
       "budget": 7,
