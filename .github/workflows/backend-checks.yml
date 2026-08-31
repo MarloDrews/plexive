@@ -214,24 +214,44 @@ jobs:
 
       # A compileall over a path that does not exist still exits 0, so count the files first.
       #
+      # THE COUNT AND THE COMPILE COME FROM ONE find, AND THAT IS THE POINT OF THIS SHAPE. They used
+      # to be two different sets -- `find app scripts tests alembic` for the count and
+      # `compileall app scripts tests alembic seed.py` for the work -- so the step could report a
+      # healthy number while compiling something else. Measured 2026-08-31 on a tree where the three
+      # top-level scripts had been consolidated into a package: compileall printed
+      # `Can't list 'seed.py'` and EXITED 0. Three files silently stopped being compiled and the step
+      # stayed green, which is the "a step that watches for a condition reports its own failure" rule
+      # in CLAUDE.md failing in the quiet direction.
+      #
+      # `.` rather than four named directories, for the same reason the mypy step below takes `.`: a
+      # new top-level package under backend/ was neither counted nor compiled here, and nothing said
+      # so. .venv/ is excluded because a dev checkout has one and CI does not -- the number has to be
+      # the same in both places or a local rehearsal is not a rehearsal.
+      #
       # THIS IS A COLLAPSE DETECTOR. It exists to catch the paths moving or this step checking nothing,
       # so the floor sits well BELOW the observed count and normal work never reaches it. That is the
       # opposite of MIN_PINS and the suite-file floor, which sit exactly on their measured values so a
       # deletion has to be deliberate. Both kinds are correct for what they watch; do not unify them.
-      # 79 .py files measured 2026-08-29 (78 on 2026-08-28, before alembic/versions/0002 landed).
-      # Was 74 until alembic/ joined the search: env.py, policy.py
-      # and the baseline migration are backend Python that no gate compiled, and a syntax error in
-      # env.py would have surfaced as a failed live migration rather than as a red check.
+      # 82 .py files measured 2026-08-31 under `.`, which is the same 82 the ruff and mypy steps
+      # report; it was 79 under the four named directories, the difference being the three top-level
+      # scripts they never saw. THE FLOOR OF 60 DID NOT MOVE -- widening what is counted raised the
+      # observed number, not the threshold.
       - name: Syntax check
         run: |
-          count=$(find app scripts tests alembic -name '*.py' -not -path '*/__pycache__/*' | wc -l)
-          echo "found $count Python files under app/ scripts/ tests/ alembic/"
+          # mapfile into an array, and "${PYFILES[@]}" quoted, rather than an unquoted $(find ...):
+          # a filename with a space would otherwise reach compileall as two paths that do not exist,
+          # and compileall exits 0 on those, which is the failure this whole step is being reshaped
+          # to remove. The array length is the count, so the number and the argument list cannot
+          # disagree.
+          mapfile -t PYFILES < <(find . -name '*.py' -not -path './.venv/*' -not -path '*/__pycache__/*')
+          count=${#PYFILES[@]}
+          echo "found $count Python files under backend/"
           if [ "$count" -lt 60 ]; then
-            echo "FAIL: only $count Python files found, expected at least 60 (79 when this was written)."
+            echo "FAIL: only $count Python files found, expected at least 60 (82 when this was written)."
             echo "Either the paths moved or this step is checking nothing."
             exit 1
           fi
-          python -m compileall -q app scripts tests alembic seed.py
+          python -m compileall -q "${PYFILES[@]}"
 
       # The check that matters most. This backend boot-fails on purpose on a weak JWT_SECRET, a missing
       # DATABASE_URL, WEB_CONCURRENCY > 1 and an empty CORS origin list, and a boot failure crash-loops
