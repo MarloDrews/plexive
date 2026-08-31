@@ -27,6 +27,40 @@ on 2026-08-31 with the surface budget step it exercises. It stores a 36-line cor
 CLAUDE.md, the shape the same-batch documentation rule makes recur, sitting exactly on the
 claude_md_lines ceiling so that tightening that ceiling to a pin turns the case red.
 
+CW-9 through CW-15 are copied **verbatim** from
+`plexive-docs/research/surface-budget-verification-2026-08-31.md`, findings F1 through F8, and
+carry the provenance CW-7 and CW-8 lack: a session that had written none of this code produced
+them, and each one is the input that reproduced its finding. Their declared exit codes are what
+the FIXED steps do; what shows that a case discriminates is the code it produced against the
+step as it stood at `06d1803`, which is in
+`plexive-docs/research/surface-budget-fixes-2026-08-31.md` as one column of a table. Four of them
+do not discriminate on the exit code at all and say so in their own headers -- CW-9a, CW-9d,
+CW-13 and CW-15c -- and they are kept because what they pin is the printed number rather than
+the verdict.
+
+One is not from that report: **CW-15c**, which turns the six-line idiom F4 quotes into a fixture.
+It is labelled in its own header rather than passed off as reproduced.
+
+Three of these declare a REFUSAL and one declares a KNOWN RESIDUAL, and none of the four is a
+defect waiting to be fixed:
+
+- **CW-12a declares 1.** Deleting `.claude/settings.json` used to pass green. The step now
+  refuses a missing settings file the way it refuses a missing budget file.
+- **CW-13 declares 1** and did before the fix too. It is the input that proved
+  `MIN_BUDGET_ENTRIES` could never fire, and it still refuses -- through the set-equality
+  assertion that was always doing the work.
+- **CW-15a and CW-15b declare 1.** Two new named thresholds in one commit now cost a line in
+  `tools/surface-budget.json`, because the ceiling was re-derived from a by-name replay and its
+  headroom is one. The accompanying line records thresholds that exist, which is the
+  discriminator this repository uses.
+- **CW-9e declares 1 and is the known residual of the rule definition**, pinned rather than
+  parsed around: a continuation line beginning `- ` cannot be told from a bullet. If someone
+  later changes that definition the case flips and `run_all.sh` reports the flip.
+
+**CW-12b passes and is not a clean bill of health.** It stores the half of F6 that is not fixed:
+a ceiling fires upward only, so emptying every list in `.claude/settings.json` in place is
+invisible to all 23 containers. The budget file says so in `_what_a_ceiling_cannot_see`.
+
 ## Running them
 
 ```
@@ -77,6 +111,21 @@ them on PATH and this machine does not.
 | `cw-6d-android-findings-fixed` | `android-build` | lint ratchet | the allow direction | 0 |
 | `cw-7-second-scoped-rules-file` | `backend-checks` | rules `paths:` scope | the allow direction | 0 |
 | `cw-8-claude-md-correction-within-ceiling` | `backend-checks` | surface budget | the allow direction | 0 |
+| `cw-9a-claude-md-one-bullet-rewrapped` | `backend-checks` | surface budget | F1 | 0 |
+| `cw-9b-claude-md-two-bullets-rewrapped` | `backend-checks` | surface budget | F1 | 0 |
+| `cw-9c-claude-md-all-bullets-rewrapped` | `backend-checks` | surface budget | F1 | 0 |
+| `cw-9d-claude-md-nested-sub-bullet` | `backend-checks` | surface budget | F1 | 0 |
+| `cw-9e-claude-md-hyphen-initial-continuation` | `backend-checks` | surface budget | F1, the residual | **1** |
+| `cw-10a-untracked-subagent-file` | `backend-checks` | surface budget | F2 | 0 |
+| `cw-10b-untracked-plugin-files` | `backend-checks` | surface budget | F2 | 0 |
+| `cw-11-rules-file-with-utf8-bom` | `backend-checks` | rules `paths:` scope | F5 | 0 |
+| `cw-12a-settings-json-deleted` | `backend-checks` | surface budget | F6 | **1** |
+| `cw-12b-settings-json-emptied` | `backend-checks` | surface budget | F6, the gap | 0 |
+| `cw-13-budget-file-cut-to-one-container` | `backend-checks` | surface budget | F7 | **1** |
+| `cw-14-claude-md-heading-inside-a-fence` | `backend-checks` | surface budget | F8 | 0 |
+| `cw-15a-workflow-step-with-three-thresholds` | `backend-checks` | surface budget | F4 | **1** |
+| `cw-15b-workflow-step-with-two-thresholds` | `backend-checks` | surface budget | F4 | **1** |
+| `cw-15c-workflow-threshold-in-the-env-prefix-idiom` | `backend-checks` | surface budget | F4 | 0 |
 
 ## The declared exit code, and why the comparison is not against zero
 
