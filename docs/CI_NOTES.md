@@ -214,6 +214,8 @@ CLAUDE.md BYTES ARE COUNTED WITH CRLF NORMALISED AWAY, for the same reason: `cor
 
 THREE CONTAINERS ARE OUTSIDE THE TREE AND CANNOT BE GATED: the GitHub ruleset `21607944` (4 rules, 3 required contexts), the gitignored `.claude/settings.local.json` (3 allow rules), and `~/.claude/settings.json` (0 permission rules). Reading the ruleset needs an admin-scoped API call the job's token does not carry, and the other two are per-machine by definition. They are in the file's `not_gated` block with their recorded values and the command that re-checks each by hand, and the step PRINTS them on every run. Omitting them would make the step look like a complete account of the surface, which is the failure it exists to prevent.
 
+THE RULES-SCOPE STEP READS ITS FRONTMATTER AS `utf-8-sig`, NOT `utf-8`, since 2026-08-31. A UTF-8 BOM otherwise lands on `lines[0]`, the first line is no longer exactly `---`, the frontmatter block is never entered, and a file carrying a perfectly good top-level `paths:` key is refused and told it has none -- a message naming a defect the file does not have. PowerShell is the primary shell on the machine these files are written on and its `>`, `>>` and `Out-File` default to UTF-8 with BOM, which is the same class of hazard as the CRLF one `.gitattributes` already pins `eol=lf` for; only the BOM was untested. Stored as `cw-11`.
+
 The correct-work input is `cw-8-claude-md-correction-within-ceiling`. It appends a 36-line correction to `CLAUDE.md`, the shape the same-batch documentation rule makes recur, and it sits exactly on the `claude_md_lines` ceiling, so tightening that ceiling to a pin turns the case red rather than silent.
 
 ## Known non-gates and a deferred upgrade

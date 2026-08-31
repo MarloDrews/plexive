@@ -135,7 +135,17 @@ jobs:
 
           unscoped = []
           for path in sys.argv[1:]:
-              with open(path, encoding="utf-8") as fh:
+              # utf-8-sig, NOT utf-8. A UTF-8 BOM lands on lines[0] otherwise, the first line is
+              # no longer exactly --- , the frontmatter block is never entered, and a file with a
+              # perfectly good top-level paths: key is refused and TOLD IT HAS NO paths: KEY --
+              # a message naming a defect the file does not have. Measured 2026-08-31. This is
+              # not a hypothetical shape here: CLAUDE.md records that PowerShell -- the primary
+              # shell on the machine these files are written on -- defaults its >, >> and
+              # Out-File redirections to UTF-8 WITH BOM. The sibling hazard, CRLF, is already
+              # handled by .gitattributes pinning these files to eol=lf and by splitlines()
+              # below; only the BOM was untested. Stored as cw-11. utf-8-sig strips a BOM when
+              # there is one and changes nothing when there is not.
+              with open(path, encoding="utf-8-sig") as fh:
                   # splitlines() handles CRLF and LF alike, which matters because
                   # core.autocrlf is on for the machine these files are written on.
                   lines = fh.read().splitlines()
