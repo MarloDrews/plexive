@@ -291,9 +291,13 @@ def build_cases(fx):
         dict(name="commit: merge gets the rules too", script=BASH_HOOK, expect=0,
              payload=bash_payload("git merge --no-ff chore/x"),
              stdout_must_contain="conventional commits"),
-        dict(name="commit: fails OPEN when SKILL.md is absent", script=orphan,
-             expect=0, payload=bash_payload('git commit -m "x"'),
-             stdout_must_be_empty=True),
+        # FAILS OPEN AND SAYS SO SINCE 2026-08-31. It still exits 0, which is the
+        # fail-open half and is asserted by expect=0; what changed is that the
+        # empty stdout it used to produce was indistinguishable from a hook with
+        # nothing to add. The declaration moved from "empty" to "names the path".
+        dict(name="commit: fails OPEN when SKILL.md is absent, and SAYS SO",
+             script=orphan, expect=0, payload=bash_payload('git commit -m "x"'),
+             stdout_must_contain=".claude/skills/commit/SKILL.md", show_stdout=True),
 
         # --- the write hook ----------------------------------------------------
         dict(name="write: emoji in a .py", script=WRITE_HOOK, expect=2,
