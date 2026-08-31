@@ -156,21 +156,43 @@ jobs:
           # Both directories, because a test may be written in either. commonTest is the one proven
           # to reach this task; androidHostTest is the Android-only half of the same compilation.
           #
+          # WHAT IS COUNTED IS DECLARED TESTS, NOT .kt FILES, and that is the fix for a check that
+          # red on correct work. It used to branch on the file count, so ANY .kt file in a test
+          # source set switched it to the branch that demands at least one executed test. A shared
+          # fixture, a helper, an expect/actual stub, or a test file committed in the same change as
+          # the code it will exercise later -- all correct work -- gave TEST_FILES=1, TESTS_RUN=0 and
+          # a red required check whose message said the task "ran and discovered nothing". The tree
+          # was right and the counter was wrong. Reproduced 2026-08-31; the input that proves it is
+          # kept in tools/correct-work/.
+          #
+          # A file cannot say whether it means to declare a test. @Test can. Both numbers are
+          # printed, because they answer different questions: the file count says whether anyone has
+          # written in the source set at all, and the @Test count says whether anything in it is
+          # supposed to run.
+          #
           # The existence test is not defensive noise. Neither directory exists on this tree, and
           # "find a b -name '*.kt'" over a missing path exits 1. Under this job's shell -- bash -eo
           # pipefail -- pipefail hands that 1 up through "| wc -l" and -e then ends the step, so the
           # job would go RED reporting nothing about the thing it was measuring. Measured: the same
           # script under a plain "bash" exits 0 and under "bash -eo pipefail" exits 1 having printed
           # nothing, which is the pair of identical-looking outcomes this file exists to tell apart.
+          # grep has the SAME TRAP and one more turn in it: grep exits 1 when it matches nothing,
+          # which is the ordinary state here, so it is wrapped in a group whose failure is swallowed
+          # and wc is left as the last command of the pipeline. "$(grep ... || true)" would not do:
+          # it swallows grep's exit 2 as well, and 2 is grep itself failing.
           files=0
+          declared=0
           for dir in shared/src/commonTest shared/src/androidHostTest; do
             if [ -d "$dir" ]; then
               found=$(find "$dir" -name '*.kt' | wc -l)
               files=$((files + found))
+              # \b so @TestFactory and @TestOnly are not counted as tests.
+              n=$( { grep -rhoE '@(kotlin\.test\.)?Test\b' --include='*.kt' "$dir" || [ $? -eq 1 ]; } | wc -l )
+              declared=$((declared + n))
             fi
           done
 
-          TEST_FILES="$files" OUTCOME="$outcome" TASK="$task" MIN_TESTS=1 \
+          TEST_FILES="$files" TESTS_DECLARED="$declared" OUTCOME="$outcome" TASK="$task" MIN_TESTS=1 \
           RESULTS=shared/build/test-results/testAndroidHostTest \
           python3 - <<'PY'
           import glob
@@ -178,6 +200,7 @@ jobs:
           import xml.etree.ElementTree as ET
 
           files = int(os.environ["TEST_FILES"])
+          declared = int(os.environ["TESTS_DECLARED"])
           outcome = os.environ["OUTCOME"]
           task = os.environ["TASK"]
           min_tests = int(os.environ["MIN_TESTS"])
@@ -191,44 +214,50 @@ jobs:
               errors += int(suite.get("errors") or 0)
               skipped += int(suite.get("skipped") or 0)
 
-          print("TEST_FILES=%d" % files)
+          print("TEST_FILES=%d TESTS_DECLARED=%d" % (files, declared))
           print("TEST_RESULT_XML_FILES=%d" % len(reports))
           print("TESTS_RUN=%d failures=%d errors=%d skipped=%d" % (tests, failures, errors, skipped))
           print("task outcome suffix: %s" % (outcome if outcome else "(none, it executed)"))
 
-          if files == 0:
+          # THE BRANCH IS ON DECLARED TESTS, NOT ON FILES. A test source set can legitimately hold
+          # .kt files and declare no test -- a shared fixture, a helper, an expect/actual stub, a
+          # test file committed before the code it will exercise -- and demanding an executed test
+          # from that tree reds a required check on correct work.
+          if declared == 0:
               print("")
-              print("NOTE: the Kotlin test source set holds ZERO test files, so there was nothing")
-              print("      for %s to run. It reported %s and 0 tests."
-                    % (task, outcome if outcome else "no outcome suffix"))
+              print("NOTE: the Kotlin test source set declares ZERO tests -- %d .kt file(s) present,"
+                    % files)
+              print("      none carrying @Test -- so there was nothing for %s to run." % task)
+              print("      It reported %s and 0 tests."
+                    % (outcome if outcome else "no outcome suffix"))
               print("      This job is therefore proving exactly one thing: that the test")
               print("      harness is WIRED. The task exists, this workflow reaches it, and a")
               print("      failing test in it fails the build -- that last part verified by hand")
               print("      on 2026-08-30, not assumed. It is proving NOTHING about the behaviour")
               print("      of any code in mobile-kmp/, because there is no test to prove it with.")
               print("      This is a known and deliberate state: the module is nearly empty and")
-              print("      tests follow code. The first .kt file under shared/src/commonTest or")
+              print("      tests follow code. The first @Test under shared/src/commonTest or")
               print("      shared/src/androidHostTest switches this step to the branch below,")
               print("      which requires the task to execute and to report at least %d test." % min_tests)
               raise SystemExit(0)
 
-          # From here the source set is NOT empty, so silence is a defect rather than a state.
+          # From here the source set DECLARES tests, so silence is a defect rather than a state.
           problems = []
 
           if outcome:
               problems.append(
-                  "FAIL: %s did not execute (%s), yet %d test files exist.\n"
-                  "      NO-SOURCE with test files present means the task is looking somewhere else."
-                  % (task, outcome, files)
+                  "FAIL: %s did not execute (%s), yet %d test(s) are declared.\n"
+                  "      NO-SOURCE with declared tests present means the task is looking elsewhere."
+                  % (task, outcome, declared)
               )
 
-          # COLLAPSE DETECTOR. Test files present and zero tests executed is the silent failure
-          # this whole step exists for: the task ran, found nothing, and exited 0.
+          # COLLAPSE DETECTOR. Tests declared and zero executed is the silent failure this whole
+          # step exists for: the task ran, found nothing, and exited 0.
           if tests < min_tests:
               problems.append(
-                  "FAIL: %d tests executed against %d test files, expected at least %d.\n"
+                  "FAIL: %d tests executed against %d declared with @Test, expected at least %d.\n"
                   "      The task ran and discovered nothing, so its green tick means nothing."
-                  % (tests, files, min_tests)
+                  % (tests, declared, min_tests)
               )
 
           if failures or errors:
@@ -245,7 +274,8 @@ jobs:
           if problems:
               raise SystemExit(1)
 
-          print("OK: %d tests executed from %d test files, 0 failures." % (tests, files))
+          print("OK: %d tests executed from %d declared with @Test across %d test file(s), 0 failures."
+                % (tests, declared, files))
           PY
 
       # AGP registers a full lint task set on :androidApp and nothing here ever called it. This step
