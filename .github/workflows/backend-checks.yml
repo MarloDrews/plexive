@@ -423,7 +423,10 @@ jobs:
           python -m pip install mypy==2.3.1
 
           # THE RATCHET. 201, measured on this tree with the paths and flags named above. Fires
-          # UPWARD ONLY, exactly like MAX_RUFF_FINDINGS and MAX_LINT_FINDINGS in android-build.yml.
+          # UPWARD ONLY, exactly like MAX_RUFF_FINDINGS one step above. (MAX_LINT_FINDINGS in
+          # android-build.yml is the same shape and was the first of them, but it is NOT ON main as
+          # this is written -- it arrives with pull request 88, which is open and unmerged. Do not
+          # go looking for it in android-build.yml until that has landed.)
           # No lower bound, and it comes down by hand in the same commit as the batch that fixes
           # errors. The earlier figures of 64 and 261 in repo-hygiene-inventory-2026-08.md were taken
           # with a different mypy and a different question; they are not comparable to this one.
