@@ -96,6 +96,78 @@ jobs:
       - name: Python version
         run: python -V
 
+      # .claude/rules/ IS A REPOSITORY-WIDE CONCERN CHECKED FROM A STACK JOB, and that is
+      # deliberate. None of the three jobs reads outside its own working-directory today, so
+      # "the job that already touches repository-wide state" did not pick itself; this one is
+      # the only one of the three with a Python interpreter on PATH by design, which reading
+      # frontmatter needs, and adding one to frontend-checks or android-build would mean
+      # adding a setup step to a job that has none.
+      #
+      # WHAT IT REFUSES: a file under .claude/rules/ with no top-level paths: key. Such a file
+      # loads GLOBALLY, at the same priority as CLAUDE.md, which makes the container the thing
+      # it was created to replace. Measured 2026-08-31 on Claude Code 2.1.251, both directions:
+      # an unscoped file loaded into a session that touched no file at all, and a paths:-scoped
+      # file loaded only in the session that read a file its glob matched.
+      - name: "Rules files under .claude/rules/ declare a paths: scope"
+        working-directory: ${{ github.workspace }}
+        run: |
+          # DELETION DETECTOR, sitting exactly on the observed count rather than below it: 1
+          # rules file, measured on the runner by the find below. A find that matches nothing
+          # exits 0 and reports a green tick having checked no files, which is the reassuring
+          # identical output this repository keeps recording. A rules file added later raises
+          # this number; a rules file deleted has to be a deliberate edit here.
+          MIN_RULES_FILES=1
+
+          mapfile -t RULES < <(find .claude/rules -name '*.md' | sort)
+          count=${#RULES[@]}
+          echo "found $count rules file(s) under .claude/rules/"
+          if [ "$count" -lt "$MIN_RULES_FILES" ]; then
+            echo "FAIL: found $count rules file(s), expected at least $MIN_RULES_FILES."
+            echo "Either .claude/rules/ moved or this step is checking nothing."
+            exit 1
+          fi
+
+          # The frontmatter is PARSED rather than grepped. A bare `grep -q paths:` passes on a
+          # file whose only paths: sits in the prose below the frontmatter, or is indented under
+          # some other key, and both of those load globally exactly as a missing key does.
+          python3 - "${RULES[@]}" <<'PY'
+          import sys
+
+          unscoped = []
+          for path in sys.argv[1:]:
+              with open(path, encoding="utf-8") as fh:
+                  # splitlines() handles CRLF and LF alike, which matters because
+                  # core.autocrlf is on for the machine these files are written on.
+                  lines = fh.read().splitlines()
+              scoped = False
+              # Frontmatter is the block between a first line that is exactly --- and the
+              # next --- . Anything outside that block is prose and scopes nothing.
+              if lines and lines[0].strip() == "---":
+                  for line in lines[1:]:
+                      if line.strip() == "---":
+                          break
+                      # Top level only: an indented paths: belongs to some other key. YAML
+                      # forbids tabs for indentation, so a leading space is the whole test.
+                      if line[:1] == " " or ":" not in line:
+                          continue
+                      if line.split(":", 1)[0].strip() == "paths":
+                          scoped = True
+                          break
+              print("  %-8s %s" % ("scoped" if scoped else "UNSCOPED", path))
+              if not scoped:
+                  unscoped.append(path)
+
+          print("UNSCOPED_RULES_FILES=%d of %d" % (len(unscoped), len(sys.argv) - 1))
+          if unscoped:
+              print("FAIL: %d rules file(s) carry no top-level paths: key." % len(unscoped))
+              print("A rules file without paths: loads globally, at CLAUDE.md priority, in")
+              print("every session. That is the thing .claude/rules/ exists to avoid, so it is")
+              print("refused here rather than found later as a context bill nobody can see.")
+              for path in unscoped:
+                  print("  " + path)
+              sys.exit(1)
+          PY
+
       # Both files are now pinned to the exact versions production runs (see requirements.txt).
       # requirements-dev.txt carries httpx, which FastAPI's TestClient imports at runtime; its httpx
       # pin must equal the one in requirements.txt, and pip enforces that by failing with

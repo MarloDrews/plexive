@@ -82,6 +82,7 @@ extract an-test  .github/workflows/android-build.yml   android-build   "Assert t
 extract an-lint  .github/workflows/android-build.yml   android-build   "Assert AGP lint ran, and ratchet its findings"    || exit 1
 extract be-ruff  .github/workflows/backend-checks.yml  backend-checks  "Ruff (E4,E7,E9,F ratchet, and F at zero)"         || exit 1
 extract be-mypy  .github/workflows/backend-checks.yml  backend-checks  "Mypy (ratchet)"                                   || exit 1
+extract be-rules .github/workflows/backend-checks.yml  backend-checks  "Rules files under .claude/rules/ declare a paths: scope" || exit 1
 
 # --- prerequisites, reported loudly rather than skipped quietly --------------------------
 VENV="$REPO/backend/.venv/Scripts/python.exe"
