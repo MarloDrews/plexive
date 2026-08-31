@@ -15,12 +15,15 @@ const OVERSCAN = 2
 // mounted when the scroll position is restored, so a valid snap target exists
 // at that offset -- a mandatory-snap feed has none there otherwise and snaps
 // back toward the top.
-// Returns the [start, end) slice of the list to actually mount.
+// Returns the [start, end) slice of the list to actually mount, plus the
+// clamped active index itself -- the feed's paging decision is a question
+// about how close the reader is to the end of the loaded list, and deriving
+// that index back out of [start, end) is wrong at both ends of the list.
 export function useWindowedFeed(
   scrollRef: RefObject<HTMLElement | null>,
   count: number,
   initialIndex = 0
-): { start: number; end: number } {
+): { start: number; end: number; activeIndex: number } {
   const [activeIndex, setActiveIndex] = useState(initialIndex)
 
   useEffect(() => {
@@ -48,5 +51,5 @@ export function useWindowedFeed(
   const clamped = Math.min(Math.max(activeIndex, 0), Math.max(0, count - 1))
   const start = Math.max(0, clamped - OVERSCAN)
   const end = Math.min(count, clamped + OVERSCAN + 1)
-  return { start, end }
+  return { start, end, activeIndex: clamped }
 }
