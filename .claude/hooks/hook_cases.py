@@ -285,15 +285,19 @@ def build_cases(fx):
              payload=bash_payload("git status")),
 
         # --- the injected commit rules ----------------------------------------
-        dict(name="commit: rules injected from commit.md", script=BASH_HOOK,
+        dict(name="commit: rules injected from commit/SKILL.md", script=BASH_HOOK,
              expect=0, payload=bash_payload('git commit -m "x"'),
              stdout_must_contain="conventional commits", show_stdout=True),
         dict(name="commit: merge gets the rules too", script=BASH_HOOK, expect=0,
              payload=bash_payload("git merge --no-ff chore/x"),
              stdout_must_contain="conventional commits"),
-        dict(name="commit: fails OPEN when commit.md is absent", script=orphan,
-             expect=0, payload=bash_payload('git commit -m "x"'),
-             stdout_must_be_empty=True),
+        # FAILS OPEN AND SAYS SO SINCE 2026-08-31. It still exits 0, which is the
+        # fail-open half and is asserted by expect=0; what changed is that the
+        # empty stdout it used to produce was indistinguishable from a hook with
+        # nothing to add. The declaration moved from "empty" to "names the path".
+        dict(name="commit: fails OPEN when SKILL.md is absent, and SAYS SO",
+             script=orphan, expect=0, payload=bash_payload('git commit -m "x"'),
+             stdout_must_contain=".claude/skills/commit/SKILL.md", show_stdout=True),
 
         # --- the write hook ----------------------------------------------------
         dict(name="write: emoji in a .py", script=WRITE_HOOK, expect=2,
@@ -754,11 +758,12 @@ def build_cases(fx):
 def make_fixtures(tmp):
     """Every fixture, all of them COPIES in temporary trees.
 
-    The real commit.md is never moved, the real check_backup_age.sh is never
-    replaced, and the real backup directory is never read.
+    The real .claude/skills/commit/SKILL.md is never moved, the real
+    check_backup_age.sh is never replaced, and the real backup directory is
+    never read.
 
     Four trees:
-      orphan      a copy of the Bash hook with no .claude/skills/commit.md, so
+      orphan      a copy of the Bash hook with no .claude/skills/commit/SKILL.md,
                   the fails-open case exercises the real resolution path.
       stub        a copy of the Bash hook whose tools/check_backup_age.sh exits
                   3, so the exit-3 warning and the commit rules are produced by
@@ -788,8 +793,9 @@ def make_fixtures(tmp):
     (stub_root / "tools").mkdir(parents=True)
     stub = stub_root / ".claude" / "hooks" / "pretooluse_bash.py"
     shutil.copyfile(BASH_HOOK, stub)
-    shutil.copyfile(REPO_ROOT / ".claude" / "skills" / "commit.md",
-                    stub_root / ".claude" / "skills" / "commit.md")
+    (stub_root / ".claude" / "skills" / "commit").mkdir(parents=True)
+    shutil.copyfile(REPO_ROOT / ".claude" / "skills" / "commit" / "SKILL.md",
+                    stub_root / ".claude" / "skills" / "commit" / "SKILL.md")
     checker = stub_root / "tools" / "check_backup_age.sh"
     checker.write_text(
         "#!/usr/bin/env bash\n"

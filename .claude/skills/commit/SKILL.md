@@ -13,8 +13,12 @@ step. Until 2026-08-30 there was one: the hook carried a hardcoded duplicate ins
 and editing this file changed nothing.
 
 The injection FAILS OPEN. If this file is missing or unreadable the hook exits 0 and
-injects nothing, because these rules are advisory context rather than a gate. The backup
-gate in the same hook fails closed, and the difference is deliberate.
+the commit proceeds, because these rules are advisory context rather than a gate. The
+backup gate in the same hook fails closed, and the difference is deliberate. Until
+2026-08-31 failing open meant injecting NOTHING AND SAYING NOTHING -- measured that day,
+rc=0 with zero bytes on stdout and zero on stderr -- so a reader whose input had vanished
+was indistinguishable from one that had nothing to add. It now injects a notice naming
+this path instead.
 
 ## Commit Message Format
 Use conventional commits: type(scope): description

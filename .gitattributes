@@ -8,6 +8,14 @@
 # renormalizes. The pattern is a glob rather than the single path because the only reason
 # .claude/skills/ui-ux-pro-max/SKILL.md never hit this is .gitignore:24 excluding it, so the
 # next tracked skill would inherit the problem.
+#
+# THE PATTERN MATCHES BY FILENAME, AND ON 2026-08-31 THAT TURNED OUT TO MATTER. The commit
+# skill was a flat .claude/skills/commit.md, which is not named SKILL.md and so was never
+# covered: measured that day, 1645 bytes in the working tree against a 1605-byte blob, 40 CR
+# bytes the pin would have removed. It did not load anyway, for the separate reason that
+# Claude Code discovers only <name>/SKILL.md; moving it to commit/SKILL.md brought it under
+# this rule and the next checkout came out at 1605 with 0 CR. Two defects, one masking the
+# other, and the pin had nothing to say about either while the file sat outside it.
 .claude/skills/**/SKILL.md text eol=lf
 
 # Rules files are frontmatter-parsed exactly as SKILL.md is, and the 2026-08-28

@@ -40,7 +40,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 BACKUP_CHECK = REPO_ROOT / "tools" / "check_backup_age.sh"
-COMMIT_RULES = REPO_ROOT / ".claude" / "skills" / "commit.md"
+COMMIT_RULES = REPO_ROOT / ".claude" / "skills" / "commit" / "SKILL.md"
 
 # Command words that mean a database or schema operation is about to happen.
 BACKUP_TRIGGERS = {"alembic", "psql", "pg_dump", "pg_restore", "pg_dumpall"}
@@ -1094,10 +1094,24 @@ def main():
             rules = commit_rules_text()
             if rules:
                 add_context(
-                    "COMMIT RULES, read from .claude/skills/commit.md by the "
+                    "COMMIT RULES, read from .claude/skills/commit/SKILL.md by the "
                     "PreToolUse hook:\n\n" + rules
                     + "\n\nA merge commit follows the same format: "
                     "chore(merge): merge <branch> into main."
+                )
+            else:
+                # STILL FAILS OPEN -- the commit proceeds -- but it SAYS SO. Measured
+                # 2026-08-31 with the file absent: rc=0, zero bytes on stdout and zero
+                # on stderr, so a reader whose input had vanished was indistinguishable
+                # from one that had nothing to add. The notice goes through
+                # add_context() rather than stderr, because hook stderr at exit 0 is
+                # somewhere nobody is looking.
+                add_context(
+                    "NOTICE: the PreToolUse hook found no commit rules to inject. It "
+                    "reads .claude/skills/commit/SKILL.md, and that file is missing, "
+                    "unreadable, or empty below its frontmatter. The commit is "
+                    "ALLOWED -- these rules are advisory -- but nobody is being told "
+                    "the conventions, so check that path before relying on them."
                 )
     except Exception as exc:  # noqa: BLE001
         sys.stderr.write(
