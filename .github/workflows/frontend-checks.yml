@@ -103,11 +103,185 @@ jobs:
             exit 1
           fi
 
+      # ESLint had a flat config, a devDependency and an npm script in this repository from the day
+      # the frontend was created, and no workflow ran it. next build does not lint either -- Next 16
+      # dropped that -- so nothing stood between a commit and Vercel's deploy of main.
+      #
+      # This step is a RATCHET, not a clean-tree gate, and that is what the earlier reasoning here
+      # missed. "It reports 88 errors, so it cannot gate anything" treats a measured count as a
+      # blocker; the count IS the gate. 88 errors and 13 warnings on tracked files, measured
+      # 2026-08-30 at 978c372, so the job refuses the 89th error and says nothing about the first 88.
+      #
+      # THE FLOOR ONLY FIRES UPWARD. There is deliberately no lower bound and no equality check,
+      # because a gate that reds when someone FIXES three errors is a gate firing on correct work,
+      # which is the inverse defect CLAUDE.md keeps apart from the rest. MAX_ERRORS comes down by
+      # hand, in the same commit as the batch that fixes the findings, and never on its own.
+      #
+      # Errors and warnings are two numbers and only one of them is floored. The warning count is
+      # printed so it exists and can be read later; nothing compares it.
+      - name: Lint
+        run: |
+          # Pinned the way ruff==0.16.4 is pinned in backend-checks.yml: an unpinned linter changes
+          # its own rules under you and reds the gate on a day nobody touched the code. package.json
+          # says "eslint": "^9", so package-lock.json is the real pin and this line is what turns a
+          # lockfile bump into a red check instead of a silently different count. eslint-config-next
+          # is already pinned exactly at 16.2.11, and it is what supplies the rule set.
+          ESLINT_PIN=9.39.4
+
+          # The ratchet. See the comment above for which direction it fires in.
+          MAX_ERRORS=88
+
+          # COLLAPSE DETECTOR, the same kind as the Syntax check floor in backend-checks.yml and set
+          # the same way, well below the observed count: a checkout of this branch gives ESLint 246
+          # files, and 248 on the dev laptop (two untracked files under .design-sync, no findings).
+          # A flat config that resolves to no files exits 0 having reported 0 errors, and that is the
+          # reassuring output this whole file exists to refuse.
+          MIN_FILES=150
+
+          # next/core-web-vitals turns on 6 jsx-a11y rules, all at severity 1, and they find NOTHING
+          # on this tree. Zero findings from zero active rules and zero findings from six active
+          # rules are the same output, so the RULES are counted off the resolved config rather than
+          # the silence being trusted. Any drop below 6 means eslint-config-next stopped shipping
+          # them and the accessibility half of this check quietly went away.
+          MIN_A11Y_RULES=6
+          A11Y_PROBE=src/components/PostCard.tsx
+
+          # --no-install matters. Without it a missing local eslint makes npx fetch eslint@latest
+          # from the registry, which is exactly the "the tool moved" failure the pin exists to stop.
+          have=$(npx --no-install eslint --version)
+          echo "eslint $have (pinned v$ESLINT_PIN)"
+          if [ "$have" != "v$ESLINT_PIN" ]; then
+            echo "FAIL: eslint resolved $have, expected v$ESLINT_PIN."
+            echo "The lockfile moved, so the counts below are not comparable to MAX_ERRORS=$MAX_ERRORS."
+            exit 1
+          fi
+
+          if [ ! -f "$A11Y_PROBE" ]; then
+            echo "FAIL: $A11Y_PROBE does not exist, so the jsx-a11y rule count has nothing to probe."
+            echo "Point A11Y_PROBE at any tracked .tsx file under src/."
+            exit 1
+          fi
+          npx --no-install eslint --print-config "$A11Y_PROBE" > "$RUNNER_TEMP/eslint-config.json"
+
+          # eslint exits 1 when it finds errors, and this shell runs under -e, so the exit code is
+          # captured rather than allowed to end the step. The classification below is the point:
+          # 0 and 1 both mean it ran, anything else means it did not lint at all.
+          rc=0
+          npx --no-install eslint --format json -o "$RUNNER_TEMP/eslint.json" || rc=$?
+          echo "eslint exit $rc"
+          if [ "$rc" -ne 0 ] && [ "$rc" -ne 1 ]; then
+            echo "FAIL: eslint exited $rc, which is not 'ran and reported' (0 clean, 1 findings)."
+            echo "2 is a config or CLI error. It did not lint, so it proved nothing."
+            exit 1
+          fi
+          if [ ! -s "$RUNNER_TEMP/eslint.json" ]; then
+            echo "FAIL: eslint wrote no JSON report, so there is nothing to count."
+            exit 1
+          fi
+
+          MAX_ERRORS="$MAX_ERRORS" MIN_FILES="$MIN_FILES" MIN_A11Y_RULES="$MIN_A11Y_RULES" \
+          REPORT="$RUNNER_TEMP/eslint.json" CONFIG="$RUNNER_TEMP/eslint-config.json" \
+          node - <<'JS'
+          const fs = require("node:fs");
+          const path = require("node:path");
+
+          const report = JSON.parse(fs.readFileSync(process.env.REPORT, "utf8"));
+          const config = JSON.parse(fs.readFileSync(process.env.CONFIG, "utf8"));
+          const maxErrors = Number(process.env.MAX_ERRORS);
+          const minFiles = Number(process.env.MIN_FILES);
+          const minA11yRules = Number(process.env.MIN_A11Y_RULES);
+
+          // A rule entry is either a severity or [severity, ...options].
+          const severityOf = (entry) => (Array.isArray(entry) ? entry[0] : entry);
+          const configured = config.rules || {};
+          const a11yRules = Object.keys(configured).filter((name) => {
+            if (!name.startsWith("jsx-a11y/")) return false;
+            const severity = severityOf(configured[name]);
+            return severity !== 0 && severity !== "off";
+          });
+
+          let errors = 0;
+          let warnings = 0;
+          let a11yErrors = 0;
+          let a11yWarnings = 0;
+          const byRule = new Map();
+          const errorLines = [];
+
+          for (const file of report) {
+            errors += file.errorCount;
+            warnings += file.warningCount;
+            const rel = path.relative(process.cwd(), file.filePath).split(path.sep).join("/");
+            for (const message of file.messages) {
+              const rule = message.ruleId || "(no rule)";
+              byRule.set(rule, (byRule.get(rule) || 0) + 1);
+              if (rule.startsWith("jsx-a11y/")) {
+                if (message.severity === 2) a11yErrors += 1;
+                else a11yWarnings += 1;
+              }
+              if (message.severity === 2) {
+                errorLines.push(rel + ":" + message.line + ":" + message.column + " " + rule);
+              }
+            }
+          }
+
+          console.log("linted " + report.length + " files");
+          console.log("errors=" + errors);
+          console.log("warnings=" + warnings);
+          console.log(
+            "jsx-a11y: " + a11yRules.length + " rules active, " +
+            a11yErrors + " errors, " + a11yWarnings + " warnings",
+          );
+
+          console.log("--- findings by rule ---");
+          for (const [rule, count] of [...byRule].sort((a, b) => b[1] - a[1])) {
+            console.log("  " + count + "  " + rule);
+          }
+          if (errorLines.length > 0) {
+            console.log("--- the " + errorLines.length + " error-severity findings ---");
+            for (const line of errorLines) console.log("  " + line);
+          }
+
+          // Every failure is reported, not just the first, so one round trip shows all of them.
+          const failures = [];
+
+          if (report.length < minFiles) {
+            failures.push(
+              "FAIL: eslint linted " + report.length + " files, expected at least " + minFiles + ".\n" +
+              "      The config resolved to almost nothing, so the error count of " + errors + " proves nothing.",
+            );
+          }
+
+          if (a11yRules.length < minA11yRules) {
+            failures.push(
+              "FAIL: " + a11yRules.length + " jsx-a11y rules are active, expected at least " +
+              minA11yRules + ".\n" +
+              "      They come from next/core-web-vitals. With them off, 0 accessibility findings\n" +
+              "      is silence rather than a clean tree.",
+            );
+          }
+
+          if (errors > maxErrors) {
+            failures.push(
+              "FAIL: " + errors + " errors, above the floor of " + maxErrors + ".\n" +
+              "      This job refuses NEW errors and accepts the " + maxErrors + " already here.\n" +
+              "      Fix the ones this branch added, or lower MAX_ERRORS in the same commit as the\n" +
+              "      batch that fixes findings. It never comes down on its own.",
+            );
+          }
+
+          for (const failure of failures) console.log(failure);
+          if (failures.length > 0) process.exit(1);
+
+          console.log(
+            "OK: " + errors + " errors (floor " + maxErrors + "), " + warnings +
+            " warnings (not floored), across " + report.length + " files.",
+          );
+          JS
+
       # next build type-checks internally under tsconfig strict: true, so it is a superset of a
       # separate "tsc --noEmit" and that is not run. It does NOT run ESLint -- Next 16 dropped that --
-      # and ESLint is deliberately absent from this job: it reports 88 errors on tracked files today,
-      # so it cannot gate anything, and a check that reports without ever failing is noise. Its own
-      # batch.
+      # which is why the Lint step above exists as its own step rather than as a side effect of this
+      # one. Lint runs BEFORE it, so a lint failure does not cost a build first.
       - name: Build
         run: |
           npm run build
