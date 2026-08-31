@@ -430,17 +430,31 @@ jobs:
 
           workflows = [p for p in shipped(".github/workflows") if p.endswith((".yml", ".yaml"))]
           m["workflow_files"] = len(workflows)
-          # Counted by shape rather than parsed, because PyYAML is not installed yet at this
-          # point in the job. Both regexes are anchored to the exact indentation these files
-          # use; the workflow_steps and workflow_jobs budgets are what notice if that changes.
+          # Jobs and steps are counted by shape rather than parsed, because PyYAML is not
+          # installed yet at this point in the job. Both regexes are anchored to the exact
+          # indentation these files use; the workflow_steps and workflow_jobs budgets are what
+          # notice if that changes.
           job_re = re.compile(r"^  [A-Za-z0-9_-]+:\s*$")
           step_re = re.compile(r"^      - (name|uses):")
-          thr_re = re.compile(r"^\s*(?:MIN|MAX)_[A-Z0-9_]+=|^\s*[A-Z0-9_]+_PIN=")
+          # NAMED THRESHOLDS ARE COUNTED BY NAME, PER FILE, AND NOT BY ASSIGNMENT. The regex
+          # matched a shape, so the ordinary idiom in these files -- NAME=value on one line and
+          # NAME="$NAME" python3 - on the next, which is how a threshold reaches a heredoc --
+          # counted the same threshold twice. Measured 2026-08-31: ten matching lines in
+          # backend-checks.yml, seven distinct thresholds. The container is called
+          # workflow_named_thresholds and now counts what it is named for; two units of headroom
+          # meant one new threshold in this file own idiom, not two, which is the kind of
+          # difference nobody notices until the ceiling reds a commit early. Stored as cw-15a,
+          # cw-15b and cw-15c.
+          #
+          # Per file, not repository-wide: MIN_FILES in two different workflows is two different
+          # thresholds and both should cost.
+          thr_re = re.compile(r"^\s*((?:MIN|MAX)_[A-Z0-9_]+|[A-Z0-9_]+_PIN)=")
           jobs = 0
           steps = 0
           thresholds = 0
           for path in workflows:
               in_jobs = False
+              named = set()
               for ln in read_lf(path).decode("utf-8", errors="replace").splitlines():
                   if ln.rstrip() == "jobs:":
                       in_jobs = True
@@ -449,8 +463,10 @@ jobs:
                       jobs += 1
                   if step_re.match(ln):
                       steps += 1
-                  if thr_re.match(ln):
-                      thresholds += 1
+                  hit = thr_re.match(ln)
+                  if hit:
+                      named.add(hit.group(1))
+              thresholds += len(named)
           m["workflow_jobs"] = jobs
           m["workflow_steps"] = steps
           m["workflow_named_thresholds"] = thresholds
