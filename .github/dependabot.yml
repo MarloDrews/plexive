@@ -21,8 +21,11 @@ version: 2
 
 updates:
   # The pinned backend. This is the ecosystem the whole batch is for: pinning every transitive package
-  # means none of them receives a security update on its own any more, and pip-audit is in
-  # requirements-dev.txt with a comment saying to run it before a release while nothing runs it.
+  # means none of them receives a security update on its own any more, so the security half below is
+  # what pays for that decision. It carries more weight since 2026-08-31, when pip-audit was removed
+  # from requirements-dev.txt: it had been installed on every CI run and called by nothing, and one of
+  # the three reasons for removing it rather than wiring it up was that these alerts already cover
+  # backend/requirements.txt. This is now the only automated dependency scanning the backend has.
   - package-ecosystem: pip
     directory: /backend
     schedule:
