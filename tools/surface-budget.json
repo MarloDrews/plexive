@@ -139,9 +139,9 @@
     },
     "correct_work_cases": {
       "budget": 37,
-      "measured": 27,
+      "measured": 29,
       "kind": "headroom",
-      "why": "SET BY 7d2a0c0c (2026-08-31, +10 cases), and the width is carried forward: the ceiling is the measured count plus 10, re-set when the count moves. Measured 12 until 2026-08-31, when the fifteen inputs from the surface-budget verification landed at once -- itself an increase of 15, larger than the 10 this width was derived from, and raised here in the same commit as the growth exactly as _raising_one prescribes. THIS CEILING GOVERNS ALMOST NOTHING AND THAT IS SAID RATHER THAN HIDDEN: 10 of headroom on a container of 27 stops a generator dumping cases and stops nothing else. It is kept because growth here is the one kind that is unambiguously good -- every case is evidence that a gate does not red on correct work -- and because a container that is measured is one somebody can see move."
+      "why": "SET BY 7d2a0c0c (2026-08-31, +10 cases), and the width is carried forward: the ceiling is the measured count plus 10, re-set when the count moves. Measured 12 until 2026-08-31, then 27 when the fifteen inputs from the surface-budget verification landed at once, then 29 the same day with cw-16a-b, the first pair here that exercises a HOOK rather than a CI step -- itself an increase of 15, larger than the 10 this width was derived from, and raised here in the same commit as the growth exactly as _raising_one prescribes. THIS CEILING GOVERNS ALMOST NOTHING AND THAT IS SAID RATHER THAN HIDDEN: 10 of headroom on a container of 27 stops a generator dumping cases and stops nothing else. It is kept because growth here is the one kind that is unambiguously good -- every case is evidence that a gate does not red on correct work -- and because a container that is measured is one somebody can see move."
     }
   },
   "not_gated": {

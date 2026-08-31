@@ -38,6 +38,14 @@ do not discriminate on the exit code at all and say so in their own headers -- C
 CW-13 and CW-15c -- and they are kept because what they pin is the printed number rather than
 the verdict.
 
+CW-16a and CW-16b were written on 2026-08-31 with the repair they exercise, so they are the third
+and fourth cases here that agree with their fix by construction, and they are the FIRST that run a
+HOOK rather than a CI step body -- `.claude/hooks/pretooluse_bash.py` with a git-commit payload,
+not a `$STEPS` script. Neither discriminates on the exit code: the hook exits 0 whether it injects
+the commit rules or injects nothing whatever, and that is the pair's entire subject. Both were run
+against the pre-repair HEAD first and both went red there, so they were seen to fail before they
+were seen to pass.
+
 One is not from that report: **CW-15c**, which turns the six-line idiom F4 quotes into a fixture.
 It is labelled in its own header rather than passed off as reproduced.
 
