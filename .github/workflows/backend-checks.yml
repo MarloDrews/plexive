@@ -392,8 +392,19 @@ jobs:
           m["claude_rules_files"] = len(shipped(".claude/rules", ".md"))
           m["hook_scripts"] = len(shipped(".claude/hooks", ".py"))
 
-          # A skill is .claude/skills/<name>.md or .claude/skills/<name>/SKILL.md. Both forms
-          # are in use here, which is why neither shape on its own is the test.
+          # A SKILL IS .claude/skills/<name>/SKILL.md, AND THAT IS THE ONLY FORM THAT LOADS.
+          # Measured 2026-08-31 on Claude Code 2.1.251, two ways: `claude plugin validate` on a
+          # tree holding byte-identical broken frontmatter in both layouts named the directory
+          # one and said nothing whatever about the flat one, and a session's --debug-file log
+          # read "Loaded 2 unique skills (... project: 2)" with THREE skill files on disk.
+          # .claude/skills/commit.md had been a flat file since 76d3ed94 and never loaded once.
+          #
+          # THE FLAT CLAUSE STAYS ON PURPOSE, and it is not a leftover. It counts a shape that
+          # is NOT a skill, which sounds wrong and is the safe direction: a flat file that does
+          # nothing still spends the ceiling and still shows up here. Drop the clause and the
+          # next one is invisible to the budget, which is how the last one survived three
+          # months. Both live skills are the directory form, so the clause changes no number
+          # today -- 2 before the move and 2 after, same command.
           m["project_skills"] = len([p for p in shipped(".claude/skills", ".md")
                                      if p.count("/") == 2 or p.endswith("/SKILL.md")])
           m["project_commands"] = len(shipped(".claude/commands", ".md"))

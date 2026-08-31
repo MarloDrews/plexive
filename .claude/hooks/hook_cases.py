@@ -291,7 +291,7 @@ def build_cases(fx):
         dict(name="commit: merge gets the rules too", script=BASH_HOOK, expect=0,
              payload=bash_payload("git merge --no-ff chore/x"),
              stdout_must_contain="conventional commits"),
-        dict(name="commit: fails OPEN when commit.md is absent", script=orphan,
+        dict(name="commit: fails OPEN when SKILL.md is absent", script=orphan,
              expect=0, payload=bash_payload('git commit -m "x"'),
              stdout_must_be_empty=True),
 
@@ -758,7 +758,7 @@ def make_fixtures(tmp):
     replaced, and the real backup directory is never read.
 
     Four trees:
-      orphan      a copy of the Bash hook with no .claude/skills/commit.md, so
+      orphan      a copy of the Bash hook with no .claude/skills/commit/SKILL.md,
                   the fails-open case exercises the real resolution path.
       stub        a copy of the Bash hook whose tools/check_backup_age.sh exits
                   3, so the exit-3 warning and the commit rules are produced by
@@ -788,8 +788,9 @@ def make_fixtures(tmp):
     (stub_root / "tools").mkdir(parents=True)
     stub = stub_root / ".claude" / "hooks" / "pretooluse_bash.py"
     shutil.copyfile(BASH_HOOK, stub)
-    shutil.copyfile(REPO_ROOT / ".claude" / "skills" / "commit.md",
-                    stub_root / ".claude" / "skills" / "commit.md")
+    (stub_root / ".claude" / "skills" / "commit").mkdir(parents=True)
+    shutil.copyfile(REPO_ROOT / ".claude" / "skills" / "commit" / "SKILL.md",
+                    stub_root / ".claude" / "skills" / "commit" / "SKILL.md")
     checker = stub_root / "tools" / "check_backup_age.sh"
     checker.write_text(
         "#!/usr/bin/env bash\n"

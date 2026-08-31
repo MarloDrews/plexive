@@ -87,7 +87,7 @@
       "budget": 2,
       "measured": 2,
       "kind": "pinned",
-      "why": "PINNED, AND THE REPLAY SUPPORTS THE PIN. Two increases, 76d3ed94 (2026-05-30, commit.md) and b98b8209 (2026-08-28, execution-discipline), neither above the measured 2. This counts what the repository SHIPS, which is the index: .claude/skills/ui-ux-pro-max is present on one laptop, gitignored and untracked, and git ls-files never lists it, so a per-machine skill cannot spend a shared ceiling. Adding a skill was considered in this topic and declined."
+      "why": "PINNED, AND THE REPLAY SUPPORTS THE PIN. Two increases, 76d3ed94 (2026-05-30, commit.md) and b98b8209 (2026-08-28, execution-discipline), neither above the measured 2. This counts what the repository SHIPS, which is the index: .claude/skills/ui-ux-pro-max is present on one laptop, gitignored and untracked, and git ls-files never lists it, so a per-machine skill cannot spend a shared ceiling. Adding a skill was considered in this topic and declined. THE NUMBER DID NOT MOVE ON 2026-08-31 when commit.md became commit/SKILL.md: the counting expression takes both shapes, so the repair that made the skill loadable cost nothing here, which is what a ceiling should do to work that adds no container. Neither of the two increases the replay found was a flat file becoming a directory, because until that day nobody had noticed the flat one never loaded."
     },
     "project_commands": {
       "budget": 0,

@@ -40,7 +40,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 BACKUP_CHECK = REPO_ROOT / "tools" / "check_backup_age.sh"
-COMMIT_RULES = REPO_ROOT / ".claude" / "skills" / "commit.md"
+COMMIT_RULES = REPO_ROOT / ".claude" / "skills" / "commit" / "SKILL.md"
 
 # Command words that mean a database or schema operation is about to happen.
 BACKUP_TRIGGERS = {"alembic", "psql", "pg_dump", "pg_restore", "pg_dumpall"}
@@ -1094,7 +1094,7 @@ def main():
             rules = commit_rules_text()
             if rules:
                 add_context(
-                    "COMMIT RULES, read from .claude/skills/commit.md by the "
+                    "COMMIT RULES, read from .claude/skills/commit/SKILL.md by the "
                     "PreToolUse hook:\n\n" + rules
                     + "\n\nA merge commit follows the same format: "
                     "chore(merge): merge <branch> into main."
