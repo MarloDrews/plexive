@@ -313,6 +313,23 @@ jobs:
           # is untouched by the branch that added this step. Before the two version-currency
           # detectors were disabled in androidApp/build.gradle.kts the laptop count was 21.
           MAX_LINT_FINDINGS=3
+          #
+          # THE RESIDUAL, WRITTEN NEXT TO THE NUMBER because two of the three findings are not a
+          # property of this repository at all. OldTargetApi fires only where a platform NEWER than
+          # targetSdk is installed, so both of its instances exist because of what GitHub ships in
+          # the ubuntu-24.04 image, not because of anything in this tree. Install a newer platform
+          # locally and the laptop reports 3 as well; the image is what decides.
+          #
+          # HOW FAR IT CAN MOVE: bounded at 2, because there are exactly two targetSdk declaration
+          # sites (androidApp/build.gradle.kts and gradle/libs.versions.toml) and OldTargetApi
+          # reports one finding per site. It cannot climb past that on its own. It CAN fall to 0
+          # without anyone doing anything, if a runner image ever ships no platform above targetSdk,
+          # and the ratchet passes that silently by design.
+          #
+          # The remaining 1 -- ObsoleteSdkInt -- is a property of this tree and appears in both
+          # places. So the part of this number that a change here can move is 1, and the part the
+          # runner image decides is 2. A move in this number is a question about the image before it
+          # is a question about the code.
 
           # Pinned by assertion, the way eslint@9.39.4 is in frontend-checks.yml and ruff==0.16.4 is
           # in backend-checks.yml. Lint ships inside AGP, so libs.versions.toml's agp = "9.0.1" is

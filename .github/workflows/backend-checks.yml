@@ -460,6 +460,33 @@ jobs:
           # errors. The earlier figures of 64 and 261 in repo-hygiene-inventory-2026-08.md were taken
           # with a different mypy and a different question; they are not comparable to this one.
           MAX_MYPY_ERRORS=201
+          #
+          # THE RESIDUAL, BECAUSE THE INPUTS TO THIS NUMBER ARE NOT ALL PINNED, and a number whose
+          # inputs float is a number that reds a pull request which changed nothing. Written here
+          # rather than in a report, because whoever has to argue with a red gate is reading this.
+          #
+          # WHAT CANNOT DRIFT: the runtime dependency set. requirements.txt and requirements-dev.txt
+          # are pinned exactly and the "Verify pins resolved" step above asserts equality in both
+          # directions, so mypy always sees the same dependency types.
+          #
+          # WHAT CAN, three things, none of them large but none of them zero:
+          #   1. `pip install mypy==2.3.1` pulls four packages with NO version constraint. From the
+          #      log of run 33343673759: ast-serialize 0.8.0, librt 0.15.0, mypy_extensions 1.1.0,
+          #      pathspec 1.1.1. The pins step runs BEFORE this install and tolerates extras, so
+          #      nothing watches them.
+          #   2. setup-python pins '3.13', the minor only. The patch floats, deliberately, and mypy's
+          #      view of the standard library moves with it.
+          #   3. This number is measured on the runner. A local reading is a different measurement.
+          #
+          # HOW BIG. Measured 2026-08-31 in both directions: removing ONE runtime package moved the
+          # count by 65 -- 251 with sqlalchemy 2.0.50 installed, 186 without it, the same 82 files
+          # checked and no tracked file changed. That is the scale of what an unpinned import can do
+          # here, and it is why an unexplained move in this number is a question about the
+          # environment before it is a question about the code.
+          #
+          # WHICH DIRECTION HURTS. Drift that LOWERS the count passes silently, because the ratchet
+          # has no lower bound, and masks whatever it hides. Drift that raises it reds a pull request
+          # that changed nothing. The first is the quieter and the worse of the two.
 
           # COLLAPSE DETECTOR, the same kind as the two file-count floors above. A mypy that resolves
           # none of its arguments prints "checked 0 source files" and exits 0, which is the reassuring
