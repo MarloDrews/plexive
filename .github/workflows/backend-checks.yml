@@ -248,47 +248,38 @@ jobs:
               "workflow_named_thresholds", "correct_work_cases",
           ]
 
-          # WHAT THE REPOSITORY SHIPS, NOT WHAT THIS MACHINE HAPPENS TO HOLD. A gitignored
-          # per-machine file must not count against a ceiling everyone shares: measured
-          # 2026-08-31, .claude/skills/ui-ux-pro-max is gitignored and present on the laptop, so
-          # a filesystem walk reports 3 project skills here and the runner reports 2 from a
-          # fresh checkout. A budget set against one and checked against the other is wrong by
-          # exactly that file. git decides, and the replay that set these numbers read git trees
-          # for the same reason, so the two agree by construction rather than by luck.
-          def ignored(paths):
-              if not paths:
-                  return set()
-              # -z AND BYTES, BOTH DELIBERATE, both measured on 2026-08-31. With text=True
-              # Python translates the "\n" separators to "\r\n" on the way into the pipe on
-              # Windows, git then sees paths ending in a carriage return, decides they need
-              # quoting, and answers with '".claude/.../SKILL.md\r"' -- which matches nothing
-              # on the way back, so the filter silently passes everything through. It works on
-              # the runner and is wrong on the laptop, which is the direction that gets found
-              # late. -z separates with NUL on input and output and disables the quoting.
-              proc = subprocess.run(
-                  ["git", "check-ignore", "-z", "--stdin"],
-                  input=b"\0".join(p.encode("utf-8") for p in paths), capture_output=True,
-              )
-              # 0 = some path is ignored, 1 = none is. Anything else is git failing, and a
-              # failure here must not be read as "nothing is ignored".
-              if proc.returncode not in (0, 1):
-                  print("FAIL: git check-ignore exited %d." % proc.returncode)
+          # WHAT THE REPOSITORY SHIPS, NOT WHAT THIS MACHINE HAPPENS TO HOLD, AND THE INDEX
+          # IS WHAT SAYS SO. Membership comes from git ls-files: the paths the next commit would
+          # carry. The first version walked the filesystem and subtracted only what
+          # git check-ignore called IGNORED, which is a different set -- an untracked file that is
+          # not gitignored counted in full. Measured 2026-08-31: .claude/agents/scratch-reviewer.md,
+          # written by a session using Claude Code's own /agents flow and never committed, made
+          # project_subagents 1 here and 0 on the runner FOR THE SAME COMMIT, and two files from a
+          # plugin install did the same to project_plugins. A ceiling that answers differently on
+          # two machines cannot gate a merge. Stored as cw-10a and cw-10b.
+          #
+          # -z AND BYTES, BOTH DELIBERATE, both measured on 2026-08-31 against the earlier
+          # check-ignore version. Without -z git quotes any path it considers unusual and the
+          # quoted form matches nothing on the way back, so the filter passes everything through:
+          # correct on the runner, wrong on the laptop, which is the direction found late.
+          #
+          # CONTENT IS STILL READ FROM THE WORKING TREE, and the split is deliberate. Membership is
+          # what a commit decides; content is what the file says right now. That is what lets cw-8
+          # measure an uncommitted correction to CLAUDE.md, and what makes a new member cost a
+          # git add before it spends a ceiling everyone shares.
+          def shipped(root, suffix=None):
+              proc = subprocess.run(["git", "ls-files", "-z", "--", root], capture_output=True)
+              # A non-zero exit is git failing, and a failure here must not be read as "the
+              # repository ships nothing", which is under every ceiling.
+              if proc.returncode != 0:
+                  print("FAIL: git ls-files exited %d for %s." % (proc.returncode, root))
                   print(proc.stderr.decode("utf-8", errors="replace").strip())
-                  print("This step has to know which files the repository actually ships. With")
-                  print("no answer it would count a gitignored per-machine file against a shared")
-                  print("ceiling, so it refuses rather than guessing that nothing is ignored.")
+                  print("This step has to know which files the repository actually ships. With no")
+                  print("answer it would count whatever this machine happens to hold against a")
+                  print("ceiling everyone shares, so it refuses rather than guessing.")
                   raise SystemExit(1)
-              return set(proc.stdout.decode("utf-8").split("\0")) - {""}
-
-          def walk(root, suffix=None):
-              found = []
-              for base, dirs, names in os.walk(root):
-                  dirs[:] = [d for d in dirs if d != "__pycache__"]
-                  for name in names:
-                      path = os.path.join(base, name).replace(os.sep, "/")
-                      if suffix is None or path.endswith(suffix):
-                          found.append(path)
-              return sorted(set(found) - ignored(found))
+              paths = [p for p in proc.stdout.decode("utf-8").split("\0") if p]
+              return sorted(p for p in paths if suffix is None or p.endswith(suffix))
 
           def read_lf(path):
               # CRLF IS NORMALISED AWAY BEFORE ANY BYTE IS COUNTED. core.autocrlf=true on the
@@ -333,16 +324,16 @@ jobs:
           m["claude_md_rules"] = bullets
           m["claude_md_unconditional_rules"] = bullets + paragraphs
 
-          m["claude_rules_files"] = len(walk(".claude/rules", ".md"))
-          m["hook_scripts"] = len(walk(".claude/hooks", ".py"))
+          m["claude_rules_files"] = len(shipped(".claude/rules", ".md"))
+          m["hook_scripts"] = len(shipped(".claude/hooks", ".py"))
 
           # A skill is .claude/skills/<name>.md or .claude/skills/<name>/SKILL.md. Both forms
           # are in use here, which is why neither shape on its own is the test.
-          m["project_skills"] = len([p for p in walk(".claude/skills", ".md")
+          m["project_skills"] = len([p for p in shipped(".claude/skills", ".md")
                                      if p.count("/") == 2 or p.endswith("/SKILL.md")])
-          m["project_commands"] = len(walk(".claude/commands", ".md"))
-          m["project_subagents"] = len(walk(".claude/agents", ".md"))
-          m["project_plugins"] = len(walk(".claude/plugins"))
+          m["project_commands"] = len(shipped(".claude/commands", ".md"))
+          m["project_subagents"] = len(shipped(".claude/agents", ".md"))
+          m["project_plugins"] = len(shipped(".claude/plugins"))
 
           settings = {}
           if os.path.isfile(".claude/settings.json"):
@@ -362,7 +353,7 @@ jobs:
               mcp += len(json.loads(read_lf(".mcp.json").decode("utf-8")).get("mcpServers", {}))
           m["project_mcp_servers"] = mcp
 
-          workflows = [p for p in walk(".github/workflows") if p.endswith((".yml", ".yaml"))]
+          workflows = [p for p in shipped(".github/workflows") if p.endswith((".yml", ".yaml"))]
           m["workflow_files"] = len(workflows)
           # Counted by shape rather than parsed, because PyYAML is not installed yet at this
           # point in the job. Both regexes are anchored to the exact indentation these files
@@ -389,7 +380,7 @@ jobs:
           m["workflow_steps"] = steps
           m["workflow_named_thresholds"] = thresholds
 
-          m["correct_work_cases"] = len(walk("tools/correct-work/cases", ".sh"))
+          m["correct_work_cases"] = len(shipped("tools/correct-work/cases", ".sh"))
 
           # ---- the file and the step must agree, in BOTH directions ------------------------
           # A metric with no budget is ungoverned. An entry naming a metric nothing measures is
