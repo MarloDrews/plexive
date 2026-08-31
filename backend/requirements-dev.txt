@@ -11,24 +11,39 @@
 # one. If you change this version, change it there too.
 httpx==0.28.1
 
-# Dependency vulnerability scanner (M135). Run before a release:
-#   python -m pip_audit -r requirements.txt
-# This comment used to say there was one remaining finding. When the command was
-# actually run, on 2026-08-27, it reported 32 findings in 6 packages -- 23 distinct
-# advisories, since some are carried in more than one source database. The 2026-08
-# security batch cleared 22 of the 23 by moving Pillow, starlette, pyasn1,
-# cryptography, h2 and hpack (see docs/research/dependency-audit-2026-08.md).
+# pip-audit==2.10.1 WAS HERE AND WAS REMOVED ON 2026-08-31. This paragraph is the
+# record, because a line that is simply deleted gets added back by the next person
+# who notices there is no dependency scanner.
 #
-# The command now reports exactly one finding: ecdsa PYSEC-2026-1325
-# (CVE-2024-23342). It is accepted because there is no fix to take -- pip-audit
-# reports an empty fix_versions list, the maintainers consider side-channel
-# attacks out of scope, and requirements.txt records the two separate reasons it
-# does not reach this codebase. Every other finding was a version bump away, which
-# is the part the old wording hid.
+# WHAT IT WAS DOING: nothing. It was pinned here from 2026-08-27, which meant CI
+# installed it -- and its ~19 unpinned transitive packages -- on every single run,
+# and no workflow ever called it. The comment above it said "run before a release"
+# and nothing did. It was the sharpest instance in this repository of a tool that
+# is configured and never consequential.
 #
-# The tool is pinned; its own ~19 transitive packages deliberately are not. The
-# reason to pin transitively in requirements.txt is that drift there reaches
-# users. Drift inside a scanner that never ships reaches nobody, and its tree in a
-# file about production dependencies only costs readability. Pinning the tool does
-# not make the scan stale either: pip-audit fetches advisory data at run time.
-pip-audit==2.10.1
+# THE CHOICE WAS INVOKE IT OR REMOVE IT, and it was removed, for three reasons:
+#
+#   1. This repository already decided that security scanners are not merge gates,
+#      and said so in .github/workflows/codeql.yml:3-8: "a security finding is a
+#      thing to triage, not a thing to block a merge on". CodeQL runs on every
+#      pull request and is deliberately absent from the ruleset. Wiring pip-audit
+#      into a required check would reverse that policy for one scanner while
+#      leaving it in force for the other.
+#   2. pip-audit fetches advisory data at run time, so invoking it puts a
+#      third-party network call inside a required check. That is the same reason
+#      lint's NewerVersionAvailable and AndroidGradlePluginVersion detectors are
+#      disabled in mobile-kmp/androidApp/build.gradle.kts: a gate that can go red
+#      or go slow on a day nobody touched this repository is a gate that gets
+#      switched off.
+#   3. Dependabot SECURITY updates are on repository-wide and cover
+#      backend/requirements.txt. docs/CI_NOTES.md already calls them "the
+#      automatic half". That is the automation; this was not.
+#
+# WHAT WAS GIVEN UP, stated rather than glossed: PyPI/OSV as a second advisory
+# source alongside GitHub's, and the recorded 2.10.1 pin. The accepted ecdsa
+# PYSEC-2026-1325 / CVE-2024-23342 finding is NOT lost -- requirements.txt carries
+# both reasons it does not reach this codebase, next to the python-jose pin that
+# pulls ecdsa in.
+#
+# To run it by hand, from backend/, without putting it back in this file:
+#   python -m pip install pip-audit && python -m pip_audit -r requirements.txt
