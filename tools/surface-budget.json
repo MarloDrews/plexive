@@ -133,9 +133,9 @@
     },
     "workflow_named_thresholds": {
       "budget": 20,
-      "measured": 18,
+      "measured": 16,
       "kind": "headroom",
-      "why": "SET BY THIS BATCH (+2, the surface budget step carrying MIN_BUDGET_ENTRIES alongside the MIN_RULES_FILES already there), the largest increase in the replay that is not the gate-integration merge creating all 15 at once. Counts MIN_*, MAX_* and *_PIN assignments across all five workflow files by shape. The four bare-literal thresholds in backend-checks.yml are NOT counted and are named in docs/CI_NOTES.md instead, so this number is a floor under the naming convention as much as a ceiling over the count."
+      "why": "Counts MIN_*, MAX_* and *_PIN assignments across all five workflow files BY SHAPE. Was 18 until 2026-08-31, when the MIN_BUDGET_ENTRIES floor was removed from the surface budget step for being unable to fire; that threshold was written on two lines, an assignment and an env-prefixed use, and by shape both counted. THE +2 THIS FIELD USED TO CLAIM FOR THIS BATCH NEVER HAPPENED: the batch added one threshold, counted twice. Measured across the three trees by shape: 7d2a0c0 = 15, a00e256 = 16, 06d1803 = 18. The ceiling of 20 is inherited and is re-derived in the next commit, which counts by name instead. The four bare-literal thresholds in backend-checks.yml are NOT counted and are named in docs/CI_NOTES.md instead, so this number is a floor under the naming convention as much as a ceiling over the count."
     },
     "correct_work_cases": {
       "budget": 22,
