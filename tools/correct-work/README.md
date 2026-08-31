@@ -16,6 +16,12 @@ by construction, which is the one thing they must not do. Two departures are mar
 files themselves: CW-1 gains a `mkdir -p` that `git mv` requires, and CW-3b was **added** by the
 integration batch after CW-3 was measured and found to be an incomplete refactor.
 
+CW-7 has a DIFFERENT provenance and is not from that report: it was written on 2026-08-31
+with the check it exercises, in the same batch. It is therefore the one case here that does
+agree with its fix by construction, which is the weakness the paragraph above describes. It
+is kept anyway because the input it stores -- the rules directory growing by one correctly
+scoped file -- is the one CI cannot produce on its own.
+
 ## Running them
 
 ```
@@ -64,6 +70,7 @@ them on PATH and this machine does not.
 | `cw-6b-frontend-errors-fixed` | `frontend-checks` | Lint | the allow direction | 0 |
 | `cw-6c-android-passing-tests` | `android-build` | test assertion | the allow direction | 0 |
 | `cw-6d-android-findings-fixed` | `android-build` | lint ratchet | the allow direction | 0 |
+| `cw-7-second-scoped-rules-file` | `backend-checks` | rules `paths:` scope | the allow direction | 0 |
 
 ## The declared exit code, and why the comparison is not against zero
 
