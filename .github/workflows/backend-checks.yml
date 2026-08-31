@@ -34,6 +34,33 @@ jobs:
     # and that table is the only thing that names the suite that hung. One suite burning its full 300 s
     # puts the job near 9 minutes and two near 14, and both still print the summary inside 20.
     timeout-minutes: 20
+    # A THROWAWAY POSTGRES, FOR THE SCHEMA LEDGER STEP ALONE. It is never production and it holds no
+    # data: it is created empty and the migrations build it, which is exactly the thing being checked.
+    #
+    # 17 because production is PostgreSQL 17.6 -- read off the newest backup manifest
+    # (OneDrive/plexive-backups/plexive-20260830T100001Z-manifest.txt, "server version : 17.6",
+    # 2026-08-30), not assumed. The major is the pin for the same reason it is on setup-python: a
+    # schema comparison is dialect behaviour, and the patch level of a Supabase instance is not ours.
+    #
+    # DATABASE_URL IS DELIBERATELY NOT SET AT JOB LEVEL. app/database.py reads it at import, and the
+    # 16 suites depend on tests/_throwaway_db.py pinning it to a temp SQLite file before any app
+    # module loads. A job-level value would be one more thing that has to lose that race, and it
+    # would lose it silently. Only the schema-ledger step exports it.
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: plexive_ci
+        ports:
+          - 5432:5432
+        # Without a health check the job races the container: postgres accepts TCP before it accepts
+        # queries, so the first alembic connection fails on a container that is merely slow.
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     defaults:
       run:
         # The Linux default shell is "bash -e {0}", without pipefail, which is how a piped failure
@@ -95,8 +122,11 @@ jobs:
       # sys_platform == "win32" marker is ever added, this check would demand a package pip correctly
       # skipped, and the fix is to evaluate the marker here rather than to delete the assertion.
       #
-      # pip-audit's own transitive tree is deliberately unpinned (see requirements-dev.txt), so extra
-      # packages in pip freeze that this file does not name are expected and are not an error.
+      # This check is one-directional on purpose: every pinned name must be installed at exactly its
+      # pinned version, and an EXTRA package in pip freeze that neither file names is not an error.
+      # That allowance used to exist for pip-audit's ~19 unpinned transitive packages; pip-audit left
+      # requirements-dev.txt on 2026-08-31 and the allowance stays, because the ruff and mypy steps
+      # below pip-install their own tools and pip's own bootstrap packages are not pinned either.
       - name: Verify pins resolved
         run: |
           python - <<'PY'
@@ -109,15 +139,27 @@ jobs:
 
           # Anti-vacuity guard. A parser that matches nothing compares nothing and passes green, which
           # is the exact failure class every other step here already guards against; it would be
-          # embarrassing for it to land inside the step built to prevent it. 65 unique pinned names
-          # across both files, measured 2026-08-28 after alembic and the Mako + MarkupSafe it pulls in
-          # were added (was 62, and 70 before matplotlib's subtree left with the render subsystem).
+          # embarrassing for it to land inside the step built to prevent it. 64 unique pinned names
+          # across both files, measured 2026-08-31 after pip-audit was REMOVED from
+          # requirements-dev.txt (was 65 from 2026-08-28, when alembic and the Mako + MarkupSafe it
+          # pulls in were added; 62 before that, and 70 before matplotlib's subtree left with the
+          # render subsystem). Lowering this number is what a deliberate deletion looks like.
+          #
+          # ONE THING THIS FLOOR STOPPED WATCHING ON 2026-08-31, said out loud rather than left to be
+          # discovered: all 64 pins now come from requirements.txt. requirements-dev.txt contributes
+          # ZERO unique names, because its only remaining pin -- httpx==0.28.1 -- is deliberately a
+          # duplicate of the one in requirements.txt, and this parser keys by package name. So
+          # deleting that line would NOT move this count. It was pip-audit that made this floor watch
+          # requirements-dev.txt at all. What still guards the httpx line is pip itself: the two pins
+          # are installed in one invocation and pip fails with ResolutionImpossible if they diverge.
+          # Measured 2026-08-31: deleting httpx from requirements-dev.txt leaves the count at 64;
+          # deleting bcrypt from requirements.txt takes it to 63 and this step exits 1.
           # THIS IS A DELETION DETECTOR, not a collapse detector, and the two kinds of floor in this
           # file answer different questions. This one sits EXACTLY on the measured count, so removing
           # a dependency has to come here and change the number on purpose. The Syntax check and Ruff
           # floors deliberately sit well below theirs instead, because those exist to catch a collapse
           # and would otherwise red during ordinary deletion work. Do not make them uniform.
-          MIN_PINS = 65
+          MIN_PINS = 64
 
           pinned = {}
           for path in ("requirements.txt", "requirements-dev.txt"):
@@ -234,27 +276,334 @@ jobs:
               sys.exit(1)
           PY
 
-      # Pyflakes rules only: unused imports, unused variables, empty f-strings. The wider ruff sets
-      # carry hundreds of findings (44 on the classic E4,E7,E9,F set, 908 on ruff 0.16 defaults, most of
-      # them SQLAlchemy and FastAPI idioms this codebase uses on purpose) and widening the selection is
-      # a separate decision. The version is pinned exactly because an unpinned linter changes its own
-      # rules under you and reds the gate on a day nobody touched the code.
-      - name: Ruff (pyflakes rules)
+      # THIS STEP MAKES TWO ASSERTIONS AND THEY ARE OF DIFFERENT KINDS. A later reader will assume
+      # they match, because they run the same tool on the same tree three lines apart, so it is said
+      # here first and again next to each number:
+      #
+      #   MAX_RUFF_FINDINGS over E4,E7,E9,F is a RATCHET. It fires UPWARD ONLY and has no lower
+      #   bound. It refuses the 38th finding and says nothing whatever about the 37 already here.
+      #
+      #   The F selection is an ABSOLUTE. Exactly zero, and it fires in BOTH directions in the sense
+      #   that there is nothing to fix: a single new unused import reds this gate on its own.
+      #
+      # WHY BOTH, RATHER THAN JUST THE WIDER ONE. F is a subset of E4,E7,E9,F, so widening the
+      # selection would have silently converted the zero-tolerance pyflakes gate that has been in
+      # force since 2026-08-27 into a 37-finding budget: a commit that adds an F401 while fixing an
+      # E712 keeps the total at 37 and passes. Nobody decided to give that up, so it is kept.
+      #
+      # ruff 0.16 DEFAULTS ARE STILL NOT ADOPTED and that is a separate decision, not an oversight.
+      # They carry 908 findings, most of them SQLAlchemy and FastAPI idioms this codebase uses on
+      # purpose. `ruff format` is not run either. The version is pinned exactly because an unpinned
+      # linter changes its own rules under you and reds the gate on a day nobody touched the code.
+      - name: Ruff (E4,E7,E9,F ratchet, and F at zero)
         run: |
           python -m pip install ruff==0.16.4
+
+          # THE RATCHET. 37, measured on this tree. The brief that asked for this step quoted 44,
+          # which is the figure in repo-hygiene-inventory-2026-08.md and predates d38f89c; 37 is what
+          # ruff 0.16.4 reports today: 33 E712, 3 E402, 1 E731. Confirmed on the runner before this
+          # number was written -- see docs/CI_NOTES.md, "The ratchets in `backend-checks.yml`".
+          #
+          # IT COMES DOWN BY HAND, in the same commit as the batch that fixes findings, and never on
+          # its own. There is deliberately no lower bound: a gate that reds because somebody fixed
+          # three E712s is a gate firing on correct work, which is the inverse defect the "## Rules"
+          # entry in CLAUDE.md keeps apart from the rest.
+          MAX_RUFF_FINDINGS=37
+
           # COLLAPSE DETECTOR, same kind as the Syntax check floor above and set the same way.
           # 82 measured 2026-08-29 (was 80, then 81 when alembic/versions/0002 landed). Note this count
           # is deliberately THREE HIGHER than the Syntax check's: ruff runs over `.` from backend/, so
           # it also sees seed.py, download_seed_images.py and content_repo.py, which the Syntax check's
           # find does not. It was TWO higher until content_repo.py was added on 2026-08-29. Setting one
           # of these two floors from the other's number leaves this step red by the difference.
-          count=$(ruff check --select F --show-files . | wc -l)
+          count=$(ruff check --select E4,E7,E9,F --show-files . | wc -l)
           echo "ruff would check $count files"
           if [ "$count" -lt 60 ]; then
             echo "FAIL: ruff found only $count files to check, expected at least 60 (82 when this was written)."
             exit 1
           fi
+
+          # ruff's exit codes are 0 (no findings), 1 (findings) and 2 (ruff itself failed). Only the
+          # third is a broken checker, and it has to be told apart from the second: `|| true` alone
+          # would turn a ruff that crashed into an empty findings list, which is a green tick meaning
+          # nothing. JSON rather than counting lines of --output-format=concise, because that format
+          # appends its own summary lines and `| wc -l` reported 39 for 37 findings when this was
+          # written.
+          rc=0
+          ruff check --select E4,E7,E9,F --output-format=json . > "$RUNNER_TEMP/ruff.json" || rc=$?
+          if [ "$rc" -gt 1 ]; then
+            echo "FAIL: ruff exited $rc, which is ruff failing rather than ruff finding something."
+            cat "$RUNNER_TEMP/ruff.json"
+            exit 1
+          fi
+
+          MAX_RUFF_FINDINGS="$MAX_RUFF_FINDINGS" REPORT="$RUNNER_TEMP/ruff.json" \
+          python3 - <<'PY'
+          import json
+          import os
+          from collections import Counter
+
+          max_findings = int(os.environ["MAX_RUFF_FINDINGS"])
+          with open(os.environ["REPORT"], encoding="utf-8") as fh:
+              findings = json.load(fh)
+
+          by_code = Counter(f.get("code") for f in findings)
+          print("RUFF_FINDINGS=%d" % len(findings))
+          print("--- findings by code ---")
+          for code, count in by_code.most_common():
+              print("  %d  %s" % (count, code))
+          for f in findings:
+              where = f.get("filename", "(no file)")
+              line = (f.get("location") or {}).get("row")
+              if line:
+                  where = "%s:%s" % (where, line)
+              print("  %s  %s  %s" % (f.get("code"), where, f.get("message")))
+
+          if len(findings) > max_findings:
+              print(
+                  "FAIL: %d findings on E4,E7,E9,F, above the RATCHET of %d.\n"
+                  "      This job refuses NEW findings and accepts the %d already here.\n"
+                  "      Fix the ones this branch added, or lower MAX_RUFF_FINDINGS in the same\n"
+                  "      commit as the batch that fixes findings. It never comes down on its own."
+                  % (len(findings), max_findings, max_findings)
+              )
+              raise SystemExit(1)
+
+          print("OK: %d findings, at or under the RATCHET of %d." % (len(findings), max_findings))
+          PY
+
+          # THE ABSOLUTE, and it is last so its output is the last thing in the step. Zero pyflakes
+          # findings, no budget, no ratchet. This is the assertion the ratchet above cannot make.
+          echo "--- F (pyflakes) must be exactly zero ---"
           ruff check --select F .
+
+      # MYPY SHIPS AS A RATCHET, AND THAT IS A WEAKER CHECK THAN IT LOOKS. Adopting a type checker at
+      # zero is a session nobody has scheduled -- 201 errors is a batch of work, not a typo. Adopting
+      # it not at all leaves the number free to grow. So what this asserts is only that the next batch
+      # does not add one more, and that is the whole claim. It is chosen deliberately over the two
+      # alternatives, not settled for.
+      #
+      # THE PATH SET AND THE FLAGS ARE PART OF WHAT THE NUMBER MEANS, so they are here beside it
+      # rather than only in a report. Somebody who has to change MAX_MYPY_ERRORS needs to know what it
+      # counted.
+      #
+      #   Paths: app scripts tests alembic *.py
+      #   -- NOTHING IS EXCLUDED. That set is every tracked .py file under backend/, and mypy reports
+      #   "checked 82 source files", which is the same 82 the ruff floor above counts. alembic/ is in
+      #   it, versions/ included: mypy 2.3.1 accepts 0001_baseline.py and 0002_drop_redundant_indexes.py
+      #   despite the leading digits (measured -- "Success: no issues found in 4 source files"), so the
+      #   exclusion that was expected to be necessary is not.
+      #
+      #   THE TRAILING GLOB IS NOT SHORTHAND. It was seed.py content_repo.py download_seed_images.py,
+      #   named one by one, and that was wrong in a way only the failure demonstration found: a NEW
+      #   top-level backend/*.py would have been checked by ruff, which runs over `.`, and silently
+      #   not checked by mypy, which takes an explicit list. A type error in it would have been
+      #   invisible while both steps reported green. `*.py` expands to the same three today and
+      #   extends itself to the fourth. If the glob ever matches nothing, bash leaves it literal, mypy
+      #   fails on a path that does not exist, and the step goes red -- which is the correct direction.
+      #
+      #   Flags: none beyond --cache-dir. In particular NOT --ignore-missing-imports. CI installs the
+      #   full pinned dependency set, so mypy sees real dependency types, and suppressing the
+      #   difference would make the number smaller for a reason that has nothing to do with this
+      #   codebase. Measured on app/ alone: 164 errors without the flag, 160 with it.
+      #
+      #   4 of the errors are [import-untyped] -- "Library stubs not installed" for jose, lxml and
+      #   defusedxml (x2). Installing types-* packages would take the count DOWN by four, which the
+      #   ratchet permits silently, and that is the expected direction. Do not add them here in order
+      #   to move the number; that would be a separate decision about what mypy is allowed to see.
+      #
+      # --cache-dir points into RUNNER_TEMP so no .mypy_cache is written into the checkout. There is
+      # no .gitignore entry for it, and this step is not the place to add one.
+      - name: Mypy (ratchet)
+        run: |
+          # Pinned by exact version for the same reason ruff is: an unpinned type checker changes its
+          # own inference under you and moves the count on a day nobody touched the code. mypy is
+          # deliberately NOT in requirements-dev.txt -- it is a CI tool, not a test dependency, and
+          # this follows the `pip install ruff==` precedent one step above.
+          python -m pip install mypy==2.3.1
+
+          # THE RATCHET. 201, measured on this tree with the paths and flags named above. Fires
+          # UPWARD ONLY, exactly like MAX_RUFF_FINDINGS and MAX_LINT_FINDINGS in android-build.yml.
+          # No lower bound, and it comes down by hand in the same commit as the batch that fixes
+          # errors. The earlier figures of 64 and 261 in repo-hygiene-inventory-2026-08.md were taken
+          # with a different mypy and a different question; they are not comparable to this one.
+          MAX_MYPY_ERRORS=201
+
+          # COLLAPSE DETECTOR, the same kind as the two file-count floors above. A mypy that resolves
+          # none of its arguments prints "checked 0 source files" and exits 0, which is the reassuring
+          # output. 82 observed; the floor sits well below it so ordinary deletion work never reaches
+          # it.
+          MIN_MYPY_FILES=60
+
+          # 0 = clean, 1 = errors found, 2 = mypy itself failed. Only the third is a broken checker.
+          rc=0
+          python -m mypy --cache-dir "$RUNNER_TEMP/mypy-cache" \
+            app scripts tests alembic *.py \
+            > "$RUNNER_TEMP/mypy.log" 2>&1 || rc=$?
+          cat "$RUNNER_TEMP/mypy.log"
+          if [ "$rc" -gt 1 ]; then
+            echo "FAIL: mypy exited $rc, which is mypy failing rather than mypy finding something."
+            exit 1
+          fi
+
+          MAX_MYPY_ERRORS="$MAX_MYPY_ERRORS" MIN_MYPY_FILES="$MIN_MYPY_FILES" \
+          LOG="$RUNNER_TEMP/mypy.log" \
+          python3 - <<'PY'
+          import os
+          import re
+          from collections import Counter
+
+          max_errors = int(os.environ["MAX_MYPY_ERRORS"])
+          min_files = int(os.environ["MIN_MYPY_FILES"])
+          with open(os.environ["LOG"], encoding="utf-8", errors="replace") as fh:
+              text = fh.read()
+
+          found = re.search(
+              r"^Found (\d+) errors? in \d+ files? \(checked (\d+) source files?\)$",
+              text, re.M,
+          )
+          clean = re.search(r"^Success: no issues found in (\d+) source files?$", text, re.M)
+
+          # ANTI-VACUITY. If neither summary line is present the two regexes below would yield None,
+          # a comparison against 0 would pass, and this step would report green having parsed
+          # nothing. mypy always prints one of the two; its absence means mypy did not finish or
+          # changed its output format, and either way this step is measuring nothing.
+          if found:
+              errors, files = int(found.group(1)), int(found.group(2))
+          elif clean:
+              errors, files = 0, int(clean.group(1))
+          else:
+              print("FAIL: no mypy summary line in the output above.")
+              print("      Expected 'Found N errors in M files (checked K source files)' or")
+              print("      'Success: no issues found in K source files'. Neither is there, so this")
+              print("      step parsed nothing and its result would mean nothing.")
+              raise SystemExit(1)
+
+          by_code = Counter(m.group(1) for m in re.finditer(r"\[([a-z][a-z-]+)\]\s*$", text, re.M))
+          print("MYPY_ERRORS=%d MYPY_FILES_CHECKED=%d" % (errors, files))
+          print("--- by error code (includes non-error notes such as annotation-unchecked) ---")
+          for code, count in by_code.most_common():
+              print("  %d  %s" % (count, code))
+
+          problems = []
+          if files < min_files:
+              problems.append(
+                  "FAIL: mypy checked only %d source files, expected at least %d (82 when this\n"
+                  "      was written). Either the paths moved or this step checked nothing."
+                  % (files, min_files)
+              )
+          if errors > max_errors:
+              problems.append(
+                  "FAIL: %d mypy errors, above the RATCHET of %d.\n"
+                  "      This job refuses NEW errors and accepts the %d already here.\n"
+                  "      Fix the ones this branch added, or lower MAX_MYPY_ERRORS in the same\n"
+                  "      commit as the batch that fixes errors. It never comes down on its own."
+                  % (errors, max_errors, max_errors)
+              )
+
+          for problem in problems:
+              print(problem)
+          if problems:
+              raise SystemExit(1)
+
+          print("OK: %d errors across %d checked files, at or under the RATCHET of %d."
+                % (errors, files, max_errors))
+          PY
+
+      # THE SCHEMA LEDGER, AND IT NEVER TOUCHES PRODUCTION. alembic.ini and a two-revision tree have
+      # existed since 2026-08-28 and no alembic command ran anywhere, so schema drift was ungated:
+      # alembic reached this job only as a directory argument to `find` and `compileall` above.
+      #
+      # WHAT IT ACTUALLY PROVES, stated narrowly because the task name invites a wider reading: that
+      # `alembic upgrade head` against an EMPTY database produces the schema models.py describes. It
+      # says nothing about production, which sits at 0001 while head is 0002 and carries three
+      # redundant indexes 0002 exists to drop (CLAUDE.md, "## Schema Migrations"). A migration that is
+      # correct here can still be unapplied there, and only scripts/schema_diff.py run by hand against
+      # the live database answers that.
+      #
+      # WHY A CONTAINER RATHER THAN SQLITE. models.py declares JSONB variants (0001_baseline.py:121-131)
+      # and the comparison policy sets compare_type=True (alembic/policy.py:64-71), so a SQLite
+      # comparison would report differences that are artefacts of the dialect. The container is
+      # PostgreSQL 17 against production's 17.6.
+      #
+      # `alembic check` EXITS 127 ON DETECTED DRIFT, which is worth knowing before it happens: 127 is
+      # normally "command not found", and the obvious reading of a red step here is that alembic is
+      # not installed. It is alembic's own CommandError exit. Measured both ways on 2026-08-31 -- 0
+      # with "No new upgrade operations detected.", 127 with the operations listed.
+      #
+      # PLEXIVE_DB_WRITE=1 is scoped to the upgrade command alone and not to the step or the job.
+      # alembic/env.py:66-102 refuses upgrade/downgrade/stamp/merge without it, and the value of that
+      # guard is that setting it is a deliberate act; exporting it once at the top of a step is how it
+      # stops being one.
+      - name: Schema ledger (alembic upgrade, then alembic check)
+        env:
+          # The service container from the job's services: block. Never a real database.
+          DATABASE_URL: postgresql+psycopg2://postgres:postgres@localhost:5432/plexive_ci
+        run: |
+          # Anti-vacuity: an empty versions/ makes `upgrade head` a silent no-op against an empty
+          # database, after which `alembic check` compares nothing to nothing and passes.
+          MIN_REVISIONS=2
+          # 13 observed on 2026-08-31: 12 application tables plus alembic_version. A floor, not the
+          # observed count, for the same reason MIN_PATHS is a floor -- the table list grows.
+          MIN_TABLES=10
+
+          # Say which database this reached, BEFORE anything runs. alembic/env.py announces the same
+          # thing from inside (its "[alembic] online target:" line), but that only appears once
+          # alembic starts; if the container is unreachable this line is the one that survives. Same
+          # reasoning as main.py's closed-beta announcement: a setting invisible until it goes wrong
+          # is the one that goes wrong.
+          python3 - <<'PY'
+          import os
+          from urllib.parse import urlparse
+          u = urlparse(os.environ["DATABASE_URL"])
+          print("[schema-ledger] target: scheme=%s host=%s port=%s db=%s user=%s (password redacted)"
+                % (u.scheme, u.hostname, u.port, (u.path or "").lstrip("/"), u.username))
+          PY
+
+          revisions=$(find alembic/versions -name '*.py' -not -path '*/__pycache__/*' | wc -l)
+          echo "found $revisions revision files under alembic/versions/"
+          if [ "$revisions" -lt "$MIN_REVISIONS" ]; then
+            echo "FAIL: found $revisions revision files, expected at least $MIN_REVISIONS."
+            echo "An empty versions/ makes 'upgrade head' a no-op and 'check' vacuous."
+            exit 1
+          fi
+
+          echo "--- alembic upgrade head ---"
+          PLEXIVE_DB_WRITE=1 alembic upgrade head
+
+          echo "--- tables built by the migrations ---"
+          tables=$(python3 - <<'PY'
+          import os
+          from sqlalchemy import create_engine, text
+          engine = create_engine(os.environ["DATABASE_URL"])
+          with engine.connect() as conn:
+              print(conn.execute(text(
+                  "select count(*) from information_schema.tables where table_schema = 'public'"
+              )).scalar_one())
+          PY
+          )
+          echo "public schema holds $tables tables"
+          if [ "$tables" -lt "$MIN_TABLES" ]; then
+            echo "FAIL: $tables tables after 'upgrade head', expected at least $MIN_TABLES."
+            echo "The migrations ran and built almost nothing, so 'check' below would prove nothing."
+            exit 1
+          fi
+
+          # `alembic current` prints NOTHING at all against a database that was never migrated, and
+          # exits 0 doing it. grep is what turns that silence into a failure.
+          echo "--- alembic current ---"
+          alembic current | tee "$RUNNER_TEMP/alembic-current.txt"
+          if ! grep -q "(head)" "$RUNNER_TEMP/alembic-current.txt"; then
+            echo "FAIL: 'alembic current' does not report the database at head."
+            exit 1
+          fi
+
+          # THE ASSERTION. Non-zero fails the job, and there is deliberately NO RATCHET on it. A
+          # ratchet here would be a drift detector told to ignore drift, which is the exact shape this
+          # whole batch exists to remove. It is exactly clean on this tree; the day it is not, the
+          # answer is a migration, not a bigger number.
+          echo "--- alembic check ---"
+          alembic check
 
       # Not "pytest tests". 12 of the 16 suites execute their whole body at import and share one app
       # instance, one in-memory rate limiter and the first module's temp SQLite file, so in one process
