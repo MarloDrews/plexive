@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { CATEGORIES } from "@/lib/interests"
-import { API_URL, INTERESTS_KEY, rememberInterestsForUser } from "@/lib/storage"
+import { INTERESTS_KEY, rememberInterestsForUser } from "@/lib/storage"
+import { apiFetch } from "@/lib/api"
 import { useAuth } from "@/lib/auth"
 
 interface Interest {
@@ -28,7 +29,7 @@ export default function InterestPicker() {
   const loadInterests = useCallback(() => {
     setError(false)
     setLoading(true)
-    fetch(`${API_URL}/api/interests`)
+    apiFetch("/api/interests")
       .then((r) => {
         if (!r.ok) throw new Error(`status ${r.status}`)
         return r.json()
