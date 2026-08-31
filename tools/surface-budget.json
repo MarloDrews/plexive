@@ -26,13 +26,13 @@
       "budget": 7,
       "measured": 6,
       "kind": "headroom",
-      "why": "SET BY b98b8209 (2026-08-28, 6->7), which added the execution-discipline bullet that is still in CLAUDE.md today, so a pin at the measured 6 would have blocked work that stood. Margin is one rule. The count returned to 6 only because 38d3ef68 moved the emoji rule out to .claude/rules/, which is the question reaching 7 again should trigger rather than a number to raise quietly."
+      "why": "WHAT IT COUNTS, IN THE WORDS A PERSON WOULD USE: the top-level \"- \" bullets at column 0 under \"## Rules\". A line indented under a bullet is part of that bullet, not a rule of its own. SET BY b98b8209 (2026-08-28, 6->7), which added the execution-discipline bullet that is still in CLAUDE.md today, so a pin at the measured 6 would have blocked work that stood. Margin is one rule. The count returned to 6 only because 38d3ef68 moved the emoji rule out to .claude/rules/, which is the question reaching 7 again should trigger rather than a number to raise quietly."
     },
     "claude_md_unconditional_rules": {
       "budget": 8,
       "measured": 7,
       "kind": "headroom",
-      "why": "SET BY 42df1f56 (2026-08-29, 7->8), the shrink merge, which added the rule that a step watching for a condition reports its own failure -- the central rule of this repository, and still present. A pin at the measured 7 would have blocked it. Margin is one rule."
+      "why": "WHAT IT COUNTS, IN THE WORDS A PERSON WOULD USE: RULES, WHERE A RULE IS AN OPENING LINE. Under \"## Rules\", a top-level \"- \" bullet at column 0 opens a rule, and so does the first line of a blank-line-separated paragraph at column 0. Continuation lines of a wrapped bullet or paragraph, and sub-bullets indented under a rule, belong to the rule above them. Six bullets and one paragraph is 7. REFORMATTING MUST NOT MOVE THIS NUMBER, and until 2026-08-31 it did: the metric was bullets plus paragraph-runs, so wrapping two bullets at 98 columns read 9 and wrapping all six read 11, with no rule added and no text changed. cw-9a..cw-9d store those inputs. THE ONE SHAPE STILL COUNTED WRONG is a continuation line that itself begins \"- \", which no parser can tell from a bullet; cw-9e pins it, no bullet here contains a standalone hyphen token, and it is left alone deliberately. THE CEILING WAS SET BY 42df1f56 (2026-08-29, 7->8), the shrink merge, which added the rule that a step watching for a condition reports its own failure -- the central rule of this repository, and still present. A pin at the measured 7 would have blocked it. Margin is one rule."
     },
     "claude_rules_files": {
       "budget": 2,

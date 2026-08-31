@@ -298,9 +298,32 @@ jobs:
           m["claude_md_lines"] = len(lines)
           m["claude_md_sections"] = sum(1 for ln in lines if ln.startswith("## "))
 
-          # The "## Rules" section only. A rule under any other heading is conditional on that
-          # heading's subject; these apply to every session with no condition at all, which is
-          # what makes them the counts that detect a refill rather than a rewording.
+          # WHAT COUNTS AS A RULE, IN THE WORDS A PERSON WOULD USE: A RULE IS AN OPENING LINE.
+          # A top-level "- " bullet at column 0 opens one, and so does the first line of a
+          # blank-line-separated paragraph at column 0. Continuation lines of a wrapped bullet or
+          # paragraph, and sub-bullets indented under a rule, belong to the rule above them and
+          # are not rules of their own. The "## Rules" section only: a rule under any other
+          # heading is conditional on that heading's subject, while these apply to every session
+          # with no condition at all, which is what makes them the counts that detect a refill
+          # rather than a rewording.
+          #
+          # THE FIRST VERSION COUNTED BULLETS PLUS PARAGRAPHS, where a paragraph was any run of
+          # non-blank non-bullet lines, so REFLOWING A BULLET ADDED A RULE. Measured 2026-08-31:
+          # wrapping two of the six bullets at 98 columns took this metric from 7 to 9 against a
+          # ceiling of 8, with no text added, no text removed and no rule added; wrapping all six
+          # took it to 11; a clarification indented under an existing rule took it to 8. The
+          # accompanying line the author could write -- raise the ceiling by one -- would have
+          # recorded a rule that does not exist, in the file whose whole purpose is that its
+          # numbers mean something. Stored as cw-9a through cw-9d.
+          #
+          # ONE SHAPE IS STILL COUNTED WRONG, AND IT IS BOUNDED AND STORED RATHER THAN ARGUED
+          # AWAY: a continuation line that itself begins "- " cannot be told from a bullet, here
+          # or by a markdown parser, which reads it as a new list item too. cw-9e pins that
+          # behaviour so a later change to this definition flips a case instead of passing
+          # unnoticed. Not one of the six bullets in "## Rules" contains a standalone hyphen
+          # token today (measured 2026-08-31), so no wrap width can produce the shape from the
+          # text that is there, and a definition that handled every wrapping style would be a
+          # parser nobody can read.
           body = []
           inside = False
           for ln in lines:
@@ -309,20 +332,20 @@ jobs:
                   continue
               if inside:
                   body.append(ln)
-          bullets = sum(1 for ln in body if ln.startswith("- "))
-          # A paragraph is a run of non-blank, non-bullet lines. The bullets are contiguous and
-          # would otherwise collapse into a single block, so they are counted separately above.
-          paragraphs = 0
-          in_para = False
+          bullets = 0
+          openers = 0
+          prev_blank = True
           for ln in body:
-              if not ln.strip() or ln.startswith("- "):
-                  in_para = False
+              if not ln.strip():
+                  prev_blank = True
                   continue
-              if not in_para:
-                  paragraphs += 1
-                  in_para = True
+              if ln.startswith("- "):
+                  bullets += 1
+              elif prev_blank and not ln[:1].isspace():
+                  openers += 1
+              prev_blank = False
           m["claude_md_rules"] = bullets
-          m["claude_md_unconditional_rules"] = bullets + paragraphs
+          m["claude_md_unconditional_rules"] = bullets + openers
 
           m["claude_rules_files"] = len(shipped(".claude/rules", ".md"))
           m["hook_scripts"] = len(shipped(".claude/hooks", ".py"))
