@@ -36,7 +36,7 @@ frontend/   Next.js web app (App Router, TypeScript, Tailwind)
 mobile-kmp/ Kotlin Multiplatform mobile app (Compose Multiplatform, Android + iOS)
 docs/       Content model, style and layout standards, roadmap
 LICENSE         AGPL-3.0
-ARCHITECTURE.md One-line-per-item map of the codebase
+ARCHITECTURE.md Map of the codebase: where things are and what they rule out
 ```
 
 ## Local development
