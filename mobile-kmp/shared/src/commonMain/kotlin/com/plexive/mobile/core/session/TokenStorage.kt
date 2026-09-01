@@ -2,7 +2,8 @@ package com.plexive.mobile.core.session
 
 // Where the backend JWT is kept between app launches. The token grants full account access, so an
 // implementation must hand it to the operating system's protected store (Android Keystore, Apple
-// Keychain) and never to a plain readable file. See the platform source sets for the two actuals.
+// Keychain) and never to a plain readable file. See the platform source sets for the two
+// implementations, each bound by a hand-written Koin module rather than by expect/actual.
 //
 // Deliberately not suspend: every implementation is one local read plus one decrypt, which costs
 // well under a millisecond, and a synchronous read means the token is already in memory before the
