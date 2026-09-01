@@ -33,11 +33,14 @@ accident.
 WHAT IS LEFT HERE, because it is deliberately not everything it once was. Six
 sections: this one; ## FOLDER STRUCTURE, the map of where things live, which is
 by size almost the whole file; then ## CHAT / WEBSOCKET DESIGN, ## DEPLOYMENT
-INVARIANT (M138), ## SECURITY and ## FRONTEND COMPONENTS. All six earn their
-place on what they RULE OUT or where they point rather than on what they
-describe. A deliberate omission, a constraint, a ban and a two-consumer contract
-are none of them visible in any one file, and each is a thing a session would
-otherwise build, break or trim in good faith.
+INVARIANT (M138), ## SECURITY and ## FRONTEND COMPONENTS. THE STANDARD ALL SIX
+ARE BEING BROUGHT TO, and not a description of where they now stand: an entry
+earns its place on what it RULES OUT or where it points rather than on what it
+describes. Of ## FOLDER STRUCTURE's 337 described entries, 23 -- the mobile-kmp/
+block -- have been brought to it. The other 314 have not, and nothing in the file
+marks which is which. A deliberate omission, a constraint, a ban and a
+two-consumer contract are none of them visible in any one file, and each is a
+thing a session would otherwise build, break or trim in good faith.
 
 FOUR SECTIONS LEFT ON 2026-08-30, in pull request 86, for one reason in all four
 cases: each duplicated a file that is executable, authoritative and easier to
