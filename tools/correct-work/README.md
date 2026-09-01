@@ -46,6 +46,26 @@ the commit rules or injects nothing whatever, and that is the pair's entire subj
 against the pre-repair HEAD first and both went red there, so they were seen to fail before they
 were seen to pass.
 
+CW-17a and CW-17b were written on 2026-09-02 with the repair they exercise, so they are the fifth
+and sixth cases here that agree with their fix by construction, declared in their own headers.
+They drive `.claude/hooks/pretooluse_write.py`, which is the OTHER hook, and they are the first
+cases here whose subject is not ASCII.
+
+**CW-17a is the one that discriminates.** Run against the pre-repair hook at `dce9f90` the case
+exits 2 with `hook rc=0`; against the fixed tree it exits 0 with `hook rc=2`. Until 2026-09-02 the
+hook read stdin with `json.load(sys.stdin)`, which decodes with the machine's default encoding --
+cp1252 here -- and the four UTF-8 bytes of an emoji are every one of them a defined cp1252
+character, so they decoded without raising into codepoints outside the range `check_emoji` looks
+for. The check ran, examined mojibake, and reported success: 0 emoji refusals in 135 transcripts.
+The 160 cases in `.claude/hooks/hook_cases.py` all missed it because that harness feeds payloads
+through `json.dumps()` with the default `ensure_ascii`, so its emoji never reached the hook as
+bytes at all. This case feeds the bytes.
+
+**CW-17b does not discriminate**, like CW-9a, CW-13, CW-15c and the CW-16 pair, and says so in its
+own header: it exits 0 against both trees. It stores the over-correction a decode fix invites -- a
+check mark, an umlaut and an em dash in a `.py` file, none of them in `U+1F300-U+1FAFF`, all of
+them correct work.
+
 One is not from that report: **CW-15c**, which turns the six-line idiom F4 quotes into a fixture.
 It is labelled in its own header rather than passed off as reproduced.
 
@@ -134,6 +154,16 @@ them on PATH and this machine does not.
 | `cw-15a-workflow-step-with-three-thresholds` | `backend-checks` | surface budget | F4 | **1** |
 | `cw-15b-workflow-step-with-two-thresholds` | `backend-checks` | surface budget | F4 | **1** |
 | `cw-15c-workflow-threshold-in-the-env-prefix-idiom` | `backend-checks` | surface budget | F4 | 0 |
+| `cw-16a-commit-skill-in-directory-form` | hook: `pretooluse_bash.py` | commit-rules injection | the deliver direction | 0 |
+| `cw-16b-commit-rules-absent-says-so` | hook: `pretooluse_bash.py` | commit-rules injection | the absent input | 0 |
+| `cw-17a-emoji-as-raw-utf8-bytes` | hook: `pretooluse_write.py` | `check_emoji` | the decode defect | 0 |
+| `cw-17b-non-emoji-utf8-in-a-py` | hook: `pretooluse_write.py` | `check_emoji` | the allow direction | 0 |
+
+The last four rows were added 2026-09-02. CW-16a and CW-16b existed since 2026-08-31 and had a
+paragraph above but **no row here**, so this table listed 29 of the 31 cases the directory holds
+and a reader counting it came up two short of what `run_all.sh` runs. That is corrected in the
+same commit as the CW-17 pair rather than left, because a table of cases is exactly the kind of
+list whose omission looks identical to a case that does not exist.
 
 ## The declared exit code, and why the comparison is not against zero
 

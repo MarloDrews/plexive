@@ -1070,9 +1070,34 @@ def command_from(payload):
     return command
 
 
+def read_payload():
+    """The payload, from stdin READ AS BYTES and decoded as UTF-8 explicitly.
+
+    THE SAME READ AS pretooluse_write.py, AND IT CHANGES NOTHING THIS HOOK DOES
+    TODAY. `json.load(sys.stdin)` decoded with the machine's default encoding,
+    cp1252 here, which turns the raw UTF-8 bytes of any non-ASCII character into
+    mojibake WITHOUT RAISING. Every check in this file keys on an ASCII command
+    word -- jq, psql, alembic, gh, grep -- and mojibake elsewhere in the command
+    leaves those words intact, so none of the six was ever bitten; measured
+    2026-09-01, a jq invocation with non-ASCII elsewhere still blocked at 2.
+
+    It is changed anyway because the NEXT check added here inherits the read,
+    and a check with a non-ASCII subject would be born dead exactly as
+    check_emoji was: running, examining mojibake, and reporting success.
+    """
+    return json.loads(sys.stdin.buffer.read().decode("utf-8"))
+
+
 def main():
     try:
-        payload = json.load(sys.stdin)
+        payload = read_payload()
+    except UnicodeDecodeError as exc:
+        # Says so rather than allowing in silence.
+        sys.stderr.write(
+            "NOTE: pretooluse_bash.py could not decode its stdin as UTF-8 ("
+            + str(exc) + "). No check ran, and the command is ALLOWED.\n"
+        )
+        return 0
     except Exception:  # noqa: BLE001
         # An unreadable payload is not evidence of a bad command. Allow, so that
         # a payload-shape change cannot wedge every Bash call in the session.

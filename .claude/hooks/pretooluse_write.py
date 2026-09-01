@@ -231,9 +231,38 @@ def path_and_input(payload):
     return path, tool_input
 
 
+def read_payload():
+    """The payload, from stdin READ AS BYTES and decoded as UTF-8 explicitly.
+
+    `json.load(sys.stdin)` decodes with the machine's DEFAULT encoding, which is
+    cp1252 here, and that is why check_emoji had never fired. The four UTF-8
+    bytes of an emoji, F0 9F 9A 80, are every one of them a DEFINED cp1252
+    character, so they decode WITHOUT RAISING into U+00F0 U+0178 U+0161 U+20AC,
+    none of which is in the range the check looks for. The check ran, examined
+    mojibake, and reported success. Measured 2026-09-01 over 135 transcripts:
+    17 utcnow refusals, 0 emoji refusals, and a live session inserting a rocket
+    into a .py file got no block at all.
+
+    A CLIENT SENDS THE EMOJI AS RAW UTF-8 BYTES, not as \\uXXXX escapes, which is
+    why a payload built by hand with json.dumps() blocked and the real one did
+    not. PYTHONIOENCODING=utf-8 also fixes it and is deliberately NOT the fix:
+    nothing sets it, and a gate that depends on the caller's environment is a
+    gate that is off by default.
+    """
+    return json.loads(sys.stdin.buffer.read().decode("utf-8"))
+
+
 def main():
     try:
-        payload = json.load(sys.stdin)
+        payload = read_payload()
+    except UnicodeDecodeError as exc:
+        # Says so rather than allowing in silence, because allowing in silence
+        # is the defect this function was written to remove.
+        sys.stderr.write(
+            "NOTE: pretooluse_write.py could not decode its stdin as UTF-8 ("
+            + str(exc) + "). Nothing was inspected, and the write is ALLOWED.\n"
+        )
+        return 0
     except Exception:  # noqa: BLE001
         # An unreadable payload is not evidence of a bad write. Allow, so that a
         # payload-shape change cannot wedge every edit in the session.
