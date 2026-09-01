@@ -7,8 +7,9 @@ FastAPI backend over Ktor, never to Supabase directly.
 ## Layout
 
 - `shared/` - everything shared. `commonMain` holds the UI, view models, repositories and the HTTP
-  client; `androidMain` and `iosMain` hold only the platform halves of `expect`/`actual` pairs
-  (currently token storage: Android Keystore, iOS Keychain).
+  client; `androidMain` and `iosMain` hold only the platform implementations of common
+  interfaces, bound by a hand-written Koin module in each source set rather than by
+  `expect`/`actual` (currently token storage: Android Keystore, iOS Keychain).
 - `androidApp/` - the Android application module: manifest, launcher resources, `MainActivity`.
 - `iosApp/` - the Xcode project that hosts the shared UI.
 
