@@ -530,7 +530,9 @@ jobs:
           print("SURFACE_CONTAINERS=%d SURFACE_OVER_BUDGET=%d" % (len(METRICS), len(over)))
 
           # ---- what this step cannot see, said out loud on every run ------------------------
-          # Three containers are outside the tree, so no step running here can measure them.
+          # Four containers are outside the tree, so no step running here can measure them,
+          # and they print as FIVE rows: the GitHub ruleset contributes two numbers, its rules
+          # and its required contexts.
           # Leaving them out silently would make this step look like a complete account of the
           # surface, which is the failure the whole file exists to prevent. They are printed
           # instead, each with the command that answers it by hand.
