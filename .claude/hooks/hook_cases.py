@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Both-directions harness for the two PreToolUse hooks.
+"""Both-directions harness for all three hooks in this directory, not for the
+two PreToolUse ones alone. Sixteen of its cases drive the Stop hook, counted
+2026-09-02; the rest drive the two PreToolUse hooks.
 
 Every check gets at least one payload that must be blocked (exit 2) and at least
 one that must be allowed (exit 0). The allowed payload is a real correct command
