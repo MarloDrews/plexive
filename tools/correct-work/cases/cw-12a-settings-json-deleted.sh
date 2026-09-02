@@ -10,9 +10,11 @@
 #       ok settings_permissions_allow 0/4   settings_permissions_deny 0/8
 #     OK: all 23 containers at or under their ceilings.                       rc=0
 #
-# Six of those eight deny rules are git push guards and the two hooks are the commit-rules
-# injection and the backup gate. The step read settings as an empty dict when the file was absent
-# and every container floored at zero, under budget: THE WHOLE GOVERNANCE SURFACE DISAPPEARING
+# Six of those eight deny rules are git push guards. The hooks were two when that output was
+# taken and are THREE now: the Bash gate, which carries the commit-rules injection and the
+# backup gate, the Write/Edit gate, and the Stop rule-behaviour log added 2026-09-02. The
+# step read settings as an empty dict when the file was absent and every container floored at
+# zero, under budget: THE WHOLE GOVERNANCE SURFACE DISAPPEARING
 # READ AS COMPLIANCE, inside the step written to watch that surface as a whole.
 #
 # The fix is not a new check and adds no container. It removes a silent default from a step whose
