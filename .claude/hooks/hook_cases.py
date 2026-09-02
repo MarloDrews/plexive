@@ -60,6 +60,7 @@ HOOKS = Path(__file__).resolve().parent
 REPO_ROOT = HOOKS.parents[1]
 BASH_HOOK = HOOKS / "pretooluse_bash.py"
 WRITE_HOOK = HOOKS / "pretooluse_write.py"
+STOP_HOOK = HOOKS / "stop_rule_log.py"
 
 # Built rather than written. See the module docstring.
 FIRE = chr(0x1F525)
@@ -77,6 +78,27 @@ SENTINEL = 'if __name__ == "__main__":'
 # hook and a case that can never discriminate.
 LEGACY_STDIN_NEW = "payload = read_payload()"
 LEGACY_STDIN_OLD = "payload = json.load(sys.stdin)"
+
+# The splice point used to build a copy of the Stop hook that decides a refusal
+# from `toolDenialKind` instead of from the result text. THAT COPY EXISTS TO BE
+# WRONG. The field is absent on every Read-form permission-deny refusal (6 of 6
+# across 164 transcripts, measured 2026-09-02) and set to "permission-rule" on
+# every PreToolUse hook block (36 of 36), which is not a permission rule. The
+# obvious mechanical detector is therefore wrong in the dangerous direction: it
+# returns a plausible number and silently drops the exact case the log exists
+# for. The pair of cases pointed at this copy is what keeps that from being
+# rediscovered by somebody simplifying refusal_shape() into a dict lookup.
+SHAPE_CALL_OLD = "            shape = refusal_shape(text)"
+SHAPE_CALL_NEW = "            shape = FIELD_KEYED.get(record.get(\"toolDenialKind\"))"
+# Assembled from chr(10) rather than from an escape, so the counter-example's
+# own source carries no backslash sequence for a splice to preserve verbatim.
+FIELD_KEYED = chr(10).join([
+    "FIELD_KEYED = {",
+    '    "permission-rule": SHAPE_DENIED_CALL,',
+    "}",
+    "",
+    "",
+])
 
 FAULT = (
     "def _injected_fault(*args):\n"
@@ -108,6 +130,65 @@ def edit_payload(path, new_string):
         "tool_name": "Edit",
         "tool_input": {"file_path": path, "new_string": new_string},
     }
+
+
+def stop_payload(transcript, session, last_message=""):
+    """A Stop payload with the ELEVEN keys observed at 2.1.257, and no more.
+
+    `stop_reason` is deliberately absent. It is documented and was in none of the
+    three captured firings, so a hook that required it would agree with the
+    documentation and fail against the product.
+    """
+    return {
+        "session_id": session,
+        "prompt_id": "8083ce57-88d9-4dcb-8f1c-c315d7b98f84",
+        "transcript_path": str(transcript),
+        "cwd": str(REPO_ROOT),
+        "permission_mode": "default",
+        "effort": {"level": "high"},
+        "hook_event_name": "Stop",
+        "last_assistant_message": last_message,
+        "stop_hook_active": False,
+        "background_tasks": [],
+        "session_crons": [],
+    }
+
+
+def call(use_id, name, tool_input):
+    """One transcript record carrying one tool_use block."""
+    return {"type": "assistant", "version": "2.1.251", "gitBranch": "main",
+            "cwd": str(REPO_ROOT),
+            "message": {"role": "assistant", "content": [
+                {"type": "tool_use", "id": use_id, "name": name,
+                 "input": tool_input}]}}
+
+
+def result(use_id, body, is_error=True, denial_kind=None):
+    """One transcript record carrying one tool_result block.
+
+    `denial_kind` is written onto the RECORD and not into the block, which is
+    where the real transcripts carry it.
+    """
+    record = {"type": "user", "version": "2.1.251", "gitBranch": "main",
+              "cwd": str(REPO_ROOT),
+              "message": {"role": "user", "content": [
+                  {"type": "tool_result", "content": body, "is_error": is_error,
+                   "tool_use_id": use_id}]}}
+    if denial_kind is not None:
+        record["toolDenialKind"] = denial_kind
+    return record
+
+
+def transcript_text(records):
+    """The fixture as a client writes it: one compact JSON object per LF line."""
+    return "".join(json.dumps(r) + chr(10) for r in records)
+
+
+def write_transcript(path, records):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w", encoding="utf-8", newline="") as handle:
+        handle.write(transcript_text(records))
+    return path
 
 
 def payload_bytes(payload):
@@ -822,6 +903,176 @@ def build_cases(fx):
             name="write F13: a clean ." + suffix + " stays allowed",
             script=WRITE_HOOK, expect=0, payload=write_payload(path, clean)))
 
+    # === the Stop rule-behaviour log =========================================
+    # THE ORDER OF THE FIRST THREE OF THESE MATTERS and nothing else here has
+    # that property: three cases share one log directory on purpose, because
+    # "the same transcript again adds nothing" and "a grown transcript adds only
+    # what grew" are claims about a SECOND firing and cannot be made by a case
+    # that starts from an empty log.
+    stop = fx["stop"]
+    logs = stop["logs"]
+
+    def stop_log(name):
+        return logs / name / "events.jsonl"
+
+    def stop_env(name):
+        return {"PLEXIVE_RULE_LOG_DIR": str(logs / name)}
+
+    # --- the payload contract ------------------------------------------------
+    # EXIT 1 AND NOT 2, and the case is written as expect=1 for that reason
+    # alone. On Stop, exit 2 does not fail the hook: it prevents Claude from
+    # stopping and continues the conversation. A logging hook that crashed into
+    # exit 2 would steer the session it exists to watch.
+    cases.append(dict(
+        name="stop: no transcript_path is exit 1, never 2",
+        script=STOP_HOOK, expect=1,
+        payload={"session_id": "nopath-1", "cwd": str(REPO_ROOT),
+                 "hook_event_name": "Stop", "stop_hook_active": False},
+        env=stop_env("nopath"),
+        stderr_must_contain="carried no transcript_path",
+        log=stop_log("nopath"), log_kinds={"error": 1}))
+    cases.append(dict(
+        name="stop: an unreadable payload says so and exits 1",
+        script=STOP_HOOK, expect=1, payload="{not json at all",
+        env=stop_env("badjson"),
+        stderr_must_contain="could not read its stdin as JSON"))
+    cases.append(dict(
+        name="stop: a missing transcript writes an error record first",
+        script=STOP_HOOK, expect=1,
+        payload=stop_payload(stop["missing"], "missing-1"),
+        env=stop_env("missing"),
+        stderr_must_contain="could not read the transcript",
+        log=stop_log("missing"), log_kinds={"error": 1},
+        log_must_contain_all=['"half": "machine"']))
+
+    # --- the three shapes, then two more firings on the same log -------------
+    cases.append(dict(
+        name="stop: three shapes, three refusals, one session record",
+        script=STOP_HOOK, expect=0,
+        payload=stop_payload(stop["three"], "three-1"),
+        env=stop_env("three"), stdout_must_contain="refusals=3",
+        log=stop_log("three"),
+        log_kinds={"session": 1, "refusal": 3}, log_halves={"machine": 4},
+        log_must_contain_all=[
+            '"shape": "deny-rule-path"', '"shape": "denied-call"',
+            '"shape": "hook-block"', '"claude_code_version": "2.1.251"',
+            '"git_branch": "main"', '"orphan_tool_use_count": 0',
+            '"tool_use_count": 6', '"tool_result_count": 6'],
+        log_must_not_contain=['"lookahead_complete": false']))
+    cases.append(dict(
+        name="stop: the same transcript again adds nothing",
+        script=STOP_HOOK, expect=0,
+        payload=stop_payload(stop["three"], "three-1"),
+        env=stop_env("three"), stdout_must_contain="refusals=0",
+        log=stop_log("three"), log_kinds={"session": 1, "refusal": 3}))
+    cases.append(dict(
+        name="stop: a grown transcript adds only what grew",
+        script=STOP_HOOK, expect=0,
+        payload=stop_payload(stop["three"], "three-1"),
+        env=stop_env("three"), append_before=[(stop["three"], stop["growth"])],
+        stdout_must_contain="refusals=1",
+        log=stop_log("three"), log_kinds={"session": 1, "refusal": 4},
+        log_must_contain_all=['"Read(**/.env.local)"']))
+
+    # --- the allow direction -------------------------------------------------
+    # `is_error` ALONE IS THE VACUOUS DEFINITION. 280 of the 372 error results
+    # across the corpus are ordinary failures, so a detector keyed on it would
+    # return a number 50 times too large and look like an answer.
+    cases.append(dict(
+        name="stop: ordinary failures are not rule refusals",
+        script=STOP_HOOK, expect=0,
+        payload=stop_payload(stop["ordinary"], "ordinary-1"),
+        env=stop_env("ordinary"), stdout_must_contain="refusals=0",
+        log=stop_log("ordinary"), log_kinds={"session": 1, "refusal": 0}))
+
+    # --- the toolDenialKind pair, which is the point of the whole detector ---
+    cases.append(dict(
+        name="stop denial-kind: the TEXT detector finds the Read form",
+        script=STOP_HOOK, expect=0,
+        payload=stop_payload(stop["readonly"], "readtext-1"),
+        env=stop_env("readtext"), stdout_must_contain="refusals=1",
+        log=stop_log("readtext"), log_kinds={"refusal": 1},
+        log_must_contain_all=['"tool_denial_kind": null',
+                              '"shape": "deny-rule-path"']))
+    cases.append(dict(
+        name="stop denial-kind: the FIELD-keyed copy misses the same one",
+        script=stop["field_keyed"], expect=0,
+        payload=stop_payload(stop["readonly"], "readfield-1"),
+        env=stop_env("readfield"), stdout_must_contain="refusals=0",
+        log=stop_log("readfield"), log_kinds={"refusal": 0}))
+
+    # --- the reconstruction, and why it is a list ----------------------------
+    cases.append(dict(
+        name="stop: force-with-lease records BOTH matching deny rules",
+        script=STOP_HOOK, expect=0,
+        payload=stop_payload(stop["three"], "force-1"),
+        env=stop_env("force"),
+        log=stop_log("force"),
+        log_must_contain_all=[
+            '"reconstructed_deny_candidates": ["Bash(git push --force*)", '
+            '"Bash(git push --force-with-lease*)"]',
+            '"reconstructed_deny_candidates": ["Read(**/.env)"]']))
+
+    # --- the one traceable shape keeps the only thing that makes it so -------
+    cases.append(dict(
+        name="stop: a hook block keeps the hook's own message",
+        script=STOP_HOOK, expect=0,
+        payload=stop_payload(stop["three"], "hookmsg-1"),
+        env=stop_env("hookmsg"), log=stop_log("hookmsg"),
+        log_must_contain_all=["pretooluse_bash.py", "BLOCKED"]))
+
+    # --- the lookahead, both directions --------------------------------------
+    cases.append(dict(
+        name="stop: a refusal at the end is marked lookahead-incomplete",
+        script=STOP_HOOK, expect=0,
+        payload=stop_payload(stop["tail"], "tail-1"),
+        env=stop_env("tail"), log=stop_log("tail"), log_kinds={"refusal": 1},
+        log_must_contain_all=['"lookahead_complete": false',
+                              '"next_tool_calls": []']))
+
+    # --- the orphan count ----------------------------------------------------
+    cases.append(dict(
+        name="stop: a call with no result counts as an orphan",
+        script=STOP_HOOK, expect=0,
+        payload=stop_payload(stop["orphan"], "orphan-1"),
+        env=stop_env("orphan"), log=stop_log("orphan"),
+        log_must_contain_all=['"orphan_tool_use_count": 1']))
+
+    # --- the fourth shape, which is not this repository's rule ---------------
+    # THIS CASE PASSES AND IT IS NOT A CLEAN BILL OF HEALTH, in the shape cw-12b
+    # already uses. It stores a refusal the detector deliberately does not count,
+    # so the decision lives in something that runs: the day somebody adds a
+    # fourth shape, this flips to a failure and says which record moved.
+    cases.append(dict(
+        name="stop: built-in path protection is not a Plexive rule",
+        script=STOP_HOOK, expect=0,
+        payload=stop_payload(stop["builtin"], "builtin-1"),
+        env=stop_env("builtin"), stdout_must_contain="refusals=0",
+        log=stop_log("builtin"), log_kinds={"session": 1, "refusal": 0}))
+
+    # --- the session half, both directions -----------------------------------
+    # NOTHING IN THIS REPOSITORY TELLS A SESSION TO WRITE ONE OF THESE. The
+    # lifter is covered anyway, so the day that instruction is written the
+    # machinery under it is already known to work.
+    cases.append(dict(
+        name="stop: a RULE-NOTE line lands in the session half",
+        script=STOP_HOOK, expect=0,
+        payload=stop_payload(stop["clean"], "note-1",
+                             "Done." + chr(10) +
+                             "RULE-NOTE: R2 fired on a correct file."),
+        env=stop_env("note"), stdout_must_contain="notes=1",
+        log=stop_log("note"), log_kinds={"session": 1, "note": 1},
+        log_halves={"machine": 1, "session": 1},
+        log_must_contain_all=['"half": "session"']))
+    cases.append(dict(
+        name="stop: an ordinary last message writes no note",
+        script=STOP_HOOK, expect=0,
+        payload=stop_payload(stop["clean"], "nonote-1",
+                             "All three checks are green."),
+        env=stop_env("nonote"), stdout_must_contain="notes=0",
+        log=stop_log("nonote"), log_kinds={"note": 0},
+        log_must_not_contain=['"half": "session"']))
+
     return cases
 
 
@@ -882,9 +1133,126 @@ def make_fixtures(tmp):
     legacy_write = write_legacy_stdin(WRITE_HOOK, tmp / "legacy-stdin-tree",
                                       "pretooluse_write.py")
 
+    # --- the Stop rule-behaviour log ----------------------------------------
+    # TRANSCRIPTS, NOT TREES. Each is a real .jsonl written into the temp tree,
+    # and every case that reads one also points PLEXIVE_RULE_LOG_DIR at the temp
+    # tree, so the real .claude/rule-log/ is never read and never written -- the
+    # same rule this file already applies to the backup directory.
+    stop_root = tmp / "stop-trees"
+    env_path = str(REPO_ROOT / "backend" / ".env")
+    hook_block = (
+        'PreToolUse:Bash hook error: [python '
+        '"$CLAUDE_PROJECT_DIR/.claude/hooks/pretooluse_bash.py"]: '
+        "BLOCKED: a check this fixture invented, so the message is traceable."
+    )
+
+    # SIX CALLS, so all three refusals have three following calls and the
+    # lookahead completes. The incomplete direction is stop_tail below.
+    stop_three = write_transcript(stop_root / "three-shapes.jsonl", [
+        call("toolu_S1", "Read", {"file_path": env_path}),
+        result("toolu_S1", "<tool_use_error>File is in a directory that is "
+                           "denied by your permission settings.</tool_use_error>"),
+        call("toolu_S2", "Bash", {"command": "git push --force-with-lease origin main"}),
+        result("toolu_S2", "Permission to use Bash with command git push "
+                           "--force-with-lease origin main has been denied.",
+               denial_kind="permission-rule"),
+        call("toolu_S3", "Bash", {"command": "ls tools/"}),
+        result("toolu_S3", hook_block, denial_kind="permission-rule"),
+        call("toolu_S4", "Bash", {"command": "ls -la backend/"}),
+        result("toolu_S4", "total 40", is_error=False),
+        call("toolu_S5", "Read", {"file_path": "README.md"}),
+        result("toolu_S5", "# Plexive", is_error=False),
+        call("toolu_S6", "Bash", {"command": "git status --porcelain"}),
+        result("toolu_S6", "", is_error=False),
+    ])
+    # Appended between two firings by the append_before key, to prove the read is
+    # incremental rather than a re-parse the dedup happens to clean up after.
+    stop_growth = transcript_text([
+        call("toolu_S7", "Read",
+             {"file_path": str(REPO_ROOT / "frontend" / ".env.local")}),
+        result("toolu_S7", "<tool_use_error>File is in a directory that is "
+                           "denied by your permission settings.</tool_use_error>"),
+    ])
+
+    # THE ALLOW DIRECTION, and the shapes are real. Sampled 2026-09-02 from the
+    # 280 error results across the corpus that carry no denial kind: a command
+    # that ran and exited non-zero, a Read of a file that is not there, and a
+    # user declining a prompt, which is a refusal BY A PERSON and belongs
+    # outside a log about rules.
+    stop_ordinary = write_transcript(stop_root / "ordinary.jsonl", [
+        call("toolu_O1", "Bash", {"command": "npm run build"}),
+        result("toolu_O1", "Exit code 1" + chr(10) + "error TS2345: not assignable"),
+        call("toolu_O2", "Read", {"file_path": "backend/nope.py"}),
+        result("toolu_O2", "<tool_use_error>File does not exist.</tool_use_error>"),
+        call("toolu_O3", "Write", {"file_path": "backend/app/x.py", "content": "x"}),
+        result("toolu_O3", "<tool_use_error>File has not been read yet. "
+                           "Read it first before writing to it.</tool_use_error>"),
+        call("toolu_O4", "Bash", {"command": "git status"}),
+        result("toolu_O4", "The user doesn't want to proceed with this tool use. "
+                           "The tool use was rejected.", denial_kind="user-rejected"),
+        call("toolu_O5", "Bash", {"command": "ls"}),
+        result("toolu_O5", "README.md", is_error=False),
+    ])
+
+    # ONE Read-form refusal and nothing else. This is the transcript the
+    # field-keyed counter-example must MISS and the text detector must find.
+    stop_readonly = write_transcript(stop_root / "read-form.jsonl", [
+        call("toolu_R1", "Read", {"file_path": env_path}),
+        result("toolu_R1", "<tool_use_error>File is in a directory that is "
+                           "denied by your permission settings.</tool_use_error>"),
+        call("toolu_R2", "Bash", {"command": "ls -la backend/"}),
+        result("toolu_R2", "total 40", is_error=False),
+    ])
+
+    # A refusal as the LAST record, so the lookahead cannot complete.
+    stop_tail = write_transcript(stop_root / "tail.jsonl", [
+        call("toolu_T1", "Bash", {"command": "ls"}),
+        result("toolu_T1", "README.md", is_error=False),
+        call("toolu_T2", "Read", {"file_path": env_path}),
+        result("toolu_T2", "<tool_use_error>File is in a directory that is "
+                           "denied by your permission settings.</tool_use_error>"),
+    ])
+
+    # A call with no result at all, which is the only shape that would let a
+    # refusal go unseen. Nothing here produces it; the count exists so the day
+    # something does, the number moves.
+    stop_orphan = write_transcript(stop_root / "orphan.jsonl", [
+        call("toolu_P1", "Bash", {"command": "ls"}),
+        result("toolu_P1", "README.md", is_error=False),
+        call("toolu_P2", "Bash", {"command": "sleep 600"}),
+    ])
+
+    # THE FOURTH SHAPE, verbatim from the single record carrying it in the 167
+    # transcripts scanned 2026-09-02. Claude Code's own built-in path protection,
+    # labelled permission-rule like a hook block and by the same defect. Not a
+    # rule this repository wrote, so it is not counted, and this fixture is what
+    # makes that a decision somebody can see flip rather than an absence.
+    stop_builtin = write_transcript(stop_root / "built-in-protection.jsonl", [
+        call("toolu_B1", "PowerShell", {"command": "Remove-Item -Recurse /E"}),
+        result("toolu_B1", "Remove-Item on system path '/E' is blocked. This "
+                           "path is protected from removal.",
+               denial_kind="permission-rule"),
+    ])
+
+    stop_clean = write_transcript(stop_root / "clean.jsonl", [
+        call("toolu_C1", "Bash", {"command": "git status --porcelain"}),
+        result("toolu_C1", "", is_error=False),
+    ])
+
+    stop_field_keyed = write_field_keyed(
+        STOP_HOOK, tmp / "field-keyed-tree", "stop_rule_log.py")
+
+    stop = dict(
+        three=stop_three, growth=stop_growth, ordinary=stop_ordinary,
+        readonly=stop_readonly, tail=stop_tail, orphan=stop_orphan,
+        clean=stop_clean, builtin=stop_builtin,
+        missing=stop_root / "there-is-no-such-transcript.jsonl",
+        field_keyed=stop_field_keyed, logs=tmp / "stop-logs",
+    )
+
     return dict(fresh=fresh, empty=empty, orphan=orphan, stub=stub,
                 fault_bash=fault_bash, fault_write=fault_write,
-                legacy_write=legacy_write)
+                legacy_write=legacy_write, stop=stop)
 
 
 def write_legacy_stdin(source, root, name):
@@ -938,6 +1306,36 @@ def write_faulted(source, root, name):
     return target
 
 
+def write_field_keyed(source, root, name):
+    """A copy of the Stop hook that decides the shape from `toolDenialKind`.
+
+    A COUNTER-EXAMPLE, not an alternative. See SHAPE_CALL_OLD above for why that
+    field cannot carry the decision.
+
+    BOTH SPLICES ARE ASSERTED. A splice that quietly found nothing would hand
+    back an ordinary hook wearing the counter-example's name, the case expecting
+    it to MISS the Read-form refusal would go green for the wrong reason, and the
+    thing actually at risk -- somebody replacing the text detector with the
+    field -- would be undetectable again.
+    """
+    text = source.read_text(encoding="utf-8")
+    for needle in (SHAPE_CALL_OLD, SENTINEL):
+        if text.count(needle) != 1:
+            raise RuntimeError(
+                "the field-keyed fixture could not find exactly one %r in %s "
+                "(found %d). The copy would be an ordinary hook."
+                % (needle, source.name, text.count(needle))
+            )
+    (root / ".claude" / "hooks").mkdir(parents=True)
+    target = root / ".claude" / "hooks" / name
+    target.write_text(
+        text.replace(SHAPE_CALL_OLD, SHAPE_CALL_NEW)
+            .replace(SENTINEL, FIELD_KEYED + SENTINEL),
+        encoding="utf-8",
+    )
+    return target
+
+
 def judge(case, code, out, err):
     """(ok, note) for one case. The exit code is checked before anything else."""
     if code != case["expect"]:
@@ -971,6 +1369,39 @@ def judge(case, code, out, err):
         except Exception as exc:  # noqa: BLE001
             return False, "stdout is not one JSON document (" + str(exc) + ")"
 
+    log = case.get("log")
+    if log is not None:
+        try:
+            body = open(str(log), encoding="utf-8").read()
+        except Exception as exc:  # noqa: BLE001
+            return False, "the log at %s could not be read (%s)" % (log, exc)
+        records = []
+        for line in body.splitlines():
+            if not line.strip():
+                continue
+            try:
+                records.append(json.loads(line))
+            except Exception as exc:  # noqa: BLE001
+                return False, "a log line is not JSON (%s)" % exc
+
+        for kind, want in (case.get("log_kinds") or {}).items():
+            got = len([r for r in records if r.get("kind") == kind])
+            if got != want:
+                return False, "%d records of kind %r, wanted %d" % (got, kind, want)
+
+        for half, want in (case.get("log_halves") or {}).items():
+            got = len([r for r in records if r.get("half") == half])
+            if got != want:
+                return False, "%d records with half %r, wanted %d" % (got, half, want)
+
+        for needle in case.get("log_must_contain_all") or []:
+            if needle not in body:
+                return False, "the log is missing " + repr(needle)
+
+        for needle in case.get("log_must_not_contain") or []:
+            if needle in body:
+                return False, "the log should not contain " + repr(needle)
+
     return True, ""
 
 
@@ -993,6 +1424,15 @@ def main():
             env = dict(os.environ)
             env["PLEXIVE_BACKUP_DIR"] = str(fx["fresh"])
             env.update(case.get("env") or {})
+
+            # A case that needs the transcript to GROW between two firings
+            # says so here. Only the incremental-read case uses it, and it is a
+            # real append to a real file rather than a second fixture, because a
+            # second fixture at a second path would not exercise the offset.
+            for target, addition in case.get("append_before") or []:
+                with open(str(target), "a", encoding="utf-8",
+                          newline="") as handle:
+                    handle.write(addition)
 
             code, out, err = run(case["script"], case["payload"], env)
             ok, note = judge(case, code, out, err)
