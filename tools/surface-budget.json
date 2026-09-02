@@ -162,7 +162,7 @@
       "recheck": "python -c \"import json;print(json.load(open(r'C:/Users/marlo/.claude/settings.json')).get('permissions',{}))\""
     },
     "rule_log_events": {
-      "recorded": "2",
+      "recorded": "grows with every session, so no fixed number here is true: 10 lines on 2026-09-02, recorded as 2 and rechecked at 7 the same day -- run the recheck, not this field",
       "recheck": "python -c \"import os;p='.claude/rule-log/events.jsonl';print(sum(1 for _ in open(p,encoding='utf-8')) if os.path.exists(p) else 0)\""
     }
   }

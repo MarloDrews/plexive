@@ -60,8 +60,9 @@ for. The check ran, examined mojibake, and reported success: 0 emoji refusals in
 The 160 cases in `.claude/hooks/hook_cases.py` all missed it because that harness FED payloads
 through `json.dumps()` with the default `ensure_ascii`, so its emoji never reached the hook as
 bytes at all. This case feeds the bytes. THAT HARNESS WAS REPAIRED ON 2026-09-02 and now feeds
-bytes too, at 162 cases; the two `harness bytes:` cases it gained drive a copy of the write
-hook with the pre-2026-09-01 read restored, so it goes red if anything there escapes again.
+bytes too, at 178 cases counted the same day; the two `harness bytes:` cases it gained drive
+a copy of the write hook with the pre-2026-09-01 read restored, so it goes red if anything
+there escapes again.
 CW-17a is therefore no longer the only place raw emoji bytes reach `check_emoji`, and it is
 kept because it also asserts the block MESSAGE names `U+1F680`, which no harness case does.
 
@@ -162,12 +163,15 @@ them on PATH and this machine does not.
 | `cw-16b-commit-rules-absent-says-so` | hook: `pretooluse_bash.py` | commit-rules injection | the absent input | 0 |
 | `cw-17a-emoji-as-raw-utf8-bytes` | hook: `pretooluse_write.py` | `check_emoji` | the decode defect | 0 |
 | `cw-17b-non-emoji-utf8-in-a-py` | hook: `pretooluse_write.py` | `check_emoji` | the allow direction | 0 |
+| `cw-18-stop-hook-ordinary-failures` | hook: `stop_rule_log.py` | refusal detection | the allow direction | 0 |
 
-The last four rows were added 2026-09-02. CW-16a and CW-16b existed since 2026-08-31 and had a
-paragraph above but **no row here**, so this table listed 29 of the 31 cases the directory holds
-and a reader counting it came up two short of what `run_all.sh` runs. That is corrected in the
-same commit as the CW-17 pair rather than left, because a table of cases is exactly the kind of
-list whose omission looks identical to a case that does not exist.
+The last five rows were added 2026-09-02. CW-16a and CW-16b existed since 2026-08-31 and had a
+paragraph above but **no row here**, so this table listed 29 of the 31 cases the directory then
+held and a reader counting it came up two short of what `run_all.sh` runs. That is corrected in
+the same commit as the CW-17 pair rather than left, because a table of cases is exactly the kind
+of list whose omission looks identical to a case that does not exist. CW-18 landed later the
+same day and went unlisted in exactly that way; the directory holds 32 cases now and this table
+lists all 32, counted with `git ls-files -- tools/correct-work/cases | wc -l`.
 
 ## The declared exit code, and why the comparison is not against zero
 
