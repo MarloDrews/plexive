@@ -42,22 +42,22 @@
       "why": "SET BY tools/correct-work/cases/cw-7-second-scoped-rules-file.sh, not by a commit. That case exists to prove a SECOND correctly scoped rules file is correct work, so a pin at the measured 1 would red on a stored correct-work input, which is the inverse defect CLAUDE.md keeps apart from the rest. The floor under this same container is MIN_RULES_FILES=1 in the step above it, so the container is fenced at both ends by two different assertions on purpose."
     },
     "settings_hook_events": {
-      "budget": 1,
-      "measured": 1,
+      "budget": 2,
+      "measured": 2,
       "kind": "pinned",
-      "why": "PINNED, AND THE REPLAY SUPPORTS THE PIN. One increase in 754 commits, 06c30115 (2026-06-11), and it created the container from nothing rather than growing one. PreToolUse is the only event ever configured. A PostToolUse or Stop hook is a new class of interception, and adding a hook was considered in this topic and declined."
+      "why": "RAISED 2026-09-02 on branch feat/stop-hook-rule-log, in the same commit as the growth. WHAT CHANGED IS A DECISION, NOT A COUNT: register entry 14 of 2026-09-01 decided that the rule-behaviour log lives on a Stop hook, and plan item 34 is the topic that built it. The measurement behind the entry is that a call refused by a deny rule is invisible to PreToolUse and to PostToolUse, and visible to Stop, so no arrangement of the existing two hooks could have produced this log. THE SUPERSEDED WHY FIELD IS KEPT BELOW RATHER THAN DELETED, because a reader who only sees the new number cannot tell a decision that was reversed from one that was never taken. Stop is the second event and it is a different class from PreToolUse in the direction that matters: it sees no tool input, blocks nothing, and cannot change what a session may do. SUPERSEDED, 2026-08-31: 'PINNED, AND THE REPLAY SUPPORTS THE PIN. One increase in 754 commits, 06c30115 (2026-06-11), and it created the container from nothing rather than growing one. PreToolUse is the only event ever configured. A PostToolUse or Stop hook is a new class of interception, and adding a hook was considered in this topic and declined.'"
     },
     "settings_hook_matchers": {
-      "budget": 2,
-      "measured": 2,
+      "budget": 3,
+      "measured": 3,
       "kind": "pinned",
-      "why": "PINNED, AND THE REPLAY SUPPORTS THE PIN. Two increases: 06c30115 created the container, f0b957d7 (2026-08-30) added the Write|Edit matcher. Neither ever took the count above 2, so this pin would have blocked neither. A third matcher intercepts another tool."
+      "why": "RAISED 2026-09-02 on branch feat/stop-hook-rule-log, in the same commit as the growth. WHAT CHANGED IS A DECISION, NOT A COUNT: register entry 14 of 2026-09-01 decided that the rule-behaviour log lives on a Stop hook, and plan item 34 is the topic that built it. The measurement behind the entry is that a call refused by a deny rule is invisible to PreToolUse and to PostToolUse, and visible to Stop, so no arrangement of the existing two hooks could have produced this log. THE SUPERSEDED WHY FIELD IS KEPT BELOW RATHER THAN DELETED, because a reader who only sees the new number cannot tell a decision that was reversed from one that was never taken. THIS CONTAINER WAS NOT IN THE THREE THE BATCH BRIEF NAMED, AND IT IS BREACHED ANYWAY, which is the whole argument for measuring a ceiling rather than reasoning about one. The step counts ENTRIES PER EVENT, not entries carrying a matcher key (.github/workflows/backend-checks.yml, 'matchers = [entry for group in hooks.values() for entry in group]'). A Stop entry has no matcher and is still an entry, so the count went 2 -> 3 while the number of tools intercepted stayed at two. Measured 2026-09-02 by loading the file and re-running that expression: events=1 matchers=2 commands=2 before, events=2 matchers=3 commands=3 after. SUPERSEDED, 2026-08-31: 'PINNED, AND THE REPLAY SUPPORTS THE PIN. Two increases: 06c30115 created the container, f0b957d7 (2026-08-30) added the Write|Edit matcher. Neither ever took the count above 2, so this pin would have blocked neither. A third matcher intercepts another tool.'"
     },
     "settings_hook_commands": {
-      "budget": 2,
-      "measured": 2,
+      "budget": 3,
+      "measured": 3,
       "kind": "pinned",
-      "why": "PINNED, AND THE REPLAY SUPPORTS THE PIN. One increase, 06c30115, which created the container. The count has been 2 ever since."
+      "why": "RAISED 2026-09-02 on branch feat/stop-hook-rule-log, in the same commit as the growth. WHAT CHANGED IS A DECISION, NOT A COUNT: register entry 14 of 2026-09-01 decided that the rule-behaviour log lives on a Stop hook, and plan item 34 is the topic that built it. The measurement behind the entry is that a call refused by a deny rule is invisible to PreToolUse and to PostToolUse, and visible to Stop, so no arrangement of the existing two hooks could have produced this log. THE SUPERSEDED WHY FIELD IS KEPT BELOW RATHER THAN DELETED, because a reader who only sees the new number cannot tell a decision that was reversed from one that was never taken. One command per wired hook, so this number follows hook_scripts minus the harness. SUPERSEDED, 2026-08-31: 'PINNED, AND THE REPLAY SUPPORTS THE PIN. One increase, 06c30115, which created the container. The count has been 2 ever since.'"
     },
     "settings_permissions_allow": {
       "budget": 4,
@@ -78,10 +78,10 @@
       "why": "PINNED AT ZERO. Never non-zero in 754 commits, in any settings file on this machine. An ask rule is a third permission mode this project has never used; the absence arrived as a default rather than as a decision, and this pin is what turns it into one."
     },
     "hook_scripts": {
-      "budget": 3,
-      "measured": 3,
+      "budget": 4,
+      "measured": 4,
       "kind": "pinned",
-      "why": "PINNED, AND THE REPLAY SUPPORTS THE PIN. One increase, f0b957d7 (2026-08-30), which created the container with all three at once: two wired hooks and hook_cases.py, their both-directions test harness. Adding a hook was considered in this topic and declined."
+      "why": "RAISED 2026-09-02 on branch feat/stop-hook-rule-log, in the same commit as the growth. WHAT CHANGED IS A DECISION, NOT A COUNT: register entry 14 of 2026-09-01 decided that the rule-behaviour log lives on a Stop hook, and plan item 34 is the topic that built it. The measurement behind the entry is that a call refused by a deny rule is invisible to PreToolUse and to PostToolUse, and visible to Stop, so no arrangement of the existing two hooks could have produced this log. THE SUPERSEDED WHY FIELD IS KEPT BELOW RATHER THAN DELETED, because a reader who only sees the new number cannot tell a decision that was reversed from one that was never taken. Four now: the two wired PreToolUse hooks, stop_rule_log.py, and hook_cases.py, which is the both-directions harness for all three rather than a fourth interception. SUPERSEDED, 2026-08-31: 'PINNED, AND THE REPLAY SUPPORTS THE PIN. One increase, f0b957d7 (2026-08-30), which created the container with all three at once: two wired hooks and hook_cases.py, their both-directions test harness. Adding a hook was considered in this topic and declined.'"
     },
     "project_skills": {
       "budget": 2,
@@ -160,6 +160,10 @@
     "user_settings_json_permission_rules": {
       "recorded": "0",
       "recheck": "python -c \"import json;print(json.load(open(r'C:/Users/marlo/.claude/settings.json')).get('permissions',{}))\""
+    },
+    "rule_log_events": {
+      "recorded": "0",
+      "recheck": "python -c \"import os;p='.claude/rule-log/events.jsonl';print(sum(1 for _ in open(p,encoding='utf-8')) if os.path.exists(p) else 0)\""
     }
   }
 }

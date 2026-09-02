@@ -38,3 +38,10 @@ docs/content-structure/generated/*/_batches/
 
 # User-uploaded content (runtime data, not source)
 user_uploads/
+
+# The rule-behaviour log the Stop hook writes (added 2026-09-02). Runtime data
+# about how THIS machine's sessions went, not source: one record per refusal and
+# one per session, plus the offsets that keep the read incremental. It is the
+# only thing under .claude/ that a session writes to on every stop, and leaving
+# it tracked would put a diff in front of the user at the end of every session.
+.claude/rule-log/
