@@ -57,9 +57,13 @@ hook read stdin with `json.load(sys.stdin)`, which decodes with the machine's de
 cp1252 here -- and the four UTF-8 bytes of an emoji are every one of them a defined cp1252
 character, so they decoded without raising into codepoints outside the range `check_emoji` looks
 for. The check ran, examined mojibake, and reported success: 0 emoji refusals in 135 transcripts.
-The 160 cases in `.claude/hooks/hook_cases.py` all missed it because that harness feeds payloads
+The 160 cases in `.claude/hooks/hook_cases.py` all missed it because that harness FED payloads
 through `json.dumps()` with the default `ensure_ascii`, so its emoji never reached the hook as
-bytes at all. This case feeds the bytes.
+bytes at all. This case feeds the bytes. THAT HARNESS WAS REPAIRED ON 2026-09-02 and now feeds
+bytes too, at 162 cases; the two `harness bytes:` cases it gained drive a copy of the write
+hook with the pre-2026-09-01 read restored, so it goes red if anything there escapes again.
+CW-17a is therefore no longer the only place raw emoji bytes reach `check_emoji`, and it is
+kept because it also asserts the block MESSAGE names `U+1F680`, which no harness case does.
 
 **CW-17b does not discriminate**, like CW-9a, CW-13, CW-15c and the CW-16 pair, and says so in its
 own header: it exits 0 against both trees. It stores the over-correction a decode fix invites -- a

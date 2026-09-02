@@ -22,7 +22,7 @@
 set -eo pipefail
 
 # A COPY. The real .claude/skills/commit/SKILL.md is never moved or deleted -- the same rule
-# hook_cases.py follows for its four temp trees.
+# hook_cases.py follows for its temp trees, of which there are five since 2026-09-02.
 T="$RUNNER_TEMP/no-rules-tree"
 rm -rf "$T"; mkdir -p "$T/.claude/hooks" "$T/.claude/skills" "$T/tools"
 cp .claude/hooks/pretooluse_bash.py "$T/.claude/hooks/"

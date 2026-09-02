@@ -31,12 +31,23 @@ TWO LITERALS ARE BUILT BY CONCATENATION ON PURPOSE, the emoji and the deprecated
 utcnow call. Spelled out, they would make this file trip the very checks it
 exists to exercise, and the harness would become uneditable under its own gate.
 
+PAYLOADS ARE FED AS RAW UTF-8 BYTES, NOT AS json.dumps() ESCAPES, since
+2026-09-02. Until then every payload went through json.dumps() with the
+default ensure_ascii and subprocess text=True, so an emoji arrived as pure
+ASCII escapes -- which the cp1252 stdin read repaired on 2026-09-01 decoded
+perfectly, so 160 cases passed for two days against a check that could not
+fire on anything a client sends. The two `harness bytes:` cases exist to make
+that undetectable-by-construction state detectable: one of them drives a copy
+of the write hook with the BROKEN read restored and expects it to ALLOW, and
+it is red for exactly as long as anything here escapes.
+
 THE REAL BACKUP DIRECTORY IS NEVER TOUCHED, in any direction, for any reason.
 Every case runs with PLEXIVE_BACKUP_DIR pointed at a temporary directory this
 script creates and removes.
 """
 
 import json
+import locale
 import os
 import shutil
 import subprocess
@@ -59,6 +70,13 @@ CHECK_GLYPH = chr(0x2713)  # U+2713, outside the emoji range on purpose
 # make_fixtures, so a hook that stops carrying it fails loudly instead of
 # quietly producing a case that can never block.
 SENTINEL = 'if __name__ == "__main__":'
+
+# The splice point used to build a copy of the write hook that reads stdin the
+# way it did BEFORE 2026-09-01. Asserted in write_legacy_stdin for the same
+# reason SENTINEL is: a splice that silently found nothing yields an ordinary
+# hook and a case that can never discriminate.
+LEGACY_STDIN_NEW = "payload = read_payload()"
+LEGACY_STDIN_OLD = "payload = json.load(sys.stdin)"
 
 FAULT = (
     "def _injected_fault(*args):\n"
@@ -92,16 +110,47 @@ def edit_payload(path, new_string):
     }
 
 
+def payload_bytes(payload):
+    """The BYTES a real client puts on a hook's stdin.
+
+    THIS WAS `json.dumps(payload)` FED THROUGH `text=True`, AND THAT DID TWO
+    SEPARATE THINGS, EACH OF WHICH ON ITS OWN HIDES THE 2026-09-01 DEFECT.
+
+    `json.dumps` defaults to `ensure_ascii=True`, so an emoji left here as
+    `\\uXXXX` escapes -- pure ASCII, which the old cp1252 `json.load(sys.stdin)`
+    decoded perfectly well, so every emoji case in this file passed against a
+    check that could not fire on anything a client sends.
+
+    `text=True` encodes with the machine's DEFAULT encoding, cp1252 here, which
+    has no representation for U+1F525 at all. Passing `ensure_ascii=False` alone
+    therefore does not feed bytes, it raises UnicodeEncodeError. IT IS ONE
+    ARGUMENT ON EACH OF TWO CALLS, NOT ONE ARGUMENT, and a session told
+    otherwise will find the harness erroring rather than fixed.
+
+    A str payload -- the malformed-JSON cases -- is encoded as UTF-8 rather than
+    re-serialised, so what those cases send stays exactly what they spell.
+    """
+    if isinstance(payload, (bytes, bytearray)):
+        return bytes(payload)
+    if isinstance(payload, str):
+        return payload.encode("utf-8")
+    return json.dumps(payload, ensure_ascii=False).encode("utf-8")
+
+
 def run(script, payload, env):
     proc = subprocess.run(
         [sys.executable, str(script)],
-        input=payload if isinstance(payload, str) else json.dumps(payload),
+        input=payload_bytes(payload),
         capture_output=True,
-        text=True,
         env=env,
         cwd=str(REPO_ROOT),
     )
-    return proc.returncode, proc.stdout, proc.stderr
+    # Output is decoded with the machine's default encoding, which is what
+    # text=True did and what the child writes with. Only the INPUT changed.
+    enc = locale.getpreferredencoding(False)
+    return (proc.returncode,
+            proc.stdout.decode(enc, errors="replace"),
+            proc.stderr.decode(enc, errors="replace"))
 
 
 def build_cases(fx):
@@ -112,6 +161,7 @@ def build_cases(fx):
     stub = fx["stub"]
     fault_bash = fx["fault_bash"]
     fault_write = fx["fault_write"]
+    legacy_write = fx["legacy_write"]
 
     empty_env = {"PLEXIVE_BACKUP_DIR": str(empty)}
     backups = str(fresh)
@@ -743,6 +793,26 @@ def build_cases(fx):
              payload=bash_payload("rm {}")),
     ]
 
+    # === the harness must feed the bytes a client sends =======================
+    # THESE TWO CASES ARE ABOUT THIS FILE, NOT ABOUT A CHECK. Every other emoji
+    # case above passes whether the payload carries the emoji as raw UTF-8 or as
+    # \uXXXX escapes, because a correct hook blocks both -- which is why they
+    # all stayed green from 2026-08-30 to 2026-09-02 while check_emoji could not
+    # fire on anything a real client sent. The discriminator is the BROKEN read,
+    # not the working one: the pre-2026-09-01 json.load(sys.stdin) blocks the
+    # escaped spelling and allows the raw one, so a case expecting it to ALLOW is
+    # red for exactly as long as this harness escapes.
+    cases.append(dict(
+        name="harness bytes: pre-2026-09-01 read is BLIND to a raw emoji",
+        script=legacy_write, expect=0,
+        payload=write_payload("backend/app/routes.py", "# ship it " + FIRE + "\n"),
+        stdout_must_be_empty=True,
+        stderr_must_not_contain="found no content field"))
+    cases.append(dict(
+        name="harness bytes: today's read SEES the same raw emoji",
+        script=WRITE_HOOK, expect=2,
+        payload=write_payload("backend/app/routes.py", "# ship it " + FIRE + "\n")))
+
     # === criterion 8: the six added emoji suffixes, both directions ===========
     for suffix, path, clean in ADDED_SUFFIX_FILES:
         cases.append(dict(
@@ -762,7 +832,7 @@ def make_fixtures(tmp):
     check_backup_age.sh is never replaced, and the real backup directory is
     never read.
 
-    Four trees:
+    Five trees:
       orphan      a copy of the Bash hook with no .claude/skills/commit/SKILL.md,
                   the fails-open case exercises the real resolution path.
       stub        a copy of the Bash hook whose tools/check_backup_age.sh exits
@@ -771,6 +841,8 @@ def make_fixtures(tmp):
       fault-bash  a copy of the Bash hook with a raising check appended to its
                   registry.
       fault-write the same for the write hook.
+      legacy-stdin a copy of the write hook reading stdin the pre-2026-09-01
+                  way, which is how this file proves it feeds bytes.
     """
     fresh = tmp / "backups-fresh"
     fresh.mkdir()
@@ -807,9 +879,42 @@ def make_fixtures(tmp):
     fault_bash = write_faulted(BASH_HOOK, tmp / "fault-bash-tree", "pretooluse_bash.py")
     fault_write = write_faulted(WRITE_HOOK, tmp / "fault-write-tree",
                                 "pretooluse_write.py")
+    legacy_write = write_legacy_stdin(WRITE_HOOK, tmp / "legacy-stdin-tree",
+                                      "pretooluse_write.py")
 
     return dict(fresh=fresh, empty=empty, orphan=orphan, stub=stub,
-                fault_bash=fault_bash, fault_write=fault_write)
+                fault_bash=fault_bash, fault_write=fault_write,
+                legacy_write=legacy_write)
+
+
+def write_legacy_stdin(source, root, name):
+    """A copy of the write hook with the PRE-2026-09-01 stdin read restored.
+
+    This fixture exists to make the harness prove that it feeds bytes. Fed the
+    `\\uXXXX` escapes this file sent until 2026-09-02, the broken read decodes
+    them perfectly and blocks, so escaped and raw payloads are indistinguishable
+    from the outside -- which is exactly why 160 cases passed for two days
+    against a check that could not fire. Fed the raw UTF-8 bytes a client sends,
+    it allows. The case pointed at this copy expects exit 0 and is therefore RED
+    for as long as the harness escapes anything.
+
+    THE SPLICE IS ASSERTED, as in write_faulted: if the hook stops carrying the
+    line, this raises rather than handing back a fixed hook wearing the legacy
+    name.
+    """
+    text = source.read_text(encoding="utf-8")
+    if text.count(LEGACY_STDIN_NEW) != 1:
+        raise RuntimeError(
+            "the legacy-stdin fixture could not find exactly one %r in %s "
+            "(found %d). The copy would be an ordinary hook, and the case "
+            "expecting exit 0 would be asserting nothing about the harness."
+            % (LEGACY_STDIN_NEW, source.name, text.count(LEGACY_STDIN_NEW))
+        )
+    (root / ".claude" / "hooks").mkdir(parents=True)
+    target = root / ".claude" / "hooks" / name
+    target.write_text(text.replace(LEGACY_STDIN_NEW, LEGACY_STDIN_OLD),
+                      encoding="utf-8")
+    return target
 
 
 def write_faulted(source, root, name):
@@ -852,6 +957,13 @@ def judge(case, code, out, err):
     want_err = case.get("stderr_must_contain")
     if want_err and want_err not in err:
         return False, "stderr missing " + repr(want_err)
+
+    # An ALLOW can be reached by inspecting clean content or by inspecting
+    # nothing at all, and the exit code cannot tell those apart. This is how a
+    # case says which of the two it means.
+    nope_err = case.get("stderr_must_not_contain")
+    if nope_err and nope_err in err:
+        return False, "stderr should not contain " + repr(nope_err)
 
     if case.get("stdout_one_json"):
         try:
