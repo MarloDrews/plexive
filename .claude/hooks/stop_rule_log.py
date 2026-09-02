@@ -98,6 +98,22 @@ HOOK_BLOCK_MARK = "BLOCKED"
 # implied by an absence. Section 4.3.
 NOT_A_RULE_REFUSAL = ("user-rejected", "automode-blocked")
 
+# A FOURTH SHAPE EXISTS AND THE MEASUREMENT DID NOT SEE IT. Found 2026-09-02 by
+# running the detector above over the whole corpus and comparing its total
+# against that report's: the three shapes account for 6 + 36 + 13 = 55 refusals,
+# while toolDenialKind reads permission-rule 50 times, and one of those 50 is
+#
+#     Remove-Item on system path '/E' is blocked. This path is protected from
+#     removal.
+#
+# which is Claude Code's OWN built-in path protection. It is mislabelled
+# permission-rule for the same reason a hook block is, and it is not a rule this
+# repository wrote, so it belongs with the two above rather than in the log. It
+# is NOT matched, deliberately, and it is written down here rather than left as
+# an absence, because a fourth shape that nobody named is how the count above
+# quietly stops being the whole picture. The harness pins it at zero refusals.
+BUILT_IN_PROTECTION = "is blocked. This path is protected from removal."
+
 # The session half. Nothing in this repository instructs a session to write one
 # of these; that instruction is a separate document change. The lifter is here
 # so the log has somewhere to put one the day it exists.

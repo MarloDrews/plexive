@@ -1038,6 +1038,18 @@ def build_cases(fx):
         env=stop_env("orphan"), log=stop_log("orphan"),
         log_must_contain_all=['"orphan_tool_use_count": 1']))
 
+    # --- the fourth shape, which is not this repository's rule ---------------
+    # THIS CASE PASSES AND IT IS NOT A CLEAN BILL OF HEALTH, in the shape cw-12b
+    # already uses. It stores a refusal the detector deliberately does not count,
+    # so the decision lives in something that runs: the day somebody adds a
+    # fourth shape, this flips to a failure and says which record moved.
+    cases.append(dict(
+        name="stop: built-in path protection is not a Plexive rule",
+        script=STOP_HOOK, expect=0,
+        payload=stop_payload(stop["builtin"], "builtin-1"),
+        env=stop_env("builtin"), stdout_must_contain="refusals=0",
+        log=stop_log("builtin"), log_kinds={"session": 1, "refusal": 0}))
+
     # --- the session half, both directions -----------------------------------
     # NOTHING IN THIS REPOSITORY TELLS A SESSION TO WRITE ONE OF THESE. The
     # lifter is covered anyway, so the day that instruction is written the
@@ -1210,6 +1222,18 @@ def make_fixtures(tmp):
         call("toolu_P2", "Bash", {"command": "sleep 600"}),
     ])
 
+    # THE FOURTH SHAPE, verbatim from the single record carrying it in the 167
+    # transcripts scanned 2026-09-02. Claude Code's own built-in path protection,
+    # labelled permission-rule like a hook block and by the same defect. Not a
+    # rule this repository wrote, so it is not counted, and this fixture is what
+    # makes that a decision somebody can see flip rather than an absence.
+    stop_builtin = write_transcript(stop_root / "built-in-protection.jsonl", [
+        call("toolu_B1", "PowerShell", {"command": "Remove-Item -Recurse /E"}),
+        result("toolu_B1", "Remove-Item on system path '/E' is blocked. This "
+                           "path is protected from removal.",
+               denial_kind="permission-rule"),
+    ])
+
     stop_clean = write_transcript(stop_root / "clean.jsonl", [
         call("toolu_C1", "Bash", {"command": "git status --porcelain"}),
         result("toolu_C1", "", is_error=False),
@@ -1221,7 +1245,8 @@ def make_fixtures(tmp):
     stop = dict(
         three=stop_three, growth=stop_growth, ordinary=stop_ordinary,
         readonly=stop_readonly, tail=stop_tail, orphan=stop_orphan,
-        clean=stop_clean, missing=stop_root / "there-is-no-such-transcript.jsonl",
+        clean=stop_clean, builtin=stop_builtin,
+        missing=stop_root / "there-is-no-such-transcript.jsonl",
         field_keyed=stop_field_keyed, logs=tmp / "stop-logs",
     )
 
