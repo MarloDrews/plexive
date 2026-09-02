@@ -124,7 +124,7 @@ Output is `C:\Users\marlo\OneDrive\plexive-backups`, written weekly by a Windows
 
 These are repository settings, not files, so nothing in the tree records them and `git log` will not show them changing. Enabled 2026-08-27, all free because the repository is public.
 
-Code scanning uses the ADVANCED setup, meaning `.github/workflows/codeql.yml`, and GitHub's default setup is deliberately left `not-configured`; the two are mutually exclusive, so enabling default setup would disable the workflow. What is on, what is deliberately off, how push protection was verified to block rather than merely to be configured, and the `mobile-kmp/` dependency-graph gap with its 50-alert triage: `docs/RULE_HISTORY.md` under "## Rule: repository security settings are not recorded in the tree" and "### From `## Repository Security Settings`: `mobile-kmp/` dependency scanning and alert triage", plus `docs/research/mobile-kmp-alert-triage-2026-08.md`.
+Code scanning uses the ADVANCED setup, meaning `.github/workflows/codeql.yml`, and GitHub's default setup is deliberately left `not-configured`. What is on, what is deliberately off, how push protection was verified to block rather than merely to be configured, and the `mobile-kmp/` dependency-graph gap with its 50-alert triage: `docs/RULE_HISTORY.md` under "## Rule: repository security settings are not recorded in the tree" and "### From `## Repository Security Settings`: `mobile-kmp/` dependency scanning and alert triage", plus `docs/research/mobile-kmp-alert-triage-2026-08.md`.
 
 ## Closed Beta
 
