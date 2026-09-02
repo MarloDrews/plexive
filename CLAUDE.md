@@ -3,6 +3,16 @@
 Open source social media app that replaces doomscrolling with valuable content.
 
 ## Rules
+THIS FILE IS CLOSED: a session adds nothing to it, and the one exception is correcting a sentence its
+own change made false, which the rule below already requires. Something new enters only through a
+register entry establishing that it applies in EVERY session without condition, which is what this
+file is for; the container table from the sorting of all 42 rules says where a rule that fails that
+test belongs instead. IT IS NOT ENFORCEMENT AND MUST NOT BE READ AS ANY: it cannot stop a session
+adding, and `claude_md_rules` and `claude_md_unconditional_rules` see a count and nothing else, so a
+session that adds a rule and raises its ceiling in one commit passes both. What those ceilings buy is
+that the addition is visible in a diff and has to be defended, which is the limit
+`tools/surface-budget.json` states about itself in `_what_a_ceiling_cannot_see`.
+
 - All code comments in English
 - I am a beginner, briefly explain what you are doing and why
 - `.claude/skills/execution-discipline/SKILL.md` carries the execution discipline for this repository and applies to every task that changes a file, including the rule on staying inside the current task's scope
