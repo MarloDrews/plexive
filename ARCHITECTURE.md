@@ -36,9 +36,11 @@ by size almost the whole file; then ## CHAT / WEBSOCKET DESIGN, ## DEPLOYMENT
 INVARIANT (M138), ## SECURITY and ## FRONTEND COMPONENTS. THE STANDARD ALL SIX
 ARE BEING BROUGHT TO, and not a description of where they now stand: an entry
 earns its place on what it RULES OUT or where it points rather than on what it
-describes. Of ## FOLDER STRUCTURE's 337 described entries, 23 -- the mobile-kmp/
-block -- have been brought to it. The other 314 have not, and nothing in the file
-marks which is which. A deliberate omission, a constraint, a ban and a
+describes. Of ## FOLDER STRUCTURE's 337 described entries, 48 have been brought
+to it: the 23 of the mobile-kmp/ block, and the first 25 in file order --
+.github/dependabot.yml through backend/tests/rate_limit_test.py -- on
+2026-09-02. The other 289 have not, and nothing in the file marks which is
+which. A deliberate omission, a constraint, a ban and a
 two-consumer contract are none of them visible in any one file, and each is a
 thing a session would otherwise build, break or trim in good faith.
 
