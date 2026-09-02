@@ -31,16 +31,21 @@ what you find stale in the same batch rather than leaving it for the next
 accident.
 
 WHAT IS LEFT HERE, because it is deliberately not everything it once was. Six
-sections: this one; ## FOLDER STRUCTURE, the map of where things live, which is
-by size almost the whole file; then ## CHAT / WEBSOCKET DESIGN, ## DEPLOYMENT
+sections: this one; ## FOLDER STRUCTURE, which is by size almost the whole
+file; then ## CHAT / WEBSOCKET DESIGN, ## DEPLOYMENT
 INVARIANT (M138), ## SECURITY and ## FRONTEND COMPONENTS. THE STANDARD ALL SIX
 ARE BEING BROUGHT TO, and not a description of where they now stand: an entry
 earns its place on what it RULES OUT or where it points rather than on what it
-describes. Of ## FOLDER STRUCTURE's 337 described entries, 48 have been brought
-to it: the 23 of the mobile-kmp/ block, and the first 25 in file order --
-.github/dependabot.yml through backend/tests/rate_limit_test.py -- on
-2026-09-02. The other 289 have not, and nothing in the file marks which is
-which. A deliberate omission, a constraint, a ban and a
+describes. An entry carrying neither earns no line at all, so ## FOLDER
+STRUCTURE is NOT an index of the tree and a file's absence from it says nothing
+about the file. PROGRESS HERE IS A FRONTIER RATHER THAN A FRACTION, because a
+deletion cannot make a frontier wrong the way it makes a denominator wrong:
+every entry from the start of ## FOLDER STRUCTURE through tools/correct-work/
+has been brought to the standard, on 2026-09-02, as has the mobile-kmp/ block;
+nothing past that frontier has, and the frontier is the only thing that says
+which is which. The section holds 308 described entries today, down from 337
+before that batch, and the number FALLS as entries earn no line -- it is a
+measurement and not a denominator. A deliberate omission, a constraint, a ban and a
 two-consumer contract are none of them visible in any one file, and each is a
 thing a session would otherwise build, break or trim in good faith.
 
