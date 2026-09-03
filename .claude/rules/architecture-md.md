@@ -19,7 +19,11 @@ ever survives in both, one of them is wrong and nobody can tell which.
 - An entry earns its line by what it RULES OUT or by where it POINTS: a constraint, a ban, a
   deliberate omission, a contract between two files, or the reason a thing is the way it is. It
   does not earn its line by describing what a file contains, because the file answers that better
-  and the description drifts silently while the file moves underneath it.
+  and the description drifts silently while the file moves underneath it. NONE OF THOSE FIVE
+  IS VISIBLE IN ANY ONE FILE, which is the whole reason they are written down, and each is a
+  thing a session would otherwise build, break or trim in good faith. That sentence stood in
+  the header of ARCHITECTURE.md until 2026-09-03 and moved here rather than being dropped
+  with the clauses it explains.
 - A location claim earns its place when it says something THE TREE DOES NOT SAY. An entry that
   restates the path it is printed at, with or without an endpoint list beside it, earns nothing.
 - A bare parameter, cap, clamp, default or list of fields earns its place only when the entry says
