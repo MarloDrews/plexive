@@ -34,6 +34,11 @@ const CHROME_CANDIDATES = [
 const target = process.argv[2]
 const WIDTH = Number(process.argv[3] || 411)
 const HEIGHT = Number(process.argv[4] || 915)
+// The two half ids, because /specimen now renders TWO light-over-dark panels and
+// each has its own pair. Defaulting to the original pair keeps every earlier
+// invocation working unchanged.
+const LIGHT_ID = process.argv[5] || "halfLight"
+const DARK_ID = process.argv[6] || "halfDark"
 
 if (!target) {
   console.error("FAIL: pass the path to the HTML file to measure.")
@@ -124,6 +129,8 @@ function cdp(ws) {
 
 // The measurements, all read from the live layout rather than from the source.
 const PROBE = `(() => {
+  const LIGHT_ID = "__LIGHT_ID__";
+  const DARK_ID = "__DARK_ID__";
   const doc = document.documentElement;
   const buttons = Array.from(document.querySelectorAll("button, summary"));
   const heights = buttons.map((b) => Math.round(b.getBoundingClientRect().height));
@@ -171,6 +178,43 @@ const PROBE = `(() => {
   doc.style.overflowX = prevHtml;
   document.body.style.overflowX = prevBody;
 
+  // ROW ALIGNMENT BETWEEN THE TWO HALVES. A file whose whole purpose is that a
+  // colour and its equivalent sit vertically above each other cannot establish
+  // that by looking at the source: the two halves are rendered by the same code
+  // here, but they could still disagree if one half's rows wrapped. So the LEFT
+  // EDGE of every .accrow is read from the live layout, and the two halves are
+  // compared. On a file that has no .accrow this comes back as an empty list
+  // rather than as a pass, so it cannot report alignment it never measured.
+  var rowsOf = (id) => {
+    const host = document.getElementById(id);
+    if (!host) return [];
+    return Array.from(host.querySelectorAll(".accrow")).map((el) => {
+      const r = el.getBoundingClientRect();
+      return { left: Math.round(r.left), width: Math.round(r.width),
+        top: Math.round(r.top + window.scrollY), bottom: Math.round(r.bottom + window.scrollY) };
+    });
+  };
+  const lightRows = rowsOf(LIGHT_ID);
+  const darkRows = rowsOf(DARK_ID);
+  const n = Math.min(lightRows.length, darkRows.length);
+  let worstLeft = null;
+  let worstWidth = null;
+  for (let i = 0; i < n; i += 1) {
+    const dl = Math.abs(lightRows[i].left - darkRows[i].left);
+    const dw = Math.abs(lightRows[i].width - darkRows[i].width);
+    worstLeft = worstLeft === null ? dl : Math.max(worstLeft, dl);
+    worstWidth = worstWidth === null ? dw : Math.max(worstWidth, dw);
+  }
+  const rows = {
+    lightCount: lightRows.length,
+    darkCount: darkRows.length,
+    worstLeftDelta: worstLeft,
+    worstWidthDelta: worstWidth,
+    firstRowTop: lightRows.length ? lightRows[0].top : null,
+    lastRowBottom: darkRows.length ? darkRows[darkRows.length - 1].bottom : null,
+  };
+
+
   return JSON.stringify({
     innerWidth: window.innerWidth,
     innerHeight: window.innerHeight,
@@ -183,9 +227,10 @@ const PROBE = `(() => {
     minButtonHeight: heights.length ? Math.min.apply(null, heights) : null,
     buttonsUnder44: heights.filter((h) => h < 44).length,
     overflowing: overflowing,
-    halfLight: half("halfLight"),
-    halfDark: half("halfDark"),
+    halfLight: half(LIGHT_ID),
+    halfDark: half(DARK_ID),
     readingFace: probeFont("p.body"),
+    rows: rows,
   });
 })()`
 
@@ -216,7 +261,8 @@ async function main() {
   // what is being counted.
   await sleep(2500)
 
-  const res = await send("Runtime.evaluate", { expression: PROBE, returnByValue: true })
+  const expression = PROBE.replaceAll("__LIGHT_ID__", () => LIGHT_ID).replaceAll("__DARK_ID__", () => DARK_ID)
+  const res = await send("Runtime.evaluate", { expression, returnByValue: true })
   const m = JSON.parse(res.result.value)
 
   const requests = events
@@ -244,11 +290,23 @@ async function main() {
   console.log("smallest height:          " + m.minButtonHeight + " px   floor 44")
   console.log("under 44 px:              " + m.buttonsUnder44 + "   expected 0")
   console.log("")
+  console.log("half ids measured:        " + LIGHT_ID + " / " + DARK_ID)
   console.log("light half height:        " + (m.halfLight ? m.halfLight.height + " px, background " + m.halfLight.background : "MISSING"))
   console.log("dark half height:         " + (m.halfDark ? m.halfDark.height + " px, background " + m.halfDark.background : "MISSING"))
   console.log("total document height:    " + m.scrollHeight + " px")
   console.log("")
   console.log("reading face on p.body:   " + JSON.stringify(m.readingFace))
+  console.log("")
+  console.log("accent rows, light half:  " + m.rows.lightCount)
+  console.log("accent rows, dark half:   " + m.rows.darkCount)
+  console.log("worst left-edge disagreement between the two halves:  " +
+    (m.rows.worstLeftDelta === null ? "n/a, no rows measured" : m.rows.worstLeftDelta + " px   expected 0"))
+  console.log("worst width disagreement between the two halves:      " +
+    (m.rows.worstWidthDelta === null ? "n/a, no rows measured" : m.rows.worstWidthDelta + " px   expected 0"))
+  console.log("first light row top " + m.rows.firstRowTop + " px, last dark row bottom " +
+    m.rows.lastRowBottom + " px, viewport height " + m.innerHeight +
+    "   all 14 rows on one screen: " +
+    (m.rows.lastRowBottom !== null && m.rows.lastRowBottom <= m.innerHeight))
   console.log("")
   console.log("requests the page made:   " + requests.length)
   requests.forEach((u) => console.log("    " + (u.length > 90 ? u.slice(0, 90) + "..." : u)))

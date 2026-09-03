@@ -53,6 +53,7 @@
 import { Fragment, useState } from "react"
 
 import GroundPairPanel from "./ground-pair-panel"
+import DarkEquivalentsPanel from "./dark-equivalents-panel"
 
 // ---------------------------------------------------------------------------
 // The four candidates.
@@ -686,6 +687,7 @@ export default function SpecimenPage() {
           0.426 on this page and not two.
           ------------------------------------------------------------------ */}
       <GroundPairPanel xheight={READING_FACE_ADJUST} />
+      <DarkEquivalentsPanel xheight={READING_FACE_ADJUST} />
     </div>
   )
 }
