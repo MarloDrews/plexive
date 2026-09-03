@@ -18,7 +18,7 @@ light background they vanish. Always:
   styled without it.
 - The `*Section` components render one post-section each. They read an
   **`--accent`** CSS variable for their highlight color; a post container sets it
-  to a format ink (e.g. `style={{ '--accent': '#cfa857' }}` for Books). Set it on
+  to a format ink (e.g. `style={{ '--accent': '#B78915' }}` for Books). Set it on
   the wrapper or accents fall back to the brand lamp purple.
 
 ## Styling idiom — Tailwind v4 utilities over semantic tokens
@@ -59,7 +59,7 @@ Stage.
 
 ```tsx
 // A Books post header on the Stage, accent set to the Books ink.
-<div style={{ background: 'var(--color-surface-0)', '--accent': '#cfa857', padding: 24 }}>
+<div style={{ background: 'var(--color-surface-0)', '--accent': '#B78915', padding: 24 }}>
   <div className="max-w-[540px] mx-auto flex flex-col gap-4">
     <span className="label-caps">From the Book</span>
     <h1 className="font-serif text-3xl font-bold text-ink leading-tight">

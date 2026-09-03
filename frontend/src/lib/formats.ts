@@ -4,8 +4,11 @@
 // chips, create wizard, empty states) must read from here so the accent
 // system stays consistent.
 //
-// "Circuit" palette: muted technical inks in blue/purple tones at matched
-// lightness. The accent hexes here are a hand-maintained mirror of the
+// Format inks, rebased 2026-09-03: saturated, chosen on a specimen against the
+// #0D0F17 ground. They keep the seven OKLCH hues of the muted "Circuit" set
+// they replace and drop its matched lightness (that set was L=0.75, C=0.110 for
+// all seven; these span L 0.636-0.693, C 0.105-0.295).
+// These hexes are a hand-maintained mirror of the
 // --color-fmt-* tokens in globals.css (web source of truth); update both
 // together. No client outside the web app carries these colors today, so one
 // that adds format colors mirrors globals.css too. The Tailwind classes below
@@ -45,8 +48,8 @@ export const FORMAT_STYLES: Record<FormatId, FormatStyle> = {
     id: "books",
     label: "Books",
     badge: "BOOKS",
-    accent: "#cfa857",
-    rgb: [207, 168, 87],
+    accent: "#B78915",
+    rgb: [183, 137, 21],
     text: "text-fmt-books",
     dot: "bg-fmt-books",
     border: "border-fmt-books",
@@ -56,8 +59,8 @@ export const FORMAT_STYLES: Record<FormatId, FormatStyle> = {
     id: "facts",
     label: "Facts",
     badge: "FACTS",
-    accent: "#7eb1f3",
-    rgb: [126, 177, 243],
+    accent: "#3490FF",
+    rgb: [52, 144, 255],
     text: "text-fmt-facts",
     dot: "bg-fmt-facts",
     border: "border-fmt-facts",
@@ -67,8 +70,8 @@ export const FORMAT_STYLES: Record<FormatId, FormatStyle> = {
     id: "people",
     label: "People",
     badge: "PEOPLE",
-    accent: "#d993ca",
-    rgb: [217, 147, 202],
+    accent: "#FF22E3",
+    rgb: [255, 34, 227],
     text: "text-fmt-people",
     dot: "bg-fmt-people",
     border: "border-fmt-people",
@@ -78,8 +81,8 @@ export const FORMAT_STYLES: Record<FormatId, FormatStyle> = {
     id: "concepts",
     label: "Ideas",
     badge: "CONCEPTS",
-    accent: "#b69feb",
-    rgb: [182, 159, 235],
+    accent: "#A774FF",
+    rgb: [167, 116, 255],
     text: "text-fmt-concepts",
     dot: "bg-fmt-concepts",
     border: "border-fmt-concepts",
@@ -89,8 +92,8 @@ export const FORMAT_STYLES: Record<FormatId, FormatStyle> = {
     id: "questions",
     label: "Q&A",
     badge: "QUESTIONS",
-    accent: "#43c3c4",
-    rgb: [67, 195, 196],
+    accent: "#1AA0A1",
+    rgb: [26, 160, 161],
     text: "text-fmt-questions",
     dot: "bg-fmt-questions",
     border: "border-fmt-questions",
@@ -100,8 +103,8 @@ export const FORMAT_STYLES: Record<FormatId, FormatStyle> = {
     id: "stories",
     label: "Stories",
     badge: "STORIES",
-    accent: "#eb9288",
-    rgb: [235, 146, 136],
+    accent: "#FF534B",
+    rgb: [255, 83, 75],
     text: "text-fmt-stories",
     dot: "bg-fmt-stories",
     border: "border-fmt-stories",
@@ -111,8 +114,8 @@ export const FORMAT_STYLES: Record<FormatId, FormatStyle> = {
     id: "academy",
     label: "Academy",
     badge: "ACADEMY",
-    accent: "#73c28d",
-    rgb: [115, 194, 141],
+    accent: "#1AA55D",
+    rgb: [26, 165, 93],
     text: "text-fmt-academy",
     dot: "bg-fmt-academy",
     border: "border-fmt-academy",
