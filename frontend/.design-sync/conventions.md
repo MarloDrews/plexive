@@ -2,7 +2,7 @@
 
 Plexive is a **dark-only** content app. Its visual language is "Stage": content
 floats on a near-black surface; color appears only on accents (format inks,
-brand lamp, action states). The serif (Newsreader) is the reading voice; the
+brand lamp, action states). The serif (EB Garamond) is the reading voice; the
 sans (Source Sans 3) is invisible UI chrome.
 
 ## Setup — wrap designs on the dark Stage
@@ -33,7 +33,7 @@ tokens (all defined in `_ds_bundle.css`):
 | Edges | `border-edge` (hairline) `border-edge-strong` |
 | Format inks | `text-/bg-/border-fmt-{books,facts,people,concepts,questions,stories,academy,neutral}` |
 | Brand + state | `text-lamp` (accent) `text-good` `text-bad` `text-like` `text-save` |
-| Type | `font-serif` (Newsreader, prose) `font-sans` (Source Sans 3, UI) `font-mono` |
+| Type | `font-serif` (EB Garamond, prose) `font-sans` (Source Sans 3, UI) `font-mono` |
 | Radii | `rounded-card` `rounded-field` (plus Tailwind `rounded-2xl/3xl/full` for chrome) |
 | Accent (in posts) | `text-(--accent)` `bg-(--accent)/10` `border-(--accent)/40` |
 

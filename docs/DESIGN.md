@@ -35,7 +35,7 @@ quiet, detached chrome around it.
   interpolates colors mid-swipe.
 - **Glow only when functional.** Focus rings (lamp), achieved/active states.
   No ambient or decorative glow anywhere.
-- **Reading comes first.** The serif (Newsreader) is the voice of the
+- **Reading comes first.** The serif (EB Garamond) is the voice of the
   content; the sans (Source Sans 3) is invisible chrome; Geist Mono carries
   numbers and metadata. Nothing competes with the post.
 
@@ -70,7 +70,7 @@ instead of opaque surface steps:
 
 | token        | font          | use                                   |
 |--------------|---------------|---------------------------------------|
-| `font-serif` | Newsreader    | post titles, prose, quotes, headings  |
+| `font-serif` | EB Garamond   | post titles, prose, quotes, headings  |
 | `font-sans`  | Source Sans 3 | UI chrome, buttons, labels, chat      |
 | `font-mono`  | Geist Mono    | numbers, metadata lines, Elo, stats   |
 

@@ -16,7 +16,7 @@ live in the gitignored `.design-sync/build/`.
    - `styles.compiled.css` — Tailwind v4 compiled via `@tailwindcss/postcss`
      (scanning `src` + `.design-sync/previews`), prefixed with the brand
      `@font-face` block, suffixed with KaTeX's stylesheet. This is `cfg.cssEntry`.
-   - `fonts/` — Newsreader / Source Sans 3 / Geist Mono (fontsource CDN) + the 20
+   - `fonts/` — EB Garamond / Source Sans 3 / Geist Mono (fontsource CDN) + the 20
      KaTeX woff2 faces.
 2. Then `node .ds-sync/package-build.mjs --config .design-sync/config.json --node-modules ./node_modules --out ./ds-bundle`
    and `node .ds-sync/package-validate.mjs ./ds-bundle`.

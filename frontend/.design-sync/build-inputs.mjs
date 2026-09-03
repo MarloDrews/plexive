@@ -15,7 +15,7 @@
 //   build/styles.compiled.css Tailwind v4 compiled output (tokens + component
 //                             classes + used utilities) prefixed with the brand
 //                             @font-face block. This is cfg.cssEntry.
-//   build/fonts/*.woff2       Newsreader / Source Sans 3 / Geist Mono, the three
+//   build/fonts/*.woff2       EB Garamond / Source Sans 3 / Geist Mono, the three
 //                             families globals.css references via --font-* vars.
 //
 // Run from the frontend package root:  node .design-sync/build-inputs.mjs
@@ -74,11 +74,11 @@ const compiled = await postcss([tailwindcss()]).process(twInput, {
 });
 const fontBlock = `/* Plexive brand fonts — shipped so designs render in the real type, not a
    fallback. globals.css maps --font-serif/sans/mono to these via @theme. */
-@font-face { font-family: "Newsreader"; font-style: normal; font-weight: 200 800; font-display: swap; src: url("./fonts/newsreader.woff2") format("woff2"); }
+@font-face { font-family: "EB Garamond"; font-style: normal; font-weight: 400 800; font-display: swap; src: url("./fonts/eb-garamond.woff2") format("woff2"); }
 @font-face { font-family: "Source Sans 3"; font-style: normal; font-weight: 200 900; font-display: swap; src: url("./fonts/source-sans-3.woff2") format("woff2"); }
 @font-face { font-family: "Geist Mono"; font-style: normal; font-weight: 100 900; font-display: swap; src: url("./fonts/geist-mono.woff2") format("woff2"); }
 :root {
-  --font-newsreader: "Newsreader", Georgia, "Times New Roman", serif;
+  --font-eb-garamond: "EB Garamond", Georgia, "Times New Roman", serif;
   --font-source-sans: "Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-geist-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
 }
@@ -104,7 +104,7 @@ console.log(`styles.compiled.css: ${(fontBlock.length + compiled.css.length + ka
 
 // ── 5. fonts ─────────────────────────────────────────────────────────────────
 const FONT_URLS = {
-  'newsreader.woff2': 'https://cdn.jsdelivr.net/fontsource/fonts/newsreader:vf@latest/latin-wght-normal.woff2',
+  'eb-garamond.woff2': 'https://cdn.jsdelivr.net/fontsource/fonts/eb-garamond:vf@latest/latin-wght-normal.woff2',
   'source-sans-3.woff2': 'https://cdn.jsdelivr.net/fontsource/fonts/source-sans-3:vf@latest/latin-wght-normal.woff2',
   'geist-mono.woff2': 'https://cdn.jsdelivr.net/fontsource/fonts/geist-mono:vf@latest/latin-wght-normal.woff2',
 };

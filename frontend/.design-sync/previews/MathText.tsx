@@ -1,7 +1,7 @@
 import { MathText } from 'plexive'
 
 // Text-heavy preview: also the font check. prose-post is the serif reading
-// voice (Newsreader); inline $...$ spans are typeset by KaTeX.
+// voice (EB Garamond); inline $...$ spans are typeset by KaTeX.
 function Stage({ children }: { children: React.ReactNode }) {
   return (
     <div
