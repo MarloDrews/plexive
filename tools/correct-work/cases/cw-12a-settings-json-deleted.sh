@@ -8,7 +8,7 @@
 #     --- .claude/settings.json deleted (8 deny rules and both PreToolUse hooks with it)
 #       ok settings_hook_events 0/1   settings_hook_matchers 0/2   settings_hook_commands 0/2
 #       ok settings_permissions_allow 0/4   settings_permissions_deny 0/8
-#     OK: all 23 containers at or under their ceilings.                       rc=0
+#     OK: all 23 containers at or under their ceilings.   (23 on the day; 24 since 2026-09-03)                       rc=0
 #
 # Six of those eight deny rules are git push guards. The hooks were two when that output was
 # taken and are THREE now: the Bash gate, which carries the commit-rules injection and the

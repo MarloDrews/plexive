@@ -92,7 +92,7 @@ defect waiting to be fixed:
 
 **CW-12b passes and is not a clean bill of health.** It stores the half of F6 that is not fixed:
 a ceiling fires upward only, so emptying every list in `.claude/settings.json` in place is
-invisible to all 23 containers. The budget file says so in `_what_a_ceiling_cannot_see`.
+invisible to all 24 containers. The budget file says so in `_what_a_ceiling_cannot_see`.
 
 ## Running them
 

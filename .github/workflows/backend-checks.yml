@@ -205,13 +205,13 @@ jobs:
           # the exact shape this repository keeps recording: the file sits in the tree looking
           # authoritative and governing nothing, while the check goes green having compared no
           # budgets. So the file is never defaulted when missing, the path actually read is
-          # printed before anything else, and the METRICS list below -- 23 names, written out --
+          # printed before anything else, and the METRICS list below -- 24 names, written out --
           # is compared against the file keys in BOTH directions, which refuses a file holding
-          # anything other than exactly those 23 entries.
+          # anything other than exactly those 24 entries.
           #
           # There WAS a MIN_BUDGET_ENTRIES=23 floor here as well, and it could never fire: set
           # equality runs first, so any file reaching a count check has already been proved to
-          # hold exactly those 23 names. Demonstrated 2026-08-31 -- a budget file cut to one
+          # hold exactly those 24 names. Demonstrated 2026-08-31 -- a budget file cut to one
           # container failed at NO BUDGET and never reached the floor (stored as cw-13). A
           # threshold that cannot fire is the shape this repository central rule is about, so it
           # was taken out rather than moved above the assertion that was already doing its job,
@@ -265,6 +265,7 @@ jobs:
               "project_skills", "project_commands", "project_subagents", "project_plugins",
               "project_mcp_servers", "workflow_files", "workflow_jobs", "workflow_steps",
               "workflow_named_thresholds", "correct_work_cases",
+              "architecture_md_bytes",
           ]
 
           # WHAT THE REPOSITORY SHIPS, NOT WHAT THIS MACHINE HAPPENS TO HOLD, AND THE INDEX
@@ -313,6 +314,15 @@ jobs:
 
           blob = read_lf("CLAUDE.md")
           m["claude_md_bytes"] = len(blob)
+          # ARCHITECTURE.md IS MEASURED THE SAME WAY AND FOR THE SAME REASON. It is the other
+          # document a standing rule in CLAUDE.md extends -- since 2026-09-03 only for a change
+          # that establishes something the code cannot state for itself, which is narrower than
+          # the entry-per-changed-item rule that filled it and still a rule that makes growth
+          # recur, and the trim topic that ended 2026-09-03 is what a ceiling here is
+          # meant to make visible the next time. read_lf so the number is the index/runner one:
+          # the working tree on the machine these files are written on is CRLF and reads larger
+          # by exactly its carriage-return count.
+          m["architecture_md_bytes"] = len(read_lf("ARCHITECTURE.md"))
           lines = blob.decode("utf-8", errors="replace").splitlines()
           m["claude_md_lines"] = len(lines)
           # FENCES ARE TRACKED, AND A "## " LINE INSIDE ONE IS A QUOTATION RATHER THAN A
@@ -415,7 +425,7 @@ jobs:
           # .claude/settings.json as an empty dict made DELETING it pass every ceiling green:
           # measured 2026-08-31, the file gone took 8 deny rules, 4 allow rules and both
           # PreToolUse hooks with it, six containers floored at zero, and the step printed
-          # "OK: all 23 containers at or under their ceilings" (stored as cw-12a). A ceiling
+          # "OK: all N containers at or under their ceilings" (stored as cw-12a). A ceiling
           # fires upward, so the whole governance surface disappearing read as compliance --
           # inside the step written to watch that surface as a whole.
           #

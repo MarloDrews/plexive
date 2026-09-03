@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
 import {
-  Newsreader,
+  EB_Garamond,
   Source_Sans_3,
   Geist_Mono,
   Cinzel,
   Playfair_Display,
-  EB_Garamond,
   Zilla_Slab,
   Inter,
   Poppins,
@@ -13,10 +12,16 @@ import {
 import "./globals.css";
 import Providers from "@/components/Providers";
 
-// "Lamplight" type system (docs/DESIGN.md): Newsreader is the serif voice of
+// "Lamplight" type system (docs/DESIGN.md): EB Garamond is the serif voice of
 // the content, Source Sans 3 is quiet UI chrome, Geist Mono renders data.
-const newsreader = Newsreader({
-  variable: "--font-newsreader",
+// This is a SECOND EB Garamond instance and is deliberately not the
+// coverGaramond one below: the reading face preloads (it is on the LCP path of
+// every content route) and carries the italic style the prose and card teasers
+// use, while the cover instance must do neither.
+// It replaced Newsreader, whose x-height was larger; globals.css restates the
+// reading size in x-heights so no rendered text got smaller.
+const ebGaramond = EB_Garamond({
+  variable: "--font-eb-garamond",
   subsets: ["latin"],
   style: ["normal", "italic"],
 });
@@ -74,7 +79,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${newsreader.variable} ${sourceSans.variable} ${geistMono.variable} ${coverSerif.variable} ${coverDidone.variable} ${coverGaramond.variable} ${coverSlab.variable} ${coverSans.variable} ${coverGeometric.variable} h-full antialiased`}
+      className={`${ebGaramond.variable} ${sourceSans.variable} ${geistMono.variable} ${coverSerif.variable} ${coverDidone.variable} ${coverGaramond.variable} ${coverSlab.variable} ${coverSans.variable} ${coverGeometric.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <Providers>
