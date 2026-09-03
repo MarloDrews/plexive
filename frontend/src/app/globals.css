@@ -72,15 +72,17 @@
   /* Rebased in 2026-07 so every text token cleared WCAG AA (4.5:1) on all
      three surfaces it renders on: the base, the .card slab (white 4% over
      base) and the .field fill (white 6% over the slab).
-     THAT NO LONGER HOLDS EVERYWHERE. Rebasing the base to #0D0F17 on
-     2026-09-03 lightened it, and --color-ink-muted now measures 4.32 on the
-     .field fill (it was 4.61), i.e. below AA for .field::placeholder. Every
-     other token still clears AA on all three. Left as measured rather than
-     patched: moving the ink ramp is a separate decision. */
+     Rebasing the base to #0D0F17 on 2026-09-03 broke that for one token:
+     --color-ink-muted fell to 4.35 on the .field fill, below AA for
+     .field::placeholder. IT IS FIXED HERE rather than left as measured:
+     ink-muted moved #8a8a8a -> #8e8e8e on 2026-09-03 and now measures 5.84 on
+     the base, 5.38 on the .card slab and 4.58 on the .field fill, so the whole
+     ramp clears AA on all three surfaces again. Only ink-muted moved; the rest
+     of the ramp never dropped below AA and is untouched. */
   --color-ink: #eeeeee;                   /* headings, primary */
   --color-ink-body: #c5c5c5;              /* body prose */
   --color-ink-dim: #a3a3a3;               /* secondary */
-  --color-ink-muted: #8a8a8a;             /* labels, meta */
+  --color-ink-muted: #8e8e8e;             /* labels, meta */
   /* NOT a text token: 1.7:1 on the base, far below AA. All 57 former text uses
      moved up to ink-muted, so it currently has no consumer. Kept defined for
      hairline graphics; retiring it belongs to M097. */
@@ -96,16 +98,21 @@
   /* Format inks — web source of truth for format colors. Hexes are mirrored by
      hand in src/lib/formats.ts (accent + rgb); update both together. No client
      outside the web app carries these colors today; one that adds them mirrors
-     this block. Equalized in OKLCH for uniform perceived brightness:
-     L=0.75, chroma 0.11 (clamped to sRGB gamut), hue per format; neutral kept
-     desaturated. New format: pick a hue, keep the same L and chroma. */
-  --color-fmt-books: #cfa857;
-  --color-fmt-facts: #7eb1f3;
-  --color-fmt-people: #d993ca;
-  --color-fmt-concepts: #b69feb;
-  --color-fmt-questions: #43c3c4;
-  --color-fmt-stories: #eb9288;
-  --color-fmt-academy: #73c28d;
+     this block. Rebased 2026-09-03 to saturated inks chosen on a specimen.
+     THE SEVEN HUES ARE UNCHANGED (OKLCH h 84/256/335/298/196/27/154, the same
+     as the values they replace); equal lightness and equal chroma are what was
+     given up. The old set sat at L=0.75, C=0.110 for all seven; the new one
+     spans L 0.636-0.693 and C 0.105-0.295, so a format is now identified by
+     hue AND intensity rather than by hue alone. New format: pick a hue, then
+     pick L and C by eye on the ground -- there is no formula to copy any more.
+     Neutral is unchanged and stays desaturated. */
+  --color-fmt-books: #B78915;
+  --color-fmt-facts: #3490FF;
+  --color-fmt-people: #FF22E3;
+  --color-fmt-concepts: #A774FF;
+  --color-fmt-questions: #1AA0A1;
+  --color-fmt-stories: #FF534B;
+  --color-fmt-academy: #1AA55D;
   --color-fmt-neutral: #7e8699;
 
   /* Radii (in-content blocks; chrome surfaces use rounded-2xl/3xl/full) */
@@ -130,11 +137,18 @@
   color-scheme: dark;
 }
 
-/* Light ground, decided on a specimen 2026-09-03. Parked here so a later
-   rebuild reads the value from the code. DELIBERATELY NOT WIRED UP: nothing
-   sets data-theme, so this never matches. The 7 light accents are still open. */
+/* The light theme: the ground and the seven format accents chosen for it.
+   DELIBERATELY NOT WIRED UP -- no theme switching mechanism exists, nothing
+   sets data-theme, so this block never matches; the values in it are settled. */
 :root[data-theme="light"] {
   --color-surface-0: #F5ECDB;             /* light page base */
+  --color-fmt-books: #AF8100;
+  --color-fmt-facts: #0083FF;
+  --color-fmt-people: #F600DB;
+  --color-fmt-concepts: #8B00FF;
+  --color-fmt-questions: #009899;
+  --color-fmt-stories: #FF001E;
+  --color-fmt-academy: #009D55;
 }
 
 body {
