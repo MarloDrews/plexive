@@ -6,10 +6,10 @@
 # fixed, so the gap sits in a file that runs. Verbatim from the verification report of 2026-08-31:
 #
 #     --- same, with the file kept and every list emptied
-#     OK: all 23 containers at or under their ceilings.                       rc=0
+#     OK: all 23 containers at or under their ceilings.   (23 on the day; 24 since 2026-09-03)                       rc=0
 #
 # A CEILING FIRES UPWARD ONLY. That is what a ceiling is, it is written into CLAUDE.md and into
-# tools/surface-budget.json, and closing this direction would mean a floor under all 23
+# tools/surface-budget.json, and closing this direction would mean a floor under all 24
 # containers -- a different check, which this batch was told not to add and did not add. So the
 # budget file now carries a line naming what a ceiling cannot see, and this case is the runnable
 # half of that line.
