@@ -40,11 +40,14 @@ describes. An entry carrying neither earns no line at all, so ## FOLDER
 STRUCTURE is NOT an index of the tree and a file's absence from it says nothing
 about the file. PROGRESS HERE IS A FRONTIER RATHER THAN A FRACTION, because a
 deletion cannot make a frontier wrong the way it makes a denominator wrong:
-every entry from the start of ## FOLDER STRUCTURE through
-frontend/src/lib/italics.ts has been brought to the standard, on 2026-09-03, as
-has the mobile-kmp/ block; nothing past that frontier has, and the frontier is
-the only thing that says which is which. The section holds 295 described entries
-today, and the number FALLS as entries earn no line -- it is a measurement and
+THE FRONTIER HAS REACHED THE END OF THE SECTION. Every entry in ## FOLDER
+STRUCTURE has been brought to the standard as of 2026-09-03, the last one
+reached being .claude/hooks/hook_cases.py, which is also the last entry there
+is; nothing sits past it, so the frontier no longer divides the section and is
+kept only to say that it once did. The section holds 297 described entries
+today -- non-blank lines, less the two fence lines, the heading, the 27 bare
+directory headers and the one placeholder note -- and the number FALLS as
+entries earn no line; it is a measurement and
 not a denominator. A deliberate omission, a constraint, a ban and a
 two-consumer contract are none of them visible in any one file, and each is a
 thing a session would otherwise build, break or trim in good faith.
