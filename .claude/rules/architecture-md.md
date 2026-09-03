@@ -21,9 +21,11 @@ ever survives in both, one of them is wrong and nobody can tell which.
   does not earn its line by describing what a file contains, because the file answers that better
   and the description drifts silently while the file moves underneath it. NONE OF THOSE FIVE
   IS VISIBLE IN ANY ONE FILE, which is the whole reason they are written down, and each is a
-  thing a session would otherwise build, break or trim in good faith. That sentence stood in
-  the header of ARCHITECTURE.md until 2026-09-03 and moved here rather than being dropped
-  with the clauses it explains.
+  thing a session would otherwise build, break or trim in good faith. THE FIVE ARE THIS ROLE'S
+  OWN KINDS AND NOT A SENTENCE CARRIED OVER: the header of ARCHITECTURE.md named four until
+  2026-09-03 and left out the reason a thing is the way it is, and a file whose role is
+  cross-file constraints AND the reasons behind decisions cannot state a list that omits the
+  reasons. Whoever shortens this list back to four is reversing that, not tidying it.
 - A location claim earns its place when it says something THE TREE DOES NOT SAY. An entry that
   restates the path it is printed at, with or without an endpoint list beside it, earns nothing.
 - A bare parameter, cap, clamp, default or list of fields earns its place only when the entry says
