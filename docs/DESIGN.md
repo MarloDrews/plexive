@@ -45,8 +45,9 @@ teaser or label look tappable when it is not.
 
 ## Tokens (single source of truth: `frontend/src/app/globals.css`)
 
-The Circuit palette is unchanged by the Stage consolidation: neutral black
-surfaces (`surface-0..3`, `surface-overlay`), neutral gray edges
+The Circuit palette is unchanged by the Stage consolidation: near-black
+surfaces (`surface-0..3`, `surface-overlay`; `surface-0` was rebased to the
+slightly cool #0D0F17 on 2026-09-03), neutral gray edges
 (`edge`, `edge-strong` — now used mainly for in-content hairlines like table
 rows), neutral ink levels (`ink`, `ink-body`, `ink-dim`, `ink-muted`,
 `ink-faint`), brand + semantic accents (`lamp` #7c6fff, `like` #ff3a5c,
