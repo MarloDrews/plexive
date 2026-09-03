@@ -43,7 +43,7 @@
 /*
   Plexive design tokens — "Circuit" palette.
 
-  Neutral black surfaces; color lives only on elements (format badges,
+  Near-black surfaces; color lives only on elements (format badges,
   brand accent, action states). The serif (EB Garamond) is the voice of
   the content; the sans (Source Sans 3) is invisible UI chrome.
 
@@ -56,8 +56,9 @@
   - duration-300 for surface transitions (sheets, page slides, reveals)
 */
 @theme {
-  /* Surfaces — neutral dark, no color tint */
-  --color-surface-0: #0a0a0a;             /* page base */
+  /* Surfaces — dark. surface-0 carries a slight cool tint, chosen on a
+     specimen 2026-09-03 and checked on an AMOLED phone; 1..3 stay neutral. */
+  --color-surface-0: #0D0F17;             /* page base */
   --color-surface-1: #141414;             /* cards, panels */
   --color-surface-2: #1a1a1a;             /* inputs, inner blocks */
   --color-surface-3: #222222;             /* raised elements, hover fills */
@@ -68,10 +69,14 @@
   --color-edge-strong: rgb(200 200 200 / 0.20); /* inputs, outline buttons */
 
   /* Ink (text) — neutral white/gray */
-  /* Rebased so every text token clears WCAG AA (4.5:1) on all three surfaces
-     it renders on: the base, the .card slab (white 4% over base) and the
-     .field fill (white 6% over the slab). The whole ramp moved together, so
-     the hierarchy is unchanged. */
+  /* Rebased in 2026-07 so every text token cleared WCAG AA (4.5:1) on all
+     three surfaces it renders on: the base, the .card slab (white 4% over
+     base) and the .field fill (white 6% over the slab).
+     THAT NO LONGER HOLDS EVERYWHERE. Rebasing the base to #0D0F17 on
+     2026-09-03 lightened it, and --color-ink-muted now measures 4.32 on the
+     .field fill (it was 4.61), i.e. below AA for .field::placeholder. Every
+     other token still clears AA on all three. Left as measured rather than
+     patched: moving the ink ramp is a separate decision. */
   --color-ink: #eeeeee;                   /* headings, primary */
   --color-ink-body: #c5c5c5;              /* body prose */
   --color-ink-dim: #a3a3a3;               /* secondary */
@@ -123,6 +128,13 @@
 :root {
   --accent: var(--color-lamp);
   color-scheme: dark;
+}
+
+/* Light ground, decided on a specimen 2026-09-03. Parked here so a later
+   rebuild reads the value from the code. DELIBERATELY NOT WIRED UP: nothing
+   sets data-theme, so this never matches. The 7 light accents are still open. */
+:root[data-theme="light"] {
+  --color-surface-0: #F5ECDB;             /* light page base */
 }
 
 body {
