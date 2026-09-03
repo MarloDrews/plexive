@@ -37,9 +37,9 @@
     },
     "claude_rules_files": {
       "budget": 2,
-      "measured": 1,
+      "measured": 2,
       "kind": "headroom",
-      "why": "SET BY tools/correct-work/cases/cw-7-second-scoped-rules-file.sh, not by a commit. That case exists to prove a SECOND correctly scoped rules file is correct work, so a pin at the measured 1 would red on a stored correct-work input, which is the inverse defect CLAUDE.md keeps apart from the rest. The floor under this same container is MIN_RULES_FILES=1 in the step above it, so the container is fenced at both ends by two different assertions on purpose."
+      "why": "THE SLOT IS SPENT AND THE CEILING DID NOT MOVE, 2026-09-03 on branch docs/architecture-entry-standard: .claude/rules/architecture-md.md is the second file and it lands UNDER the existing ceiling, so this row records growth without authorising any. Margin is now zero, which is the mechanism working rather than a state to fix -- a third rules file must be defended here before it can land, and the step was run against one to see it refused (claude_rules_files 3 / 2, OVER, exit 1). SET BY tools/correct-work/cases/cw-7-second-scoped-rules-file.sh, not by a commit. That case exists to prove a SECOND correctly scoped rules file is correct work, so a pin at the measured 1 would red on a stored correct-work input, which is the inverse defect CLAUDE.md keeps apart from the rest. The floor under this same container is MIN_RULES_FILES=1 in the step above it, so the container is fenced at both ends by two different assertions on purpose."
     },
     "settings_hook_events": {
       "budget": 2,
