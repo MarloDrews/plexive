@@ -10,6 +10,29 @@
 // Every size, weight and line height below was MEASURED off the live components
 // on 2026-09-03 at c558f15, not chosen here. The measurements and their
 // file:line citations are in the design token inventory report of that date.
+// The four component citations were re-checked against 5757481 (the EB Garamond
+// merge) on 2026-09-03 and all four still land on the line they name; the
+// globals.css one had moved and is corrected in the same pass.
+//
+// SINCE 5757481 EB GARAMOND IS THE APP'S READING FACE, and it carries an
+// x-height correction: globals.css:36-41 and :343 state the reading size in
+// x-heights (font-size-adjust: 0.426, which is Newsreader's ratio) so swapping
+// the family did not shrink any rendered text. This page reproduces that
+// correction on every row set in a candidate face, because without it the
+// specimen renders EB Garamond about 6% smaller than the app does and the
+// judgement would be made about text the product never shows. The correction is
+// stated in x-heights rather than in EB Garamond's own metrics, so it applies
+// unchanged to all four candidates and normalises them to each other as a side
+// effect. It is deliberately NOT on the chrome: every block below that sets
+// fontFamily also sets fontSizeAdjust, which is the pairing contract
+// globals.css:25-30 states for the app.
+//
+// The page also carries two decision panels that are not about typefaces, for
+// the beige-theme question the 2026-09-03 design token inventory opened: the
+// seven format accents (all seven measure 1.69-2.17:1 on every beige, below
+// even the 3:1 floor a rule needs) and the card surface (a white wash, which on
+// beige makes a card LIGHTER than the page). Both are things to look at, not to
+// read off a table.
 //
 // The fonts are self-hosted under public/specimen-fonts/, following the same
 // static-asset pattern public/accessories/ and public/seed-images/ already use.
@@ -19,7 +42,7 @@
 // The @font-face block is inline rather than in globals.css because globals.css
 // is outside this batch's scope.
 
-import { useState } from "react"
+import { Fragment, useState } from "react"
 
 // ---------------------------------------------------------------------------
 // The four candidates.
@@ -83,16 +106,67 @@ interface Ground {
   hex: string
   ink: string
   family: "beige" | "dark"
+  // One step off the ground, for the card panel: lighter on a dark ground,
+  // darker on a beige one. NOT chosen by eye and not +10 per channel either.
+  // Produced by `node src/app/specimen/accent-candidates.mjs step`, which takes
+  // the app's own step (--color-surface-0 #0a0a0a to --color-surface-1 #141414,
+  // globals.css:60-61, which is also what rgb(255 255 255 / 0.04) composites to
+  // over the base) as a lightness difference in OKLab, delta L = 0.046463, and
+  // applies it in the direction the ground family needs. Copying the channel
+  // arithmetic instead would put a visible step on the dark grounds and an
+  // invisible one on the beige ones, and the panel would then answer a question
+  // about arithmetic rather than about direction.
+  step: string
 }
 
 const GROUNDS: Ground[] = [
-  { id: "L1", hex: "#FAF6EE", ink: "#14110C", family: "beige" },
-  { id: "L2", hex: "#F4EFE6", ink: "#14110C", family: "beige" },
-  { id: "L3", hex: "#EDE4D3", ink: "#14110C", family: "beige" },
-  { id: "D1", hex: "#0B0E15", ink: "#EEEEEE", family: "dark" },
-  { id: "D2", hex: "#0F1117", ink: "#EEEEEE", family: "dark" },
-  { id: "D3", hex: "#070910", ink: "#EEEEEE", family: "dark" },
+  { id: "L1", hex: "#FAF6EE", ink: "#14110C", family: "beige", step: "#EBE7DF" },
+  { id: "L2", hex: "#F4EFE6", ink: "#14110C", family: "beige", step: "#E5E0D7" },
+  { id: "L3", hex: "#EDE4D3", ink: "#14110C", family: "beige", step: "#DED5C4" },
+  { id: "D1", hex: "#0B0E15", ink: "#EEEEEE", family: "dark", step: "#151820" },
+  { id: "D2", hex: "#0F1117", ink: "#EEEEEE", family: "dark", step: "#191B22" },
+  { id: "D3", hex: "#070910", ink: "#EEEEEE", family: "dark", step: "#10131B" },
 ]
+
+// ---------------------------------------------------------------------------
+// The seven format accents, and the two candidate sets for a light ground.
+//
+// `today` is read from globals.css:97-103. `setA` and `setB` are the output of
+// `node src/app/specimen/accent-candidates.mjs emit`, pasted here because this
+// page is a client component with no build step: hue held exactly, lightness
+// set to 0.50 (A) and 0.44 (B), chroma the largest value in the sRGB gamut at
+// that lightness capped at 1.4x the original. The script proves its own
+// conversion first -- #FFFFFF to lightness 1 and chroma 0, #000000 to lightness
+// 0, and a hex -> OKLCH -> hex round trip of all seven with a maximum
+// per-channel error of 0 in 0-255 units.
+//
+// The point of showing `today` beside the two candidates is that the contrast
+// table cannot answer the only question that matters here: whether a colour at
+// lightness 0.50 or 0.44 still READS as the colour that format has today.
+// ---------------------------------------------------------------------------
+
+interface Accent {
+  name: string
+  today: string
+  setA: string
+  setB: string
+}
+
+const ACCENTS: Accent[] = [
+  { name: "books", today: "#cfa857", setA: "#7f5d00", setB: "#6a4d00" },
+  { name: "facts", today: "#7eb1f3", setA: "#1362b8", setB: "#0050a0" },
+  { name: "people", today: "#d993ca", setA: "#953986", setB: "#822674" },
+  { name: "concepts", today: "#b69feb", setA: "#6f4aae", setB: "#5e389b" },
+  { name: "questions", today: "#43c3c4", setA: "#007273", setB: "#005f60" },
+  { name: "stories", today: "#eb9288", setA: "#a9352f", setB: "#95201e" },
+  { name: "academy", today: "#73c28d", setA: "#00773f", setB: "#006434" },
+]
+
+// The app's reading-face x-height correction, globals.css:37 and :343. Applied
+// to every row on this page that is set in a candidate face, and to nothing
+// else. Kept as one named constant so the page cannot drift from the app by a
+// typo in one of seven places.
+const READING_FACE_ADJUST = "0.426"
 
 // ---------------------------------------------------------------------------
 // The five measured type roles. Every number here was read off the source on
@@ -135,7 +209,7 @@ const ROLES: Role[] = [
   {
     key: "detail-body",
     label: "Detail view body, .prose-post",
-    cite: "globals.css:303-308 - font-serif, --text-reading 1.0625rem, line-height 1.7",
+    cite: "globals.css:341-347 - font-serif, font-size-adjust 0.426, --text-reading 1.0625rem, line-height 1.7",
     fontSize: "1.0625rem",
     fontWeight: 400,
     lineHeight: 1.7,
@@ -189,6 +263,14 @@ const BODY = [
 ].join(" ")
 
 const META = "12 min read - MEDIUM - 4 sources - 2026"
+
+// The card panel needs a block short enough that four of them fit on one screen
+// and long enough to wrap. Two sentences off the passage above, so the card
+// panel and the type rows are not comparing different text.
+const CARD_TEXT =
+  "Meitner, who had fled to Sweden that July, read the letter in Kungalv over " +
+  "Christmas. Walking in the snow with her nephew Otto Frisch, she did the sum " +
+  "on a scrap of paper."
 
 // ---------------------------------------------------------------------------
 
@@ -261,6 +343,7 @@ export default function SpecimenPage() {
     fontSize: "0.8125rem",
     fontWeight: on ? 600 : 400,
     fontFamily: "system-ui, sans-serif",
+    fontSizeAdjust: "none",
     cursor: "pointer",
     lineHeight: 1.2,
   })
@@ -270,12 +353,62 @@ export default function SpecimenPage() {
 
   const labelStyle = {
     fontFamily: "system-ui, sans-serif",
+    fontSizeAdjust: "none" as const,
     fontSize: "0.6875rem",
     letterSpacing: "0.14em",
     textTransform: "uppercase" as const,
     color: chromeInk,
     marginBottom: "0.5rem",
   }
+
+  // Small chrome caption, for the hexes printed beside every swatch and card.
+  const captionStyle = {
+    fontFamily: "ui-monospace, monospace",
+    fontSizeAdjust: "none" as const,
+    fontSize: "0.625rem",
+    lineHeight: 1.4,
+    color: chromeInk,
+  }
+
+  // rgb(255 255 255 / 0.04) over the ground, resolved. The value the app's
+  // .card carries today (globals.css:182); shown as a real hex so the
+  // inversion on beige is a thing on the screen rather than a claim.
+  const whiteWashOver = (groundHex: string) => {
+    const channels = [1, 3, 5].map((i) => parseInt(groundHex.slice(i, i + 2), 16))
+    return (
+      "#" +
+      channels
+        .map((c) => Math.round(255 * 0.04 + c * 0.96).toString(16).padStart(2, "0"))
+        .join("")
+        .toUpperCase()
+    )
+  }
+
+  // The four card treatments. Each is a flat fill, a flat rule, both, or the
+  // wash that ships. No radius, no shadow, no gradient: those are separate
+  // decisions and putting one here would make all four look like a proposal.
+  const CARD_TREATMENTS = [
+    {
+      name: "Step",
+      resolved: ground.step + (beige ? " (darker than the ground)" : " (lighter than the ground)"),
+      style: { background: ground.step },
+    },
+    {
+      name: "Line",
+      resolved: "no fill, 1px " + rule,
+      style: { border: "1px solid " + rule },
+    },
+    {
+      name: "Step and line",
+      resolved: ground.step + " + 1px " + rule,
+      style: { background: ground.step, border: "1px solid " + rule },
+    },
+    {
+      name: "Today, what ships",
+      resolved: "rgb(255 255 255 / 0.04) over " + ground.hex + " = " + whiteWashOver(ground.hex),
+      style: { background: "rgb(255 255 255 / 0.04)" },
+    },
+  ]
 
   return (
     <div style={{ background: ground.hex, color: ground.ink, minHeight: "100vh" }}>
@@ -284,7 +417,7 @@ export default function SpecimenPage() {
       <div style={{ maxWidth: "42rem", margin: "0 auto", padding: "1rem 1.25rem 5rem" }}>
         {/* Controls. Kept in system-ui so the chrome is never mistaken for the
             specimen and never influences the judgement being made. */}
-        <div style={{ fontFamily: "system-ui, sans-serif" }}>
+        <div style={{ fontFamily: "system-ui, sans-serif", fontSizeAdjust: "none" }}>
           <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem", marginBottom: "0.6rem" }}>
             {FACES.map((f) => (
               <button
@@ -319,6 +452,7 @@ export default function SpecimenPage() {
         <div
           style={{
             fontFamily: "system-ui, sans-serif",
+            fontSizeAdjust: "none",
             fontSize: "0.75rem",
             lineHeight: 1.5,
             color: chromeInk,
@@ -336,6 +470,14 @@ export default function SpecimenPage() {
           <div>
             ground {ground.id} {ground.hex} - ink {ground.ink} - {ground.family}
           </div>
+          {/* Said on the page, not only in the source: a page that merely
+              declares font-size-adjust and a page where it takes effect look
+              identical in a screenshot. */}
+          <div style={{ marginTop: "0.35rem" }}>
+            x-height correction APPLIED: font-size-adjust {READING_FACE_ADJUST} on every row set in{" "}
+            {face.name}, the same value globals.css:37 and :343 carry for the app&apos;s reading face.
+            The chrome on this page resets it to none.
+          </div>
         </div>
 
         {ROLES.map((role) => (
@@ -344,6 +486,7 @@ export default function SpecimenPage() {
             <div
               style={{
                 fontFamily: "ui-monospace, monospace",
+                fontSizeAdjust: "none",
                 fontSize: "0.6875rem",
                 lineHeight: 1.5,
                 color: chromeInk,
@@ -356,8 +499,10 @@ export default function SpecimenPage() {
               {role.cite}
             </div>
             <div
+              data-specimen-row={role.key}
               style={{
                 fontFamily: face.stack,
+                fontSizeAdjust: READING_FACE_ADJUST,
                 fontSize: role.fontSize,
                 fontWeight: role.fontWeight,
                 lineHeight: role.lineHeight,
@@ -374,9 +519,148 @@ export default function SpecimenPage() {
             whether the hairlines survive here on a phone. */}
         <section style={{ borderTop: "1px solid " + rule, paddingTop: "1.5rem" }}>
           <div style={labelStyle}>11px, alone</div>
-          <div style={{ fontFamily: face.stack, fontSize: "11px", fontWeight: 400, lineHeight: 1 }}>{META}</div>
+          <div
+            style={{
+              fontFamily: face.stack,
+              fontSizeAdjust: READING_FACE_ADJUST,
+              fontSize: "11px",
+              fontWeight: 400,
+              lineHeight: 1,
+            }}
+          >
+            {META}
+          </div>
           <div style={{ height: "1.25rem" }} />
-          <div style={{ fontFamily: face.stack, fontSize: "11px", fontWeight: 400, lineHeight: 1.6 }}>{BODY}</div>
+          <div
+            style={{
+              fontFamily: face.stack,
+              fontSizeAdjust: READING_FACE_ADJUST,
+              fontSize: "11px",
+              fontWeight: 400,
+              lineHeight: 1.6,
+            }}
+          >
+            {BODY}
+          </div>
+        </section>
+
+        {/* ------------------------------------------------------------------
+            The accent panel. Seven formats, each as small coloured text at the
+            11px metadata size and as a 2px coloured rule, because those are the
+            two things the app actually does with a format accent and they fail
+            different thresholds (4.5:1 and 3:1).
+
+            On a beige ground: three versions side by side, the value shipping
+            today and the two candidate sets. On a dark ground: the shipping
+            value alone, because the candidate sets were built for a light
+            ground and putting them on black would invite a comparison nobody
+            is being asked to make.
+            ------------------------------------------------------------------ */}
+        <section style={{ borderTop: "1px solid " + rule, marginTop: "2.5rem", paddingTop: "1.5rem" }}>
+          <div style={labelStyle}>Format accents</div>
+          <div style={{ ...captionStyle, marginBottom: "1rem" }}>
+            {beige
+              ? "today (globals.css:97-103, L 0.75) / set A (L 0.50) / set B (L 0.44). Hue held, chroma the largest in gamut capped at 1.4x. Does a candidate still read as the same colour that format has?"
+              : "dark ground: the shipping value alone. The two candidate sets are for a light ground and are not shown here."}
+          </div>
+
+          {beige && (
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "5.5rem 1fr 1fr 1fr",
+                gap: "0.5rem 0.75rem",
+                marginBottom: "0.5rem",
+              }}
+            >
+              <div style={captionStyle} />
+              <div style={captionStyle}>today</div>
+              <div style={captionStyle}>set A, L 0.50</div>
+              <div style={captionStyle}>set B, L 0.44</div>
+            </div>
+          )}
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: beige ? "5.5rem 1fr 1fr 1fr" : "5.5rem 1fr",
+              gap: "0.9rem 0.75rem",
+              alignItems: "start",
+            }}
+          >
+            {ACCENTS.map((accent) => {
+              const shown = beige
+                ? [accent.today, accent.setA, accent.setB]
+                : [accent.today]
+              return (
+                <Fragment key={accent.name}>
+                  <div style={captionStyle}>{accent.name}</div>
+                  {shown.map((hex) => (
+                    <div key={hex}>
+                      {/* Small coloured text at the 11px metadata size, the
+                          size PostCard.tsx:155 renders the meta row at. */}
+                      <div
+                        style={{
+                          fontFamily: face.stack,
+                          fontSizeAdjust: READING_FACE_ADJUST,
+                          fontSize: "11px",
+                          lineHeight: 1.2,
+                          color: hex,
+                        }}
+                      >
+                        {accent.name}
+                      </div>
+                      {/* A 2px coloured rule: the thin non-text element, which
+                          needs 3:1 rather than 4.5:1. */}
+                      <div style={{ height: "2px", background: hex, marginTop: "0.35rem" }} />
+                      <div style={{ ...captionStyle, marginTop: "0.25rem" }}>{hex}</div>
+                    </div>
+                  ))}
+                </Fragment>
+              )
+            })}
+          </div>
+        </section>
+
+        {/* ------------------------------------------------------------------
+            The card panel. The same block of text in four treatments, on every
+            ground, so the direction problem is visible: the white wash that
+            ships makes a card LIGHTER than a beige page, and no value
+            substitution fixes a direction.
+
+            No radius, no shadow, no gradient on any of the four. Those are
+            separate decisions, and one of them here would turn a comparison
+            into a proposal.
+            ------------------------------------------------------------------ */}
+        <section style={{ borderTop: "1px solid " + rule, marginTop: "2.5rem", paddingTop: "1.5rem" }}>
+          <div style={labelStyle}>Card surface</div>
+          <div style={{ ...captionStyle, marginBottom: "1rem" }}>
+            same text, four treatments, on {ground.id} {ground.hex}. The step is the app&apos;s own
+            #0a0a0a-to-#141414 lightness difference carried across in OKLab, not +10 per channel.
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem" }}>
+            {CARD_TREATMENTS.map((treatment) => (
+              <div key={treatment.name} style={{ flex: "1 1 13rem", minWidth: "12rem" }}>
+                <div style={{ ...captionStyle, marginBottom: "0.35rem" }}>
+                  {treatment.name}
+                  <br />
+                  {treatment.resolved}
+                </div>
+                <div style={{ padding: "0.9rem", ...treatment.style }}>
+                  <div
+                    style={{
+                      fontFamily: face.stack,
+                      fontSizeAdjust: READING_FACE_ADJUST,
+                      fontSize: "1.0625rem",
+                      lineHeight: 1.7,
+                    }}
+                  >
+                    {CARD_TEXT}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </section>
       </div>
     </div>
