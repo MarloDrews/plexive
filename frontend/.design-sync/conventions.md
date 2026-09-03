@@ -10,7 +10,7 @@ sans (Source Sans 3) is invisible UI chrome.
 Components are styled for a dark canvas (`--color-ink` text is near-white). On a
 light background they vanish. Always:
 
-- Set the page/container background to `var(--color-surface-0)` (#0a0a0a) and let
+- Set the page/container background to `var(--color-surface-0)` (#0D0F17) and let
   text default to `var(--color-ink)`. The app sets this on `body` with
   `color-scheme: dark`.
 - Load the bound `styles.css` — it `@import`s `_ds_bundle.css` (all tokens +
