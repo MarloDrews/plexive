@@ -27,12 +27,20 @@
 // fontFamily also sets fontSizeAdjust, which is the pairing contract
 // globals.css:25-30 states for the app.
 //
-// The page also carries two decision panels that are not about typefaces, for
+// The page also carries THREE decision panels that are not about typefaces, for
 // the beige-theme question the 2026-09-03 design token inventory opened: the
 // seven format accents (all seven measure 1.69-2.17:1 on every beige, below
-// even the 3:1 floor a rule needs) and the card surface (a white wash, which on
-// beige makes a card LIGHTER than the page). Both are things to look at, not to
-// read off a table.
+// even the 3:1 floor a rule needs), the card surface (a white wash, which on
+// beige makes a card LIGHTER than the page), and the ground pair. All three are
+// things to look at, not to read off a table.
+//
+// THE THIRD ONE IS THE ONE THAT DOES NOT SWITCH. The first two show one ground
+// at a time, which compares a colour against a memory of the last one; the
+// ground-pair panel at the bottom (ground-pair-panel.tsx) puts a light ground
+// and a dark ground on the screen at once, chosen independently from six each,
+// with the accent palette and the contrast floor chosen once for both. Its
+// values are generated into ground-palettes-data.ts by ground-palettes.mjs and
+// are never typed in by hand.
 //
 // The fonts are self-hosted under public/specimen-fonts/, following the same
 // static-asset pattern public/accessories/ and public/seed-images/ already use.
@@ -43,6 +51,8 @@
 // is outside this batch's scope.
 
 import { Fragment, useState } from "react"
+
+import GroundPairPanel from "./ground-pair-panel"
 
 // ---------------------------------------------------------------------------
 // The four candidates.
@@ -663,6 +673,19 @@ export default function SpecimenPage() {
           </div>
         </section>
       </div>
+
+      {/* ------------------------------------------------------------------
+          The ground-pair panel. Full width and OUTSIDE the column above, so
+          the two halves are full bleed and neither is tinted by the single
+          ground the rest of the page is showing.
+
+          It is the one panel here that does not switch: a light ground and a
+          dark ground are on the screen at the same time, chosen
+          independently, so a pair is judged as a pair. The x-height
+          correction is passed down rather than re-declared, so there is one
+          0.426 on this page and not two.
+          ------------------------------------------------------------------ */}
+      <GroundPairPanel xheight={READING_FACE_ADJUST} />
     </div>
   )
 }
