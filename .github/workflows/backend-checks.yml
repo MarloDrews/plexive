@@ -315,8 +315,10 @@ jobs:
           blob = read_lf("CLAUDE.md")
           m["claude_md_bytes"] = len(blob)
           # ARCHITECTURE.md IS MEASURED THE SAME WAY AND FOR THE SAME REASON. It is the other
-          # document a session is told to update after every change, so it grows under the same
-          # standing rule, and the trim topic that ended 2026-09-03 is what a ceiling here is
+          # document a standing rule in CLAUDE.md extends -- since 2026-09-03 only for a change
+          # that establishes something the code cannot state for itself, which is narrower than
+          # the entry-per-changed-item rule that filled it and still a rule that makes growth
+          # recur, and the trim topic that ended 2026-09-03 is what a ceiling here is
           # meant to make visible the next time. read_lf so the number is the index/runner one:
           # the working tree on the machine these files are written on is CRLF and reads larger
           # by exactly its carriage-return count.

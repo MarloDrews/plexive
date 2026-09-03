@@ -33,24 +33,25 @@ accident.
 WHAT IS LEFT HERE, because it is deliberately not everything it once was. Six
 sections: this one; ## FOLDER STRUCTURE, which is by size almost the whole
 file; then ## CHAT / WEBSOCKET DESIGN, ## DEPLOYMENT
-INVARIANT (M138), ## SECURITY and ## FRONTEND COMPONENTS. THE STANDARD ALL SIX
-ARE BEING BROUGHT TO, and not a description of where they now stand: an entry
-earns its place on what it RULES OUT or where it points rather than on what it
-describes. An entry carrying neither earns no line at all, so ## FOLDER
-STRUCTURE is NOT an index of the tree and a file's absence from it says nothing
-about the file. PROGRESS HERE IS A FRONTIER RATHER THAN A FRACTION, because a
+INVARIANT (M138), ## SECURITY and ## FRONTEND COMPONENTS. THE STANDARD AN ENTRY
+IN ANY OF THE SIX IS HELD TO IS IN `.claude/rules/architecture-md.md`, stated
+there and NOWHERE ELSE, and it is a rule going forward rather than a
+description of where the sections now stand. It is delivered to any session
+that reads this file, at any offset, measured in both directions on 2026-09-03;
+this paragraph is here for the reader who never sees a rules file, so it points
+and carries no clause of its own. A clause found in two places would mean one
+of the two is wrong with no way for a reader to tell which.
+PROGRESS HERE IS A FRONTIER RATHER THAN A FRACTION, because a
 deletion cannot make a frontier wrong the way it makes a denominator wrong:
 THE FRONTIER HAS REACHED THE END OF THE SECTION. Every entry in ## FOLDER
-STRUCTURE has been brought to the standard as of 2026-09-03, the last one
+STRUCTURE has been brought to that standard as of 2026-09-03, the last one
 reached being .claude/hooks/hook_cases.py, which is also the last entry there
 is; nothing sits past it, so the frontier no longer divides the section and is
 kept only to say that it once did. The section holds 297 described entries
 today -- non-blank lines, less the two fence lines, the heading, the 27 bare
-directory headers and the one placeholder note -- and the number FALLS as
-entries earn no line; it is a measurement and
-not a denominator. A deliberate omission, a constraint, a ban and a
-two-consumer contract are none of them visible in any one file, and each is a
-thing a session would otherwise build, break or trim in good faith.
+directory headers and the one placeholder note -- and the number FALLS whenever
+the standard refuses an entry; it is a measurement and
+not a denominator.
 
 FOUR SECTIONS LEFT ON 2026-08-30, in pull request 86, for one reason in all four
 cases: each duplicated a file that is executable, authoritative and easier to
