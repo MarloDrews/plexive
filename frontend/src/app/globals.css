@@ -1,16 +1,50 @@
 @import "tailwindcss";
 
 @theme inline {
-  --font-serif: var(--font-newsreader);
+  --font-serif: var(--font-eb-garamond);
   --font-sans: var(--font-source-sans);
   --font-mono: var(--font-geist-mono);
+}
+
+/*
+  Reading-face x-height correction.
+
+  EB Garamond replaced Newsreader as --font-serif. Read from the font files
+  themselves (OS/2 sxHeight over head unitsPerEm): Newsreader is 852/2000 =
+  0.426 em, EB Garamond is 400/1000 = 0.400 em. Swapping the family alone
+  would therefore have shrunk every reading surface by a factor of 0.939
+  without one number in this file or any component changing, which reads as
+  the text having got harder rather than as a font change.
+
+  font-size-adjust states the size in x-heights instead of em: at 0.426 the
+  browser scales EB Garamond by 0.426 / 0.400 = 1.065, so text keeps the pixel
+  x-height it had at every call site and no component had to be touched. The
+  correction sits with the font because that is where the cause is; putting it
+  at the call sites would have spread it over 60 files and lost the reason.
+
+  THE PROPERTY INHERITS, and that is the one thing to know before adding a
+  rule here. Every rule that switches the family away from the serif clears it
+  again, and the pairing below is the contract: a declaration block that sets
+  font-family sets font-size-adjust in the same block. .katex is in the list
+  because KaTeX renders its own faces inside .prose-post; without the reset,
+  inline math would render at 0.426/0.442 of its size.
+
+  Browsers without the numeric font-size-adjust (pre-127 Chromium) ignore
+  these rules and get the 0.939 shrink, which is the pre-correction look and
+  not a broken one.
+*/
+:where(.font-serif, .prose-post, [style*="--font-serif"]) {
+  font-size-adjust: 0.426;
+}
+:where(.font-sans, .font-mono, .katex) {
+  font-size-adjust: none;
 }
 
 /*
   Plexive design tokens — "Circuit" palette.
 
   Neutral black surfaces; color lives only on elements (format badges,
-  brand accent, action states). The serif (Newsreader) is the voice of
+  brand accent, action states). The serif (EB Garamond) is the voice of
   the content; the sans (Source Sans 3) is invisible UI chrome.
 
   Semantic tokens below generate utilities (bg-surface-1, border-edge,
@@ -157,6 +191,7 @@ body::before {
     gap: 0.5rem;
     padding: 0.625rem 1.25rem;
     font-family: var(--font-sans);
+    font-size-adjust: none;
     font-weight: 500;
     font-size: 0.875rem;
     line-height: 1.25rem;
@@ -247,6 +282,7 @@ body::before {
     border-radius: 1.25rem;
     padding: 0.625rem 1rem;
     font-family: var(--font-sans);
+    font-size-adjust: none;
     font-size: 1rem;
     color: var(--color-ink);
     transition: background-color 150ms ease-out;
@@ -266,6 +302,7 @@ body::before {
     border-radius: 9999px;
     padding: 0.375rem 0.875rem;
     font-family: var(--font-sans);
+    font-size-adjust: none;
     font-size: 0.875rem;
     font-weight: 500;
     line-height: 1.25rem;
@@ -292,6 +329,7 @@ body::before {
 
   .label-caps {
     font-family: var(--font-sans);
+    font-size-adjust: none;
     font-size: 0.6875rem;
     font-weight: 600;
     letter-spacing: 0.18em;
@@ -302,6 +340,7 @@ body::before {
   /* Long-form post prose: the reading voice of the app. */
   .prose-post {
     font-family: var(--font-serif);
+    font-size-adjust: 0.426;
     font-size: var(--text-reading);
     line-height: 1.7;
     color: var(--color-ink-body);
