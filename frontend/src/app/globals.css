@@ -67,6 +67,12 @@
   /* Edges — neutral gray */
   --color-edge: rgb(200 200 200 / 0.10);        /* hairline dividers */
   --color-edge-strong: rgb(200 200 200 / 0.20); /* inputs, outline buttons */
+  /* The strength a rule moves to under hover. Added 2026-09-04 with the
+     specified empty state, whose control is a rule and no fill, so hover has
+     nothing else to move. A token and not a literal at the call site: a rule
+     strength for a state is exactly the value that gets copied by hand into
+     the next component and then drifts. */
+  --color-edge-emphasis: rgb(200 200 200 / 0.40); /* outline buttons on hover */
 
   /* Ink (text) — neutral white/gray */
   /* Rebased in 2026-07 so every text token cleared WCAG AA (4.5:1) on all
