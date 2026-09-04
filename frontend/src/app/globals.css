@@ -67,6 +67,12 @@
   /* Edges — neutral gray */
   --color-edge: rgb(200 200 200 / 0.10);        /* hairline dividers */
   --color-edge-strong: rgb(200 200 200 / 0.20); /* inputs, outline buttons */
+  /* The strength a rule moves to under hover. Added 2026-09-04 with the
+     specified empty state, whose control is a rule and no fill, so hover has
+     nothing else to move. A token and not a literal at the call site: a rule
+     strength for a state is exactly the value that gets copied by hand into
+     the next component and then drifts. */
+  --color-edge-emphasis: rgb(200 200 200 / 0.40); /* outline buttons on hover */
 
   /* Ink (text) — neutral white/gray */
   /* Rebased in 2026-07 so every text token cleared WCAG AA (4.5:1) on all
@@ -494,5 +500,59 @@ body::before {
   .post-sheet-open,
   .post-sheet-closing {
     animation-duration: 0ms;
+  }
+}
+
+/* Compass mark draw-once. The mark is a compass construction of a circle and it
+   draws itself in construction order over 900ms: the centre appears, the radius
+   draws outward from it, then the circle sweeps from the outer end of the radius.
+   Three animations with delays rather than one timeline, so each phase states its
+   own window.
+
+   The dash values are viewBox units, not pixels, which is why they are literals
+   here and not variables: the mark is always drawn on a 24 unit grid, and the
+   pixel size it renders at is the viewBox's problem. Radius length 8,
+   circumference 2 * pi * 8 = 50.265.
+
+   THE ELEMENTS THEMSELVES CARRY THE FINISHED STATE and every keyframe animates
+   FROM the hidden one. That is what makes the reduced-motion rule below correct
+   rather than nearly correct: animation:none leaves the finished drawing on
+   screen immediately, with nothing left to unset. Writing it the other way round
+   would leave an invisible mark for anyone who asked for less motion. */
+@keyframes compass-mark-centre {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes compass-mark-radius {
+  from { stroke-dashoffset: 8; }
+  to   { stroke-dashoffset: 0; }
+}
+
+@keyframes compass-mark-circle {
+  from { stroke-dashoffset: 50.265; }
+  to   { stroke-dashoffset: 0; }
+}
+
+.compass-mark-centre {
+  opacity: 1;
+  animation: compass-mark-centre 120ms linear 0ms both;
+}
+
+.compass-mark-radius {
+  stroke-dashoffset: 0;
+  animation: compass-mark-radius 280ms linear 120ms both;
+}
+
+.compass-mark-circle {
+  stroke-dashoffset: 0;
+  animation: compass-mark-circle 500ms linear 400ms both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .compass-mark-centre,
+  .compass-mark-radius,
+  .compass-mark-circle {
+    animation: none;
   }
 }

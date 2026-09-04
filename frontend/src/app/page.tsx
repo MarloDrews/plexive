@@ -6,6 +6,7 @@ import Link from "next/link"
 import useSWRInfinite from "swr/infinite"
 import dynamic from "next/dynamic"
 import PostCard from "@/components/PostCard"
+import EmptyState from "@/components/EmptyState"
 import BottomNav from "@/components/BottomNav"
 import ToastHost from "@/components/ToastHost"
 import FeedHeader, { FEED_TABS_ID, type FeedTab } from "@/components/FeedHeader"
@@ -260,11 +261,10 @@ function TabPage({
           <div className="stage-pulse card h-20 w-3/4" />
         </div>
       ) : posts.length === 0 ? (
-        <div className="h-full flex items-center justify-center bg-surface-0 px-6">
-          <div className="card px-8 py-10 text-center max-w-xs flex flex-col items-center gap-2">
-            <p className="font-serif text-xl text-ink leading-snug">Nothing here yet</p>
-            <p className="text-ink-muted text-sm">Try adjusting your interests</p>
-          </div>
+        // The ground stays on the page wrapper, as it does on the sibling
+        // branches; the empty state itself paints nothing.
+        <div className="h-full bg-surface-0">
+          <EmptyState copy="Adjust your interests to bring posts into this feed." />
         </div>
       ) : (
         <>
